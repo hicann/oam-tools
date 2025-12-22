@@ -1,0 +1,4 @@
+(gdb) #39 0x0000000000000000 in ?? ()
+(gdb) rbp            0x7ffeef83dc20      0x7ffeef83dc20
+rsp            0x7ffeef83dcf0      0x7ffeef83dcf0
+rip            0x0                 0x0

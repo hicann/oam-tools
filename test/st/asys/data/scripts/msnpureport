@@ -1,0 +1,65 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+
+echo "llt msnpureport execute start."
+
+time_stamp=2023-01-16-06-02-56
+
+mkdir -p ${time_stamp}
+
+mkdir -p ${time_stamp}/hisi_logs/device-0/
+mkdir -p ${time_stamp}/hisi_logs/device-0/20230117043125-000000000
+mkdir -p ${time_stamp}/hisi_logs/device-0/20230117043125-000000001
+mkdir -p ${time_stamp}/hisi_logs/device-0/20230117043125-000000002
+mkdir -p ${time_stamp}/hisi_logs/device-0/20230117043125-000000003
+touch ${time_stamp}/hisi_logs/device_info.txt
+touch ${time_stamp}/hisi_logs/device-0/history.log
+
+mkdir -p ${time_stamp}/message/
+mkdir -p ${time_stamp}/message/dev-os-0/
+touch ${time_stamp}/message/dev-os-0/messages
+touch ${time_stamp}/message/dev-os-0/messages
+
+mkdir -p ${time_stamp}/module_info/
+mkdir -p ${time_stamp}/module_info/dev-os-0/
+mkdir -p ${time_stamp}/module_info/dev-os-0/dvpp
+touch ${time_stamp}/module_info/dev-os-0/dvpp/dvpp_proc.log
+
+mkdir -p ${time_stamp}/slog/
+mkdir -p ${time_stamp}/slog/host/
+touch ${time_stamp}/slog/host/host-driver_20240524062534026.log
+mkdir -p ${time_stamp}/slog/dev-os-0/
+mkdir -p ${time_stamp}/slog/dev-os-0/debug
+mkdir -p ${time_stamp}/slog/dev-os-0/debug/device-app-140561
+touch ${time_stamp}/slog/dev-os-0/debug/device-app-140561/device-app-140561_20230117124044739.log
+mkdir -p ${time_stamp}/slog/dev-os-0/debug/device-os
+touch ${time_stamp}/slog/dev-os-0/debug/device-os/device-os_20230117043132102.log
+mkdir -p ${time_stamp}/slog/dev-os-0/run
+mkdir -p ${time_stamp}/slog/dev-os-0/run/device-app-140561
+touch ${time_stamp}/slog/dev-os-0/run/device-app-140561/device-app-140561_20230117124044739.log
+mkdir -p ${time_stamp}/slog/dev-os-0/run/device-os
+touch ${time_stamp}/slog/dev-os-0/run/device-os/device-os_20230117043132102.log
+mkdir -p ${time_stamp}/slog/dev-os-0/slogd
+touch ${time_stamp}/slog/dev-os-0/slogd/slogdlog
+mkdir -p ${time_stamp}/slog/dev-os-0/device-0
+touch ${time_stamp}/slog/dev-os-0/device-0/device-0_20230117043132152.log
+
+mkdir -p ${time_stamp}/stackcore/dev-os-0/
+touch ${time_stamp}/stackcore/dev-os-0/stackcore.slogd.11233.6.583572
+touch ${time_stamp}/stackcore/dev-os-0/stackcore.slogd.11546.6.583572
+
+echo "llt msnpureport execute finsh."

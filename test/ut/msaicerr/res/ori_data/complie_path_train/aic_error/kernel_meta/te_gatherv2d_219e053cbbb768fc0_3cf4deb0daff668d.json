@@ -1,0 +1,14 @@
+{
+    "binFileName":"te_gatherv2d_219e053cbbb768fc0_3cf4deb0daff668d",
+    "binFileSuffix":".o",
+    "blockDim":16,
+    "kernelName":"te_gatherv2d_219e053cbbb768fc0_3cf4deb0daff668d__kernel0",
+    "magic":"RT_DEV_BINARY_MAGIC_ELF",
+    "opParaSize":0,
+    "parameters":[
+        0,
+        0,
+        0
+    ],
+    "sha256":"a9cae45b639aac840f091fa5a4f0990bfafeb0c6978ee993d227ef08caf72996"
+}

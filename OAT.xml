@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<configuration>
+    <oatconfig>
+        <licensefile>LICENSE</licensefile>
+        <policylist>
+            <policy name="apachePolicy" desc="Apache 2.0 License Policy">
+                <!-- 允许Apache 2.0许可证 -->
+                <policyitem type="license" name="Apache-2.0" path=".*" filefilter="defaultPolicyFilter" desc="Apache 2.0 licensed files"/>
+                <!-- 版权策略示例 -->
+                <policyitem type="copyright" name="Huawei Technologies Co., Ltd." path=".*" filefilter="copyrightPolicyFilter" desc="Developed by Huawei Company"/> 
+            </policy>
+        </policylist>
+        
+        <filefilterlist>
+            <!-- 默认过滤器：排除不需要扫描的文件 -->
+            <filefilter name="defaultFilter" desc="Files not to check">
+                <!-- 排除构建输出目录 -->
+                <filteritem type="filepath" name="build/.*" desc="Build output files"/>
+                <filteritem type="filepath" name="target/.*" desc="Build output files"/>
+                <filteritem type="filepath" name="dist/.*" desc="Distribution files"/>
+                
+                <!-- 排除IDE配置文件 -->
+                <filteritem type="filepath" name="\.idea/.*" desc="IDE configuration"/>
+                <filteritem type="filepath" name="\.vscode/.*" desc="IDE configuration"/>
+            </filefilter>
+            
+            <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
+                <filteritem type="filename" name="LICENSE" desc="skip LICENSE file"/>
+                <filteritem type="filename" name="*.info" desc="skip info files"/>
+                <filteritem type="filename" name="*.xml" desc="skip xml files"/>
+                <filteritem type="filename" name="*.csv" desc="skip csv files"/>
+                <filteritem type="filename" name="*.yaml" desc="skip yaml files"/>
+                <!-- 继承默认过滤规则 -->
+                <!--<filteritem type="filepath" name="build/.*" desc="Build output files"/>-->
+            </filefilter>
+            
+            <filefilter name="copyrightPolicyFilter" desc="Filters for copyright header policies">
+                <filteritem type="filename" name="LICENSE" desc="skip LICENSE file"/>
+                <filteritem type="filename" name="*.info" desc="skip info files"/>
+                <filteritem type="filename" name="*.xml" desc="skip xml files"/>
+                <filteritem type="filename" name="*.csv" desc="skip csv files"/>
+                <filteritem type="filename" name="*.yaml" desc="skip yaml files"/>
+                <!-- 版权检查的特定过滤规则 -->
+                <!--<filteritem type="filepath" name="docs/.*" desc="Documentation files"/>-->
+                <!--<filteritem type="filepath" name="test/.*" desc="Test files"/>-->
+            </filefilter>
+            
+            <filefilter name="licenseFileNamePolicyFilter" desc="Filters for LICENSE file policies">
+                <!-- LICENSE文件检查的过滤规则 -->
+            </filefilter>
+            
+            <filefilter name="readmeFileNamePolicyFilter" desc="Filters for README file policies">
+                <!-- README文件检查的过滤规则 -->
+            </filefilter>
+            
+            <filefilter name="readmeOpenSourcefileNamePolicyFilter" desc="Filters for README.OpenSource file policies">
+                <!-- README.OpenSource文件检查的过滤规则 -->
+            </filefilter>
+            
+            <filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies">
+                <!-- 二进制文件过滤规则 -->
+                <filteritem type="filename" name="*.dll" desc="Dynamic library files"/>
+                <filteritem type="filename" name="*.so" desc="Shared object files"/>
+                <filteritem type="filename" name="*.a" desc="Static library files"/>
+                <filteritem type="filename" name="*.pyc" desc="Python compiled files"/>
+            </filefilter>
+        </filefilterlist>
+        
+        <licensematcherlist>
+            <!-- Apache 2.0许可证匹配器 -->
+            <licensematcher name="Apache-2.0" desc="Apache License 2.0 matching rules">
+                <licensetext name="Apache License" desc="Standard Apache 2.0 license header">
+                    Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+                    you may not use this file except in compliance with the License.
+                    You may obtain a copy of the License at
+
+                        http://www.apache.org/licenses/LICENSE-2.0
+
+                    Unless required by applicable law or agreed to in writing, software
+                    distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+                    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                    See the License for the specific language governing permissions and
+                    limitations under the License.
+                </licensetext>
+            </licensematcher>
+        </licensematcherlist>
+    </oatconfig>
+</configuration>

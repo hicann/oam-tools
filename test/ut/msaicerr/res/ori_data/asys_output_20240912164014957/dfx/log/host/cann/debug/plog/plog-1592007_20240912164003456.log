@@ -1,0 +1,100 @@
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:03.335.920 [stars_engine.cc:1406]1592077 ProcLogicCqReport:[INIT][DEFAULT]Task run failed, device_id=0, stream_id=42, task_id=1, sqe_type=0(ffts), errType=0x1(task exception), sqSwStatus=0
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.361.999 [device_error_proc.cc:1402]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.023 [device_error_proc.cc:1402]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial number is 87, there is an fftsplus aivector error exception, core id is 0, error code = 0, dump info: pc start: 0x12c042d73754, current: 0x12c042d75b18, vec error info: 0x99000000a2, mte error info: 0x5003000031, ifu error info: 0x200000007ffc0, ccu error info: 0x280d00000084, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c040569000.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.097 [device_error_proc.cc:1414]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.102 [device_error_proc.cc:1414]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The extend info: errcode:(0, 0, 0) errorStr: timeout or trap error. fixp_error0 info: 0x3000031, fixp_error1 info: 0x50 fsmId:0, tslot:0, thread:0, ctxid:0, blk:5, sublk:1, subErrType:2.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.127 [stream.cc:3081]1592077 EnterFailureAbort:[INIT][DEFAULT]stream_id=42 enter failure abort.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.141 [davinci_kernel_task.cc:1313]1592077 SetStarsResultForDavinciTask:[INIT][DEFAULT]AICORE Kernel task happen error, retCode=0x26.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.489 [davinci_kernel_task.cc:1256]1592077 PreCheckTaskErr:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.495 [davinci_kernel_task.cc:1256]1592077 PreCheckTaskErr:[INIT][DEFAULT]Kernel task happen error, retCode=0x26, [aicore exception].
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.519 [stream.cc:1075]1592077 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=42, retCode=0x26, [aicore exception].
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.524 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.528 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT]AICORE Kernel task happen error, retCode=0x26.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.642 [davinci_kernel_task.cc:1180]1592077 PrintErrorInfoForDavinciTask:[INIT][DEFAULT]Aicore kernel execute failed, device_id=0, stream_id=42, report_stream_id=42, task_id=1, flip_num=0, fault kernel_name=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic, fault kernel info ext=none, program id=0, hash=1208019939949783628.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.738 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(0 to 20) after execute:0xe7ffc0009000, 0x12c200000000, 0x12d340000000, 0x12d34000d800, 0x12c234014000, 0x12c234014000, 0x12c234014000, 0x12c234014000, 0x12c040569640, 0x12c040569660, 0x12c040569800, 0x12c234014000, 0x12c234014000, 0x12c23000c000, 0x12c232010000, 0x12c235fb4200, 0x12c220008000, 0x12c234014000, 0x12c0405690a0, 0x12c0c0011000,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.748 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(20 to 40) after execute:0x34, 0x1, 0x1, 0x100000, 0x58, 0x60, 0x80, 0x3db504f33f800000, 0x5f5e0ff, 0x5f5e0ff, 0x8000000000000000, 0x8000000000000000, 0, 0x104, 0, 0x1, 0, 0, 0x28, 0x2032,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.764 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(40 to 60) after execute:0xcf, 0xa9, 0, 0xcf, 0x19e, 0x26d, 0x33c, 0x40b, 0x4da, 0x5a9, 0x678, 0x747, 0x816, 0x8e5, 0x9b4, 0xa83, 0xb52, 0xc21, 0xcf0, 0xdbf,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.770 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(60 to 80) after execute:0xe8e, 0xf5d, 0x102c, 0x10fb, 0x11ca, 0x1299, 0x1368, 0x1437, 0x1506, 0x15d5, 0x16a4, 0x1773, 0x1842, 0x1911, 0x19e0, 0x1aaf, 0x1b7e, 0x1c4d, 0x1d1c, 0x1deb,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.777 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(80 to 100) after execute:0x1eba, 0x1f89, 0x2032, 0x2032, 0x2032, 0x2032, 0x2032, 0x2032, 0x2032, 0x2032, 0x8000000080, 0x2000, 0x40, 0, 0x5800000060, 0x1, 0x8000000080, 0x1, 0x100000001, 0x34,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.783 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(100 to 120) after execute:0x100000001, 0x1, 0x100000001, 0x1, 0x1, 0x5f5e0ff, 0x5f5e0ff, 0, 0, 0x3000, 0, 0x40000004000, 0x40000000400, 0x400000018000, 0, 0, 0, 0, 0, 0,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.790 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(120 to 140) after execute:0, 0, 0, 0x10000000000001, 0x8000000060, 0x8000000080, 0x8000000058, 0x6000000080, 0x100000080, 0x100000001, 0x1, 0, 0x7ff0000000000, 0x20000, 0x100000001, 0x100000001, 0x100000001, 0, 0x200000002, 0x1,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.796 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(140 to 160) after execute:0, 0, 0, 0, 0, 0, 0, 0, 0x10000000000001, 0x5800000080, 0x8000000080, 0x5800000080, 0x8000000080, 0x100000060, 0x100000001, 0x1, 0, 0x7ff0000000000, 0x20000, 0x100000001,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.802 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(160 to 180) after execute:0x100000001, 0x100000001, 0, 0x200000002, 0x1, 0, 0, 0, 0, 0, 0, 0, 0, 0x30000000010, 0x1000003000, 0x8000000008, 0x30000000010, 0x1000003000, 0x8000000008, 0x1,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.808 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(180 to 200) after execute:0, 0x100000034, 0x8000100000, 0x100000080, 0x8000000001, 0x10000000080, 0x10000008000000, 0x80, 0x1a00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.814 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(200 to 220) after execute:0, 0, 0, 0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.821 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(220 to 240) after execute:0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.827 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(240 to 260) after execute:0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x100032, 0x1, 0x2, 0x3, 0x4,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.833 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(260 to 280) after execute:0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.838 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(280 to 300) after execute:0x19, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.850 [davinci_kernel_task.cc:1119]1592077 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(300 to 308) after execute:0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0xd6,  
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.854 [davinci_kernel_task.cc:1122]1592077 GetArgsInfo:[INIT][DEFAULT]tilingKey = 10000000000022420943, print 16 Times totalLen=(308*8)Bytes, argsSize=2464, blockDim=20
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.468.865 [davinci_kernel_task.cc:1184]1592077 PrintErrorInfoForDavinciTask:[INIT][DEFAULT][AIC_INFO] after execute:args print end
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.927 [dump_args.cpp:548][tid:1592077] [Dump][Exception] the begin tensor's index of args is:1, args dump count[17]
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.932 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:1
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.936 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c200000000; size:268448256 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.940 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:1
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.944 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:2
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.947 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12d340000000; size:54784 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.951 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:2
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.954 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:3
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.957 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12d34000d800; size:54784 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.961 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:3
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.964 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:4
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.967 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:2 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.971 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:4
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.974 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:5
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.977 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:1 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.981 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:5
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.984 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:6
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.987 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:2 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.990 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:6
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.994 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:7
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.997 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:1 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.007 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:7
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.011 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:8
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.014 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c040569640; size:0 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.017 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:8
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.021 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:9
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.024 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c040569660; size:416 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.028 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:9
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.031 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:10
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.034 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c040569800; size:416 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.038 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:10
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.041 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:11
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.044 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:8 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.048 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:11
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.051 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:12
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.054 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:8 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.057 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:12
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.061 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:13
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.064 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c23000c000; size:33556032 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.067 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:13
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.070 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:14
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.074 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c232010000; size:33556032 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.077 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:14
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.080 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:15
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.084 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c235fb4200; size:0 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.087 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:15
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.090 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:16
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.093 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c220008000; size:268448256 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.102 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:16
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.105 [dump_args.cpp:703][tid:1592077] [Dump][Exception] begin to load normal tensor, index:17
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.109 [dump_args.cpp:706][tid:1592077] [Dump][Exception] exception info dump args data, addr:0x12c234014000; size:33161216 bytes
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.469.113 [dump_args.cpp:708][tid:1592077] [Dump][Exception] end to load normal tensor, index:17
+[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807][tid:1592077] [Dump][Exception] dump exception to file, file: ./new/extra-info/data-dump/0/exception_info.42.1.1726159207469285
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.336 [stars_engine.cc:1280]1592077 StarsResumeRtsq:[INIT][DEFAULT]stop scheduling in abort failure mode: stream_id=42, sq_id=44, sq_head=1, task_id=1, taskType=0.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.380 [stream.cc:2868]1592077 StarsWaitForTask:[INIT][DEFAULT]Task Wait: device_id=0, stream_id=42 is Abort, runningState=0, task_id=2, finish_task_id=1, last_task_id=2.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.387 [stream.cc:1075]1592077 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=42, retCode=0x26, [aicore exception].
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.393 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.397 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT]Aicore kernel execute failed, device_id=0, stream_id=42, report_stream_id=42, task_id=1, flip_num=0, fault kernel_name=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic, fault kernel info ext=none, program id=0, hash=1208019939949783628.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.467 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.471 [stream.cc:1078]1592077 GetError:[INIT][DEFAULT][AIC_INFO] after execute:args print end
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.483 [stream.cc:1075]1592077 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=42, retCode=0x26, [aicore exception].
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.488 [context.cc:372]1592077 Synchronize:[INIT][DEFAULT]sync stream fail, stream_id=42, retCode=0x7150026.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.254 [stars_engine.cc:1061]1592077 SyncTask:[INIT][DEFAULT]Task Wait:context is failure ABORT.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.263 [context.cc:378]1592077 Synchronize:[INIT][DEFAULT]Synchronize streams, retCode=0x7150026.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.269 [api_error.cc:1929]1592077 DeviceSynchronize:[INIT][DEFAULT]Device synchronize failed.
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.285 [api_c_device.cc:196]1592077 rtDeviceSynchronize:[INIT][DEFAULT]ErrCode=507015, desc=[aicore exception], InnerCode=0x7150026
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.290 [error_message_manage.cc:53]1592077 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:13.685.296 [error_message_manage.cc:53]1592077 FuncErrorReason:[INIT][DEFAULT]rtDeviceSynchronize execute failed, reason=[aicore exception]
+[ERROR] ASCENDCL(1592077,python3):2024-09-12-16:40:13.685.329 [device.cpp:269]1592077 aclrtSynchronizeDevice: [INIT][DEFAULT]wait for compute device to finish failed, runtime result = 507015.

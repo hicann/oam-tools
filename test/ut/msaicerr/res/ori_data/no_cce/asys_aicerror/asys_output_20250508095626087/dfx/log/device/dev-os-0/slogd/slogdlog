@@ -1,0 +1,1794 @@
+2025-05-07 19:54:54.608[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-07 19:54:54.608[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-07 19:54:54.608[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-07 19:54:54.608[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-07 19:54:54.608[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-07 19:54:54.608[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-07 19:54:54.609[INFO] slogd_buffer.c:149: log[3] buffer init finish, buffer size = 2097152 bytes
+2025-05-07 19:54:54.611[INFO] slogd_buffer.c:149: log[0] buffer init finish, buffer size = 3145728 bytes
+2025-05-07 19:54:54.611[INFO] slogd_buffer.c:149: log[1] buffer init finish, buffer size = 2097152 bytes
+2025-05-07 19:54:54.612[INFO] slogd_buffer.c:149: log[2] buffer init finish, buffer size = 3145728 bytes
+2025-05-07 19:54:54.612[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-07 19:54:54.612[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-07 19:54:54.614[INFO] slogd_buffer.c:149: log[4] buffer init finish, buffer size = 20971520 bytes
+2025-05-07 19:54:54.615[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-07 19:54:54.615[INFO] slogd_thread_mgr.c:67: slogd create thread for device 0 success.
+2025-05-07 19:54:54.615[INFO] slogd_thread_mgr.c:67: slogd create thread for device 0 success.
+2025-05-07 19:54:54.615[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-07 19:54:54.615[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-07 19:54:54.615[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:407: global_level = ERROR.
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:427: event level = 1, 0:disable, 1:enable.
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=2 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=HCCL in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=FMK in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=5 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=RUNTIME in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=11 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=12 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=13 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=14 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=15 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=16 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=17 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=18 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=19 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=20 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=21 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=CCECPU in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=26 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=TEFUSION in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=DP in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=AICPU in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=FE in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=GE in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=46 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=ASCENDCL in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=ISP in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=SIS in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=HSM in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=DSS in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=PROCMGR in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=AIVECTOR in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.615[INFO] operate_loglevel.c:449: no config_name=TBE in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=FV in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=59 in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=TUNE in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=HSS in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=FFTS in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=OP in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=UDF in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=HICAID in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=TSYNC in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=AUDIO in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=TPRT in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=ASYS in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=ATRACE in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=RTC in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=SYSMONITOR in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=AML in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] operate_loglevel.c:449: no config_name=ADETECT in config file, result=21, use default_config_value=ERROR
+2025-05-07 19:54:54.616[INFO] slogd_firmware_level.c:111: Set device level finished, result=0
+2025-05-07 19:54:54.618[INFO] slogd_appnum_watch.c:64: mkdir /var/log/npu/slog/debug succeed.
+2025-05-07 19:54:54.618[INFO] slogd_appnum_watch.c:64: mkdir /var/log/npu/slog/security succeed.
+2025-05-07 19:54:54.618[INFO] slogd_appnum_watch.c:64: mkdir /var/log/npu/slog/run succeed.
+2025-05-07 19:54:54.677[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-07 19:54:54.677[INFO] slogd_main.c:82: slogd process start, devId=-1
+2025-05-07 19:54:54.677[INFO] slogd_communication_socket.c:123: Total socket num is 2.
+2025-05-07 19:54:54.677[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog.
+2025-05-07 19:54:54.677[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog, strerr=No such file or directory.
+2025-05-07 19:54:54.677[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog.
+2025-05-07 19:54:54.678[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_app.
+2025-05-07 19:54:54.678[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_app, strerr=No such file or directory.
+2025-05-07 19:54:54.678[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_app.
+2025-05-07 19:54:54.678[INFO] slogd_recv_msg.c:82: fileNum is : 2
+2025-05-07 19:54:54.757[INFO] log_config_list.c:20: ============= config list=========
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: IMP = 5
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: IMU = 5
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: LP = 5
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: TS = 5
+2025-05-07 19:54:54.757[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: BBOX = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: ME = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: MB = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: MD = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: TDT = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: APP = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: ROCE = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: HCCP = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: ROS = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: DRV = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: HDC = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: CCE = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: DVPP = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: SLOG = 5
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-07 19:54:54.761[INFO] log_config_list.c:23: global_level = 3
+2025-05-07 19:54:54.761[INFO] log_config_list.c:26: ====================================
+2025-05-07 19:54:54.761[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-07 19:54:54.810[INFO] log_daemon.c:202: log-daemon process init...
+2025-05-07 19:54:54.810[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-07 19:54:54.810[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-07 19:54:54.810[INFO] log_config_list.c:20: ============= config list=========
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: IMP = 5
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: IMU = 5
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: LP = 5
+2025-05-07 19:54:54.810[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: TS = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: BBOX = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: ME = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: MB = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: MD = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: TDT = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: APP = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: ROCE = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: HCCP = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: ROS = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: DRV = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: HDC = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: CCE = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: DVPP = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: SLOG = 5
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-07 19:54:54.811[INFO] log_config_list.c:23: global_level = 3
+2025-05-07 19:54:54.811[INFO] log_config_list.c:26: ====================================
+2025-05-07 19:54:54.811[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-07 19:54:54.812[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-07 19:54:54.812[INFO] file_monitor_core.c:141: file monitor init success
+2025-05-07 19:54:54.812[INFO] log_daemon.c:215: log-daemon process started...
+2025-05-07 19:54:54.824[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-07 19:54:54.824[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=1.
+2025-05-07 19:54:54.824[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-07 19:54:54.824[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=3.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=6.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=14.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=26.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=24.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=25.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=10.
+2025-05-07 19:54:54.825[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=12.
+2025-05-07 19:54:54.825[INFO] klogd.c:385: sklogd process started......
+2025-05-08 02:28:14.916[INFO] slogd_main.c:68: slogd process init
+2025-05-08 02:28:14.916[INFO] slogd_argv.c:71: get vfid arg: 32
+2025-05-08 02:28:14.916[INFO] log_config_list.c:20: ============= config list=========
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: IMP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: IMU = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: LP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: TS = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: BBOX = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: ME = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: MB = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: MD = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: TDT = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: APP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: ROCE = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: HCCP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: ROS = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DRV = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: HDC = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: CCE = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: DVPP = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: SLOG = 5
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-08 02:28:14.916[INFO] log_config_list.c:23: global_level = 3
+2025-05-08 02:28:14.916[INFO] log_config_list.c:26: ====================================
+2025-05-08 02:28:14.916[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-08 02:28:14.916[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-08 02:28:14.916[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-08 02:28:14.916[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-08 02:28:14.916[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-08 02:28:14.916[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-08 02:28:14.916[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-08 02:28:14.916[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-08 02:28:14.917[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-08 02:28:14.917[INFO] slogd_flush.c:249: No device node is registered. No thread needs to be created.
+2025-05-08 02:28:14.917[INFO] slogd_recv_core.c:126: No common node is registered, no common thread needs to be created.
+2025-05-08 02:28:14.917[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-08 02:28:14.917[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-08 02:28:14.934[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-08 02:28:14.934[INFO] slogd_main.c:82: slogd process start, devId=32
+2025-05-08 02:28:14.934[INFO] slogd_communication_socket.c:123: Total socket num is 1.
+2025-05-08 02:28:14.934[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_32.
+2025-05-08 02:28:14.934[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_32, strerr=No such file or directory.
+2025-05-08 02:28:14.934[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_32.
+2025-05-08 02:28:14.934[INFO] slogd_recv_msg.c:82: fileNum is : 1
+2025-05-08 02:28:16.193[INFO] slogd_main.c:68: slogd process init
+2025-05-08 02:28:16.193[INFO] slogd_argv.c:71: get vfid arg: 33
+2025-05-08 02:28:16.194[INFO] log_config_list.c:20: ============= config list=========
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: IMP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: IMU = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: LP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: TS = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: BBOX = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: ME = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: MB = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: MD = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: TDT = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: APP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: ROCE = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: HCCP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: ROS = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DRV = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: HDC = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: CCE = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: DVPP = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: SLOG = 5
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-08 02:28:16.194[INFO] log_config_list.c:23: global_level = 3
+2025-05-08 02:28:16.194[INFO] log_config_list.c:26: ====================================
+2025-05-08 02:28:16.194[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-08 02:28:16.194[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-08 02:28:16.194[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-08 02:28:16.194[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-08 02:28:16.194[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-08 02:28:16.194[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-08 02:28:16.194[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-08 02:28:16.194[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-08 02:28:16.195[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-08 02:28:16.195[INFO] slogd_flush.c:249: No device node is registered. No thread needs to be created.
+2025-05-08 02:28:16.195[INFO] slogd_recv_core.c:126: No common node is registered, no common thread needs to be created.
+2025-05-08 02:28:16.195[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-08 02:28:16.195[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-08 02:28:16.222[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-08 02:28:16.222[INFO] slogd_main.c:82: slogd process start, devId=33
+2025-05-08 02:28:16.222[INFO] slogd_communication_socket.c:123: Total socket num is 1.
+2025-05-08 02:28:16.222[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_33.
+2025-05-08 02:28:16.222[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_33, strerr=No such file or directory.
+2025-05-08 02:28:16.222[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_33.
+2025-05-08 02:28:16.223[INFO] slogd_recv_msg.c:82: fileNum is : 1
+2025-05-08 02:28:18.279[INFO] slogd_main.c:68: slogd process init
+2025-05-08 02:28:18.279[INFO] slogd_argv.c:71: get vfid arg: 34
+2025-05-08 02:28:18.279[INFO] log_config_list.c:20: ============= config list=========
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: IMP = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: IMU = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: LP = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: TS = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: BBOX = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: ME = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: MB = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: MD = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: TDT = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: APP = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: ROCE = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: HCCP = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: ROS = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-08 02:28:18.279[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: DRV = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: HDC = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: CCE = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: DVPP = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: SLOG = 5
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-08 02:28:18.280[INFO] log_config_list.c:23: global_level = 3
+2025-05-08 02:28:18.280[INFO] log_config_list.c:26: ====================================
+2025-05-08 02:28:18.280[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-08 02:28:18.280[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-08 02:28:18.280[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-08 02:28:18.280[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-08 02:28:18.280[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-08 02:28:18.280[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-08 02:28:18.280[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-08 02:28:18.280[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-08 02:28:18.281[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-08 02:28:18.281[INFO] slogd_flush.c:249: No device node is registered. No thread needs to be created.
+2025-05-08 02:28:18.281[INFO] slogd_recv_core.c:126: No common node is registered, no common thread needs to be created.
+2025-05-08 02:28:18.281[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-08 02:28:18.281[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-08 02:28:18.327[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-08 02:28:18.327[INFO] slogd_main.c:82: slogd process start, devId=34
+2025-05-08 02:28:18.327[INFO] slogd_communication_socket.c:123: Total socket num is 1.
+2025-05-08 02:28:18.327[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_34.
+2025-05-08 02:28:18.327[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_34, strerr=No such file or directory.
+2025-05-08 02:28:18.327[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_34.
+2025-05-08 02:28:18.327[INFO] slogd_recv_msg.c:82: fileNum is : 1
+2025-05-08 02:28:20.234[INFO] slogd_main.c:68: slogd process init
+2025-05-08 02:28:20.234[INFO] slogd_argv.c:71: get vfid arg: 35
+2025-05-08 02:28:20.234[INFO] log_config_list.c:20: ============= config list=========
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: IMP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: IMU = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: LP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: TS = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: BBOX = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: ME = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: MB = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: MD = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: TDT = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: APP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: ROCE = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: HCCP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: ROS = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DRV = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: HDC = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: CCE = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: DVPP = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: SLOG = 5
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-08 02:28:20.234[INFO] log_config_list.c:23: global_level = 3
+2025-05-08 02:28:20.234[INFO] log_config_list.c:26: ====================================
+2025-05-08 02:28:20.234[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-08 02:28:20.234[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-08 02:28:20.234[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-08 02:28:20.234[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-08 02:28:20.234[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-08 02:28:20.234[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-08 02:28:20.235[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-08 02:28:20.235[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-08 02:28:20.235[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-08 02:28:20.235[INFO] slogd_flush.c:249: No device node is registered. No thread needs to be created.
+2025-05-08 02:28:20.235[INFO] slogd_recv_core.c:126: No common node is registered, no common thread needs to be created.
+2025-05-08 02:28:20.235[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-08 02:28:20.235[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-08 02:28:20.268[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-08 02:28:20.268[INFO] slogd_main.c:82: slogd process start, devId=35
+2025-05-08 02:28:20.268[INFO] slogd_communication_socket.c:123: Total socket num is 1.
+2025-05-08 02:28:20.268[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_35.
+2025-05-08 02:28:20.268[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_35, strerr=No such file or directory.
+2025-05-08 02:28:20.268[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_35.
+2025-05-08 02:28:20.268[INFO] slogd_recv_msg.c:82: fileNum is : 1
+2025-05-08 02:28:22.342[INFO] slogd_main.c:68: slogd process init
+2025-05-08 02:28:22.342[INFO] slogd_argv.c:71: get vfid arg: 36
+2025-05-08 02:28:22.342[INFO] log_config_list.c:20: ============= config list=========
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: AppLogBufSize = 65536
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: permission_for_all = 0
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: logAgentFileDir = /var/log/npu/slog
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DeviceAppDirNums = 8
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DeviceAppMaxFileSize = 524288
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DeviceAppMaxFileNum = 2
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: IMP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: IMU = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: LP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: TSDUMP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: TS = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: ASCENDCKERNEL = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: BBOX = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: TEEOS = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: CAMERA = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: ME = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: MB = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: MD = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: TDT = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: APP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: PROFILING = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: ROCE = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: HCCP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: ROS = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: LIBMEDIA = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: KERNEL = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DEVMM = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DRV = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: HDC = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: CCE = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: DVPP = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: IDEDD = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: SLOG = 5
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: enableEvent = 1
+2025-05-08 02:28:22.342[INFO] log_config_list.c:23: global_level = 3
+2025-05-08 02:28:22.342[INFO] log_config_list.c:26: ====================================
+2025-05-08 02:28:22.342[INFO] log_path_mgr.c:123: logWorkspace = /usr/slog.
+2025-05-08 02:28:22.342[INFO] slogd_config_mgr.c:71: get global level succeed, level=ERROR.
+2025-05-08 02:28:22.342[INFO] log_config_list.c:226: get config DeviceAppMaxFileNum=2
+2025-05-08 02:28:22.342[INFO] log_config_list.c:226: get config DeviceAppMaxFileSize=524288
+2025-05-08 02:28:22.342[INFO] log_config_list.c:226: get config DeviceAppDirNums=8
+2025-05-08 02:28:22.342[INFO] log_config_list.c:226: get config AppLogBufSize=65536
+2025-05-08 02:28:22.342[INFO] slogd_appnum_watch.c:372: create thread(AppLogWatcher) succeed.
+2025-05-08 02:28:22.342[INFO] slogd_applog_report.c:223: log hdc server init success
+2025-05-08 02:28:22.345[INFO] slogd_thread_mgr.c:31: slogd create common thread success.
+2025-05-08 02:28:22.345[INFO] slogd_flush.c:249: No device node is registered. No thread needs to be created.
+2025-05-08 02:28:22.345[INFO] slogd_recv_core.c:126: No common node is registered, no common thread needs to be created.
+2025-05-08 02:28:22.345[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=15.
+2025-05-08 02:28:22.345[INFO] log_pm_sig.c:36: examine and change a signal action, signal_type=2.
+2025-05-08 02:28:22.369[INFO] log_monitor.c:330: iam resource manager ready.
+2025-05-08 02:28:22.370[INFO] slogd_main.c:82: slogd process start, devId=36
+2025-05-08 02:28:22.370[INFO] slogd_communication_socket.c:123: Total socket num is 1.
+2025-05-08 02:28:22.370[INFO] slogd_communication_socket.c:126: Socket Path is: /usr/slog/slog_36.
+2025-05-08 02:28:22.370[WARNING] slogd_communication_socket.c:82: can not unlink file=/usr/slog/slog_36, strerr=No such file or directory.
+2025-05-08 02:28:22.370[INFO] slogd_communication_socket.c:112: create socket succeed, socket path: /usr/slog/slog_36.
+2025-05-08 02:28:22.370[INFO] slogd_recv_msg.c:82: fileNum is : 1
+2025-05-08 02:29:57.424[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:29:57.429[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:29:57.430[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:29:57.431[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:29:57.431[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:29:57.431[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250507195454678.log, readLen:187323
+2025-05-08 02:29:57.432[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:29:57.432[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:130081
+2025-05-08 02:29:57.433[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:29:57.433[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:29:57.512[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:29:57.513[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:29:57.626[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:29:57.626[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:29:57.844[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:29:57.863[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:29:57.897[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:33:34.508[ERROR] slogd_communication_socket.c:179: select error, strerr=Interrupted system call.
+2025-05-08 02:33:34.508[ERROR] slogd_main.c:87: slogd process quit, signal=15.
+2025-05-08 02:33:35.954[ERROR] slogd_flush.c:191: Thread(flushCommonLog) quit, signal=1.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:35.955[ERROR] slogd_firmware_log.c:61: quit firmware log
+2025-05-08 02:33:39.265[ERROR] slogd_communication_socket.c:179: select error, strerr=Interrupted system call.
+2025-05-08 02:33:39.265[ERROR] slogd_main.c:87: slogd process quit, signal=15.
+2025-05-08 02:33:41.219[ERROR] slogd_flush.c:191: Thread(flushCommonLog) quit, signal=1.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[WARNING] log_queue.c:41: [input] queue is null.
+2025-05-08 02:33:41.220[ERROR] slogd_firmware_log.c:61: quit firmware log
+2025-05-08 02:33:43.618[ERROR] slogd_communication_socket.c:179: select error, strerr=Interrupted system call.
+2025-05-08 02:33:43.618[ERROR] slogd_main.c:87: slogd process quit, signal=15.
+2025-05-08 02:33:47.201[ERROR] slogd_communication_socket.c:179: select error, strerr=Interrupted system call.
+2025-05-08 02:33:47.201[ERROR] slogd_main.c:87: slogd process quit, signal=15.
+2025-05-08 02:33:52.193[ERROR] slogd_communication_socket.c:179: select error, strerr=Interrupted system call.
+2025-05-08 02:33:52.193[ERROR] slogd_main.c:87: slogd process quit, signal=15.
+2025-05-08 02:33:52.364[ERROR] slogd_appnum_watch.c:357: Thread(AppLogWatcher) quit, signal=15.
+2025-05-08 02:35:25.736[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:35:25.741[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:35:25.742[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:35:25.742[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:35:25.742[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:35:25.742[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:209160
+2025-05-08 02:35:25.767[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:35:25.772[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:35:25.774[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:35:25.774[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:132261
+2025-05-08 02:35:25.775[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:35:25.775[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:35:25.851[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:35:25.851[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:35:25.959[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:35:25.959[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:35:26.170[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:35:26.189[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:35:26.222[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:43:54.046[INFO] log_hdc.cpp:55: insert log session, pid 7005 devid 0
+2025-05-08 02:44:01.225[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 02:45:47.235[INFO] log_hdc.cpp:59: delete log session, pid 7005 devid 0
+2025-05-08 02:45:48.478[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:45:48.483[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:45:48.484[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:45:48.484[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:109
+2025-05-08 02:45:48.484[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:45:48.484[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:45:48.485[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:249806
+2025-05-08 02:45:48.486[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:45:48.491[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:45:48.493[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:45:48.493[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:133439
+2025-05-08 02:45:48.494[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:45:48.495[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:45:48.571[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:45:48.571[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:45:48.681[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:45:48.681[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:45:48.902[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:45:48.921[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:45:48.956[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:45:51.242[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 02:45:51.242[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 02:45:51.242[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 02:45:51.242[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=7005, devId=0, res=0
+2025-05-08 02:45:51.242[WARNING] slogd_applog_report.c:148: can not report log to process, result=1, strerr=Success, print once every 200 times.
+2025-05-08 02:47:10.503[INFO] log_hdc.cpp:55: insert log session, pid 8009 devid 0
+2025-05-08 02:47:14.248[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 02:48:59.971[INFO] log_hdc.cpp:59: delete log session, pid 8009 devid 0
+2025-05-08 02:49:01.267[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:01.277[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:01.278[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:01.278[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:01.279[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:01.279[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:01.279[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:01.280[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:01.285[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:01.288[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:01.288[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:01.289[INFO] log_sys_get.c:136: slog_single_### finished
+2025-05-08 02:49:01.289[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:01.366[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:01.366[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:01.474[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:01.474[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:01.692[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:01.711[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:01.745[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:02.683[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.687[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.696[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.697[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.694[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.704[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.714[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.707[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.714[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.711[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:02.722[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.752[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.760[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.761[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.770[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.771[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.778[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.778[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.778[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.778[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.780[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.781[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.788[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.790[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.791[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.798[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.798[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.799[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.798[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.803[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.804[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.804[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.805[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.806[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.806[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.806[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.806[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.813[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.814[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.814[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.814[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.814[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.815[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.815[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.818[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.821[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.821[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.822[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:02.822[INFO] log_sys_get.c:136: slog_single‡òß finished
+2025-05-08 02:49:02.823[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.823[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.824[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.824[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.824[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.824[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.826[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.827[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.827[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.827[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.828[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.828[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.829[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.829[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.830[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.832[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.833[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.833[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.833[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.833[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.834[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.835[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.836[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.836[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.836[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.836[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.839[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.841[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.841[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.842[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.842[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.843[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.845[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.846[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.850[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.848[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.851[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.852[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:02.852[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.853[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.853[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.853[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.853[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.853[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.854[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:02.855[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.855[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.855[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.856[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:02.858[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:02.858[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:02.858[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.860[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.856[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.857[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.857[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.860[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.863[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.864[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.864[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.864[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:02.864[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.865[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.865[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.869[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.867[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.871[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.873[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:02.873[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.874[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.874[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.874[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.876[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.880[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.880[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:02.880[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:02.878[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.879[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.882[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:02.888[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:02.906[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:03.656[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.663[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.666[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.673[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.675[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.678[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.682[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.683[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.687[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.689[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.693[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.697[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.701[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.708[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.709[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.717[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.721[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.729[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:03.775[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:03.804[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:04.710[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.718[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.725[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.733[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.733[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.733[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.740[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.757[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.781[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.796[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.804[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.804[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.821[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.829[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.864[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.884[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.891[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.912[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:04.927[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:04.953[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:05.544[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:05.549[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:05.572[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:05.644[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:05.645[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:05.646[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:05.713[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:05.714[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:05.715[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:05.719[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:05.750[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:05.788[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.385[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.389[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.411[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.458[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.459[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.473[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.530[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.536[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.543[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.562[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.575[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.582[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:06.595[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.600[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.601[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:06.630[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.636[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:06.637[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:49:12.336[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:49:12.346[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:49:12.347[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:49:12.348[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:49:12.349[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:49:12.349[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:49:12.349[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:49:12.351[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:49:12.355[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:49:12.358[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:49:12.358[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:49:12.358[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:49:12.359[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:49:12.436[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:49:12.436[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:49:12.546[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:49:12.546[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:49:12.766[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:49:12.786[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:49:12.820[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:50:15.874[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:50:15.885[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:50:15.886[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:50:15.887[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:50:15.887[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:50:15.887[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:50:15.887[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:50:15.889[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:50:15.894[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:50:15.896[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:50:15.896[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:50:15.897[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:50:15.898[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:50:15.975[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:50:15.975[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:50:16.084[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:50:16.084[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:50:16.305[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:50:16.325[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:50:16.358[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:50:47.884[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:50:47.895[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:50:47.895[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:50:47.896[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:50:47.897[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:50:47.897[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:50:47.897[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:50:47.899[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:50:47.903[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:50:47.905[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:50:47.906[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:50:47.906[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:50:47.907[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:50:47.985[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:50:47.985[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:50:48.094[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:50:48.094[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:50:48.315[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:50:48.334[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:50:48.368[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:52:16.021[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:52:16.032[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:52:16.033[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:52:16.034[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:52:16.034[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:52:16.034[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:52:16.035[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:276985
+2025-05-08 02:52:16.036[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:52:16.041[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:52:16.044[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:52:16.044[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:134111
+2025-05-08 02:52:16.044[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:52:16.045[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:52:16.123[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:52:16.123[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:52:16.232[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:52:16.232[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:52:16.454[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:52:16.473[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:52:16.507[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:37.970[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:54:37.981[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:54:37.982[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:54:37.983[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:54:37.983[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:54:37.983[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:54:37.984[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277293
+2025-05-08 02:54:37.985[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:54:37.990[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:54:37.992[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:54:37.993[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:139791
+2025-05-08 02:54:37.994[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:54:37.994[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:54:38.072[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:54:38.073[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:54:38.181[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:54:38.182[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:54:38.404[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:54:38.423[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:54:38.459[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:39.895[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:54:39.905[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:54:39.906[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:54:39.907[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:54:39.907[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:54:39.907[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:54:39.908[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277293
+2025-05-08 02:54:39.909[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:54:39.913[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:54:39.916[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:54:39.916[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:139791
+2025-05-08 02:54:39.917[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:54:39.918[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:54:39.995[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:54:39.996[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:54:40.104[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:54:40.104[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:54:40.326[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:54:40.345[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:54:40.379[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:42.818[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:54:42.829[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:54:42.830[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:54:42.831[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:54:42.831[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:54:42.831[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:54:42.831[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277293
+2025-05-08 02:54:42.833[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:54:42.837[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:54:42.840[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:54:42.840[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:139791
+2025-05-08 02:54:42.841[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:54:42.841[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:54:42.919[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:54:42.919[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:54:43.028[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:54:43.029[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:54:43.250[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:54:43.269[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:54:43.304[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:48.529[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:54:48.539[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:54:48.540[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:54:48.541[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:54:48.541[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:54:48.542[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:54:48.542[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:54:48.543[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:54:48.548[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:54:48.550[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:54:48.551[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:139791
+2025-05-08 02:54:48.551[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:54:48.552[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:54:48.630[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:54:48.631[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:54:48.740[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:54:48.740[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:54:48.969[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:54:48.989[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:54:49.024[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:50.489[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:54:50.490[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:54:50.491[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:54:50.491[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:54:50.491[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:54:50.491[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:54:50.493[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:54:50.498[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:54:50.502[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:54:50.502[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:139791
+2025-05-08 02:54:50.503[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:54:50.581[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:54:50.582[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:54:50.691[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:54:50.691[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 02:54:53.491[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 02:54:53.492[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:54:53.714[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:54:53.734[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:54:53.769[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:54:54.908[INFO] msn_config.c:256: receive request: deviceId:0, MsnReq: cmdType:2, subCmd:0, valueLen:1, value:
+2025-05-08 02:55:01.037[INFO] driver_api.c:58: call log_set_dfx_param with devId:0, channelType:30, key:0, value:0, return:0
+2025-05-08 02:55:01.037[INFO] msn_config.c:74: send configInfo->len:23, configInfo->value:Flush register success, return:0
+2025-05-08 02:55:01.037[INFO] msn_config.c:259: operate command finished, ret=0
+2025-05-08 02:55:01.039[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:05.528[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:06.168[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 02:55:08.988[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 02:55:22.932[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:22.943[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:55:22.944[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:55:22.945[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:55:22.945[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:55:22.945[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:55:22.945[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:55:22.947[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:55:22.952[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:55:22.954[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:55:22.955[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:161822
+2025-05-08 02:55:22.956[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:55:22.956[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:23.035[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:55:23.035[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:55:23.144[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:55:23.144[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:55:23.366[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:55:23.385[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:55:23.420[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:55:24.873[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:24.883[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:55:24.884[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:55:24.885[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:55:24.886[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:55:24.886[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:55:24.886[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:55:24.888[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:55:24.893[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:55:24.895[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:55:24.896[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:161822
+2025-05-08 02:55:24.896[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:55:24.897[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:24.973[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:55:24.974[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:55:25.083[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:55:25.083[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:55:25.307[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:55:25.326[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:55:25.361[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:55:27.843[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:27.854[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:55:27.855[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:55:27.856[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:55:27.856[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:55:27.856[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:55:27.856[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:55:27.858[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:55:27.862[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:55:27.865[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:55:27.865[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:161822
+2025-05-08 02:55:27.866[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:55:27.867[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:27.944[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:55:27.944[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:55:28.054[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:55:28.054[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:55:28.275[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:55:28.294[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:55:28.328[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:55:33.513[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:33.524[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:55:33.525[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:55:33.526[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:55:33.526[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:55:33.526[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:55:33.526[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:55:33.528[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:55:33.533[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:55:33.535[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:55:33.535[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:161822
+2025-05-08 02:55:33.536[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:55:33.537[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:33.613[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:55:33.614[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:55:33.723[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:55:33.723[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:55:33.951[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:55:33.970[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:55:34.005[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:55:35.476[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 02:55:35.477[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 02:55:35.478[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 02:55:35.479[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 02:55:35.479[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 02:55:35.479[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:277830
+2025-05-08 02:55:35.481[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 02:55:35.485[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 02:55:35.489[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 02:55:35.489[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:161822
+2025-05-08 02:55:35.490[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 02:55:35.568[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 02:55:35.568[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 02:55:35.677[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 02:55:35.677[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 02:55:38.473[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 02:55:38.473[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 02:55:38.697[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 02:55:38.716[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 02:55:38.751[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 02:55:39.912[INFO] msn_config.c:256: receive request: deviceId:0, MsnReq: cmdType:2, subCmd:0, valueLen:1, value:
+2025-05-08 02:55:46.061[INFO] driver_api.c:58: call log_set_dfx_param with devId:0, channelType:30, key:0, value:0, return:0
+2025-05-08 02:55:46.061[INFO] msn_config.c:74: send configInfo->len:23, configInfo->value:Flush register success, return:0
+2025-05-08 02:55:46.061[INFO] msn_config.c:259: operate command finished, ret=0
+2025-05-08 02:55:46.063[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 02:55:50.760[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 02:55:51.398[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 02:55:54.208[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 03:10:55.206[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:10:55.217[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:10:55.218[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:10:55.219[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:10:55.219[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:10:55.219[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:10:55.219[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:10:55.221[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:10:55.226[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:10:55.228[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:10:55.228[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:184143
+2025-05-08 03:10:55.229[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:10:55.230[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:10:55.315[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:10:55.316[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:10:55.425[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:10:55.425[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:10:55.675[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:10:55.694[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:10:55.730[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:10:57.238[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:10:57.249[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:10:57.250[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:10:57.250[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:10:57.251[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:10:57.251[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:10:57.251[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:10:57.253[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:10:57.257[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:10:57.259[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:10:57.260[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:184143
+2025-05-08 03:10:57.260[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:10:57.261[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:10:57.338[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:10:57.339[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:10:57.448[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:10:57.448[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:10:57.670[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:10:57.690[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:10:57.724[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:11:00.224[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:11:00.235[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:11:00.236[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:11:00.237[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:11:00.237[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:11:00.237[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:11:00.237[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:11:00.239[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:11:00.243[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:11:00.246[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:11:00.246[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:184143
+2025-05-08 03:11:00.247[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:11:00.248[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:11:00.332[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:11:00.332[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:11:00.442[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:11:00.442[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:11:00.664[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:11:00.683[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:11:00.718[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:11:05.941[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:11:05.952[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:11:05.953[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:11:05.954[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:11:05.954[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:11:05.954[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:11:05.954[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:11:05.956[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:11:05.960[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:11:05.963[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:11:05.963[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:184143
+2025-05-08 03:11:05.964[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:11:05.965[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:11:06.042[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:11:06.043[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:11:06.152[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:11:06.152[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:11:06.374[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:11:06.393[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:11:06.429[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:11:07.992[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:11:07.993[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:11:07.993[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:11:07.994[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:11:07.994[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:11:07.994[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:11:07.996[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:11:08.000[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:11:08.004[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:11:08.004[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:184143
+2025-05-08 03:11:08.005[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:11:08.083[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:11:08.083[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:11:08.192[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:11:08.193[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 03:11:11.007[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 03:11:11.007[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:11:11.230[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:11:11.250[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:11:11.285[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:11:12.508[INFO] msn_config.c:256: receive request: deviceId:0, MsnReq: cmdType:2, subCmd:0, valueLen:1, value:
+2025-05-08 03:11:18.637[INFO] driver_api.c:58: call log_set_dfx_param with devId:0, channelType:30, key:0, value:0, return:0
+2025-05-08 03:11:18.637[INFO] msn_config.c:74: send configInfo->len:23, configInfo->value:Flush register success, return:0
+2025-05-08 03:11:18.637[INFO] msn_config.c:259: operate command finished, ret=0
+2025-05-08 03:11:18.639[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:11:23.444[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:11:24.076[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 03:11:26.914[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 03:12:44.725[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:12:44.735[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:12:44.736[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:12:44.737[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:12:44.738[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:12:44.738[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:12:44.738[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:12:44.739[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:12:44.744[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:12:44.747[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:12:44.747[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:206174
+2025-05-08 03:12:44.748[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:12:44.749[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:12:44.826[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:12:44.827[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:12:44.935[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:12:44.936[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:12:45.159[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:12:45.178[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:12:45.214[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:12:46.678[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:12:46.689[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:12:46.690[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:12:46.690[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:12:46.691[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:12:46.691[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:12:46.691[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:12:46.693[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:12:46.697[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:12:46.699[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:12:46.699[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:206174
+2025-05-08 03:12:46.700[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:12:46.701[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:12:46.779[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:12:46.779[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:12:46.888[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:12:46.888[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:12:47.110[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:12:47.129[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:12:47.164[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:12:49.718[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:12:49.729[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:12:49.730[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:12:49.730[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:12:49.731[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:12:49.731[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:12:49.731[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:12:49.733[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:12:49.737[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:12:49.739[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:12:49.740[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:206174
+2025-05-08 03:12:49.741[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:12:49.741[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:12:49.820[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:12:49.820[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:12:49.929[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:12:49.930[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:12:50.152[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:12:50.171[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:12:50.206[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:12:55.399[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:12:55.409[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:12:55.410[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:12:55.411[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:12:55.412[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:12:55.412[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:12:55.412[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:12:55.414[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:12:55.418[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:12:55.421[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:12:55.421[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:206174
+2025-05-08 03:12:55.422[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:12:55.423[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:12:55.533[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:12:55.533[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:12:55.643[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:12:55.643[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:12:55.866[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:12:55.886[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:12:55.921[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:12:57.393[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 03:12:57.394[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:1349
+2025-05-08 03:12:57.395[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:218
+2025-05-08 03:12:57.395[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 03:12:57.395[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 03:12:57.396[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:278877
+2025-05-08 03:12:57.397[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 03:12:57.402[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 03:12:57.406[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 03:12:57.406[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:206174
+2025-05-08 03:12:57.407[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 03:12:57.484[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 03:12:57.485[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 03:12:57.595[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 03:12:57.595[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 03:13:00.413[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 03:13:00.414[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 03:13:00.645[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 03:13:00.664[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 03:13:00.700[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 03:13:01.890[INFO] msn_config.c:256: receive request: deviceId:0, MsnReq: cmdType:2, subCmd:0, valueLen:1, value:
+2025-05-08 03:13:08.045[INFO] driver_api.c:58: call log_set_dfx_param with devId:0, channelType:30, key:0, value:0, return:0
+2025-05-08 03:13:08.045[INFO] msn_config.c:74: send configInfo->len:23, configInfo->value:Flush register success, return:0
+2025-05-08 03:13:08.045[INFO] msn_config.c:259: operate command finished, ret=0
+2025-05-08 03:13:08.047[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 03:13:12.837[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 03:13:13.488[INFO] log_get_file.cpp:131: Popen hal script: /var/hal_proc_collect.sh
+2025-05-08 03:13:16.322[INFO] log_get_file.cpp:205: transfer hal file finished
+2025-05-08 03:18:46.939[INFO] log_hdc.cpp:55: insert log session, pid 20225 devid 0
+2025-05-08 03:18:48.167[INFO] log_hdc.cpp:59: delete log session, pid 20225 devid 0
+2025-05-08 03:18:48.478[INFO] log_hdc.cpp:55: insert log session, pid 20225 devid 0
+2025-05-08 03:18:50.343[INFO] log_hdc.cpp:59: delete log session, pid 20225 devid 0
+2025-05-08 03:18:54.478[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 03:18:54.478[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 03:18:54.478[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 03:18:54.478[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=20225, devId=0, res=0
+2025-05-08 03:24:52.887[INFO] log_hdc.cpp:55: insert log session, pid 20717 devid 0
+2025-05-08 03:24:54.120[INFO] log_hdc.cpp:59: delete log session, pid 20717 devid 0
+2025-05-08 03:24:54.503[INFO] log_hdc.cpp:55: insert log session, pid 20717 devid 0
+2025-05-08 03:24:56.296[INFO] log_hdc.cpp:59: delete log session, pid 20717 devid 0
+2025-05-08 03:25:00.503[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 03:25:00.503[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 03:25:00.503[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 03:25:00.504[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=20717, devId=0, res=0
+2025-05-08 03:25:00.859[INFO] log_hdc.cpp:55: insert log session, pid 20766 devid 0
+2025-05-08 03:25:02.089[INFO] log_hdc.cpp:59: delete log session, pid 20766 devid 0
+2025-05-08 03:25:02.505[INFO] log_hdc.cpp:55: insert log session, pid 20766 devid 0
+2025-05-08 03:25:04.201[INFO] log_hdc.cpp:59: delete log session, pid 20766 devid 0
+2025-05-08 03:25:08.432[INFO] log_hdc.cpp:55: insert log session, pid 20814 devid 0
+2025-05-08 03:25:09.673[INFO] log_hdc.cpp:59: delete log session, pid 20814 devid 0
+2025-05-08 03:39:36.729[INFO] log_hdc.cpp:55: insert log session, pid 21094 devid 0
+2025-05-08 03:39:37.964[INFO] log_hdc.cpp:59: delete log session, pid 21094 devid 0
+2025-05-08 03:40:55.464[INFO] log_hdc.cpp:55: insert log session, pid 21224 devid 0
+2025-05-08 03:40:56.715[INFO] log_hdc.cpp:59: delete log session, pid 21224 devid 0
+2025-05-08 03:50:25.133[INFO] log_hdc.cpp:55: insert log session, pid 21607 devid 0
+2025-05-08 03:50:26.381[INFO] log_hdc.cpp:59: delete log session, pid 21607 devid 0
+2025-05-08 04:23:34.484[INFO] log_hdc.cpp:55: insert log session, pid 22323 devid 0
+2025-05-08 04:23:37.820[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:23:45.820[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:23:59.463[INFO] log_hdc.cpp:59: delete log session, pid 22323 devid 0
+2025-05-08 04:24:05.522[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 04:24:05.526[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:5611
+2025-05-08 04:24:05.526[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 04:24:05.527[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:2739
+2025-05-08 04:24:05.527[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 04:24:05.527[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 04:24:05.528[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:561912
+2025-05-08 04:24:05.531[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 04:24:05.535[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 04:24:05.537[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 04:24:05.537[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:257128
+2025-05-08 04:24:05.538[INFO] log_sys_get.c:136: slog_single## finished
+2025-05-08 04:24:05.539[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 04:24:05.617[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 04:24:05.617[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 04:24:05.725[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 04:24:05.726[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 04:24:05.948[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 04:24:05.967[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 04:24:06.001[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 04:24:06.823[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:24:06.823[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:24:06.823[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 04:24:06.823[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=22323, devId=0, res=0
+2025-05-08 04:25:13.684[INFO] log_hdc.cpp:55: insert log session, pid 23031 devid 0
+2025-05-08 04:25:14.930[INFO] log_hdc.cpp:59: delete log session, pid 23031 devid 0
+2025-05-08 04:25:15.830[INFO] log_hdc.cpp:55: insert log session, pid 23031 devid 0
+2025-05-08 04:25:19.830[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:25:31.666[INFO] log_hdc.cpp:59: delete log session, pid 23031 devid 0
+2025-05-08 04:25:36.173[INFO] log_hdc.cpp:55: insert log session, pid 23079 devid 0
+2025-05-08 04:25:37.394[INFO] log_hdc.cpp:59: delete log session, pid 23079 devid 0
+2025-05-08 04:28:04.097[INFO] log_hdc.cpp:55: insert log session, pid 23429 devid 0
+2025-05-08 04:28:05.331[INFO] log_hdc.cpp:59: delete log session, pid 23429 devid 0
+2025-05-08 04:28:09.567[INFO] log_hdc.cpp:55: insert log session, pid 23470 devid 0
+2025-05-08 04:28:10.803[INFO] log_hdc.cpp:59: delete log session, pid 23470 devid 0
+2025-05-08 04:28:14.850[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:28:14.850[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:28:14.850[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 04:28:14.850[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=23470, devId=0, res=0
+2025-05-08 04:28:15.119[INFO] log_hdc.cpp:55: insert log session, pid 23510 devid 0
+2025-05-08 04:28:16.339[INFO] log_hdc.cpp:59: delete log session, pid 23510 devid 0
+2025-05-08 04:28:20.492[INFO] log_hdc.cpp:55: insert log session, pid 23552 devid 0
+2025-05-08 04:28:21.715[INFO] log_hdc.cpp:59: delete log session, pid 23552 devid 0
+2025-05-08 04:33:54.933[INFO] log_hdc.cpp:55: insert log session, pid 23968 devid 0
+2025-05-08 04:33:56.180[INFO] log_hdc.cpp:59: delete log session, pid 23968 devid 0
+2025-05-08 04:34:19.144[INFO] log_hdc.cpp:55: insert log session, pid 24011 devid 0
+2025-05-08 04:34:20.372[INFO] log_hdc.cpp:59: delete log session, pid 24011 devid 0
+2025-05-08 04:42:07.874[INFO] log_hdc.cpp:55: insert log session, pid 24168 devid 0
+2025-05-08 04:42:09.109[INFO] log_hdc.cpp:59: delete log session, pid 24168 devid 0
+2025-05-08 04:42:45.754[INFO] log_hdc.cpp:55: insert log session, pid 24286 devid 0
+2025-05-08 04:42:46.997[INFO] log_hdc.cpp:59: delete log session, pid 24286 devid 0
+2025-05-08 04:42:47.933[INFO] log_hdc.cpp:55: insert log session, pid 24286 devid 0
+2025-05-08 04:42:50.357[INFO] log_hdc.cpp:59: delete log session, pid 24286 devid 0
+2025-05-08 04:42:54.701[INFO] log_hdc.cpp:55: insert log session, pid 24336 devid 0
+2025-05-08 04:42:55.925[INFO] log_hdc.cpp:59: delete log session, pid 24336 devid 0
+2025-05-08 04:42:56.027[INFO] log_hdc.cpp:55: insert log session, pid 24336 devid 0
+2025-05-08 04:42:59.253[INFO] log_hdc.cpp:59: delete log session, pid 24336 devid 0
+2025-05-08 04:43:03.653[INFO] log_hdc.cpp:55: insert log session, pid 24384 devid 0
+2025-05-08 04:43:04.885[INFO] log_hdc.cpp:59: delete log session, pid 24384 devid 0
+2025-05-08 04:43:07.936[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:43:07.936[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 04:43:07.936[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 04:43:07.936[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=24384, devId=0, res=0
+2025-05-08 07:00:41.627[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:00:41.631[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:00:41.633[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:00:41.633[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:00:41.633[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:00:41.634[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:959695
+2025-05-08 07:00:41.638[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 07:00:41.642[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:00:41.645[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:00:41.646[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:350321
+2025-05-08 07:00:41.647[INFO] log_sys_get.c:136: slog_single## finished
+2025-05-08 07:00:41.650[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:00:41.680[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:00:41.744[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:00:41.744[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:00:41.853[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:00:41.853[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:00:42.084[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:00:42.103[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:00:42.137[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:05:18.339[INFO] log_hdc.cpp:55: insert log session, pid 92844 devid 0
+2025-05-08 07:05:19.564[INFO] log_hdc.cpp:59: delete log session, pid 92844 devid 0
+2025-05-08 07:07:09.340[INFO] log_hdc.cpp:55: insert log session, pid 94868 devid 0
+2025-05-08 07:07:10.572[INFO] log_hdc.cpp:59: delete log session, pid 94868 devid 0
+2025-05-08 07:07:14.765[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:07:14.765[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:07:14.765[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 07:07:14.766[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=94868, devId=0, res=0
+2025-05-08 07:07:17.223[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:07:17.227[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:07:17.228[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:07:17.229[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:07:17.229[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:07:17.229[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1008859
+2025-05-08 07:07:17.234[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354002.log, readLen:1048415
+2025-05-08 07:07:17.237[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:07:17.241[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:07:17.241[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:351967
+2025-05-08 07:07:17.243[INFO] log_sys_get.c:136: slog_single_### finished
+2025-05-08 07:07:17.246[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:07:17.275[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:07:17.337[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:07:17.338[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:07:17.446[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:07:17.446[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:07:17.677[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:07:17.696[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:07:17.730[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:12:39.886[INFO] log_hdc.cpp:55: insert log session, pid 97687 devid 0
+2025-05-08 07:12:41.133[INFO] log_hdc.cpp:59: delete log session, pid 97687 devid 0
+2025-05-08 07:13:08.568[INFO] log_hdc.cpp:55: insert log session, pid 98209 devid 0
+2025-05-08 07:13:09.805[INFO] log_hdc.cpp:59: delete log session, pid 98209 devid 0
+2025-05-08 07:13:36.294[INFO] log_hdc.cpp:55: insert log session, pid 98737 devid 0
+2025-05-08 07:13:37.517[INFO] log_hdc.cpp:59: delete log session, pid 98737 devid 0
+2025-05-08 07:14:28.401[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:14:28.407[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:14:28.408[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:14:28.408[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:14:28.408[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:14:28.409[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:14:28.413[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:34646
+2025-05-08 07:14:28.414[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:14:28.417[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:14:28.417[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:354001
+2025-05-08 07:14:28.420[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 07:14:28.423[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:14:28.444[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:14:28.509[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:14:28.510[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:14:28.618[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:14:28.618[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:14:28.848[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:14:28.867[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:14:28.902[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:15:05.670[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:15:05.674[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:15:05.676[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:15:05.676[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:15:05.676[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:15:05.677[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:15:05.681[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:34769
+2025-05-08 07:15:05.682[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:15:05.685[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:15:05.685[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:354291
+2025-05-08 07:15:05.687[INFO] log_sys_get.c:136: slog_single## finished
+2025-05-08 07:15:05.692[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:15:05.720[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:15:05.782[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:15:05.783[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:15:05.892[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:15:05.892[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:15:06.123[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:15:06.142[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:15:06.176[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:16:47.548[INFO] log_hdc.cpp:55: insert log session, pid 100809 devid 0
+2025-05-08 07:16:48.781[INFO] log_hdc.cpp:59: delete log session, pid 100809 devid 0
+2025-05-08 07:16:52.831[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:16:52.831[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:16:52.831[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 07:16:52.831[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=100809, devId=0, res=0
+2025-05-08 07:18:37.745[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:18:37.749[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:18:37.750[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:18:37.751[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:18:37.751[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:18:37.752[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:18:37.756[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:59292
+2025-05-08 07:18:37.757[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:18:37.760[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:18:37.760[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:354973
+2025-05-08 07:18:37.762[INFO] log_sys_get.c:136: slog_single_### finished
+2025-05-08 07:18:37.766[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:18:37.788[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:18:37.854[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:18:37.854[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:18:37.963[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:18:37.963[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:18:38.195[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:18:38.214[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:18:38.248[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:27:31.787[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:27:31.790[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:27:31.792[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14498
+2025-05-08 07:27:31.793[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:27:31.793[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:27:31.793[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:27:31.797[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:60031
+2025-05-08 07:27:31.798[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:27:31.801[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:27:31.801[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:360653
+2025-05-08 07:27:31.804[INFO] log_sys_get.c:136: slog_singleTÿß finished
+2025-05-08 07:27:31.807[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:27:31.815[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:27:31.890[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:27:31.890[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:27:31.999[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:27:32.000[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:27:32.233[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:27:32.252[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:27:32.286[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:29:58.299[INFO] log_hdc.cpp:55: insert log session, pid 107697 devid 0
+2025-05-08 07:29:59.535[INFO] log_hdc.cpp:59: delete log session, pid 107697 devid 0
+2025-05-08 07:32:43.757[INFO] log_hdc.cpp:55: insert log session, pid 109157 devid 0
+2025-05-08 07:32:46.921[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:32:52.921[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:33:03.252[INFO] log_hdc.cpp:59: delete log session, pid 109157 devid 0
+2025-05-08 07:33:09.923[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:33:09.923[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:33:09.923[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 07:33:09.923[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=109157, devId=0, res=0
+2025-05-08 07:33:09.932[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-7005.
+2025-05-08 07:33:48.636[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:33:48.641[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:33:48.643[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:14751
+2025-05-08 07:33:48.643[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:33:48.643[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:33:48.644[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:33:48.648[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:109385
+2025-05-08 07:33:48.650[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:33:48.652[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:33:48.654[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:364490
+2025-05-08 07:33:48.655[INFO] log_sys_get.c:136: slog_single## finished
+2025-05-08 07:33:48.659[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:33:48.694[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:33:48.755[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:33:48.756[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:33:48.864[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:33:48.865[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:33:49.095[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:33:49.114[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:33:49.148[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:33:59.466[INFO] log_hdc.cpp:55: insert log session, pid 110254 devid 0
+2025-05-08 07:34:00.720[INFO] log_hdc.cpp:59: delete log session, pid 110254 devid 0
+2025-05-08 07:34:01.008[INFO] log_hdc.cpp:55: insert log session, pid 110254 devid 0
+2025-05-08 07:34:04.048[INFO] log_hdc.cpp:59: delete log session, pid 110254 devid 0
+2025-05-08 07:34:08.414[INFO] log_hdc.cpp:55: insert log session, pid 110357 devid 0
+2025-05-08 07:34:09.648[INFO] log_hdc.cpp:59: delete log session, pid 110357 devid 0
+2025-05-08 07:35:23.890[INFO] log_get_file.cpp:205: transfer slog file finished
+2025-05-08 07:35:23.894[INFO] slogd_eventlog.c:64: send file:run/event/event_20250507195454617.log, readLen:13801
+2025-05-08 07:35:23.896[INFO] slogd_syslog.c:48: send file:debug/device-os/device-os_20250508024510859.log, readLen:15251
+2025-05-08 07:35:23.896[INFO] slogd_syslog.c:56: send debug finish
+2025-05-08 07:35:23.896[INFO] slogd_syslog.c:56: send security finish
+2025-05-08 07:35:23.897[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354201.log, readLen:1048265
+2025-05-08 07:35:23.902[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508071308747.log, readLen:183385
+2025-05-08 07:35:23.903[INFO] slogd_syslog.c:48: send file:run/device-os/device-os_20250508023354102.log, readLen:1048405
+2025-05-08 07:35:23.906[INFO] slogd_syslog.c:56: send run finish
+2025-05-08 07:35:23.906[INFO] log_recv.c:142: send file:debug/device-0/device-0_20250507195454620.log, readLen:371767
+2025-05-08 07:35:23.908[INFO] log_sys_get.c:136: slog_single finished
+2025-05-08 07:35:23.912[INFO] log_get_file.cpp:205: transfer stackcore file finished
+2025-05-08 07:35:23.967[INFO] log_get_file.cpp:205: transfer bbox file finished
+2025-05-08 07:35:24.022[INFO] log_get_file.cpp:205: transfer message file finished
+2025-05-08 07:35:24.022[INFO] log_get_file.cpp:131: Popen dvpp script: /var/dvpp_proc_collect.sh
+2025-05-08 07:35:24.131[INFO] log_get_file.cpp:205: transfer dvpp file finished
+2025-05-08 07:35:24.131[INFO] log_get_file.cpp:131: Popen tee script: /var/tee_log_collect.sh
+2025-05-08 07:35:24.361[INFO] log_get_file.cpp:205: transfer tee file finished
+2025-05-08 07:35:24.380[WARNING] log_file_utils.cpp:289: check path: /sys/devices/virtual/devdrv_manager/davinci_manager/node/node_sched_abnormal_event_clear does not have read permission!
+2025-05-08 07:35:24.415[INFO] log_get_file.cpp:205: transfer event_sched file finished
+2025-05-08 07:35:34.699[INFO] log_hdc.cpp:55: insert log session, pid 111237 devid 0
+2025-05-08 07:35:35.920[INFO] log_hdc.cpp:59: delete log session, pid 111237 devid 0
+2025-05-08 07:35:36.025[INFO] log_hdc.cpp:55: insert log session, pid 111237 devid 0
+2025-05-08 07:35:39.280[INFO] log_hdc.cpp:59: delete log session, pid 111237 devid 0
+2025-05-08 07:35:43.676[INFO] log_hdc.cpp:55: insert log session, pid 111341 devid 0
+2025-05-08 07:35:44.912[INFO] log_hdc.cpp:59: delete log session, pid 111341 devid 0
+2025-05-08 07:35:48.947[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:35:48.947[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 07:35:48.947[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 07:35:48.947[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=111341, devId=0, res=0
+2025-05-08 07:35:54.934[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-20225.
+2025-05-08 07:37:46.285[INFO] log_hdc.cpp:55: insert log session, pid 112192 devid 0
+2025-05-08 07:37:47.537[INFO] log_hdc.cpp:59: delete log session, pid 112192 devid 0
+2025-05-08 08:43:31.263[INFO] log_hdc.cpp:55: insert log session, pid 129851 devid 0
+2025-05-08 08:43:32.507[INFO] log_hdc.cpp:59: delete log session, pid 129851 devid 0
+2025-05-08 08:53:42.910[INFO] log_hdc.cpp:55: insert log session, pid 131964 devid 0
+2025-05-08 08:53:44.156[INFO] log_hdc.cpp:59: delete log session, pid 131964 devid 0
+2025-05-08 08:54:41.807[INFO] log_hdc.cpp:55: insert log session, pid 132429 devid 0
+2025-05-08 08:54:43.037[INFO] log_hdc.cpp:59: delete log session, pid 132429 devid 0
+2025-05-08 08:55:00.096[INFO] log_hdc.cpp:55: insert log session, pid 132625 devid 0
+2025-05-08 08:55:01.341[INFO] log_hdc.cpp:59: delete log session, pid 132625 devid 0
+2025-05-08 08:55:05.396[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 08:55:05.396[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 08:55:05.397[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 08:55:05.397[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=132625, devId=0, res=0
+2025-05-08 08:55:09.969[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-20717.
+2025-05-08 08:57:29.502[INFO] log_hdc.cpp:55: insert log session, pid 134216 devid 0
+2025-05-08 08:57:30.717[INFO] log_hdc.cpp:59: delete log session, pid 134216 devid 0
+2025-05-08 08:59:09.803[INFO] log_hdc.cpp:55: insert log session, pid 135421 devid 0
+2025-05-08 08:59:11.037[INFO] log_hdc.cpp:59: delete log session, pid 135421 devid 0
+2025-05-08 08:59:54.763[INFO] log_hdc.cpp:55: insert log session, pid 135794 devid 0
+2025-05-08 08:59:55.998[INFO] log_hdc.cpp:59: delete log session, pid 135794 devid 0
+2025-05-08 09:27:34.646[INFO] log_hdc.cpp:55: insert log session, pid 136667 devid 0
+2025-05-08 09:27:35.874[INFO] log_hdc.cpp:59: delete log session, pid 136667 devid 0
+2025-05-08 09:29:04.702[INFO] log_hdc.cpp:55: insert log session, pid 139596 devid 0
+2025-05-08 09:29:05.922[INFO] log_hdc.cpp:59: delete log session, pid 139596 devid 0
+2025-05-08 09:29:26.429[INFO] log_hdc.cpp:55: insert log session, pid 139765 devid 0
+2025-05-08 09:29:27.682[INFO] log_hdc.cpp:59: delete log session, pid 139765 devid 0
+2025-05-08 09:38:33.830[INFO] log_hdc.cpp:55: insert log session, pid 145889 devid 0
+2025-05-08 09:38:35.076[INFO] log_hdc.cpp:59: delete log session, pid 145889 devid 0
+2025-05-08 09:40:59.055[INFO] log_hdc.cpp:55: insert log session, pid 147108 devid 0
+2025-05-08 09:41:00.654[WARNING] log_drv.c:66: can not get session attr, drvErr=25, strerr=Invalid argument.
+2025-05-08 09:41:00.654[INFO] log_session_manage.c:154: release session finished, ret=0, pid=147108
+2025-05-08 09:41:02.654[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:41:02.654[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:41:02.654[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 09:41:02.655[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=147108, devId=0, res=0
+2025-05-08 09:41:09.990[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-22323.
+2025-05-08 09:41:57.050[INFO] log_hdc.cpp:55: insert log session, pid 147130 devid 0
+2025-05-08 09:41:57.659[WARNING] log_drv.c:66: can not get session attr, drvErr=25, strerr=Invalid argument.
+2025-05-08 09:41:57.659[INFO] log_session_manage.c:154: release session finished, ret=0, pid=147130
+2025-05-08 09:42:00.660[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:42:00.660[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:42:00.660[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 09:42:00.660[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=147130, devId=0, res=0
+2025-05-08 09:42:09.991[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-23470.
+2025-05-08 09:42:29.946[INFO] log_hdc.cpp:55: insert log session, pid 147159 devid 0
+2025-05-08 09:42:33.663[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:43:14.670[WARNING] log_drv.c:66: can not get session attr, drvErr=25, strerr=Invalid argument.
+2025-05-08 09:43:14.670[INFO] log_session_manage.c:154: release session finished, ret=0, pid=147159
+2025-05-08 09:44:07.440[INFO] log_hdc.cpp:55: insert log session, pid 148401 devid 0
+2025-05-08 09:44:08.676[INFO] log_hdc.cpp:59: delete log session, pid 148401 devid 0
+2025-05-08 09:44:56.462[INFO] log_hdc.cpp:55: insert log session, pid 149655 devid 0
+2025-05-08 09:44:57.701[INFO] log_hdc.cpp:59: delete log session, pid 149655 devid 0
+2025-05-08 09:48:15.988[INFO] log_hdc.cpp:55: insert log session, pid 152144 devid 0
+2025-05-08 09:48:17.221[INFO] log_hdc.cpp:59: delete log session, pid 152144 devid 0
+2025-05-08 09:48:34.443[INFO] log_hdc.cpp:55: insert log session, pid 152238 devid 0
+2025-05-08 09:48:35.685[INFO] log_hdc.cpp:59: delete log session, pid 152238 devid 0
+2025-05-08 09:48:35.980[INFO] log_hdc.cpp:55: insert log session, pid 152238 devid 0
+2025-05-08 09:48:39.013[INFO] log_hdc.cpp:59: delete log session, pid 152238 devid 0
+2025-05-08 09:48:43.400[INFO] log_hdc.cpp:55: insert log session, pid 152287 devid 0
+2025-05-08 09:48:44.645[INFO] log_hdc.cpp:59: delete log session, pid 152287 devid 0
+2025-05-08 09:48:44.829[INFO] log_hdc.cpp:55: insert log session, pid 152287 devid 0
+2025-05-08 09:48:47.941[INFO] log_hdc.cpp:59: delete log session, pid 152287 devid 0
+2025-05-08 09:48:52.174[INFO] log_hdc.cpp:55: insert log session, pid 152336 devid 0
+2025-05-08 09:48:53.413[INFO] log_hdc.cpp:59: delete log session, pid 152336 devid 0
+2025-05-08 09:51:02.380[INFO] log_hdc.cpp:55: insert log session, pid 154791 devid 0
+2025-05-08 09:51:03.622[INFO] log_hdc.cpp:59: delete log session, pid 154791 devid 0
+2025-05-08 09:51:07.733[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:51:07.733[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:51:07.733[WARNING] log_session_manage.c:184: can not get session info
+2025-05-08 09:51:07.734[WARNING] slogd_applog_report.c:59: can not send data to hdc session, ret=1, pid=154791, devId=0, res=0
+2025-05-08 09:51:09.995[INFO] slogd_appnum_watch.c:279: remove app log dir succeed, dir=/var/log/npu/slog/run/device-app-24384.
+2025-05-08 09:56:12.668[INFO] log_hdc.cpp:55: insert log session, pid 155320 devid 0
+2025-05-08 09:56:15.762[WARNING] log_session_manage.c:273: session node list is null.
+2025-05-08 09:56:20.918[INFO] log_hdc.cpp:59: delete log session, pid 155320 devid 0

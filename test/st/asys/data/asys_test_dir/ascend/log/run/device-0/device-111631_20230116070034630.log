@@ -1,0 +1,3 @@
+[EVENT] CCECPU(5407,aicpu_scheduler):2023-01-16-07:00:33.572.218 [aicpusd_resource_limit_linux.cpp:67][AddToCgroup][tid:5407] Add to cgroup success, cmd:[cd /var/  && sudo ./tsdaemon_add_to_usermemory.sh 5407 0 0].
+[EVENT] CCECPU(5407,aicpu_scheduler):2023-01-16-07:00:33.572.284 [aicpusd_lastword.cpp:33][RegLastwordCallback][tid:5407] Reg lastword mark[aicpu sd event mng] key[0].
+[EVENT] CCECPU(5407,aicpu_scheduler):2023-01-16-07:00:33.572.297 [aicpusd_interface_process.cpp:477][GetCurrentRunMode][tid:5407] Current aicpu mode is online (call from host).

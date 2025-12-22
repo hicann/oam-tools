@@ -1,0 +1,473 @@
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+
+###################################################################################################
+# copy kernel src to tbe/ascendc path
+###################################################################################################
+function(kernel_src_copy)
+  set(oneValueArgs TARGET DST_DIR)
+  set(multiValueArgs IMPL_DIR)
+  cmake_parse_arguments(KNCPY "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  add_custom_target(${KNCPY_TARGET})
+  foreach(OP_DIR ${KNCPY_IMPL_DIR})
+    get_filename_component(OP_NAME ${OP_DIR} NAME)
+    if (${OP_NAME} STREQUAL "CMakeLists.txt")
+      continue()
+    endif()
+    if(NOT TARGET ${OP_NAME}_src_copy)
+      set(SRC_DIR ${OP_DIR}/op_kernel)
+      if(NOT EXISTS ${SRC_DIR})
+        continue()
+      endif()
+      add_custom_target(${OP_NAME}_src_copy
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${KNCPY_DST_DIR}/${OP_NAME}
+        COMMAND bash -c "find ${SRC_DIR} -mindepth 1 -maxdepth 1 -exec cp -r {} ${KNCPY_DST_DIR}/${OP_NAME} \\;"
+        VERBATIM
+      )
+      add_dependencies(${KNCPY_TARGET} ${OP_NAME}_src_copy)
+      if(ENABLE_PACKAGE)
+        install(
+          DIRECTORY ${SRC_DIR}/
+          DESTINATION ${IMPL_INSTALL_DIR}/${OP_NAME}
+        )
+      endif()
+    endif()
+  endforeach()
+endfunction()
+
+###################################################################################################
+# generate operator dynamic python script for compile, generenate out path ${CMAKE_BINARY_DIR}/tbe,
+# and install to packages/vendors/${VENDOR_NAME}/op_impl/ai_core/tbe/${VENDOR_NAME}_impl/dynamic
+###################################################################################################
+function(add_ops_impl_target)
+  set(oneValueArgs TARGET OPS_INFO_DIR IMPL_DIR OUT_DIR INSTALL_DIR)
+  cmake_parse_arguments(OPIMPL "" "${oneValueArgs}" "OPS_BATCH;OPS_ITERATE" ${ARGN})
+
+  add_custom_command(OUTPUT ${OPIMPL_OUT_DIR}/.impl_timestamp
+    COMMAND mkdir -m 700 -p ${OPIMPL_OUT_DIR}/dynamic
+    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/ascendc_impl_build.py
+            \"\" \"${OPIMPL_OPS_BATCH}\" \"${OPIMPL_OPS_ITERATE}\"
+            ${OPIMPL_IMPL_DIR} ${OPIMPL_OUT_DIR}/dynamic ${ASCEND_AUTOGEN_PATH}
+            --opsinfo-dir ${OPIMPL_OPS_INFO_DIR} ${OPIMPL_OPS_INFO_DIR}/inner ${OPIMPL_OPS_INFO_DIR}/exc
+    COMMAND rm -rf ${OPIMPL_OUT_DIR}/.impl_timestamp
+    COMMAND touch ${OPIMPL_OUT_DIR}/.impl_timestamp
+    DEPENDS ${CMAKE_SOURCE_DIR}/scripts/util/ascendc_impl_build.py
+  )
+  add_custom_target(${OPIMPL_TARGET} ALL
+    DEPENDS ${OPIMPL_OUT_DIR}/.impl_timestamp
+  )
+
+  file(GLOB dynamic_impl ${OPIMPL_OUT_DIR}/dynamic/*.py)
+  if(ENABLE_PACKAGE)
+    install(
+      FILES ${dynamic_impl}
+      DESTINATION ${OPIMPL_INSTALL_DIR}
+      OPTIONAL
+    )
+  endif()
+endfunction()
+
+###################################################################################################
+# generate aic-${compute_unit}-ops-info.json from aic-${compute_unit}-ops-info.ini
+# generate outpath: ${CMAKE_BINARY_DIR}/tbe/op_info_cfg/ai_core/${compute_unit}/
+# install path: packages/vendors/${VENDOR_NAME}/op_impl/ai_core/tbe/config/${compute_unit}
+###################################################################################################
+function(add_ops_info_target_v1)
+  set(oneValueArgs TARGET OPS_INFO_DIR COMPUTE_UNIT OUTPUT INSTALL_DIR)
+  cmake_parse_arguments(OPINFO "" "${oneValueArgs}" "" ${ARGN})
+  get_filename_component(opinfo_file_path "${OPINFO_OUTPUT}" DIRECTORY)
+  add_custom_command(OUTPUT ${OPINFO_OUTPUT}
+    COMMAND mkdir -p ${opinfo_file_path}
+    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/parse_ini_to_json.py
+            ${OPINFO_OPS_INFO_DIR}/aic-${OPINFO_COMPUTE_UNIT}-ops-info.ini
+            ${OPINFO_OPS_INFO_DIR}/inner/aic-${OPINFO_COMPUTE_UNIT}-ops-info.ini
+            ${OPINFO_OPS_INFO_DIR}/exc/aic-${OPINFO_COMPUTE_UNIT}-ops-info.ini
+            ${OPINFO_OUTPUT}
+  )
+  add_custom_target(${OPINFO_TARGET} ALL
+    DEPENDS ${OPINFO_OUTPUT}
+  )
+
+  if(ENABLE_PACKAGE)
+    install(FILES ${OPINFO_OUTPUT}
+      DESTINATION ${OPINFO_INSTALL_DIR}
+      OPTIONAL
+    )
+  endif()
+endfunction()
+
+###################################################################################################
+# merge ops info ini in aclnn/aclnn_inner/aclnn_exc to a total ini file
+# srcpath: ${ASCEND_AUTOGEN_PATH}
+# generate outpath: ${CMAKE_BINARY_DIR}/tbe/config
+###################################################################################################
+function(merge_ini_files)
+  set(oneValueArgs TARGET OPS_INFO_DIR COMPUTE_UNIT)
+  cmake_parse_arguments(MGINI "" "${oneValueArgs}" "" ${ARGN})
+  add_custom_command(OUTPUT ${ASCEND_KERNEL_CONF_DST}/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+                    COMMAND touch ${MGINI_OPS_INFO_DIR}/aic-merged-${MGINI_COMPUTE_UNIT}-ops-info.ini
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${OPS_KERNEL_BINARY_SCRIPT}/merge_ini_files.py
+                            ${MGINI_OPS_INFO_DIR}/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+                            ${MGINI_OPS_INFO_DIR}/inner/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+                            ${MGINI_OPS_INFO_DIR}/exc/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+                            --output-file ${ASCEND_KERNEL_CONF_DST}/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+    )
+  add_custom_target(${MGINI_TARGET} ALL
+                    DEPENDS ${ASCEND_KERNEL_CONF_DST}/aic-${MGINI_COMPUTE_UNIT}-ops-info.ini
+  )
+endfunction()
+
+# ##################################################################################################
+# merge ops proto headers in aclnn/aclnn_inner/aclnn_exc to a total proto file
+# srcpath: ${ASCEND_AUTOGEN_PATH}
+# generate outpath: ${CMAKE_BINARY_DIR}/tbe/graph
+# ##################################################################################################
+function(merge_graph_headers)
+  set(oneValueArgs TARGET OUT_DIR)
+  cmake_parse_arguments(MGPROTO "" "${oneValueArgs}" "" ${ARGN})
+  get_target_property(proto_headers ${GRAPH_PLUGIN_NAME}_proto_headers INTERFACE_SOURCES)
+  add_custom_command(OUTPUT ${MGPROTO_OUT_DIR}/ops_proto_oam.h
+    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/merge_proto.py
+    ${proto_headers}
+    --output-file ${MGPROTO_OUT_DIR}/ops_proto_oam.h
+  )
+  add_custom_target(${MGPROTO_TARGET} ALL
+    DEPENDS ${MGPROTO_OUT_DIR}/ops_proto_oam.h
+  )
+endfunction()
+
+###################################################################################################
+# generate binary compile shell script and binary json
+# srcpath: ${ASCEND_AUTOGEN_PATH}
+# outpath: ${CMAKE_BINARY_DIR}/binary/${compute_unit}
+###################################################################################################
+function(generate_bin_scripts)
+  set(oneValueArgs TARGET OP_NAME OP_TYPE OPS_INFO_DIR COMPUTE_UNIT OUT_DIR)
+  cmake_parse_arguments(GENBIN "" "${oneValueArgs}" "" ${ARGN})
+  file(MAKE_DIRECTORY ${GENBIN_OUT_DIR}/gen)
+  file(MAKE_DIRECTORY ${GENBIN_OUT_DIR}/gen/${GENBIN_OP_NAME})
+  message(STATUS "start generate_bin_scripts for op: ${GENBIN_OP_NAME}")
+  add_custom_target(generate_bin_scripts_${GENBIN_COMPUTE_UNIT}_${GENBIN_OP_NAME}
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/ascendc_bin_param_build.py
+                            ${GENBIN_OPS_INFO_DIR}/aic-${GENBIN_COMPUTE_UNIT}-ops-info.ini
+                            ${GENBIN_OUT_DIR}/gen/${GENBIN_OP_NAME} ${GENBIN_COMPUTE_UNIT}
+                            --opc-config-file ${ASCEND_AUTOGEN_PATH}/${CUSTOM_OPC_OPTIONS}
+                            --ops ${GENBIN_OP_TYPE}
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/ascendc_bin_param_build.py
+                            ${GENBIN_OPS_INFO_DIR}/inner/aic-${GENBIN_COMPUTE_UNIT}-ops-info.ini
+                            ${GENBIN_OUT_DIR}/gen/${GENBIN_OP_NAME} ${GENBIN_COMPUTE_UNIT}
+                            --opc-config-file ${ASCEND_AUTOGEN_PATH}/${CUSTOM_OPC_OPTIONS}
+                            --ops ${GENBIN_OP_TYPE}
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/util/ascendc_bin_param_build.py
+                            ${GENBIN_OPS_INFO_DIR}/exc/aic-${GENBIN_COMPUTE_UNIT}-ops-info.ini
+                            ${GENBIN_OUT_DIR}/gen/${GENBIN_OP_NAME} ${GENBIN_COMPUTE_UNIT}
+                            --opc-config-file ${ASCEND_AUTOGEN_PATH}/${CUSTOM_OPC_OPTIONS}
+                            --ops ${GENBIN_OP_TYPE}
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${OPS_KERNEL_BINARY_SCRIPT}/merge_ops_config_json.py
+                            ${GENBIN_OUT_DIR}/gen/${GENBIN_OP_NAME}
+  )
+  if(NOT TARGET ${GENBIN_TARGET})
+    add_custom_target(${GENBIN_TARGET})
+  endif()
+  add_dependencies(${GENBIN_TARGET} generate_bin_scripts_${GENBIN_COMPUTE_UNIT}_${GENBIN_OP_NAME}
+  )
+endfunction()
+
+###################################################################################################
+# copy binary config from op_host/config to tbe/config path
+###################################################################################################
+function(binary_config_copy)
+  set(oneValueArgs TARGET OP_NAME CONF_DIR DST_DIR COMPUTE_UNIT)
+  cmake_parse_arguments(CNFCPY "" "${oneValueArgs}" "" ${ARGN})
+  file(MAKE_DIRECTORY ${CNFCPY_DST_DIR}/${CNFCPY_COMPUTE_UNIT}/${CNFCPY_OP_NAME})
+  add_custom_target(${CNFCPY_TARGET}
+    COMMAND rm -rf ${CNFCPY_DST_DIR}/${CNFCPY_COMPUTE_UNIT}/${CNFCPY_OP_NAME}/*
+    COMMAND cp -r ${CNFCPY_CONF_DIR}/${CNFCPY_COMPUTE_UNIT}/* ${CNFCPY_DST_DIR}/${CNFCPY_COMPUTE_UNIT}/${CNFCPY_OP_NAME}
+  )
+endfunction()
+
+###################################################################################################
+# compile binary from op_host/config binary json files
+# generate outpath: ${CMAKE_BINARY_DIR}/binary/${compute_unit}/bin
+# install path: ${BIN_KERNEL_INSTALL_DIR}/${compute_unit}
+###################################################################################################
+function(compile_from_config)
+  set(oneValueArgs TARGET OP_NAME OP_TYPE BINARY_JSON OPS_INFO_DIR IMPL_DIR CONFIG_DIR OP_PYTHON_DIR OUT_DIR INSTALL_DIR COMPUTE_UNIT)
+  cmake_parse_arguments(CONFCMP "" "${oneValueArgs}" "" ${ARGN})
+  file(MAKE_DIRECTORY ${CONFCMP_OUT_DIR}/src)
+  file(MAKE_DIRECTORY ${CONFCMP_OUT_DIR}/bin)
+  file(MAKE_DIRECTORY ${CONFCMP_OUT_DIR}/gen)
+  message(STATUS "start to compile op: ${CONFCMP_OP_NAME}, op_type: ${CONFCMP_OP_TYPE}")
+  # add Environment Variable Configurations of python & ccache
+  set(_ASCENDC_ENV_VAR)
+  list(APPEND _ASCENDC_ENV_VAR export HI_PYTHON=${ASCEND_PYTHON_EXECUTABLE} &&)
+  # whether need judging CMAKE_C_COMPILER_LAUNCHER
+  if(${CMAKE_CXX_COMPILER_LAUNCHER} MATCHES "ccache$")
+    list(APPEND _ASCENDC_ENV_VAR export ASCENDC_CCACHE_EXECUTABLE=${CMAKE_CXX_COMPILER_LAUNCHER} &&)
+  endif()
+
+  if(EXISTS ${CONFCMP_BINARY_JSON})
+    # copy binary config file to tbe/config
+    binary_config_copy(
+      TARGET bin_conf_${CONFCMP_OP_NAME}_${CONFCMP_COMPUTE_UNIT}_copy
+      OP_NAME ${CONFCMP_OP_NAME}
+      CONF_DIR ${CONFCMP_CONFIG_DIR}
+      DST_DIR ${ASCEND_KERNEL_CONF_DST}
+      COMPUTE_UNIT ${CONFCMP_COMPUTE_UNIT}
+    )
+  else()
+    file(MAKE_DIRECTORY ${ASCEND_KERNEL_CONF_DST}/${CONFCMP_COMPUTE_UNIT}/${CONFCMP_OP_NAME})
+    add_custom_target(bin_conf_${CONFCMP_OP_NAME}_${CONFCMP_COMPUTE_UNIT}_copy
+          COMMAND cp ${CMAKE_BINARY_DIR}/binary/${CONFCMP_COMPUTE_UNIT}/gen/${CONFCMP_OP_NAME}/${CONFCMP_OP_NAME}_binary.json  ${ASCEND_KERNEL_CONF_DST}/${CONFCMP_COMPUTE_UNIT}/${CONFCMP_OP_NAME}
+          COMMENT "cp ${CMAKE_BINARY_DIR}/binary/${CONFCMP_COMPUTE_UNIT}/gen/${CONFCMP_OP_NAME}/${CONFCMP_OP_NAME}_binary.json  ${ASCEND_KERNEL_CONF_DST}/${CONFCMP_COMPUTE_UNIT}/${CONFCMP_OP_NAME}"
+    )
+  endif()
+
+  add_custom_target(config_compile_${CONFCMP_COMPUTE_UNIT}_${CONFCMP_OP_NAME}
+    COMMAND ${_ASCENDC_ENV_VAR} bash ${OPS_KERNEL_BINARY_SCRIPT}/build_binary_single_op.sh
+            ${CONFCMP_OP_TYPE}
+            ${CONFCMP_COMPUTE_UNIT}
+            ${CONFCMP_OUT_DIR}/bin
+    WORKING_DIRECTORY ${OPS_KERNEL_BINARY_SCRIPT}
+    DEPENDS ${ASCEND_KERNEL_CONF_DST}/aic-${CONFCMP_COMPUTE_UNIT}-ops-info.ini
+            ascendc_kernel_src_copy
+            bin_conf_${CONFCMP_OP_NAME}_${CONFCMP_COMPUTE_UNIT}_copy
+  )
+
+  if(NOT TARGET binary)
+    add_custom_target(binary)
+  endif()
+  add_custom_target(${CONFCMP_TARGET}
+    COMMAND cp -r ${CONFCMP_IMPL_DIR}/*.* ${CONFCMP_OUT_DIR}/src
+    COMMAND cp ${CONFCMP_OP_PYTHON_DIR}/*.py ${CONFCMP_OUT_DIR}/src
+  )
+  add_dependencies(binary config_compile_${CONFCMP_COMPUTE_UNIT}_${CONFCMP_OP_NAME} ${CONFCMP_TARGET})
+  if(ENABLE_PACKAGE)
+    set(subDir "ops_oam")
+    if(ENABLE_CUSTOM)
+      set(subDir "")
+    endif()
+    install(DIRECTORY ${CONFCMP_OUT_DIR}/bin/${CONFCMP_COMPUTE_UNIT}/${CONFCMP_OP_NAME}
+      DESTINATION ${BIN_KERNEL_INSTALL_DIR}/${CONFCMP_COMPUTE_UNIT}/${subDir} OPTIONAL
+    )
+    file(GLOB CONFCMP_OP_NAME_JSON ${CONFCMP_OUT_DIR}/bin/config/${CONFCMP_COMPUTE_UNIT}/${CONFCMP_OP_NAME}*.json)
+    install(FILES ${CONFCMP_OP_NAME_JSON}
+      DESTINATION ${BIN_KERNEL_CONFIG_INSTALL_DIR}/${CONFCMP_COMPUTE_UNIT}/${subDir}
+    )
+  endif()
+endfunction()
+
+###################################################################################################
+# generate binary_info_config.json
+# generate outpath: ${CMAKE_BINARY_DIR}/binary/${compute_unit}/bin/config
+# install path: packages/vendors/${VENDOR_NAME}/op_impl/ai_core/tbe/kernel/config
+###################################################################################################
+function(gen_binary_info_config_json)
+  set(oneValueArgs TARGET BIN_DIR COMPUTE_UNIT)
+  cmake_parse_arguments(GENBIN_INFOCFG "" "${oneValueArgs}" "" ${ARGN})
+
+  if (NOT EXISTS "${GENBIN_INFOCFG_BIN_DIR}/bin/config")
+    message(STATUS "Directory does not exist. Create: ${GENBIN_INFOCFG_BIN_DIR}/bin/config")
+    file(MAKE_DIRECTORY "${GENBIN_INFOCFG_BIN_DIR}/bin/config")
+  endif()
+
+  add_custom_command(OUTPUT ${GENBIN_INFOCFG_BIN_DIR}/bin/config/${GENBIN_INFOCFG_COMPUTE_UNIT}/binary_info_config.json
+    COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${OPS_KERNEL_BINARY_SCRIPT}/gen_binary_info_config.py
+            ${GENBIN_INFOCFG_BIN_DIR}/bin
+            ${GENBIN_INFOCFG_COMPUTE_UNIT}
+    DEPENDS ${GENBIN_INFOCFG_BIN_DIR}/bin/config
+  )
+  add_custom_target(${GENBIN_INFOCFG_TARGET}
+    DEPENDS ${GENBIN_INFOCFG_BIN_DIR}/bin/config/${GENBIN_INFOCFG_COMPUTE_UNIT}/binary_info_config.json
+  )
+
+  if(NOT TARGET gen_bin_info_config)
+    add_custom_target(gen_bin_info_config)
+  endif()
+  add_dependencies(gen_bin_info_config ${GENBIN_INFOCFG_TARGET})
+  if(ENABLE_PACKAGE)
+    set(subDir "ops_oam")
+    if(ENABLE_CUSTOM)
+      set(subDir "")
+    endif()
+    install(
+      FILES ${GENBIN_INFOCFG_BIN_DIR}/bin/config/${GENBIN_INFOCFG_COMPUTE_UNIT}/binary_info_config.json
+      DESTINATION ${BIN_KERNEL_CONFIG_INSTALL_DIR}/${GENBIN_INFOCFG_COMPUTE_UNIT}/${subDir} OPTIONAL
+    )
+  endif()
+endfunction()
+
+# ######################################################################################################################
+# get op_type from *_def.cpp
+# ######################################################################################################################
+function(get_op_type_from_op_name OP_NAME OP_TYPE)
+  execute_process(
+    COMMAND
+      find ${CMAKE_CURRENT_SOURCE_DIR} -name ${OP_NAME}_def.cpp -exec grep OP_ADD {} \;
+    OUTPUT_VARIABLE op_type
+    )
+  if(NOT op_type)
+    set(op_type "")
+  else()
+    string(REGEX REPLACE "[\t ]*OP_ADD\\([\t ]*" "" op_type ${op_type})
+    string(REGEX REPLACE "[\t ]*\\).*$" "" op_type ${op_type})
+  endif()
+  set(${OP_TYPE}
+      ${op_type}
+      PARENT_SCOPE
+    )
+endfunction()
+
+# ######################################################################################################################
+# check op_type is or not support in compute_unit
+# ######################################################################################################################
+function(check_op_supported OP_NAME COMPUTE_UNIT OP_SUPPORTED_COMPUTE_UNIT)
+  set(cmd "find ${CMAKE_CURRENT_SOURCE_DIR} -name ${OP_NAME}_def.cpp -exec grep '\.AddConfig(\\s*\"${COMPUTE_UNIT}\"' {} \;")
+  execute_process(
+    COMMAND bash -c "${cmd}"
+    OUTPUT_VARIABLE op_supported_compute_unit
+    )
+  if(NOT op_supported_compute_unit)
+    set(op_supported_compute_unit FALSE)
+  else()
+    set(op_supported_compute_unit TRUE)
+  endif()
+  set(${OP_SUPPORTED_COMPUTE_UNIT}
+      ${op_supported_compute_unit}
+      PARENT_SCOPE
+    )
+endfunction()
+
+# binary compile
+function(gen_ops_info_and_python)
+  gen_aclnn_with_opdef()
+  if(NOT TARGET opbuild_custom_gen_aclnn_all)
+    message(STATUS "no need build binary, for all the ops donot have any operator def")
+    return()
+  endif()
+
+  kernel_src_copy(
+    TARGET ascendc_kernel_src_copy
+    OP_LIST ${COMPILED_OPS}
+    IMPL_DIR ${COMPILED_OP_DIRS}
+    DST_DIR ${ASCEND_KERNEL_SRC_DST}
+  )
+
+  add_custom_target(common_copy
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/tbe/ascendc/inc
+    COMMAND cp -r ${PROJECT_SOURCE_DIR}/src/aml/ops/common/inc/op_kernel/* ${CMAKE_BINARY_DIR}/tbe/ascendc/inc
+  )
+  if(ENABLE_PACKAGE)
+    install(
+      DIRECTORY ${CMAKE_BINARY_DIR}/tbe/ascendc/inc/
+      DESTINATION ${IMPL_INSTALL_DIR}/inc
+    )
+  endif()
+  add_ops_impl_target(
+    TARGET ascendc_impl_gen
+    OPS_INFO_DIR ${ASCEND_AUTOGEN_PATH}
+    IMPL_DIR ${ASCEND_KERNEL_SRC_DST}
+    OUT_DIR ${CMAKE_BINARY_DIR}/tbe
+    INSTALL_DIR ${IMPL_DYNAMIC_INSTALL_DIR}
+  )
+
+  merge_graph_headers(
+    TARGET merge_ops_proto ALL
+    OUT_DIR ${ASCEND_GRAPH_CONF_DST}
+  )
+
+  set(ascendc_impl_gen_depends ascendc_kernel_src_copy opbuild_custom_gen_aclnn_all common_copy)
+  foreach(compute_unit ${ASCEND_ALL_COMPUTE_UNIT})
+    # generate aic-${compute_unit}-ops-info.json, operator infos
+    set(ops_info_suffix "ops-info-oam.json")
+    add_ops_info_target_v1(
+      TARGET ops_info_gen_${compute_unit}
+      OUTPUT ${CMAKE_BINARY_DIR}/tbe/op_info_cfg/ai_core/${compute_unit}/aic-${compute_unit}-${ops_info_suffix}
+      OPS_INFO_DIR ${ASCEND_AUTOGEN_PATH}
+      COMPUTE_UNIT ${compute_unit}
+      INSTALL_DIR ${OPS_INFO_INSTALL_DIR}/${compute_unit}
+    )
+
+    # merge ops info ini files
+    merge_ini_files(TARGET merge_ini_${compute_unit}
+        OPS_INFO_DIR ${ASCEND_AUTOGEN_PATH}
+        COMPUTE_UNIT ${compute_unit}
+    )
+    list(APPEND ascendc_impl_gen_depends ops_info_gen_${compute_unit})
+  endforeach()
+  add_dependencies(ascendc_impl_gen ${ascendc_impl_gen_depends})
+
+  foreach(compute_unit ${ASCEND_COMPUTE_UNIT})
+    set(HAS_OP_COMPILE_OF_COMPUTE_UNIT TRUE)
+    foreach(OP_DIR ${COMPILED_OP_DIRS})
+      get_filename_component(op_name ${OP_DIR} NAME)
+      set(op_type)
+      get_op_type_from_op_name("${op_name}" op_type)
+      if(NOT op_type)
+        message(STATUS "[INFO] On [${compute_unit}], [${op_name}] not need to compile.")
+        continue()
+      endif()
+      set(check_op_supported_result)
+      check_op_supported("${op_name}" "${compute_unit}" check_op_supported_result)
+      if(NOT check_op_supported_result)
+        message(STATUS "[INFO] On [${compute_unit}], [${op_name}] not supported.")
+        continue()
+      endif()
+      set(HAS_OP_COMPILE_OF_COMPUTE_UNIT TRUE)
+      # generate opc shell scripts for autogen binary config ops
+      generate_bin_scripts(
+        TARGET gen_bin_scripts
+        OP_NAME ${op_name}
+        OP_TYPE ${op_type}
+        OPS_INFO_DIR ${ASCEND_AUTOGEN_PATH}
+        COMPUTE_UNIT ${compute_unit}
+        OUT_DIR ${CMAKE_BINARY_DIR}/binary/${compute_unit}
+      )
+      set(binary_json ${OP_DIR}/op_host/config/${compute_unit}/${op_name}_binary.json)
+      if(EXISTS ${binary_json})
+        # binary compile from binary json config
+        message(STATUS "[INFO] On [${compute_unit}], [${op_name}] compile binary with self config.")
+      else()
+        message(STATUS "[INFO] On [${compute_unit}], [${op_name}] compile binary with auto gen config.")
+      endif()
+      # binary compile from binary json config
+      compile_from_config(
+        TARGET ascendc_bin_${compute_unit}_${op_name}
+        OP_NAME ${op_name}
+        OP_TYPE ${op_type}
+        BINARY_JSON ${binary_json}
+        OPS_INFO_DIR ${ASCEND_AUTOGEN_PATH}
+        IMPL_DIR ${OP_DIR}/op_kernel
+        CONFIG_DIR ${OP_DIR}/op_host/config
+        OP_PYTHON_DIR ${CMAKE_BINARY_DIR}/tbe/dynamic
+        OUT_DIR ${CMAKE_BINARY_DIR}/binary/${compute_unit}
+        INSTALL_DIR ${BIN_KERNEL_INSTALL_DIR}
+        COMPUTE_UNIT ${compute_unit}
+      )
+      add_dependencies(ascendc_bin_${compute_unit}_${op_name} merge_ini_${compute_unit} ascendc_impl_gen)
+    endforeach()
+    if(HAS_OP_COMPILE_OF_COMPUTE_UNIT)
+      # generate binary_info_config.json
+      gen_binary_info_config_json(
+        TARGET gen_bin_info_config_${compute_unit}
+        BIN_DIR ${CMAKE_BINARY_DIR}/binary/${compute_unit}
+        COMPUTE_UNIT ${compute_unit}
+      )
+    else()
+      message(STATUS "[WARNING] There is no operator support for ${compute_unit}.")
+    endif()
+  endforeach()
+endfunction()

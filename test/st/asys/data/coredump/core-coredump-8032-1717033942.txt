@@ -1,0 +1,163 @@
+Program terminated with signal SIGSEGV, Segmentation fault.
+#0  0x00007ffff7a17765 in ChildPthread (args=0x0)
+    at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:288
+0x00007f64cfed8630  0x00007f64d004d27d  Yes         /lib/x86_64-linux-gnu/libc.so.6
+                                         No         /lib64/ld-linux-x86-64.so.2
+[Current thread is 1 (Thread 0x7ffff50c3700 (LWP 40907))]
+(gdb)   Num  Description       Executable
+* 1    process 40896     /home/h30044213/atrace_test
+(gdb)
+Thread 3 (Thread 0x7ffff70e8700 (LWP 40900)):
+#0  0x00007ffff7c8723f in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=req@entry=0x7ffff70e7e60, rem=rem@entry=0x0) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78
+#1  0x00007ffff7c8cec7 in __GI___nanosleep (requested_time=requested_time@entry=0x7ffff70e7e60, remaining=remaining@entry=0x0) at nanosleep.c:27
+#2  0x00007ffff7cbf85f in usleep (useconds=<optimized out>) at ../sysdeps/posix/usleep.c:32
+#3  0x00007ffff794a67e in ToolSleep (milliSecond=20) at ../../../../../../../../../abl/slog/utils/log_system_api.c:704
+#4  0x00007ffff794c74c in PlogFlushAppLog (args=0x0) at ../../../../../../../../../abl/slog/liblog/slog/plog/plog_host_log.c:151
+#5  0x00007ffff7da4609 in start_thread (arg=<optimized out>) at pthread_create.c:477
+#6  0x00007ffff7cc9133 in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+#7  0x17d6f978d331dc6d  in /dev/davinci_manager
+#8  0x101  in /dev/davinci_manager
+
+Thread 2 (Thread 0x7ffff7a3f4c0 (LWP 40896)):
+#0  __pthread_clockjoin_ex (threadid=140737304606464, thread_return=0x0, clockid=<optimized out>, abstime=<optimized out>, block=<optimized out>) at pthread_join_common.c:145
+#1  0x00007ffff7a17926 in g_func_Atrace_TestLocalTimeR () at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:327
+#2  0x00007ffff7a1b907 in std::_Function_base::_Base_manager<void (*)()>::_M_manager (__dest=..., __source=..., __op=32767) at /usr/include/c++/9/bits/std_function.h:216
+#3  0x00007ffff7a1a19c in std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, atest::TestFixture*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, atest::TestFixture*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, atest::TestFixture*> > >::_Rb_tree_impl<std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, true>::_Rb_tree_impl (this=0x7ffff7a3b428 <g_fixture_Atrace_TestStackcore+48>) at /usr/include/c++/9/bits/stl_tree.h:684
+#4  0x00007ffff7a197e2 in atest::TestFixture::~TestFixture (this=0x7ffff7a3b420 <g_fixture_Atrace_TestStackcore+40>, __in_chrg=<optimized out>) at ../../../../../../../../llt/abl/atrace/rdv/common/atest/atest.h:60
+#5  0x00007ffff7a19dc5 in atest::TestManager::SetTestResult (this=0x86ee7a611e807f00, name="", result=32767) at ../../../../../../../../llt/abl/atrace/rdv/common/atest/atest.h:124
+#6  0x00007ffff7a14982 in RunTestcase (name=0x7fffffffdfd9 "TestStackcore") at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:76
+#7  0x00007ffff7a18b04 in __static_initialization_and_destruction_0 (__initialize_p=32767, __priority=97) at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:102
+#8  0x0000555555555314 in main (argc=3, argv=0x7fffffffdd28) at ../../../../../../../../llt/abl/atrace/rdv/testcase/main.cc:39
+
+Thread 1 (Thread 0x7ffff50c3700 (LWP 40907)):
+#0  0x00007ffff7a17765 in ChildPthread (args=0x0) at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:288
+#1  0x00007ffff7a177d4 in g_func_Atrace_TestStackcore () at ../../../../../../../../llt/abl/atrace/rdv/testcase/atrace_test.cc:299
+#2  0x00007ffff7da4609 in start_thread (arg=<optimized out>) at pthread_create.c:477
+#3  0x00007ffff7cc9133 in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:95
+(gdb) Mapped address spaces:
+(gdb) Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset objfile
+      0x100000000000     0x180000000000     0x80000000000 0x0 /dev/davinci_manager
+      0x555555554000     0x555555555000     0x1000        0x0 /home/h30044213/atrace_test
+      0x555555555000     0x555555556000     0x1000     0x1000 /home/h30044213/atrace_test
+      0x555555556000     0x555555557000     0x1000     0x2000 /home/h30044213/atrace_test
+      0x555555557000     0x555555558000     0x1000     0x2000 /home/h30044213/atrace_test
+      0x555555558000     0x555555559000     0x1000     0x3000 /home/h30044213/atrace_test
+      0x7ffff74ed000     0x7ffff74f0000     0x3000        0x0 /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+      0x7ffff74f0000     0x7ffff74f7000     0x7000     0x3000 /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+      0x7ffff74f7000     0x7ffff74f9000     0x2000     0xa000 /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+      0x7ffff74f9000     0x7ffff74fa000     0x1000     0xb000 /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+      0x7ffff74fa000     0x7ffff74fb000     0x1000     0xc000 /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+      0x7ffff7501000     0x7ffff7503000     0x2000        0x0 /usr/lib/x86_64-linux-gnu/librt-2.31.so
+      0x7ffff7503000     0x7ffff7507000     0x4000     0x2000 /usr/lib/x86_64-linux-gnu/librt-2.31.so
+      0x7ffff7507000     0x7ffff7509000     0x2000     0x6000 /usr/lib/x86_64-linux-gnu/librt-2.31.so
+      0x7ffff7509000     0x7ffff750a000     0x1000     0x7000 /usr/lib/x86_64-linux-gnu/librt-2.31.so
+      0x7ffff750a000     0x7ffff750b000     0x1000     0x8000 /usr/lib/x86_64-linux-gnu/librt-2.31.so
+      0x7ffff750b000     0x7ffff751f000    0x14000        0x0 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff751f000     0x7ffff7626000   0x107000    0x14000 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff7626000     0x7ffff768f000    0x69000   0x11b000 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff768f000     0x7ffff7690000     0x1000   0x184000 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff7690000     0x7ffff7691000     0x1000   0x184000 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff7691000     0x7ffff7696000     0x5000   0x185000 /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+      0x7ffff7941000     0x7ffff7944000     0x3000        0x0 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff7944000     0x7ffff7954000    0x10000     0x3000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff7954000     0x7ffff795c000     0x8000    0x13000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff795c000     0x7ffff795d000     0x1000    0x1b000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff795d000     0x7ffff795e000     0x1000    0x1b000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff795e000     0x7ffff795f000     0x1000    0x1c000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+      0x7ffff795f000     0x7ffff7964000     0x5000        0x0 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff7964000     0x7ffff796c000     0x8000     0x5000 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff796c000     0x7ffff796e000     0x2000     0xd000 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff796e000     0x7ffff796f000     0x1000     0xf000 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff796f000     0x7ffff7970000     0x1000     0xf000 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff7970000     0x7ffff7971000     0x1000    0x10000 /usr/local/Ascend/driver/lib64/common/libmmpa.so
+      0x7ffff7971000     0x7ffff7996000    0x25000        0x0 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff7996000     0x7ffff79c1000    0x2b000    0x25000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff79c1000     0x7ffff79d2000    0x11000    0x50000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff79d2000     0x7ffff79d3000     0x1000    0x61000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff79d3000     0x7ffff79d6000     0x3000    0x61000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff79d6000     0x7ffff79d8000     0x2000    0x64000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascend_trace.so
+      0x7ffff79d8000     0x7ffff7a0c000    0x34000        0x0 /home/h30044213/libatrace_test.so
+      0x7ffff7a0c000     0x7ffff7a2b000    0x1f000    0x34000 /home/h30044213/libatrace_test.so
+      0x7ffff7a2b000     0x7ffff7a37000     0xc000    0x53000 /home/h30044213/libatrace_test.so
+      0x7ffff7a37000     0x7ffff7a38000     0x1000    0x5f000 /home/h30044213/libatrace_test.so
+      0x7ffff7a38000     0x7ffff7a39000     0x1000    0x5f000 /home/h30044213/libatrace_test.so
+      0x7ffff7a39000     0x7ffff7a3c000     0x3000    0x60000 /home/h30044213/libatrace_test.so
+      0x7ffff7a40000     0x7ffff7a43000     0x3000        0x0 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7ffff7a43000     0x7ffff7a55000    0x12000     0x3000 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7ffff7a55000     0x7ffff7a59000     0x4000    0x15000 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7ffff7a59000     0x7ffff7a5a000     0x1000    0x18000 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7ffff7a5a000     0x7ffff7a5b000     0x1000    0x19000 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+      0x7ffff7a5b000     0x7ffff7a68000     0xd000        0x0 /usr/lib/x86_64-linux-gnu/libm-2.31.so
+      0x7ffff7a68000     0x7ffff7b0f000    0xa7000     0xd000 /usr/lib/x86_64-linux-gnu/libm-2.31.so
+      0x7ffff7b0f000     0x7ffff7ba8000    0x99000    0xb4000 /usr/lib/x86_64-linux-gnu/libm-2.31.so
+      0x7ffff7ba8000     0x7ffff7ba9000     0x1000   0x14c000 /usr/lib/x86_64-linux-gnu/libm-2.31.so
+      0x7ffff7ba9000     0x7ffff7baa000     0x1000   0x14d000 /usr/lib/x86_64-linux-gnu/libm-2.31.so
+      0x7ffff7baa000     0x7ffff7bcc000    0x22000        0x0 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      0x7ffff7bcc000     0x7ffff7d44000   0x178000    0x22000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      0x7ffff7d44000     0x7ffff7d92000    0x4e000   0x19a000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      0x7ffff7d92000     0x7ffff7d96000     0x4000   0x1e7000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      0x7ffff7d96000     0x7ffff7d98000     0x2000   0x1eb000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+      0x7ffff7d9c000     0x7ffff7da2000     0x6000        0x0 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+      0x7ffff7da2000     0x7ffff7db3000    0x11000     0x6000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+      0x7ffff7db3000     0x7ffff7db9000     0x6000    0x17000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+      0x7ffff7db9000     0x7ffff7dba000     0x1000    0x1c000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+      0x7ffff7dba000     0x7ffff7dbb000     0x1000    0x1d000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+      0x7ffff7dc1000     0x7ffff7e57000    0x96000        0x0 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7e57000     0x7ffff7f48000    0xf1000    0x96000 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7f48000     0x7ffff7f91000    0x49000   0x187000 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7f91000     0x7ffff7f92000     0x1000   0x1d0000 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7f92000     0x7ffff7f9d000     0xb000   0x1d0000 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7f9d000     0x7ffff7fa0000     0x3000   0x1db000 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+      0x7ffff7fa3000     0x7ffff7fa4000     0x1000        0x0 /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+      0x7ffff7fa4000     0x7ffff7fa6000     0x2000     0x1000 /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+      0x7ffff7fa6000     0x7ffff7fa7000     0x1000     0x3000 /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+      0x7ffff7fa7000     0x7ffff7fa8000     0x1000     0x3000 /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+      0x7ffff7fa8000     0x7ffff7fa9000     0x1000     0x4000 /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+      0x7ffff7fb5000     0x7ffff7fb7000     0x2000        0x0 /usr/local/Ascend/driver/lib64/common/libc_sec.so
+      0x7ffff7fb7000     0x7ffff7fc4000     0xd000     0x2000 /usr/local/Ascend/driver/lib64/common/libc_sec.so
+      0x7ffff7fc4000     0x7ffff7fc7000     0x3000     0xf000 /usr/local/Ascend/driver/lib64/common/libc_sec.so
+      0x7ffff7fc7000     0x7ffff7fc8000     0x1000    0x11000 /usr/local/Ascend/driver/lib64/common/libc_sec.so
+      0x7ffff7fc8000     0x7ffff7fc9000     0x1000    0x12000 /usr/local/Ascend/driver/lib64/common/libc_sec.so
+      0x7ffff7fcf000     0x7ffff7fd0000     0x1000        0x0 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+      0x7ffff7fd0000     0x7ffff7ff3000    0x23000     0x1000 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+      0x7ffff7ff3000     0x7ffff7ffb000     0x8000    0x24000 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+      0x7ffff7ffc000     0x7ffff7ffd000     0x1000    0x2c000 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+
+
+
+(gdb) [Switching to thread 3 (Thread 0x7f97e2e90700 (LWP 40900))]
+#0  0x00007f97e3a2d23f in __GI___clock_nanosleep (clock_id=clock_id@entry=0,
+    flags=flags@entry=0, req=req@entry=0x7f97e2e8fe60, rem=rem@entry=0x0)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78
+(gdb) #0  0x00007f97e3a2d23f in __GI___clock_nanosleep (clock_id=clock_id@entry=0,
+    flags=flags@entry=0, req=req@entry=0x7f97e2e8fe60, rem=rem@entry=0x0)
+    at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78
+78      in ../sysdeps/unix/sysv/linux/clock_nanosleep.c
+(gdb) rax            0xfffffffffffffdfc  -516
+rcx            0x7f97e3a2d23f      140290335887935
+rbp            0x0                 0x0
+rsp            0x7f97e2e8fde0      0x7f97e2e8fde0
+rip            0x7f97e3a2d23f      0x7f97e3a2d23f <__GI___clock_nanosleep+223>
+(gdb) #1  0x00007f97e3a32ec7 in __GI___nanosleep (
+    requested_time=requested_time@entry=0x7f97e2e8fe60,
+    remaining=remaining@entry=0x0) at nanosleep.c:27
+(gdb) rax            0xfffffffffffffdfc  -516
+rcx            0x7f97e3a2d23f      140290335887935
+rbp            0x7f97e2e8feb0      0x7f97e2e8feb0
+rsp            0x7f97e2e8fe50      0x7f97e2e8fe50
+rip            0x7f97e3a32ec7      0x7f97e3a32ec7 <__GI___nanosleep+23>
+(gdb) [Switching to thread 2 (Thread 0x7f97e37e54c0 (LWP 40896))]
+#0  __pthread_clockjoin_ex (threadid=140290290005760, thread_return=0x0,
+    clockid=<optimized out>, abstime=<optimized out>, block=<optimized out>)
+    at pthread_join_common.c:145
+(gdb) #0  __pthread_clockjoin_ex (threadid=140290290005760, thread_return=0x0,
+    clockid=<optimized out>, abstime=<optimized out>, block=<optimized out>)
+    at pthread_join_common.c:145
+145     in pthread_join_common.c
+(gdb) rax            0xfffffffffffffe00  -512
+rcx            0x7f97e3b4bcd7      140290337062103
+rbp            0x0                 0x0
+rsp            0x7ffeef83db20      0x7ffeef83db20
+rip            0x7f97e3b4bcd7      0x7f97e3b4bcd7 <__pthread_clockjoin_ex+599>

@@ -1,0 +1,48 @@
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.714.696 [main.cpp:317][main][tid:12790] Start para. deviceId=0, hostPid=155320, pidSign=000000000000000000000000000000000000000000000000, profilingMode=0, vfId=0, logLevel=3, ccecpulogLevel=-1, aicpulogLevel=-1, deviceMode=0, aicpuSchedMode=0, hostProcName=, grpNameNum=0, grpNameList=[]
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.734.983 [aicpusd_resource_limit.cpp:53][AddToCgroup][tid:12790] Add to cgroup success, cmd:[cd /var/  && sudo ./tsdaemon_add_to_usermemory.sh 12790 0 0].
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.098 [aicpusd_interface_process.cpp:610][GetCurrentRunMode][tid:12790] Current aicpu mode is online (call from host).
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.154 [aicpusd_drv_manager.cpp:321][InitSocType][tid:12790] Soc type is 0
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.182 [aicpusd_drv_manager.cpp:175][GetNormalAicpuInfo][tid:12790] aicpuBitMap[252], aicpuNum[6].
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.205 [aicpusd_drv_manager.cpp:209][GetCcpuInfo][tid:12790] ccpuBitMap[1].
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.237 [aicpusd_drv_manager.cpp:95][GetNormalAicpuDCpuInfo][tid:12790] GetNormalAicpuDCpuInfo, deviceId[0], aicpu_num[6], aicpu_os_sched[1], ccpu_num[1], ccpu_os_sched[1], dcpu_num[1], dcpu_os_sched[1], tscpu_num[0], tscpu_os_sched[0].
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.257 [aicpusd_drv_manager.cpp:292][InitDrvMgrCaluniqueVfId][tid:12790] InitDrvMgr uniqueVfId=0, deviceId=0
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.273 [aicpusd_drv_manager.cpp:372][InitDrvMgr][tid:12790] host pid[155320], host proc name[], vf id[0], first aicpu index[0], aicpu num[6], dcpu base index[1], dcpu num[1].
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.294 [aicpusd_drv_manager.cpp:568][CheckBindHostPid][tid:12790] Start query process host pid
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.319 [aicpusd_drv_manager.cpp:581][CheckBindHostPid][tid:12790] Query process host pid end, ret=0, hostpid=155320, expect=155320, cpType=0
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.337 [aicpusd_drv_manager.cpp:596][CheckBindHostPid][tid:12790] call drvQueryProcessHostPid success, hostpid[155320], cpType[0]
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.388 [aicpusd_resource_manager.cpp:264][InitBufManager][tid:12790] Aicpu schedule SetBuffCfg successfully!
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.814 [aicpusd_drv_manager.cpp:441][InitDrvSchedModule][tid:12790] Enable process drv queue msg on ccpu, ret is 0.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.856 [aicpusd_monitor.cpp:239][SetModelTimeoutFlag][tid:12790] Not set aicpu model timeout. Env is not set.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.735.909 [aicpusd_monitor.cpp:160][InitMonitor][tid:12790] Init aicpu monitor success, taskTimeout=28s, tickFreq=50000000
+[INFO] DRV(12790,aicpu_scheduler):2025-05-08-09:56:12.740.314 [grp_mng.c:81][bufmng] [halGrpCreate] Create grp. (grp_name=svm_share_grp_12790; grp_id=67; max_size=0; cache_flag=0)
+[INFO] DRV(12790,aicpu_scheduler):2025-05-08-09:56:12.740.372 [grp_mng.c:144][bufmng] [halGrpAddProc] add grp succ, name:svm_share_grp_12790, pid:12790, grp_id:67, admin:1 alloc:0 read:1 write:1 
+[INFO] DRV(12790,aicpu_scheduler):2025-05-08-09:56:12.740.526 [drv_buff_mbuf.c:65][bufmng] [mbufSetPrivFlag] Set mbuf priv flag success. (flag=0, g_mbuf_priv_flag=0)
+[INFO] DRV(12790,aicpu_scheduler):2025-05-08-09:56:12.740.549 [grp_mng.c:212][bufmng] [halGrpAttach] grp attach, grp_name:svm_share_grp_12790, grp_id:67, timeout:0ms
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.740.575 [aicpusd_worker.cpp:73][ThreadPool][tid:12790] ThreadPool
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.740.775 [aicpusd_worker.cpp:299][AddPidToTask][tid:12804] Bind pid by hal.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.740.885 [aicpusd_worker.cpp:299][AddPidToTask][tid:12805] Bind pid by hal.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.740.937 [aicpusd_worker.cpp:299][AddPidToTask][tid:12803] Bind pid by hal.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.741.001 [aicpusd_worker.cpp:299][AddPidToTask][tid:12802] Bind pid by hal.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.741.452 [aicpusd_worker.cpp:299][AddPidToTask][tid:12801] Bind pid by hal.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.741.519 [aicpusd_worker.cpp:299][AddPidToTask][tid:12800] Bind pid by hal.
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.742.733 [tsd_event_client.cpp:645][SetSubProcScheduleMode][tid:12790] [TsdEventClient] Enter Set ScheduleMode deviceid[0],hostPid[155320],vfId[0].
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.743.015 [tsd_event_client.cpp:666][SetSubProcScheduleMode][tid:12790] [TsdEventClient] Submit event Set ScheduleMode to tsd success.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.743.044 [aicpusd_threads_process.cpp:62][LoadKernelSo][tid:12790] Start to preload aicpu so.
+[WARNING] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.743.094 [ae_kernel_lib_fwk.cc:329][LoadTfSo][tid:12790][AICPU_PROCESSER] load tensorflow so failed, ret is[11002]
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.825.894 [aicpusd_threads_process.cpp:66][LoadKernelSo][tid:12790] End to preload aicpu so.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.825.992 [aicpusd_threads_process.cpp:82][LoadExtendKernelSo][tid:12790] Start to preload extend kernel so.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.844.274 [aicpusd_threads_process.cpp:86][LoadExtendKernelSo][tid:12790] End to preload extend kernel so.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.844.627 [aicpusd_cust_so_manager.cpp:75][InitAicpuCustSoManager][tid:12790] Cust so manager init success, dir=/home/CustAiCpuUser/cust_aicpu_0_0_155320/, runMode=0, schedMode=0
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.844.673 [main.cpp:347][main][tid:12790] Aicpu schedule start success, LD_LIBRARY_PATH=/usr/lib64/aicpu_kernels/0/aicpu_kernels_device/:/usr/lib64/aicpu_kernels/0/aicpu_kernels_device/sand_box/:/home/HwHiAiUser/hs/0/runtime/lib64/:
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.844.697 [main.cpp:358][main][tid:12790] Aicpu schedule attach and init success.
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.844.730 [tsd_event_client.cpp:385][ReportMsgToTsd][tid:12790] [TsdEventClient] Enter ReportMsgToTsd deviceid[0],hostPid[155320],vfId[0].
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.844.754 [tsd_event_client.cpp:401][ReportMsgToTsd][tid:12790] [TsdEventClient] subCapabityType[8], value[1]
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.844.929 [tsd_event_client.cpp:408][ReportMsgToTsd][tid:12790] [TsdEventClient] Submit event ReportMsgToTsd to tsd success.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.846.414 [main.cpp:202][RegQueueScheduleModuleCallBack][tid:12790] RegQueueScheduleModuleCallBack success
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.846.458 [tsd_event_client.cpp:268][TsdStartupResponse][tid:12790] [TsdEventClient] TsdStartupResponseProc to dev[0] pid[4866] hostpid[155320] vfId[0] is running.
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.846.673 [tsd_event_client.cpp:287][TsdStartupResponse][tid:12790] [TsdEventClient] Submit event TSD_EVENT_START_RSP to tsd success.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.846.696 [main.cpp:374][main][tid:12790] Aicpu startup response return success.
+[INFO] TDT(12790,aicpu_scheduler):2025-05-08-09:56:12.846.715 [tsd_event_client.cpp:232][DoLoopProcessEvent][tid:12790] [TsdEventClient] Start wait event, deviceId=0.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:12.846.885 [aicpusd_period_statistic.cpp:133][SetThreadAffinity][tid:12808] aicpu bind by self success
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:17.919.182 [aicpusd_event_process.cpp:377][ProcessSetTimeoutEvent][tid:12802] Get opTimeoutEnable[1] value[547] waitTimeoutEnable[0] value[0] from ts success.
+[INFO] CCECPU(12790,aicpu_scheduler):2025-05-08-09:56:17.919.239 [aicpusd_monitor.cpp:445][SetOpExecuteTimeOut][tid:12802] Get enable op execute timeout config from ts. timeout[547]s tickFrequency[27350000000]

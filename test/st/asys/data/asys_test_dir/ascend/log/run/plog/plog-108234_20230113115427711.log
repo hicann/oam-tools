@@ -1,0 +1,4 @@
+[EVENT] ASCENDCL(108234,main):2023-01-13-11:54:27.708.154 [acl_resource_manager.cpp:87]108234 GetRuntimeV2Env: runtime v2 flag : model flag = 1, singleOp flag = 1
+[EVENT] TDT(108234,main):2023-01-13-11:54:27.837.971 [log.cpp:43][ProcessModeManager] enter into open process deviceId[0] rankSize[0],[process_mode_manager.cpp:64:Open]108234
+[EVENT] TDT(108234,main):2023-01-13-11:54:27.838.731 [log.cpp:43][TsdClient] deviceId[0] begin to init hdc client,[process_mode_manager.cpp:315:InitTsdClient]108234
+[EVENT] TDT(108234,main):2023-01-13-11:54:27.839.082 [log.cpp:43]VersionVerify: send client version to server,[version_verify.cpp:34:SetVersionInfo]108234

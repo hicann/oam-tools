@@ -1,0 +1,2 @@
+[WARNING] TBE(1149,python3):2023-07-13-07:41:18.322.753 [../../../../../../latest/compiler/python/site-packages/te/platform/cce_policy.py:51][OpImplPolicy] te.platform.cce_policy.OpImplPolicy is deprecated,           use te_fusion.fusion_util.OpImplPolicy instead.
+[INFO] TBE(1149,python3):2023-07-13-07:41:19.258.988 [../../../../../../latest/compiler/python/site-packages/tbe/common/rl_bank/dynamic_op_filter.py:373][_need_to_tune_all_op] Auto search dynamic filter info: tune_all_op is False.

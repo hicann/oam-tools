@@ -1,0 +1,4275 @@
+ir_version: 6
+producer_name: "GE"
+graph {
+  node {
+    output: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:0"
+    output: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:1"
+    name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+    op_type: "ge:PartitionedCall"
+    attribute {
+      name: "OwnerGraphIsUnknown"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "_is_unknown_shape"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "dst_index"
+      type: INTS
+    }
+    attribute {
+      name: "dst_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "id"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_nums"
+      type: INT
+    }
+    attribute {
+      name: "input_i"
+      type: INTS
+    }
+    attribute {
+      name: "input_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "is_input_const"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_attr_origin_format_is_set:0"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_attr_origin_format_is_set:1"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_attr_placement:0"
+      type: INT
+    }
+    attribute {
+      name: "output_desc_attr_placement:1"
+      type: INT
+    }
+    attribute {
+      name: "output_desc_device_type:0"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_device_type:1"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_dtype:0"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_dtype:1"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_layout:1"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_nums"
+      i: 2
+      type: INT
+    }
+    attribute {
+      name: "output_desc_origin_dtype:0"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_dtype:1"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_layout:1"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_shape:0"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_origin_shape:1"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_real_dim_cnt:0"
+      type: INT
+    }
+    attribute {
+      name: "output_desc_real_dim_cnt:1"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_shape:0"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_shape:1"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_size:0"
+      i: 64
+      type: INT
+    }
+    attribute {
+      name: "output_desc_size:1"
+      i: 64
+      type: INT
+    }
+    attribute {
+      name: "output_desc_weight_size:0"
+      type: INT
+    }
+    attribute {
+      name: "output_desc_weight_size:1"
+      type: INT
+    }
+    attribute {
+      name: "output_i"
+      type: INTS
+    }
+    attribute {
+      name: "src_index"
+      type: INTS
+    }
+    attribute {
+      name: "src_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "stream_id"
+      i: -1
+      type: INT
+    }
+    attribute {
+      name: "workspace"
+      type: INTS
+    }
+    attribute {
+      name: "workspace_bytes"
+      type: INTS
+    }
+  }
+  node {
+    output: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1:0"
+    name: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+    op_type: "ge:PartitionedCall"
+    attribute {
+      name: "OwnerGraphIsUnknown"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "_is_unknown_shape"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "dst_index"
+      type: INTS
+    }
+    attribute {
+      name: "dst_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "id"
+      i: 4
+      type: INT
+    }
+    attribute {
+      name: "input_desc_nums"
+      type: INT
+    }
+    attribute {
+      name: "input_i"
+      type: INTS
+    }
+    attribute {
+      name: "input_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "is_input_const"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_device_type:0"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_nums"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_origin_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_shape:0"
+      ints: 64
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_real_dim_cnt:0"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_shape:0"
+      ints: 64
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_size:0"
+      i: 288
+      type: INT
+    }
+    attribute {
+      name: "output_desc_weight_size:0"
+      type: INT
+    }
+    attribute {
+      name: "output_i"
+      type: INTS
+    }
+    attribute {
+      name: "src_index"
+      type: INTS
+    }
+    attribute {
+      name: "src_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "stream_id"
+      i: -1
+      type: INT
+    }
+    attribute {
+      name: "workspace"
+      type: INTS
+    }
+    attribute {
+      name: "workspace_bytes"
+      type: INTS
+    }
+  }
+  node {
+    input: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:1"
+    input: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:0"
+    input: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1:0"
+    output: "ge_default_20230713074125_sub_2_unknow_PartitionedCall_2:0"
+    name: "ge_default_20230713074125_sub_2_unknow_PartitionedCall_2"
+    op_type: "ge:PartitionedCall"
+    attribute {
+      name: "OwnerGraphIsUnknown"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "_input_name_key"
+      strings: "__input0"
+      strings: "__input1"
+      strings: "__input2"
+      type: STRINGS
+    }
+    attribute {
+      name: "_input_name_value"
+      ints: 0
+      ints: 1
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "_is_connected_to_netoutput"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "_is_unknown_shape"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "dst_index"
+      type: INTS
+    }
+    attribute {
+      name: "dst_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "id"
+      i: 7
+      type: INT
+    }
+    attribute {
+      name: "input_desc_attr_need_update_dtype_when_op_checksupport:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_attr_need_update_dtype_when_op_checksupport:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_size:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_size:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_size:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_tab:0"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_cmps_tab:1"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_cmps_tab:2"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_cmps_tab_offset:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_tab_offset:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_tab_offset:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_data_offset:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_data_offset:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_data_offset:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_device_type:0"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_device_type:1"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_device_type:2"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_dtype:0"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_dtype:1"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_dtype:2"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_input_tensor:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_input_tensor:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_input_tensor:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_layout:1"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_layout:2"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_nums"
+      i: 3
+      type: INT
+    }
+    attribute {
+      name: "input_desc_origin_dtype:0"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_dtype:1"
+      s: "DT_INT32"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_dtype:2"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_layout:1"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_layout:2"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_origin_shape:1"
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_origin_shape:2"
+      ints: 64
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_output_tensor:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_output_tensor:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_output_tensor:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_real_dim_cnt:0"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "input_desc_real_dim_cnt:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_real_dim_cnt:2"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "input_desc_reuse_input:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_reuse_input:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_reuse_input:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_shape:1"
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_shape:2"
+      ints: 64
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_size:0"
+      i: 64
+      type: INT
+    }
+    attribute {
+      name: "input_desc_size:1"
+      i: 64
+      type: INT
+    }
+    attribute {
+      name: "input_desc_size:2"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_weight_size:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_weight_size:1"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_weight_size:2"
+      type: INT
+    }
+    attribute {
+      name: "input_i"
+      type: INTS
+    }
+    attribute {
+      name: "input_name"
+      strings: "ge_default_20230713074125_sub_0_input_PartitionedCall_0: 1"
+      strings: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+      strings: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+      type: STRINGS
+    }
+    attribute {
+      name: "is_input_const"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_attr_need_update_dtype_when_op_checksupport:0"
+      type: INT
+    }
+    attribute {
+      name: "output_desc_attr_origin_shape_range:0_0"
+      ints: 2
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_attr_shape_range:0_0"
+      ints: 2
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_device_type:0"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_nums"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_origin_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "output_desc_origin_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_real_dim_cnt:0"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "output_desc_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_size:0"
+      i: 64
+      type: INT
+    }
+    attribute {
+      name: "output_desc_weight_size:0"
+      type: INT
+    }
+    attribute {
+      name: "output_i"
+      type: INTS
+    }
+    attribute {
+      name: "src_index"
+      ints: 1
+      ints: 0
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "src_name"
+      strings: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+      strings: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+      strings: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+      type: STRINGS
+    }
+    attribute {
+      name: "stream_id"
+      i: -1
+      type: INT
+    }
+    attribute {
+      name: "workspace"
+      type: INTS
+    }
+    attribute {
+      name: "workspace_bytes"
+      type: INTS
+    }
+  }
+  node {
+    output: "ge_default_20230713074125_sub_3_unknow_PartitionedCall_3:-1"
+    name: "ge_default_20230713074125_sub_3_unknow_PartitionedCall_3"
+    op_type: "ge:PartitionedCall"
+    attribute {
+      name: "OwnerGraphIsUnknown"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "_is_unknown_shape"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "dst_index"
+      type: INTS
+    }
+    attribute {
+      name: "dst_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "id"
+      i: 14
+      type: INT
+    }
+    attribute {
+      name: "input_desc_nums"
+      type: INT
+    }
+    attribute {
+      name: "input_i"
+      type: INTS
+    }
+    attribute {
+      name: "input_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "is_input_const"
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_nums"
+      type: INT
+    }
+    attribute {
+      name: "output_i"
+      type: INTS
+    }
+    attribute {
+      name: "src_index"
+      type: INTS
+    }
+    attribute {
+      name: "src_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "stream_id"
+      i: -1
+      type: INT
+    }
+    attribute {
+      name: "workspace"
+      type: INTS
+    }
+    attribute {
+      name: "workspace_bytes"
+      type: INTS
+    }
+  }
+  node {
+    input: "ge_default_20230713074125_sub_2_unknow_PartitionedCall_2:0"
+    input: "ge_default_20230713074125_sub_3_unknow_PartitionedCall_3:-1"
+    name: "Node_Output"
+    op_type: "ge:NetOutput"
+    attribute {
+      name: "OwnerGraphIsUnknown"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "_input_name_key"
+      strings: "__input0"
+      type: STRINGS
+    }
+    attribute {
+      name: "_input_name_value"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "_is_connected_to_data"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "_op_no_tiling"
+      type: INT
+    }
+    attribute {
+      name: "dst_index"
+      type: INTS
+    }
+    attribute {
+      name: "dst_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "id"
+      i: 17
+      type: INT
+    }
+    attribute {
+      name: "input_desc_attr_origin_shape_range:0_0"
+      ints: 2
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_attr_shape_range:0_0"
+      ints: 2
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_cmps_size:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_cmps_tab:0"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_cmps_tab_offset:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_data_offset:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_device_type:0"
+      s: "NPU"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_input_tensor:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_nums"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "input_desc_origin_dtype:0"
+      s: "DT_FLOAT"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_layout:0"
+      s: "ND"
+      type: STRING
+    }
+    attribute {
+      name: "input_desc_origin_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_output_tensor:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_real_dim_cnt:0"
+      i: 1
+      type: INT
+    }
+    attribute {
+      name: "input_desc_reuse_input:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_shape:0"
+      ints: 2
+      type: INTS
+    }
+    attribute {
+      name: "input_desc_size:0"
+      type: INT
+    }
+    attribute {
+      name: "input_desc_weight_size:0"
+      type: INT
+    }
+    attribute {
+      name: "input_i"
+      type: INTS
+    }
+    attribute {
+      name: "input_name"
+      type: STRINGS
+    }
+    attribute {
+      name: "is_input_const"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "is_input_const"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "output_desc_nums"
+      type: INT
+    }
+    attribute {
+      name: "output_i"
+      type: INTS
+    }
+    attribute {
+      name: "src_index"
+      ints: 0
+      type: INTS
+    }
+    attribute {
+      name: "src_name"
+      strings: "new_sub_graph2_PlaceHolder1"
+      strings: "new_sub_graph2_PlaceHolder0"
+      type: STRINGS
+    }
+    attribute {
+      name: "stream_id"
+      i: -1
+      type: INT
+    }
+    attribute {
+      name: "true_branch_stream"
+      type: INT
+    }
+    attribute {
+      name: "workspace"
+      type: INTS
+    }
+    attribute {
+      name: "workspace_bytes"
+      type: INTS
+    }
+  }
+  node {
+    name: "ge_default_20230713074125_sub_0_input"
+    op_type: "subgraph"
+    attribute {
+      name: "graph"
+      g {
+        node {
+          output: "GatherV2/axis:0"
+          name: "GatherV2/axis"
+          op_type: "ge:Constant"
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "ge_default_20230713074125_sub_0_input_Node_Output"
+            type: STRINGS
+          }
+          attribute {
+            name: "dtype"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "id"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_origin_format_is_set:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_attr_placement:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 62277030400
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "value_desc_device_type"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_dtype"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_layout"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          output: "GatherV2/indices:0"
+          name: "GatherV2/indices"
+          op_type: "ge:Constant"
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "ge_default_20230713074125_sub_0_input_Node_Output"
+            type: STRINGS
+          }
+          attribute {
+            name: "dtype"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "id"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_attr_origin_format_is_set:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_attr_placement:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 62277031936
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "value_desc_device_type"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_dtype"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_layout"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_shape"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: "GatherV2/axis:0"
+          input: "GatherV2/indices:0"
+          name: "ge_default_20230713074125_sub_0_input_Node_Output"
+          op_type: "ge:NetOutput"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 1
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            strings: "__input1"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            type: INT
+          }
+          attribute {
+            name: "_op_read_write_index"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr__data_visit_distance:0"
+            ints: 0
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_attr__data_visit_distance:1"
+            ints: 0
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_attr__parent_node_index:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr__parent_node_index:1"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_origin_format_is_set:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_origin_format_is_set:1"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_placement:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_placement:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab:1"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_device_type:1"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_input_tensor:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_origin_shape:1"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_output_tensor:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:1"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_shape:1"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_size:1"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:1"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 62277030400
+            ints: 62277031936
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "GatherV2/axis"
+            strings: "GatherV2/indices"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        name: "ge_default_20230713074125_sub_0_input"
+      }
+      type: GRAPH
+    }
+  }
+  node {
+    name: "ge_default_20230713074125_sub_1_unknow"
+    op_type: "subgraph"
+    attribute {
+      name: "graph"
+      g {
+        node {
+          input: ""
+          output: "Variable:0"
+          name: "Variable"
+          op_type: "ge:Variable"
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "x"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "ge_default_20230713074125_sub_1_unknow_Node_Output"
+            type: STRINGS
+          }
+          attribute {
+            name: "dtype"
+            type: INT
+          }
+          attribute {
+            name: "id"
+            type: INT
+          }
+          attribute {
+            name: "index"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_UNDEFINED"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 288
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 62277027328
+            type: INTS
+          }
+          attribute {
+            name: "shape"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "value_desc_device_type"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_dtype"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_layout"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: "Variable:0"
+          name: "ge_default_20230713074125_sub_1_unknow_Node_Output"
+          op_type: "ge:NetOutput"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            type: INT
+          }
+          attribute {
+            name: "_op_read_write_index"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr__data_visit_distance:0"
+            ints: 0
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_attr__parent_node_index:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 288
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 62277027328
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "Variable"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        name: "ge_default_20230713074125_sub_1_unknow"
+      }
+      type: GRAPH
+    }
+  }
+  node {
+    name: "ge_default_20230713074125_sub_2_unknow"
+    op_type: "subgraph"
+    attribute {
+      name: "graph"
+      g {
+        node {
+          input: ""
+          output: "ge_default_20230713074125_sub_2_unknow_Data_0:0"
+          name: "ge_default_20230713074125_sub_2_unknow_Data_0"
+          op_type: "ge:Data"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_parent_node_index"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "GatherV2"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: ""
+          output: "ge_default_20230713074125_sub_2_unknow_Data_1:0"
+          name: "ge_default_20230713074125_sub_2_unknow_Data_1"
+          op_type: "ge:Data"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_parent_node_index"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "GatherV2"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: ""
+          output: "ge_default_20230713074125_sub_2_unknow_Data_2:0"
+          name: "ge_default_20230713074125_sub_2_unknow_Data_2"
+          op_type: "ge:Data"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_parent_node_index"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "Unique"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 256
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 288
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: "ge_default_20230713074125_sub_2_unknow_Data_2:0"
+          output: "Unique:0"
+          name: "Unique"
+          op_type: "ge:Unique"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_AllShape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_aicpu_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_aicpu_unknown_shape_type"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "_align_64_bytes_flag"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "x"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "_unknown_shape_type"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "async_flag"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "GatherV2"
+            type: STRINGS
+          }
+          attribute {
+            name: "framework_type"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "id"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "imply_type"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 288
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            strings: "new_sub_graph3_PlaceHolder5"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_alignment_vector"
+            ints: 64
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_origin_shape_range:0_0"
+            ints: 0
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_shape_range:0_0"
+            ints: 0
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_device_type:1"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_origin_shape:1"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:1"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_shape:1"
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 256
+            type: INT
+          }
+          attribute {
+            name: "output_desc_size:1"
+            i: 256
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:1"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "output_memsize_vector"
+            ints: 256
+            ints: 256
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "ge_default_20230713074125_sub_2_unknow_Data_2"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "t_in_datatype"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "t_out_datatype"
+            ints: 1
+            ints: 3
+            type: INTS
+          }
+          attribute {
+            name: "topic_type"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            ints: 238
+            type: INTS
+          }
+          attribute {
+            name: "workspace_reuse_flag"
+            ints: 0
+            type: INTS
+          }
+        }
+        node {
+          input: "Unique:0"
+          input: "ge_default_20230713074125_sub_2_unknow_Data_0:0"
+          input: "ge_default_20230713074125_sub_2_unknow_Data_1:0"
+          output: "GatherV2:0"
+          name: "GatherV2"
+          op_type: "ge:GatherV2"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_fe_imply_type"
+            i: 6
+            type: INT
+          }
+          attribute {
+            name: "_fe_is_unknown_graph"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "axis"
+            strings: "indices"
+            strings: "x"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 2
+            ints: 1
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_inter_core_sync"
+            type: INT
+          }
+          attribute {
+            name: "_is_custom_op"
+            type: INT
+          }
+          attribute {
+            name: "_is_n_batch_split"
+            type: INT
+          }
+          attribute {
+            name: "_is_op_dynamic_impl"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_mode_in_args_first_field"
+            type: INT
+          }
+          attribute {
+            name: "_node_support_dynamic_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_impl_mode_enum"
+            i: 2
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "_supported_16in_32out"
+            type: INT
+          }
+          attribute {
+            name: "_task_ratio"
+            type: INT
+          }
+          attribute {
+            name: "_tbeKernelSize"
+            i: 417120
+            type: INT
+          }
+          attribute {
+            name: "batch_dims"
+            type: INT
+          }
+          attribute {
+            name: "continuous_input"
+            type: INT
+          }
+          attribute {
+            name: "continuous_output"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "ge_default_20230713074125_sub_2_unknow_Node_Output"
+            type: STRINGS
+          }
+          attribute {
+            name: "fusion_scope"
+            i: -2
+            type: INT
+          }
+          attribute {
+            name: "globalworkspace_size"
+            i: 32
+            type: INT
+          }
+          attribute {
+            name: "globalworkspace_type"
+            type: INT
+          }
+          attribute {
+            name: "id"
+            i: 4
+            type: INT
+          }
+          attribute {
+            name: "imply_type"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_origin_shape_range:0_0"
+            ints: 0
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_attr_shape_range:0_0"
+            ints: 0
+            ints: 64
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_size:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab:1"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab:2"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_device_type:1"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_device_type:2"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:2"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_input_tensor:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_input_tensor:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_layout:2"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 3
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_dtype:1"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_dtype:2"
+            s: "DT_INT32"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:1"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:2"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_origin_shape:1"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_origin_shape:2"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_output_tensor:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_output_tensor:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:1"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:2"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_shape:1"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_shape:2"
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: -1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_size:1"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_size:2"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:1"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:2"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            strings: "new_sub_graph4_PlaceHolder6"
+            strings: "new_sub_graph4_PlaceHolder7"
+            strings: "new_sub_graph4_PlaceHolder8"
+            type: STRINGS
+          }
+          attribute {
+            name: "input_para_type_list"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_preprocessed"
+            type: INT
+          }
+          attribute {
+            name: "negative_index_support"
+            type: INT
+          }
+          attribute {
+            name: "op_para_size"
+            i: 256
+            type: INT
+          }
+          attribute {
+            name: "output_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_attr_origin_shape_range:0_0"
+            ints: 2
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_attr_shape_range:0_0"
+            ints: 2
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "Unique"
+            strings: "ge_default_20230713074125_sub_2_unknow_Data_0"
+            strings: "ge_default_20230713074125_sub_2_unknow_Data_1"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "support_dynamicshape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "tbe_op_atomic_workspace_flag"
+            type: INT
+          }
+          attribute {
+            name: "tvm_blockdim"
+            i: 32
+            type: INT
+          }
+          attribute {
+            name: "ub_atomic_params"
+            ints: 0
+            ints: 0
+            ints: 0
+            ints: 0
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: "GatherV2:0"
+          name: "ge_default_20230713074125_sub_2_unknow_Node_Output"
+          op_type: "ge:NetOutput"
+          attribute {
+            name: "INPUT_IS_VAR"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_input_name_key"
+            strings: "__input0"
+            type: STRINGS
+          }
+          attribute {
+            name: "_input_name_value"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 5
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr__parent_node_index:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_need_update_dtype_when_op_checksupport:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_attr_origin_shape_range:0_0"
+            ints: 2
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_attr_shape_range:0_0"
+            ints: 2
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_cmps_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_cmps_tab:0"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_cmps_tab_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_data_offset:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_input_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_origin_dtype:0"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "input_desc_origin_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_output_tensor:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_real_dim_cnt:0"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_reuse_input:0"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_shape:0"
+            ints: 2
+            type: INTS
+          }
+          attribute {
+            name: "input_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "input_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_input_const"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            ints: 0
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "GatherV2"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        name: "ge_default_20230713074125_sub_2_unknow"
+        input {
+          name: "ge_default_20230713074125_sub_2_unknow_Data_0"
+          type {
+            tensor_type {
+              elem_type: 6
+              shape {
+                dim {
+                  dim_value: 2
+                }
+              }
+            }
+          }
+        }
+        input {
+          name: "ge_default_20230713074125_sub_2_unknow_Data_1"
+          type {
+            tensor_type {
+              elem_type: 6
+              shape {
+              }
+            }
+          }
+        }
+        input {
+          name: "ge_default_20230713074125_sub_2_unknow_Data_2"
+          type {
+            tensor_type {
+              elem_type: 1
+              shape {
+                dim {
+                  dim_value: 64
+                }
+              }
+            }
+          }
+        }
+      }
+      type: GRAPH
+    }
+  }
+  node {
+    name: "ge_default_20230713074125_sub_3_unknow"
+    op_type: "subgraph"
+    attribute {
+      name: "graph"
+      g {
+        node {
+          output: "ge_global_step:-1"
+          name: "ge_global_step"
+          op_type: "ge:Variable"
+          attribute {
+            name: "OUTPUT_IS_VAR"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "_op_no_tiling"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            ints: -1
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            strings: "ge_default_20230713074125_sub_3_unknow_Node_Output"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            type: INT
+          }
+          attribute {
+            name: "index"
+            type: INT
+          }
+          attribute {
+            name: "input_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_device_type:0"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_dtype:0"
+            s: "DT_UINT64"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_nums"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_origin_dtype:0"
+            s: "DT_UNDEFINED"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_layout:0"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "output_desc_origin_shape:0"
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_real_dim_cnt:0"
+            type: INT
+          }
+          attribute {
+            name: "output_desc_shape:0"
+            ints: 1
+            type: INTS
+          }
+          attribute {
+            name: "output_desc_size:0"
+            i: 64
+            type: INT
+          }
+          attribute {
+            name: "output_desc_weight_size:0"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            ints: 62277028864
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "value_desc_device_type"
+            s: "NPU"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_dtype"
+            s: "DT_FLOAT"
+            type: STRING
+          }
+          attribute {
+            name: "value_desc_layout"
+            s: "ND"
+            type: STRING
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        node {
+          input: "ge_global_step:-1"
+          name: "ge_default_20230713074125_sub_3_unknow_Node_Output"
+          op_type: "ge:NetOutput"
+          attribute {
+            name: "OwnerGraphIsUnknown"
+            type: INT
+          }
+          attribute {
+            name: "_is_unknown_shape"
+            type: INT
+          }
+          attribute {
+            name: "_op_read_write_index"
+            type: INT
+          }
+          attribute {
+            name: "dst_index"
+            type: INTS
+          }
+          attribute {
+            name: "dst_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "id"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "input_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "input_i"
+            type: INTS
+          }
+          attribute {
+            name: "input_name"
+            type: STRINGS
+          }
+          attribute {
+            name: "is_first_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "is_input_const"
+            type: INTS
+          }
+          attribute {
+            name: "is_last_node"
+            i: 1
+            type: INT
+          }
+          attribute {
+            name: "output_desc_nums"
+            type: INT
+          }
+          attribute {
+            name: "output_i"
+            type: INTS
+          }
+          attribute {
+            name: "src_index"
+            type: INTS
+          }
+          attribute {
+            name: "src_name"
+            strings: "ge_global_step"
+            type: STRINGS
+          }
+          attribute {
+            name: "stream_id"
+            type: INT
+          }
+          attribute {
+            name: "workspace"
+            type: INTS
+          }
+          attribute {
+            name: "workspace_bytes"
+            type: INTS
+          }
+        }
+        name: "ge_default_20230713074125_sub_3_unknow"
+      }
+      type: GRAPH
+    }
+  }
+  name: "ge_default_20230713074125_11"
+}

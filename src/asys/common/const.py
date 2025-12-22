@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+
+import enum
+from pathlib import Path
+
+PROCESSES_NUMBER = 4
+DEVICE_ID_MIN = 0
+DEVICE_ID_MAX = 63
+MAX_CHAR_LINE = 100
+
+MEMORY_FREQUENCY = 1
+HBM_FREQUENCY = 6
+CONTROL_CPU_FREQUENCY = 2
+AI_CORE_FREQUENCY = 7
+
+MEM_BANDWIDTH_USE = 5
+HBM_BANDWIDTH_USE = 10
+AI_CORE_USE = 2
+AI_CPU_USE = 3
+CONTROL_CPU_USE = 4
+
+NOT_SUPPORT = '-'
+UNKNOWN = 'Unknown'
+NONE = 'none'
+
+CANN_LOG_NAME = 'log'
+ATRACE_LOG_NAME = 'atrace'
+
+REG_OFF = 0
+REG_THREAD = 1
+REG_STACK = 2
+
+HBM_MIN_TIMEOUT = 0  # detection side
+CPU_MIN_TIMEOUT = 1  # detection 1s
+DETECT_MAX_TIMEOUT = 604800  # one week
+DETECT_DEFAULT_TIMEOUT = 600
+
+CPU_DETECT_ERROR_CODE_MIN = 500000
+CPU_DETECT_ERROR_CODE_MAX = 599999
+
+ADDR_LEN_HEX = 18  # 0x 0000 0000 0000 0000
+ADDR_BIT_LEN = 16  # 0000 0000 0000 0000
+
+GDB_LAYER_MAX = 32
+
+MAX_PERIOD = 2592000  # 30*24*3600
+
+# sigrtmin
+SIGRTMIN = 34
+STACKTRACE = 'stacktrace'
+
+GET_DEVICES_INFO_TIMEOUT = 10
+
+ALL_NOT_SUPPORTED_CHIP_TYPE = 'NULL'
+ALL_SUPPORTED_CHIP_TYPE = 'ALL'
+
+CONFIG_TABLE_FILE = Path(__file__).parent.parent / 'conf' / 'config_table.csv'
+
+
+class ScreenResult(enum.Enum):
+    PASS = 'Pass'
+    FAIL = 'Fail'
+    WARN = 'Warn'
+
+
+class CannPkg:
+    firmware = 'firmware'
+    driver = 'driver'
+    runtime = 'runtime'
+    ge_compiler = 'ge-compiler'
+    bisheng_compiler = 'bisheng-compiler'
+    toolkit = 'oam_tools'
+    dvpp = 'dvpp'
+    aoe = 'aoe'
+    hccl = 'hccl'
+    ncs = 'ncs'
+    opbase = 'opbase'
+    ops_cv = 'ops_cv'
+    ops_legacy = 'ops_legacy'
+    ops_math = 'ops_math'
+    ops_nn = 'ops_nn'
+    ops_transformer = 'ops_transformer'
+
+    @classmethod
+    def get_all_pkg_list(cls):
+        return [cls.firmware, cls.driver, cls.runtime, cls.ge_compiler, cls.bisheng_compiler, 
+                cls.toolkit, cls.dvpp, cls.aoe, cls.hccl, cls.ncs, cls.opbase, cls.ops_cv, 
+                cls.ops_legacy, cls.ops_math, cls.ops_nn, cls.ops_transformer]
+
+
+class Singleton(type):
+    """ Singleton class """
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in Singleton._instances:
+            Singleton._instances[cls] = super().__call__(*args, **kwargs)
+        return Singleton._instances[cls]
+
+    def clear(cls):
+        try:
+            del Singleton._instances[cls]
+        except KeyError:
+            pass
+
+
+class RetCode(enum.Enum):
+    SUCCESS = 0
+    FAILED = 1
+    ARG_PATH_INVALID = 2
+    ARG_EMPTY_STRING = 3
+    ARG_SAPCE_STRING = 4
+    ARG_ILLEGAL_STRING = 5
+    ARG_NO_EXIST_DIR = 6
+    ARG_NO_EXECUTABLE = 7
+    ARG_NO_WRITABLE_PERMISSION = 8
+    ARG_CREATE_DIR_FAILED = 9
+    READ_FILE_FAILED = 10
+    PERMISSION_FAILED = 11
+
+
+class ConfigOptionName(enum.Enum):
+    CHIP_NAME = 'chip_name'
+    POWER = 'power'
+    TEMPERATURE = 'temperature'
+    HEALTH = 'health'
+    ACPU_CNT = 'acpu_cnt'
+    ACPU_USAGE = 'acpu_usage'
+    CCPU_USAGE = 'ccpu_usage'
+    CCPU_CNT = 'ccpu_cnt'
+    CCPU_FREQUENCY = 'ccpu_frequency'
+    CCPU_VOLTAGE = 'ccpu_voltage'
+    AIC_CNT = 'aic_cnt'
+    AIC_USAGE = 'aic_usage'
+    AIC_FREQUENCY = 'aic_frequency'
+    AIC_VOLTAGE = 'aic_voltage'
+    BUS_VOLTAGE = 'bus_voltage'
+    CPU_FREQUENCY = 'cpu_frequency'
+    RING_FREQUENCY = 'ring_frequency'
+    MATA_FREQUENCY = 'mata_frequency'
+    L2BUFFER_FREQUENCY = 'l2buffer_frequency'
+    DDR_TOTAL = 'ddr_total'
+    DDR_USED = 'ddr_used'
+    DDR_BANDWIDTH = 'ddr_bandwidth'
+    DDR_FREQUENCY = 'ddr_frequency'
+    HBM_TOTAL = 'hbm_total'
+    HBM_USED = 'hbm_used'
+    HBM_BANDWIDTH_USE = 'hbm_bandwidth_usage'
+    HBM_FREQUENCY = 'hbm_frequency'
+    HBM_VOLTAGE = 'hbm_voltage'
+
+
+class ConfigOperateType(enum.Enum):
+    GET = 'get'
+    SET = 'set'
+    RESTORE = 'restore'
+
+
+class Constants:
+    @property
+    def help_cmd(self):
+        return 'help'
+
+    @property
+    def collect_cmd(self):
+        return 'collect'
+
+    @property
+    def launch_cmd(self):
+        return 'launch'
+
+    @property
+    def info_cmd(self):
+        return 'info'
+
+    @property
+    def diagnose_cmd(self):
+        return 'diagnose'
+
+    @property
+    def health_cmd(self):
+        return 'health'
+
+    @property
+    def analyze_cmd(self):
+        return 'analyze'
+
+    @property
+    def config_cmd(self):
+        return 'config'
+
+    @property
+    def profiling_cmd(self):
+        return 'profiling'
+
+    @property
+    def cmd_set(self):
+        return [self.help_cmd, self.collect_cmd, self.launch_cmd, self.info_cmd, self.diagnose_cmd, self.health_cmd,
+                self.analyze_cmd, self.config_cmd, self.profiling_cmd]
+
+
+consts = Constants()

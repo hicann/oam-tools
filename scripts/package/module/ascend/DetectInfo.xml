@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block name="DetectInfo" copy_type="delivery" src_path="lib/" dst_path="" install_path="" install_own="$username:$usergroup" install_mod="550" install_type="all">
+
+    <file_info value="aclnn_api" copy_type="delivery" src_path="built-in/op_api" dst_path="built-in/op_impl/ai_core/tbe/op_api/lib/linux/$(ARCH)" install_path="$(TARGET_ENV)/lib64">
+        <file value="libopapi_oam.so" install_mod="555"/>
+    </file_info>
+
+    <file_info value="ops_info" src_path="op_host" dst_path="built-in/op_impl/ai_core/tbe" install_path="opp/built-in/op_impl/ai_core/tbe">
+        <file value="config" install_mod="555"/>
+    </file_info>
+
+    <file_info value="op_host" src_path="op_host" dst_path="built-in/op_impl/ai_core/tbe/op_host/lib/linux/$(ARCH)" install_path="opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/$(ARCH)">
+        <file value="libophost_oam.so" file_type="shared" install_mod="555"/>
+    </file_info>
+
+    <file_info value="kernel_src" src_path="op_host" dst_path="built-in/op_impl/ai_core/tbe/impl" install_path="opp/built-in/op_impl/ai_core/tbe/impl">
+        <file value="ops_oam" entity="true" install_mod="555"/>
+    </file_info>
+
+    <file_info value="kernel" src_path="op_host" dst_path="built-in/op_impl/ai_core/tbe" install_path="opp/built-in/op_impl/ai_core/tbe">
+        <file value="kernel" optional="true" install_mod="555"/>
+    </file_info>
+
+    <dir_info value="DetectInfo" install_mod="750" install_type="all">
+        <path value="opp" install_mod="550"/>
+        <path value="opp/built-in" install_mod="550"/>
+        <path value="opp/built-in/op_impl" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe/impl" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe/op_host" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe/op_host/lib" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux" install_mod="550"/>
+        <path value="opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/$(ARCH)" install_mod="550"/>
+    </dir_info>
+</block>

@@ -1,0 +1,11 @@
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.824.594 [aicpusd_period_statistic.cpp:73][DoStatistic][tid:455] DoStatistic running over
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.824.791 [aicpusd_proc_mem_statistic.cpp:260][PrintOutProcMemInfo][tid:437] proc_metrics:pid=94868, rssavg=85409792 B, rsshwm=85409792 B, xsmemavg=0 B, xsmemhwm=0 B, svmmemavg=0 B, svmmemhwm=0 B
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.825.889 [aicpusd_interface_process.cpp:627][DettachDeviceInDestory][tid:437] Uninit process drv queue msg on ccpu, ret is 0.
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.825.974 [aicpusd_worker.cpp:171][WaitForStop][tid:437] WaitForStop begin.
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.827.112 [aicpusd_worker.cpp:177][WaitForStop][tid:437] WaitForStop end.
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.827.129 [aicpusd_interface_process.cpp:581][StopAICPUSchedulerWithFlag][tid:437] Success to stop aicpu scheduler, hostPid[94868]
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.827.138 [main.cpp:390][main][tid:437] Aicpu schedule stopped
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.831.007 [aicpusd_worker.cpp:171][WaitForStop][tid:437] WaitForStop begin.
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.831.032 [aicpusd_worker.cpp:177][WaitForStop][tid:437] WaitForStop end.
+[INFO] CCECPU(437,aicpu_scheduler):2025-05-08-07:07:10.831.846 [aicpusd_mpi_mgr.cpp:48][PrintStatisticInfo][tid:437] Mpi Dvpp event statistic: [0]
+[INFO] DRV(437,aicpu_scheduler):2025-05-08-07:07:10.832.617 [agentmm_svm.c:652][devmm] [devmm_agentmm_close] Svm process exit. (hostpid=94868; devpid=437; devid_mask=1; vfid=0)

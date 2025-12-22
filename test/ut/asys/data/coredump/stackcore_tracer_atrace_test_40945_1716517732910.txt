@@ -1,0 +1,30 @@
+[process info]
+crash reason:  signal SIGSEGV
+start time: 
+crash time: 
+crash pid: 40945
+crash tid: 40957
+
+[stack]
+Thread 3
+#0 0x7ffff7a17926 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#1 0x7ffff7a1b907 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#2 0x7ffff7a1a19c 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#3 0x7ffff7a197e2 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#4 0x7ffff7a19dc5 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#5 0x7ffff7a14982 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#6 0x7ffff7a18b04 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#7 0x555555555314 0x555555554000 /home/h30044213/atrace_test
+Thread 2
+#0 0x7ffff7c8723f 0x7ffff7baa000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+#1 0x7ffff7c8cec7 0x7ffff7baa000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+#2 0x7ffff7cbf85f 0x7ffff7baa000 /usr/lib/x86_64-linux-gnu/libc-2.31.so
+#3 0x7ffff794a67e 0x7ffff7941000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+#4 0x7ffff794c74c 0x7ffff7941000 /usr/local/Ascend/CANN-7.3/x86_64-linux/lib64/libascendalog.so
+#5 0x7ffff7da4609 0x7ffff7d9c000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+#6                               Ignore
+Thread 1
+#0 0x7ffff7a17765 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#1 0x7ffff7a177d4 0x7ffff79d8000 /home/h30044213/libatrace_test.so
+#2 0x7ffff7da4609 0x7ffff7d9c000 /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+#3 0x7ffff7cc9133 0x7ffff7baa000 /usr/lib/x86_64-linux-gnu/libc-2.31.so

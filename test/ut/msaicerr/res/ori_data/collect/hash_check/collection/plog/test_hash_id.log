@@ -1,0 +1,108 @@
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 [exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:[AIC_INFO] dev_func:te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0
+[INFO] GE(370,python3):2023-07-13-07:42:40.516.953 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:EZ9999, work_stream_id:11
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.517.144 [task.cc:1341]1432 PrintErrorInfo:[EXEC][EXEC]fftsplus task execute failed, device_id=0, stream_id=2, report_stream_id=2, task_id=6, flip_num=0, fault kernel_name=2_0_11_GatherV2, program id=1.
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.517.188 [task.cc:1347]1432 PrintErrorInfo:[EXEC][EXEC][AIC_INFO] args after execute: 20068234969088, 0, 64, 0, 0, 0, 0, 0, 18446709106252148736, 0, 0, 0, 0, 0, 0, 0, 18446709106252146688, 0, 0, 0, 0, 0, 0, 0, 18446709106252132864, 0, 0, 0, 0, 0, 0, 0, 18446709106252121600, 0, 0, 0, 0, 0, 0, 0, 18446709106252133888, 0, 
+[WARNING] RUNTIME(370,python3):2023-07-13-07:42:40.517.224 [task.cc:178] 1432 TaskFailCallBack: stream_id=2, task_id=6, retCode=0x7150026,[aicore exception]
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.234 [exception_dumper.cc:310]1432 DumpExceptionInfo:[Dump][Exception] Start to dump exception info
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.406 [exception_dumper.cc:429]1432 GetOpDescInfo:[Get][OpDescInfo] There are 1 op info saved, target stream_id:2, task_id:6.
+[WARNING] GE(370,python3):2023-07-13-07:42:40.517.412 [exception_dumper.cc:380]1432 DumpExceptionInfo:[Dump][Exception] Get op desc info failed,task id:6,stream id:2
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.417 [exception_dumper.cc:310]1432 DumpExceptionInfo:[Dump][Exception] Start to dump exception info
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.436 [exception_dumper.cc:429]1432 GetOpDescInfo:[Get][OpDescInfo] There are 2 op info saved, target stream_id:2, task_id:6.
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.440 [exception_dumper.cc:434]1432 GetOpDescInfo:[Get][OpDescInfo] Find exception op [GatherV2] of task_id: 6, stream_id: 2.
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.448 [exception_dumper.cc:395]1432 RefreshAddrs:op:GatherV2(GatherV2) store args is on host, skip refresh addr
+[INFO] GE(370,python3):2023-07-13-07:42:40.517.823 [exception_dumper.cc:255]1432 LogExceptionTvmOpInfo:[AIC_INFO] node_name:GatherV2, node_type:GatherV2, stream_id:2, task_id:6
+[INFO] GE(370,python3):2023-07-13-07:42:40.518.094 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:0;shape:[64];format:ND;dtype:DT_FLOAT;addr:0x124080044000
+[INFO] GE(370,python3):2023-07-13-07:42:40.518.342 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:1;shape:[2];format:ND;dtype:DT_INT32;addr:0xfff4543037c0
+[INFO] GE(370,python3):2023-07-13-07:42:40.518.594 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:2;shape:[];format:ND;dtype:DT_INT32;addr:0xfff4541a9e10
+[INFO] GE(370,python3):2023-07-13-07:42:40.518.837 [exception_dumper.cc:267]1432 LogExceptionTvmOpInfo:[AIC_INFO] output:0;shape:[2];format:ND;dtype:DT_FLOAT;addr:0x124080054000
+[INFO] GE(370,python3):2023-07-13-07:42:40.519.087 [exception_dumper.cc:270]1432 LogExceptionTvmOpInfo:[AIC_INFO] block_dim:32
+[INFO] GE(370,python3):2023-07-13-07:42:40.519.329 [exception_dumper.cc:271]1432 LogExceptionTvmOpInfo:[AIC_INFO] workspace_bytes:[]
+[INFO] GE(370,python3):2023-07-13-07:42:40.519.571 [exception_dumper.cc:272]1432 LogExceptionTvmOpInfo:[AIC_INFO] workspace_addrs:[]
+[INFO] GE(370,python3):2023-07-13-07:42:40.519.806 [exception_dumper.cc:273]1432 LogExceptionTvmOpInfo:[AIC_INFO] all attrs:GatherV2_kernelname:Wte_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0;GatherV2_pattern:Opaque;INPUT_IS_VAR:
+*
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 [exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:[AIC_INFO] dev_func:te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.273 [exception_dumper.cc:275]1432 LogExceptionTvmOpInfo:[AIC_INFO] tvm_magic:RT_DEV_BINARY_MAGIC_ELF
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.513 [exception_dumper.cc:276]1432 LogExceptionTvmOpInfo:[AIC_INFO] kernel_info:/0
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.747 [exception_dumper.cc:277]1432 LogExceptionTvmOpInfo:[AIC_INFO] tiling_key:0
+[INFO] GE(370,python3):2023-07-13-07:42:40.520.990 [exception_dumper.cc:282]1432 LogExceptionTvmOpInfo:[AIC_INFO] tiling_data:0x04 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0
+[INFO] GE(370,python3):2023-07-13-07:42:40.521.240 [exception_dumper.cc:200]1432 LogExceptionArgs:[AIC_INFO] args before execute: 20068234969088, 20068234838016, 20068234903552, 20068235034624, 20069311840368, 20068234825728, 0, 0, 0, 0, 0, 0, 0, 20068234825728, 4, 1, 64, 1, 2, 0, 1, 0, 2, 0, 0, 19712, 2, 19712, 0, 1, 19712, 2, 0, 64, 0, 0, 0, 0, 1, 1, 0, 1, , addr:0xfff4543002f0
+[INFO] GE(370,python3):2023-07-13-07:42:40.521.357 [exception_dumper.cc:203]1432 LogExceptionArgs:Args is host, skip log args
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.193 [exception_dumper.cc:306]1432 LogExceptionTvmOpInfo:[AIC_INFO] op_file_path:/home/liuzhenyu/tf
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.410 [exception_dumper.cc:79]1432 SetDumpData:[Set][DumpData] The input [0] size exception is 256
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.427 [exception_dumper.cc:79]1432 SetDumpData:[Set][DumpData] The input [1] size exception is 8
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.432 [exception_dumper.cc:79]1432 SetDumpData:[Set][DumpData] The input [2] size exception is 4
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.437 [exception_dumper.cc:95]1432 SetDumpData:[Set][DumpData] The output [0] size exception is 8
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.576 [exception_dumper.cc:470]1432 DumpExceptionInput:[Dump][ExceptionInput] Start to dump exception input
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.653 [logger.cc:566] 1432 HostMalloc: size=256 
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.745 [logger.cc:566] 1432 HostMalloc: size=8 
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.772 [logger.cc:566] 1432 HostMalloc: size=4 
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.795 [exception_dumper.cc:485]1432 DumpExceptionOutput:[Dump][ExceptionOutput] Start to dump exception output
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.801 [logger.cc:566] 1432 HostMalloc: size=8 
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.839 [exception_dumper.cc:500]1432 DumpExceptionWorkspace:[Dump][ExceptionInput] Start to dump exception workspace
+[INFO] GE(370,python3):2023-07-13-07:42:40.564.844 [exception_dumper.cc:378]1432 DumpExceptionInfo:[Dump][Exception] Dump exception info SUCCESS
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.925 [engine.cc:1820] 1432 HandleShmTask: Last errorCode detected: stream_id=2, task_id=6, errorCode=0x26
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.948 [logger.cc:2057] 1432 TaskFinished: device_id=0, stream_id=2, task_id=7, task_type=5 (MEMCPY_ASYNC), task_finish_num=24
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.954 [task.cc:162] 1432 TaskFailCallBack: task ok, stream_id=2, task_id=7, retCode=0.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.979 [logger.cc:2057] 1432 TaskFinished: device_id=0, stream_id=2, task_id=8, task_type=2 (EVENT_RECORD), task_finish_num=25
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:40.564.989 [engine.cc:1744] 1432 SyncTask: Notify: count=1, idx=0, stream_id=2, task_id=8, type=0, retCode=0, payLoad=0, drvErr=0.
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.006 [stream.cc:1190]1432 GetError:[EXEC][EXEC]Stream Synchronize failed, stream_id=2, retCode=0x26, [aicore exception].
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.011 [stream.cc:1193]1432 GetError:[EXEC][EXEC]report error module_type=5, module_name=EZ9999, blockDim=48
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.034 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:EZ9999, work_stream_id:11
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.057 [stream.cc:1193]1432 GetError:[EXEC][EXEC]report error module_type=5, module_name=EZ9999, blockDim=48
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.061 [stream.cc:1193]1432 GetError:[EXEC][EXEC][AIC_INFO] args after execute: 20068234969088, 0, 64, 0, 0, 0, 0, 0, 18446709106252148736, 0, 0, 0, 0, 0, 0, 0, 18446709106252146688, 0, 0, 0, 0, 0, 0, 0, 18446709106252132864, 0, 0, 0, 0, 0, 0, 0, 18446709106252121600, 0, 0, 0, 0, 0, 0, 0, 18446709106252133888, 0, 
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.066 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:EZ9999, work_stream_id:11
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.073 [logger.cc:464]1432 StreamSynchronize:[EXEC][EXEC]Stream synchronize failed
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.091 [api_c.cc:793]1432 rtStreamSynchronizeWithTimeout:[EXEC][EXEC]ErrCode=507015, desc=[aicore exception], InnerCode=0x7150026
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.096 [error_message_manage.cc:50]1432 FuncErrorReason:[EXEC][EXEC]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(370,python3):2023-07-13-07:42:40.565.104 [error_message_manage.cc:50]1432 FuncErrorReason:[EXEC][EXEC]rtStreamSynchronizeWithTimeout execute failed, reason=[aicore exception]
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.111 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:EE8888, work_stream_id:11
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.128 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:E19999, work_stream_id:11
+[ERROR] GE(370,python3):2023-07-13-07:42:40.565.148 [hybrid_model_rt_v2_executor.cc:158]1432 DoRtStreamSyncWithTimeout: ErrorNo: 4294967295(failed) [EXEC][EXEC]Assert ((rt_ret) == 0) failed
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.156 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:E19999, work_stream_id:11
+[ERROR] GE(370,python3):2023-07-13-07:42:40.565.162 [hybrid_model_rt_v2_executor.cc:574]1432 Execute: ErrorNo: 4294967295(failed) [EXEC][EXEC]Assert ((DoRtStreamSyncWithTimeout(model_args.stream)) == ge::SUCCESS) failed
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.170 [hybrid_model_rt_v2_executor.cc:475]1432 ExecuteOnlineModel:run iterator count is 1,  model_id:2
+[ERROR] GE(370,python3):2023-07-13-07:42:40.565.186 [hybrid_model_executor.cc:322]1432 HandleResult: ErrorNo: 1343225857(Parameter's invalid!) [EXEC][EXEC][Check][Param:Status] failed to execute graph. model_id = 2
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.193 [error_manager.cc:254]1432 ReportInterErrMessage:report error_message, error_code:E19999, work_stream_id:11
+[INFO] GE(370,python3):2023-07-13-07:42:40.565.199 [graph_manager_utils.cc:108]1432 OnComputeDone:[GraphManager] run graph async call back, modelId:2, taskId:0, resultCode:1343225860.
+[ERROR] FMK(370,python3):2023-07-13-07:42:43.565.277 [tf_adapter/common/adapter_logger.cc:24][TF_ADAPTER] [tf_adapter/kernels/geop_npu.cc:1032] GeOp2_0GEOP::::DoRunAsync Failed
+[INFO] DRV(370,python3):2023-07-13-07:42:43.565.473 [ascend][curpid: 370, 1432][drv][hdc][drvHdcSetSessionReference 1557]Get pid number. (session=14724; pid=370)
+[INFO] DRV(370,python3):2023-07-13-07:42:43.565.498 [ascend][curpid: 370, 1432][drv][hdc][drvHdcClientSessionClose 403]Destroy client session. (sock=14724)
+[WARNING] DRV(370,python3):2023-07-13-07:42:45.278.876 [ascend][curpid: 370, 1021][drv][tsdrv][TsDrvLogicCqIrqWait 438]wait_logic_cq abnormal result show: err_code=16 devId=0 tsId=0
+[INFO] DRV(370,python3):2023-07-13-07:42:45.278.891 [ascend][curpid: 370, 1021][drv][tsdrv][TsDrvLogicCqIrqWait 454]end, logic_cqid=125 reporCnt=0 devId=0 tsId=0 err_code=16.
+[INFO] TDT(370,python3):2023-07-13-07:42:45.278.904 [client_manager.cpp:85][GetInstance][tid:1021] [ClientManager] GetInstance, deviceId[0]
+[INFO] TDT(370,python3):2023-07-13-07:42:45.278.911 [client_manager.cpp:85][GetInstance][tid:1021] [ClientManager] GetInstance, deviceId[0]
+[INFO] DRV(370,python3):2023-07-13-07:42:45.278.938 [ascend][curpid: 370, 1021][drv][tsdrv][TsDrvLogicCqIrqWait 419]start, logic_cqid=125 devId=0 tsId=0
+[INFO] DRV(370,python3):2023-07-13-07:42:46.692.934 [ascend][curpid: 370, 1023][drv][hdc][drvHdcClientSessionClose 403]Destroy client session. (sock=14723)
+[INFO] GE(370,python3):2023-07-13-07:42:46.694.292 [error_manager.cc:376]1432 GetErrorMessage:current work_stream_id:11
+[INFO] GE(370,python3):2023-07-13-07:42:46.694.497 [scalable_allocator.cc:268]1432 [allocator_1] Free:Free block device_id:0 allock_size:65536 mem_addr:0x124080054000.
+[INFO] GE(370,python3):2023-07-13-07:42:46.694.515 [hybrid_model_async_executor.cc:230]1432 RunInternal:Executor failed execute model 2
+[INFO] FMK(370,python3):2023-07-13-07:42:46.697.044 [tf_adapter/common/adapter_logger.cc:27][TF_ADAPTER] [tf_adapter/kernels/geop_npu.cc:469] [GEOP] GeOp start to finalize, tf session: directcf9bb16430be6bba, graph_id_: 11
+[INFO] FMK(370,python3):2023-07-13-07:42:46.697.076 [tf_adapter/common/adapter_logger.cc:27][TF_ADAPTER] [tf_adapter/kernels/geop_npu.cc:515] [GEOP] GeOp Finalize success, tf session: directcf9bb16430be6bba, graph_id_: 11
+[INFO] FMK(370,python3):2023-07-13-07:42:46.697.203 [tf_adapter/common/adapter_logger.cc:27][TF_ADAPTER] [tf_adapter/kernels/geop_npu.cc:469] [GEOP] GeOp start to finalize, tf session: directcf9bb16430be6bba, graph_id_: 1
+[INFO] FMK(370,python3):2023-07-13-07:42:46.697.210 [tf_adapter/common/adapter_logger.cc:27][TF_ADAPTER] [tf_adapter/util/session_manager.cc:70] find ge session connect with tf session directcf9bb16430be6bba
+[TRACE] GE(370,python3):2023-07-13-07:42:46.697.261 [status:INIT] [ge_api.cc:477]1434 ~Session:Start to destruct session.
+[TRACE] GE(370,python3):2023-07-13-07:42:46.697.282 [status:RUNNING] [ge_api.cc:489]1434 ~Session:Session id is 0
+[TRACE] GE(370,python3):2023-07-13-07:42:46.697.286 [status:RUNNING] [ge_api.cc:490]1434 ~Session:Destroying session
+[INFO] GE(370,python3):2023-07-13-07:42:46.697.303 [rt_context_util.cc:92]1434 DestroyRtContexts:Destroy 1 rts contexts for graph -1 of session 0.
+[WARNING] RUNTIME(370,python3):2023-07-13-07:42:46.697.326 [api_impl.cc:142] 1434 CurrentContext: current ctx is nullptr!
+[WARNING] RUNTIME(370,python3):2023-07-13-07:42:46.697.331 [api_impl.cc:2344] 1434 ContextGetCurrent: curCtx is nullptr!
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.344 [stream.cc:962] 1434 TearDown: stream_id=138, pendingNum=1, isForceRecycle_=1, flag=1, failMode=0.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.380 [ctrl_res_pool.cpp:104] 1434 AllocTaskId: [ctrlsq] Alloc ctrl resHeadIndex_=1, resTailIndex_=0, task_id=0
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.396 [event.cc:103] 1434 CreateTask: [ctrlsq]create ctrl task task_id=0. 
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.402 [engine.cc:468] 1434 SubmitTask: stream_id=-1, task_id=0, task_type=6 (MAINTENANCE)
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.431 [stream.cc:2841] 1434 AddTaskToStream: [ctrlsq]ctrl stream_id=-1, task_id=0, type=6(MAINTENANCE), pos=0
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.450 [npu_driver.cc:453] 1434 CommandSend: device_id=0, ts_id=0, sq_id=135, reportCount=1, cmdCount=1.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.474 [engine.cc:1546] 1434 RecycleCtrlTask: [ctrlsq]recycle ctrl task, targetPos=0, sqTailPos=0.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.480 [stream.cc:2787] 1434 GetTaskIdByPos: [ctrlsq]Get task_id=0 by recycleHead=0 success.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.485 [logger.cc:2057] 1434 TaskFinished: device_id=0, stream_id=-1, task_id=0, task_type=6 (MAINTENANCE), task_finish_num=26
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.490 [ctrl_res_pool.cpp:114] 1434 RecycleTask: [ctrlsq]recycle ctrl taskId=0
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.494 [stream.cc:2825] 1434 Synchronize: [ctrlsq] lastPosId=0 is recycled.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.498 [ctrl_res_pool.cpp:104] 1434 AllocTaskId: [ctrlsq] Alloc ctrl resHeadIndex_=2, resTailIndex_=1, task_id=1
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.502 [event.cc:103] 1434 CreateTask: [ctrlsq]create ctrl task task_id=1. 
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.505 [stream.cc:1094] 1434 RecycleTaskWithCtrlsq: ctrlsq=-1 alloc MT task_id=1 for stream_id=138 with pendingNum=1 to force recycle task
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.509 [engine.cc:468] 1434 SubmitTask: stream_id=-1, task_id=1, task_type=6 (MAINTENANCE)
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.514 [stream.cc:2841] 1434 AddTaskToStream: [ctrlsq]ctrl stream_id=-1, task_id=1, type=6(MAINTENANCE), pos=1
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.518 [npu_driver.cc:453] 1434 CommandSend: device_id=0, ts_id=0, sq_id=135, reportCount=1, cmdCount=1.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.522 [engine.cc:1546] 1434 RecycleCtrlTask: [ctrlsq]recycle ctrl task, targetPos=0, sqTailPos=1.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.526 [stream.cc:2787] 1434 GetTaskIdByPos: [ctrlsq]Get task_id=1 by recycleHead=1 success.
+[INFO] RUNTIME(370,python3):2023-07-13-07:42:46.697.530 [engine.cc:1546] 1434 RecycleCtrlTask: [ctrlsq]recycle ctrl task, targetPos=1, sqTailPos=1.

@@ -1,0 +1,273 @@
+[EVENT] GE(370,python3):2023-07-13-07:41:09.952.272 [gelib.cc:96]370 Initialize:[GEPERFTRACE] GE Init Start
+[EVENT] GE(370,python3):2023-07-13-07:41:10.010.705 [gelib.cc:456]370 InitSystemWithOptions:System init with options begin, job id 
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.012.025 [process_mode_manager.cpp:74][Open][tid:370] [ProcessModeManager] enter into open process deviceId[0] rankSize[0]
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.012.673 [process_mode_manager.cpp:324][InitTsdClient][tid:370] [TsdClient] deviceId[0] begin to init hdc client
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.013.162 [version_verify.cpp:34][SetVersionInfo][tid:370] VersionVerify: send client version to server
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.013.721 [version_verify.cpp:51][SetVersionInfo][tid:370] send feature_info:{msg_type:35, features:{check before send aicpu package,}}
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.013.728 [version_verify.cpp:51][SetVersionInfo][tid:370] send feature_info:{msg_type:37, features:{check before send open qs message,}}
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.014.085 [version_verify.cpp:67][PeerVersionCheck][tid:370] VersionVerify: Check client version info, server[1230], client[1230]
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.014.214 [version_verify.cpp:88][ParseVersionInfo][tid:370] VersionVerify: pass client version info success
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.014.219 [hdc_client.cpp:268][CheckHdcConnection][tid:370] Service[2] create hdc success
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.014.226 [version_verify.cpp:121][SpecialFeatureCheck][tid:370] VersionVerify: new type[35], supported
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.014.270 [process_mode_manager.cpp:649][GetDeviceCheckCode][tid:370] [TsdClient][deviceId=0] [sessionId=1]wait package info respond
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.130.408 [process_mode_manager.cpp:324][InitTsdClient][tid:370] [TsdClient] deviceId[0] begin to init hdc client
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.131.080 [version_verify.cpp:34][SetVersionInfo][tid:370] VersionVerify: send client version to server
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.131.226 [version_verify.cpp:51][SetVersionInfo][tid:370] send feature_info:{msg_type:35, features:{check before send aicpu package,}}
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.131.233 [version_verify.cpp:51][SetVersionInfo][tid:370] send feature_info:{msg_type:37, features:{check before send open qs message,}}
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.156 [version_verify.cpp:67][PeerVersionCheck][tid:370] VersionVerify: Check client version info, server[1230], client[1230]
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.163 [version_verify.cpp:88][ParseVersionInfo][tid:370] VersionVerify: pass client version info success
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.166 [hdc_client.cpp:268][CheckHdcConnection][tid:370] Service[2] create hdc success
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.172 [process_mode_manager.cpp:371][ConstructOpenMsg][tid:370] [TsdClient] tsd get process sign successfully, procpid[116705] signSize[48]
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.178 [version_verify.cpp:113][SpecialFeatureCheck][tid:370] VersionVerify: previous type[6], supported
+[EVENT] TDT(370,python3):2023-07-13-07:41:10.145.187 [process_mode_manager.cpp:91][Open][tid:370] [ProcessModeManager] deviceId[0] sessionId[1] rankSize[0], wait sub process start respond
+[EVENT] TDT(370,python3):2023-07-13-07:41:13.115.625 [stub_process_mode_nowin.cpp:61][ProcessQueueForMdc][tid:370] [TsdClient] it is unnecessary of current mode[0] chiptype[2] to grant queue auth to aicpusd
+[EVENT] TDT(370,python3):2023-07-13-07:41:13.115.964 [stub_process_mode_nowin.cpp:99][OpenInHost][tid:370] enter into OpenInHost deviceid[0]
+[EVENT] TDT(370,python3):2023-07-13-07:41:13.116.100 [stub_process_mode_nowin.cpp:103][OpenInHost][tid:370] host cpu not support
+[EVENT] TDT(370,python3):2023-07-13-07:41:13.116.221 [process_mode_manager.cpp:121][Open][tid:370] [TsdClient][deviceId=0] [sessionId=1] start hccp and computer process success
+[EVENT] TDT(370,python3):2023-07-13-07:41:13.135.234 [client_manager.cpp:153][SetProfilingCallback][tid:370] [TsdClient] set profiling callback success.
+[EVENT] DVPP(370,python3):2023-07-13-07:41:13.772.181 [dvpp_engine.cc:31][ENGINE][Initialize:31][tid:370]dvpp engine Initialize start
+[EVENT] DVPP(370,python3):2023-07-13-07:41:13.772.425 [dvpp_engine.cc:41][ENGINE][Initialize:41][tid:370]dvpp engine do not support
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:19.286.054 [fusion_op.cc:604]370 TbeInit [FE_PERFORMANCE]The time cost of CannKB::Initialize is [5509341] micro second.
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:19.305.586 [fusion_op.cc:716]370 TbeInit [FE_PERFORMANCE]The time cost of TbeCompiler::Initialize is [3070] micro second.
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:21.199.964 [fusion_op.cc:728]370 TbeInit [FE_PERFORMANCE]The time cost of ParallelCompilation::Initialize is [1894146] micro second.
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:21.200.603 [fusion_op.cc:734]370 TbeInit [FE_PERFORMANCE]The time cost of TeFusion::Initialize is [7424580] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:21.564.328 [fusion_manager.cc:137]370 Initialize:"[FE_PERFORMANCE]The time cost of FusionManager::Initialize is [7791483] micro second."
+[EVENT] FFTS(370,python3):2023-07-13-07:41:21.566.580 [engine_manager.cc:65]370 Initialize:"[FFTS_PERFORMANCE]The time cost of EngineManager::Initialize is [1403] micro second."
+[EVENT] HCCL(370,python3):2023-07-13-07:41:21.566.990 [plugin_manager.cc:42][370][370]hcom running normal mode.
+[EVENT] DVPP(370,python3):2023-07-13-07:41:21.568.783 [dvpp_engine.cc:89][ENGINE][GetOpsKernelInfoStores:89][tid:370]dvpp engine GetOpsKernelInfoStores start
+[EVENT] DVPP(370,python3):2023-07-13-07:41:21.568.951 [dvpp_engine.cc:92][ENGINE][GetOpsKernelInfoStores:92][tid:370]dvpp ops kernel info store do not support
+[EVENT] DVPP(370,python3):2023-07-13-07:41:21.569.321 [dvpp_engine.cc:66][ENGINE][GetGraphOptimizerObjs:66][tid:370]dvpp engine GetGraphOptimizerObjs start
+[EVENT] DVPP(370,python3):2023-07-13-07:41:21.569.461 [dvpp_engine.cc:69][ENGINE][GetGraphOptimizerObjs:69][tid:370]dvpp graph optimizer do not support
+[EVENT] FE(370,python3):2023-07-13-07:41:22.078.991 [fusion_config_parser.cc:415]370 ParseFusionConfigFile:"[FE_PERFORMANCE]The time cost of FusionConfigParser::ParseFusionConfigFile is [2547] micro second."
+[EVENT] DVPP(370,python3):2023-07-13-07:41:22.113.822 [dvpp_ops_kernel_builder.cc:31][ENGINE][Initialize:31][tid:370]dvpp ops kernel builder Initialize start
+[EVENT] DVPP(370,python3):2023-07-13-07:41:22.114.225 [dvpp_ops_kernel_builder.cc:48][ENGINE][Initialize:48][tid:370]dvpp ops kernel builder do not support
+[EVENT] GE(370,python3):2023-07-13-07:41:22.128.506 [gelib.cc:170]370 Initialize:[GEPERFTRACE] The time cost of GELib::Initialize is [12118252] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.355.423 [graph_var_manager.cc:1405]1017 SetMemoryMallocSize:Total memory size is 34359738368
+[EVENT] GE(370,python3):2023-07-13-07:41:22.356.145 [graph_var_manager.cc:1379]1017 SetAllMemoryMaxValue:The graph_mem_max_size is 27917287424 and the var_mem_max_size is 5368709120
+[EVENT] GE(370,python3):2023-07-13-07:41:22.363.886 [tensorflow_parser.cc:2550]1017 ParseProtoWithSubgraph:[GEPERFTRACE] The time cost of TensorFlowModelParser::ParseProtoWithSubgraph is [3980] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.365.069 [graph_manager.cc:973]1242 PreRun:PreRun start: graph node size 4, session id 0, graph id 1, graph name ge_default_20230713074122.
+[EVENT] TDT(370,python3):2023-07-13-07:41:22.366.273 [client_manager.cpp:153][SetProfilingCallback][tid:1242] [TsdClient] set profiling callback success.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.367.840 [parallel_partitioner.cc:183]1242 DoPipelinePartition:[GEPERFTRACE] The time cost of OptimizeSubgraph::PipelinePartition is [56] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.368.204 [parallel_partitioner.cc:196]1242 DoFlowGraphPartition:[GEPERFTRACE] The time cost of OptimizeSubgraph::FlowGraphPartition is [19] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.369.359 [graph_manager.cc:817]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareInitAndUpdateInput is [848] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.375.098 [fusion_priority_manager.cc:92]1242 SortGraphFusion:"[FE_PERFORMANCE]The time cost of FusionPriorityManager::SortGraphFusion is [4879] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.376.499 [fe_graph_optimizer.cc:678]1242 OptimizeGraphInit:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::SortFusionPassByPriority is [6708] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.376.819 [graph_manager.cc:818]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeGraphInit is [7136] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.377.646 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [486] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.378.038 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [216] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.378.174 [fe_graph_optimizer.cc:711]1242 OptimizeGraphPrepare:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeTagNoConstFoldingGraph is [1017] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.378.551 [graph_manager.cc:819]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraphForQuantize is [1459] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.378.841 [graph_manager.cc:828]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.HandleSummaryOp is [10] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.379.611 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [26] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.382.061 [graph_manager.cc:829]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareDynShape is [2923] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.387.079 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [137] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.387.403 [fe_graph_optimizer.cc:289]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::BeforeQuantFusion is [461] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.389.092 [fe_graph_optimizer.cc:307]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeQuantGraph is [1682] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.389.422 [fe_ops_kernel_info_store.cc:1773]1242 SetDynamicCustomOpStoreInfo:"[FE_PERFORMANCE]The time cost of SetDynamicCustomOpStoreInfo during FEGraphOptimizer::OptimizeOriginalGraph is [116] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.403.470 [fe_graph_optimizer.cc:328]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of GraphFusion::Fusion during FEGraphOptimizer::OptimizeOriginalGraph is [13877] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.403.893 [fe_graph_optimizer.cc:343]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeOriginalGraph is [16951] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.404.755 [graph_manager.cc:837]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraph is [22324] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.405.261 [graph_manager.cc:840]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareRunningFormatRefiner is [171] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.410.135 [op_impl_type_judge.cc:45]1242 Judge:"[FE_PERFORMANCE]The time cost of OpImplTypeJudge during FEGraphOptimizer::OptimizeOriginalGraph is [896] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.410.738 [format_dtype_setter.cc:42]1242 SetSupportFormatDtype:"[FE_PERFORMANCE]The time cost of SetSupportFormatDtype during FEGraphOptimizer::OptimizeOriginalGraph is [115] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.411.046 [fe_graph_optimizer.cc:496]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeOriginalGraphOpJudgeAndFormatDtypeSetter is [1809] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.411.338 [fe_graph_optimizer.cc:507]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of BuildRefRelations during FEGraphOptimizer::OptimizeOriginalGraph is [9] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.412.412 [op_format_dtype_judge.cc:92]1242 Judge:"[FE_PERFORMANCE]The time cost of OpFormatDtypeJudge during FEGraphOptimizer::OptimizeOriginalGraph is [879] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.412.423 [fe_graph_optimizer.cc:509]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::op_format_dtype_judge_ptr->Judge is [892] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.412.994 [heavy_format_propagation.cc:1678]1242 PropagateHeavyFormat:"[FE_PERFORMANCE]The time cost of PropagateHeavyFormat during FEGraphOptimizer::OptimizeOriginalGraph is [155] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.413.162 [fe_graph_optimizer.cc:510]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::heavy_format_propagation_ptr->PropagateHeavyFormat is [324] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.413.383 [op_axis_update_desc.cc:70]1242 UpdateAxis:"[FE_PERFORMANCE]The time cost of UpdateAxis during FEGraphOptimizer::OptimizeOriginalGraph is [54] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.413.540 [fe_graph_optimizer.cc:511]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::op_axis_update_desc_ptr_->UpdateAxis is [211] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.413.877 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [164] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.414.639 [trans_node_manager.cc:114]1242 InsertAndMergeTransNodes:"[FE_PERFORMANCE]The time cost of InsertAndMergeTransNodes during FEGraphOptimizer::OptimizeOriginalGraph is [396] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.414.844 [fe_graph_optimizer.cc:521]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::InsertTransNodesForAllGraph is [806] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.415.181 [fe_graph_optimizer.cc:523]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::graph_fusion_ptr_->SwitchTransDataAndCast is [4] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.417.569 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [2102] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:22.418.418 [fe_graph_optimizer.cc:571]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OriginalGraphJudgeInsert is [9906] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.419.077 [graph_manager.cc:841]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraphJudgeInsert is [13507] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.419.343 [graph_manager.cc:842]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::SubexpressionMigration is [27] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.420.355 [graph_manager.cc:2420]1242 OptimizeStage1:[GEPERFTRACE] The time cost of extern constant folding is [0] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.420.966 [graph_manager.cc:847]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeStage1 is [1304] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.421.327 [graph_manager.cc:848]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeAfterStage1 is [39] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.421.672 [graph_manager.cc:849]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::GraphUtilsEx::InferShapeInNeed is [47] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.421.979 [graph_manager.cc:857]1242 PreRunOptimizeOriginalGraph:PreRun:PreRunOptimizeOriginalGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.422.261 [graph_manager.cc:2964]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::StagePartition is [12] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:22.422.906 [fe_ops_kernel_info_store.cc:440]1242 CheckSupported:"[FE_PERFORMANCE]The time cost of FEOpsKernelInfoStore::CheckSupported is [284] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:22.423.137 [engine_place.cc:144]1242 Run:The time cost of AIcoreEngine::CheckSupported is [466] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.423.288 [engine_place.cc:144]1242 Run:The time cost of DNN_VM_GE_LOCAL_OP_STORE::CheckSupported is [16] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.423.541 [engine_place.cc:144]1242 Run:The time cost of DNN_VM_RTS_OP_STORE::CheckSupported is [11] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.423.885 [graph_manager.cc:2985]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::GraphPartitionDynamicShape is [1377] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.424.158 [graph_manager.cc:2998]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::SubgraphPartitionAndOptimization::CompositeEngine is [10] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:22.425.052 [graph_manager.cc:3039]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::Partition1 is [632] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:23.641.750 [fe_graph_optimizer.cc:1278]1261 BufferFusionMatch:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph.MatchFusionPattern is [1130] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:23.642.592 [fe_graph_optimizer.cc:1298]1261 BufferFusionMatch:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph.BufferFusionRun is [323] micro second."
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:23.646.102 [fusion_op.cc:7105]1261 BuildTbeOp [FE_PERFORMANCE]The time cost of BuildTbeOp is [2835] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.028.664 [tbe_op_store_adapter.cc:928]1261 ParallelCompileOp:"[FE_PERFORMANCE]The time cost of TeFusion during FEGraphOptimizer::OptimizeFusedGraph is [1385534] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.157.990 [fe_graph_optimizer.cc:1169]1261 PostProcessAfterCompilingOp:"[FE_PERFORMANCE]The time cost of BuildFusionGraph during FEGraphOptimizer::OptimizeFusedGraph is [288] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.158.543 [fe_graph_optimizer.cc:1682]1261 OptimizeGraphForTiling:"[FE_PERFORMANCE]The time cost of RecoverIrDefinitions is [258] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.159.069 [fe_graph_optimizer.cc:1461]1261 OptimizeFusedGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph is [2732921] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.159.875 [graph_manager.cc:3047]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::SetSubGraph is [2734511] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.160.860 [graph_manager.cc:3084]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::MergeSubGraph is [405] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.161.174 [graph_manager.cc:3011]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::SubgraphPartitionAndOptimization::AtomicEngine is [2736757] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.161.433 [graph_manager.cc:866]1242 PreRunOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeSubgraph is [2739185] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.161.683 [graph_manager.cc:875]1242 PreRunOptimizeSubGraph:PreRun:PreRunOptimizeSubGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.161.963 [graph_manager.cc:890]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.ReplacePrecompiledNodeWithOmGraph is [22] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.162.280 [graph_manager.cc:891]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeWholeGraph is [57] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.163.056 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [5] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.163.773 [graph_manager.cc:2625]1242 OptimizeStage2:[GEPERFTRACE] The time cost of SetFftsPlusAttrPass::last_passes.Run is [8] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.164.081 [graph_manager.cc:892]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeStage2 is [1553] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.164.732 [graph_manager.cc:895]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::GetCompilerStages(graph_node->GetGraphId()).optimizer.OptimizeGraphBeforeBuild is [353] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.165.294 [graph_manager.cc:3165]1242 Build:[GEPERFTRACE] The time cost of GraphManager::RecoverIrDefinitionAndModifyAippData is [250] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.167.017 [block_mem_assigner.cc:3500]1353 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.167.392 [block_mem_assigner.cc:3500]1354 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.168.287 [model_builder.cc:1121]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::CompileSingleOp is [8] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.169.295 [model_builder.cc:1136]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::OptimizeStreamedWholeGraph is [47] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.171.112 [task_builder.cc:174]1242 GenerateKernelTask:"[FE_PERFORMANCE]The time cost of TaskBuilder::GenerateTask is [793] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.171.689 [task_generator.cc:554]1242 GenerateTask:[GEPERFTRACE] The time cost of GraphBuild::GenerateTask is [1481] micro second, call num is 6
+[EVENT] GE(370,python3):2023-07-13-07:41:25.178.382 [graph_manager.cc:911]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::Build is [13353] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.178.709 [graph_manager.cc:923]1242 PreRunAfterOptimizeSubGraph:PreRun:PreRunAfterOptimizeSubGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.179.011 [graph_manager.cc:992]1242 PreRun:[GEPERFTRACE] The time cost of FlowModelBuild is [2811346] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.179.254 [graph_manager.cc:993]1242 PreRun:[GEPERFTRACE] GE PreRun End
+[EVENT] GE(370,python3):2023-07-13-07:41:25.187.971 [model_executor.cc:521]1243 ModelLoad:[GEPERFTRACE] The time cost of GraphLoader::LoadModelOnline is [7162] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.188.440 [davinci_model.cc:2826]1371 HandleInputData:[GEPERFTRACE] The time cost of Model Run SyncVarData is [25] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.188.766 [davinci_model.cc:3528]1371 Run:[GEPERFTRACE] The time cost of rtModelExecute is [41] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.189.049 [davinci_model.cc:3557]1371 Run:[GEPERFTRACE] The time cost of Wait for rtStreamSynchronizeWithTimeout is [34] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.189.382 [davinci_model.cc:3566]1371 Run:[GEPERFTRACE] The time cost of CopyDataFromDeviceToHost is [78] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.223.261 [tensorflow_parser.cc:2550]1017 ParseProtoWithSubgraph:[GEPERFTRACE] The time cost of TensorFlowModelParser::ParseProtoWithSubgraph is [3212] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.224.417 [graph_manager.cc:973]1242 PreRun:PreRun start: graph node size 7, session id 0, graph id 11, graph name ge_default_20230713074125.
+[EVENT] TDT(370,python3):2023-07-13-07:41:25.225.121 [client_manager.cpp:153][SetProfilingCallback][tid:1242] [TsdClient] set profiling callback success.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.225.996 [parallel_partitioner.cc:183]1242 DoPipelinePartition:[GEPERFTRACE] The time cost of OptimizeSubgraph::PipelinePartition is [53] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.226.312 [parallel_partitioner.cc:196]1242 DoFlowGraphPartition:[GEPERFTRACE] The time cost of OptimizeSubgraph::FlowGraphPartition is [22] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.226.985 [graph_manager.cc:817]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareInitAndUpdateInput is [406] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.227.527 [fe_graph_optimizer.cc:678]1242 OptimizeGraphInit:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::SortFusionPassByPriority is [241] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.227.793 [graph_manager.cc:818]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeGraphInit is [517] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.228.457 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [395] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.228.750 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [143] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.228.870 [fe_graph_optimizer.cc:711]1242 OptimizeGraphPrepare:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeTagNoConstFoldingGraph is [811] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.229.109 [graph_manager.cc:819]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraphForQuantize is [1067] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.229.374 [graph_manager.cc:828]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.HandleSummaryOp is [11] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.229.986 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [24] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.232.144 [graph_manager.cc:829]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareDynShape is [2529] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.237.053 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [135] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.237.360 [fe_graph_optimizer.cc:289]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::BeforeQuantFusion is [443] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.238.636 [fe_graph_optimizer.cc:307]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeQuantGraph is [1270] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.238.831 [fe_ops_kernel_info_store.cc:1773]1242 SetDynamicCustomOpStoreInfo:"[FE_PERFORMANCE]The time cost of SetDynamicCustomOpStoreInfo during FEGraphOptimizer::OptimizeOriginalGraph is [61] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.255.885 [fe_graph_optimizer.cc:328]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of GraphFusion::Fusion during FEGraphOptimizer::OptimizeOriginalGraph is [16883] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.256.289 [fe_graph_optimizer.cc:343]1242 OptimizeOriginalGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeOriginalGraph is [19372] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.257.082 [graph_manager.cc:837]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraph is [24618] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.257.453 [graph_manager.cc:840]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.preparer.PrepareRunningFormatRefiner is [71] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.263.483 [op_impl_type_judge.cc:45]1242 Judge:"[FE_PERFORMANCE]The time cost of OpImplTypeJudge during FEGraphOptimizer::OptimizeOriginalGraph is [1989] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.263.886 [format_dtype_setter.cc:42]1242 SetSupportFormatDtype:"[FE_PERFORMANCE]The time cost of SetSupportFormatDtype during FEGraphOptimizer::OptimizeOriginalGraph is [71] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.264.145 [fe_graph_optimizer.cc:496]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeOriginalGraphOpJudgeAndFormatDtypeSetter is [2653] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.264.390 [fe_graph_optimizer.cc:507]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of BuildRefRelations during FEGraphOptimizer::OptimizeOriginalGraph is [8] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.264.921 [op_format_dtype_judge.cc:92]1242 Judge:"[FE_PERFORMANCE]The time cost of OpFormatDtypeJudge during FEGraphOptimizer::OptimizeOriginalGraph is [406] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.264.930 [fe_graph_optimizer.cc:509]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::op_format_dtype_judge_ptr->Judge is [417] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.265.222 [heavy_format_propagation.cc:1678]1242 PropagateHeavyFormat:"[FE_PERFORMANCE]The time cost of PropagateHeavyFormat during FEGraphOptimizer::OptimizeOriginalGraph is [115] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.265.365 [fe_graph_optimizer.cc:510]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::heavy_format_propagation_ptr->PropagateHeavyFormat is [261] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.265.567 [op_axis_update_desc.cc:70]1242 UpdateAxis:"[FE_PERFORMANCE]The time cost of UpdateAxis during FEGraphOptimizer::OptimizeOriginalGraph is [51] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.265.700 [fe_graph_optimizer.cc:511]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::op_axis_update_desc_ptr_->UpdateAxis is [184] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.265.999 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [142] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.266.573 [trans_node_manager.cc:114]1242 InsertAndMergeTransNodes:"[FE_PERFORMANCE]The time cost of InsertAndMergeTransNodes during FEGraphOptimizer::OptimizeOriginalGraph is [289] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.266.749 [fe_graph_optimizer.cc:521]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::InsertTransNodesForAllGraph is [606] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.267.017 [fe_graph_optimizer.cc:523]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::graph_fusion_ptr_->SwitchTransDataAndCast is [4] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.269.236 [graph_fusion.cc:145]1242 RunGraphFusionPassByType:"[FE_PERFORMANCE]The time cost of GraphFusion::RunGraphFusionPassByType is [1972] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.269.755 [fe_graph_optimizer.cc:571]1242 OptimizeOriginalGraphJudgeInsert:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OriginalGraphJudgeInsert is [8743] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.270.389 [graph_manager.cc:841]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeOriginalGraphJudgeInsert is [12679] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.270.604 [graph_manager.cc:842]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::SubexpressionMigration is [27] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.271.495 [graph_manager.cc:2420]1242 OptimizeStage1:[GEPERFTRACE] The time cost of extern constant folding is [0] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.272.054 [graph_manager.cc:847]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeStage1 is [1126] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.272.369 [graph_manager.cc:848]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeAfterStage1 is [39] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.272.655 [graph_manager.cc:849]1242 PreRunOptimizeOriginalGraph:[GEPERFTRACE] The time cost of GraphManager::GraphUtilsEx::InferShapeInNeed is [30] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.272.919 [graph_manager.cc:857]1242 PreRunOptimizeOriginalGraph:PreRun:PreRunOptimizeOriginalGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.273.183 [graph_manager.cc:2964]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::StagePartition is [13] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.275.088 [fe_ops_kernel_info_store.cc:440]1242 CheckSupported:"[FE_PERFORMANCE]The time cost of FEOpsKernelInfoStore::CheckSupported is [1493] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:41:25.275.316 [engine_place.cc:144]1242 Run:The time cost of AIcoreEngine::CheckSupported is [1682] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.275.459 [engine_place.cc:144]1242 Run:The time cost of DNN_VM_GE_LOCAL_OP_STORE::CheckSupported is [16] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.275.700 [engine_place.cc:144]1242 Run:The time cost of DNN_VM_RTS_OP_STORE::CheckSupported is [11] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.275.935 [engine_place.cc:144]1242 Run:The time cost of aicpu_tf_kernel::CheckSupported is [101] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.276.923 [graph_manager.cc:2985]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::GraphPartitionDynamicShape is [3503] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.277.215 [graph_manager.cc:2998]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::SubgraphPartitionAndOptimization::CompositeEngine is [10] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:41:25.278.809 [graph_manager.cc:3039]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::Partition1 is [1332] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:41:25.285.155 [fe_graph_optimizer.cc:1278]1394 BufferFusionMatch:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph.MatchFusionPattern is [820] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:41:25.285.527 [fe_graph_optimizer.cc:1298]1394 BufferFusionMatch:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph.BufferFusionRun is [148] micro second."
+[EVENT] TEFUSION(370,python3):2023-07-13-07:41:25.288.259 [fusion_op.cc:7105]1394 BuildTbeOp [FE_PERFORMANCE]The time cost of BuildTbeOp is [2323] micro second.
+[EVENT] FE(370,python3):2023-07-13-07:42:40.416.476 [tbe_op_store_adapter.cc:928]1394 ParallelCompileOp:"[FE_PERFORMANCE]The time cost of TeFusion during FEGraphOptimizer::OptimizeFusedGraph is [75130603] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:42:40.419.114 [fe_graph_optimizer.cc:1169]1394 PostProcessAfterCompilingOp:"[FE_PERFORMANCE]The time cost of BuildFusionGraph during FEGraphOptimizer::OptimizeFusedGraph is [216] micro second."
+[EVENT] FE(370,python3):2023-07-13-07:42:40.419.703 [fe_graph_optimizer.cc:1461]1394 OptimizeFusedGraph:"[FE_PERFORMANCE]The time cost of FEGraphOptimizer::OptimizeFusedGraph is [75139590] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:42:40.420.363 [graph_manager.cc:3047]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::SetSubGraph is [75141251] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.421.230 [engine_place.cc:144]1242 Run:The time cost of DNN_VM_GE_LOCAL_OP_STORE::CheckSupported is [12] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.421.928 [graph_manager.cc:3084]1242 SubgraphPartitionAndOptimization:[GEPERFTRACE] The time cost of OptimizeSubgraph::MergeSubGraph is [1315] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.422.267 [graph_manager.cc:3011]1242 OptimizeSubgraph:[GEPERFTRACE] The time cost of OptimizeSubgraph::SubgraphPartitionAndOptimization::AtomicEngine is [75144791] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.422.525 [graph_manager.cc:866]1242 PreRunOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeSubgraph is [75149354] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.422.781 [graph_manager.cc:875]1242 PreRunOptimizeSubGraph:PreRun:PreRunOptimizeSubGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.423.077 [graph_manager.cc:890]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.ReplacePrecompiledNodeWithOmGraph is [24] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.423.440 [graph_manager.cc:891]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::stages.optimizer.OptimizeWholeGraph is [104] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.424.625 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [4] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.424.937 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [3] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.425.186 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [1] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.425.431 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [3] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.425.674 [compile_nodes_pass.cc:86]1242 Run:[GEPERFTRACE] The time cost of OptimizeStage2::ControlAttrOptimize::CompileNodesPass is [1] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.426.708 [graph_manager.cc:2625]1242 OptimizeStage2:[GEPERFTRACE] The time cost of SetFftsPlusAttrPass::last_passes.Run is [25] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.427.043 [graph_manager.cc:892]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::OptimizeStage2 is [3348] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.427.467 [graph_manager.cc:895]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::GetCompilerStages(graph_node->GetGraphId()).optimizer.OptimizeGraphBeforeBuild is [159] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.428.131 [graph_manager.cc:3165]1242 Build:[GEPERFTRACE] The time cost of GraphManager::RecoverIrDefinitionAndModifyAippData is [326] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.429.287 [block_mem_assigner.cc:3500]1410 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.429.650 [block_mem_assigner.cc:3500]1411 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.430.297 [model_builder.cc:1121]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::CompileSingleOp is [8] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.430.762 [model_builder.cc:1136]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::OptimizeStreamedWholeGraph is [48] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.431.657 [task_generator.cc:554]1242 GenerateTask:[GEPERFTRACE] The time cost of GraphBuild::GenerateTask is [154] micro second, call num is 3
+[EVENT] GE(370,python3):2023-07-13-07:42:40.432.713 [block_mem_assigner.cc:3500]1412 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.433.028 [block_mem_assigner.cc:3500]1413 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.433.497 [model_builder.cc:1121]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::CompileSingleOp is [6] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.433.904 [model_builder.cc:1136]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::OptimizeStreamedWholeGraph is [42] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.434.479 [task_generator.cc:554]1242 GenerateTask:[GEPERFTRACE] The time cost of GraphBuild::GenerateTask is [78] micro second, call num is 2
+[EVENT] FE(370,python3):2023-07-13-07:42:40.436.628 [task_builder.cc:174]1242 GenerateKernelTask:"[FE_PERFORMANCE]The time cost of TaskBuilder::GenerateTask is [410] micro second."
+[EVENT] GE(370,python3):2023-07-13-07:42:40.436.993 [task_generator.cc:554]1242 GenerateTask:[GEPERFTRACE] The time cost of GraphBuild::GenerateTask is [1160] micro second, call num is 6
+[EVENT] GE(370,python3):2023-07-13-07:42:40.438.524 [block_mem_assigner.cc:3500]1414 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.438.929 [block_mem_assigner.cc:3500]1415 AssignMemoryWithReuse:Reuse memory open memory_priority_mode is false.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.439.406 [model_builder.cc:1121]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::CompileSingleOp is [6] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.439.823 [model_builder.cc:1136]1242 BuildModelForGetTask:[GEPERFTRACE] The time cost of GraphBuilder::OptimizeStreamedWholeGraph is [44] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.440.363 [task_generator.cc:554]1242 GenerateTask:[GEPERFTRACE] The time cost of GraphBuild::GenerateTask is [75] micro second, call num is 2
+[EVENT] GE(370,python3):2023-07-13-07:42:40.450.470 [graph_manager.cc:911]1242 PreRunAfterOptimizeSubGraph:[GEPERFTRACE] The time cost of GraphManager::Build is [22675] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.450.866 [graph_manager.cc:923]1242 PreRunAfterOptimizeSubGraph:PreRun:PreRunAfterOptimizeSubGraph success.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.451.149 [graph_manager.cc:992]1242 PreRun:[GEPERFTRACE] The time cost of FlowModelBuild is [75225287] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.451.387 [graph_manager.cc:993]1242 PreRun:[GEPERFTRACE] GE PreRun End
+[EVENT] GE(370,python3):2023-07-13-07:42:40.452.604 [hybrid_model.cc:547]1243 PrintDynamicType:current execute mode is dynamic in process, model id = 2, model_name = .
+[EVENT] GE(370,python3):2023-07-13-07:42:40.459.545 [graph_converter.cc:432]1243 ConvertComputeGraphToExecuteGraph:[GEPERFTRACE] The time cost of ConvertComputeGraphToExecuteGraph::CreateMainNode is [4271] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.460.858 [copy_flow_launch_fuse.cc:395]1243 Run:[GEPERFTRACE] The time cost of Pass::CopyFlowLaunchFuse is [135] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.461.382 [copy_flow_launch_fuse.cc:395]1243 Run:[GEPERFTRACE] The time cost of Pass::CopyFlowLaunchFuse is [81] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.462.015 [graph_converter.cc:444]1243 ConvertComputeGraphToExecuteGraph:[GEPERFTRACE] The time cost of ConvertComputeGraphToExecuteGraph::RunPass is [2118] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.463.682 [graph_converter.cc:448]1243 ConvertComputeGraphToExecuteGraph:[GEPERFTRACE] The time cost of ConvertComputeGraphToExecuteGraph::AppendGraphLevelData is [1410] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.464.138 [graph_converter.cc:452]1243 ConvertComputeGraphToExecuteGraph:[GEPERFTRACE] The time cost of ConvertComputeGraphToExecuteGraph::CalculatePriority is [155] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.488.074 [model_executor.cc:521]1243 ModelLoad:[GEPERFTRACE] The time cost of GraphLoader::LoadModelOnline is [35635] micro second.
+[EVENT] GE(370,python3):2023-07-13-07:42:40.517.453 [exception_dumper.cc:255]1432 LogExceptionTvmOpInfo:[AIC_INFO] node_name:GatherV2, node_type:GatherV2, stream_id:2, task_id:6
+[EVENT] GE(370,python3):2023-07-13-07:42:40.517.968 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:0;shape:[64];format:ND;dtype:DT_FLOAT;addr:0x124080044000
+[EVENT] GE(370,python3):2023-07-13-07:42:40.518.221 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:1;shape:[2];format:ND;dtype:DT_INT32;addr:0xfff4543037c0
+[EVENT] GE(370,python3):2023-07-13-07:42:40.518.466 [exception_dumper.cc:260]1432 LogExceptionTvmOpInfo:[AIC_INFO] input:2;shape:[];format:ND;dtype:DT_INT32;addr:0xfff4541a9e10
+[EVENT] GE(370,python3):2023-07-13-07:42:40.518.718 [exception_dumper.cc:267]1432 LogExceptionTvmOpInfo:[AIC_INFO] output:0;shape:[2];format:ND;dtype:DT_FLOAT;addr:0x124080054000
+[EVENT] GE(370,python3):2023-07-13-07:42:40.518.967 [exception_dumper.cc:270]1432 LogExceptionTvmOpInfo:[AIC_INFO] block_dim:32
+[EVENT] GE(370,python3):2023-07-13-07:42:40.519.208 [exception_dumper.cc:271]1432 LogExceptionTvmOpInfo:[AIC_INFO] workspace_bytes:[]
+[EVENT] GE(370,python3):2023-07-13-07:42:40.519.450 [exception_dumper.cc:272]1432 LogExceptionTvmOpInfo:[AIC_INFO] workspace_addrs:[]
+[EVENT] GE(370,python3):2023-07-13-07:42:40.519.689 [exception_dumper.cc:273]1432 LogExceptionTvmOpInfo:[AIC_INFO] all attrs:GatherV2_kernelname:Wte_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0;GatherV2_pattern:Opaque;INPUT_IS_VAR:
+*
+[EVENT] GE(370,python3):2023-07-13-07:42:40.519.924 [exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:[AIC_INFO] dev_func:te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0
+[EVENT] GE(370,python3):2023-07-13-07:42:40.520.157 [exception_dumper.cc:275]1432 LogExceptionTvmOpInfo:[AIC_INFO] tvm_magic:RT_DEV_BINARY_MAGIC_ELF
+[EVENT] GE(370,python3):2023-07-13-07:42:40.520.396 [exception_dumper.cc:276]1432 LogExceptionTvmOpInfo:[AIC_INFO] kernel_info:/0
+[EVENT] GE(370,python3):2023-07-13-07:42:40.520.630 [exception_dumper.cc:277]1432 LogExceptionTvmOpInfo:[AIC_INFO] tiling_key:0
+[EVENT] GE(370,python3):2023-07-13-07:42:40.520.867 [exception_dumper.cc:282]1432 LogExceptionTvmOpInfo:[AIC_INFO] tiling_data:0x04 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x4d 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x40 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+[EVENT] GE(370,python3):2023-07-13-07:42:40.521.121 [exception_dumper.cc:200]1432 LogExceptionArgs:[AIC_INFO] args before execute: 20068234969088, 20068234838016, 20068234903552, 20068235034624, 20069311840368, 20068234825728, 0, 0, 0, 0, 0, 0, 0, 20068234825728, 4, 1, 64, 1, 2, 0, 1, 0, 2, 0, 0, 19712, 2, 19712, 0, 1, 19712, 2, 0, 64, 0, 0, 0, 0, 1, 1, 0, 1, , addr:0xfff4543002f0
+[EVENT] GE(370,python3):2023-07-13-07:42:40.562.758 [exception_dumper.cc:306]1432 LogExceptionTvmOpInfo:[AIC_INFO] op_file_path:/home/liuzhenyu/tf
+[EVENT] DVPP(370,python3):2023-07-13-07:42:46.738.056 [dvpp_ops_kernel_builder.cc:61][ENGINE][Finalize:61][tid:1434]dvpp ops kernel builder Finalize start
+[EVENT] DVPP(370,python3):2023-07-13-07:42:46.738.376 [dvpp_ops_kernel_builder.cc:62][ENGINE][Finalize:62][tid:1434]dvpp ops kernel builder Finalize success
+[EVENT] DVPP(370,python3):2023-07-13-07:42:46.877.814 [dvpp_engine.cc:99][ENGINE][Finalize:99][tid:1434]dvpp engine Finalize start
+[EVENT] DVPP(370,python3):2023-07-13-07:42:46.878.152 [dvpp_engine.cc:100][ENGINE][Finalize:100][tid:1434]dvpp engine Finalize success
+[EVENT] FE(370,python3):2023-07-13-07:42:47.371.894 [fusion_manager.cc:193]1434 Finalize:"[FE_PERFORMANCE]The time cost of FusionManager::Finalize is [493716] micro second."
+[EVENT] FFTS(370,python3):2023-07-13-07:42:47.372.340 [engine_manager.cc:90]1434 Finalize:"[FFTS_PERFORMANCE]The time cost of EngineManager::Finalize is [138] micro second."
+[EVENT] HCCL(370,python3):2023-07-13-07:42:47.373.062 [hcom.cc:401][370][1434]Entry-HcomDestroy:void skip
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.376.484 [process_mode_manager.cpp:149][Close][tid:1434] [TsdClient] Close [deviceId=0][sessionId=1] hccp and computer enter
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.376.680 [version_verify.cpp:113][SpecialFeatureCheck][tid:1434] VersionVerify: previous type[7], supported
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.376.721 [process_mode_manager.cpp:159][Close][tid:1434] [TsdClient][deviceId=0] [sessionId=1] wait hccp and computer process close respond
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.408.493 [process_mode_manager.cpp:164][Close][tid:1434] [TsdClient][logicDeviceId_=0]has recv close hccp and computer process respond
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.408.581 [stub_process_mode_nowin.cpp:149][CloseInHost][tid:1434] enter into CloseInHost deviceid[0]
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.408.669 [stub_process_mode_nowin.cpp:152][CloseInHost][tid:1434] host cpu not support
+[EVENT] TDT(370,python3):2023-07-13-07:42:47.408.927 [process_mode_manager.cpp:177][Close][tid:1434] [TsdClient][deviceId=0] [sessionId=1] close hccp and computer process success

@@ -1,0 +1,78 @@
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.522.534 [stars_engine.cc:1553]155320 ProcLogicCqReport:[INIT][DEFAULT]Task run failed, device_id=0, stream_id=2, task_id=1, sqe_type=0(ffts), errType=0x1(task exception), sqSwStatus=0
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.744 [device_error_proc.cc:1635]155320 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.761 [device_error_proc.cc:1635]155320 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial number is 19, there is an aivec error exception, core id is 0, error code = 0, dump info: pc start: 0x12c100014f8c, current: 0x12c1000157d0, vec error info: 0x51000070f7, mte error info: 0x206000046, ifu error info: 0x2d10bbf7a4dc0, ccu error info: 0x22c090001000046, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c1c0000400.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.848 [device_error_proc.cc:1647]155320 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.855 [device_error_proc.cc:1647]155320 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The extend info: errcode:(0, 0, 0) errorStr: timeout or trap error. fixp_error0 info: 0x6000046, fixp_error1 info: 0x2, fsmId:0, tslot:0, thread:0, ctxid:0, blk:0, sublk:0, subErrType:2.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.881 [stream.cc:3287]155320 EnterFailureAbort:[INIT][DEFAULT]stream_id=2 enter failure abort.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.526.895 [davinci_kernel_task.cc:1525]155320 SetStarsResultForDavinciTask:[INIT][DEFAULT]AIV Kernel happen error, retCode=0x31.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.368 [davinci_kernel_task.cc:1470]155320 PreCheckTaskErr:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.376 [davinci_kernel_task.cc:1470]155320 PreCheckTaskErr:[INIT][DEFAULT]Kernel task happen error, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.404 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.409 [stream.cc:1175]155320 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.414 [stream.cc:1175]155320 GetError:[INIT][DEFAULT]AIV Kernel happen error, retCode=0x31.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.785 [davinci_kernel_task.cc:1381]155320 PrintErrorInfoForDavinciTask:[INIT][DEFAULT]Aicore kernel execute failed, device_id=0, stream_id=2, report_stream_id=2, task_id=1, flip_num=0, fault kernel_name=GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10330, fault kernel info ext=none, program id=0, hash=9005124917278870274.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.823 [davinci_kernel_task.cc:1318]155320 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, 0x12c1c00004f8, 0x12d340000400, 0x12d340019600, 0x12c1c0000438, 0x12c100011000, 0x285a, 0x30, 0x3, 0, 0xc00, 0x18, 0x1, 0x1, 0xa0000, 0x64, 0x100, 0x1, 0x1,  
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.831 [davinci_kernel_task.cc:1318]155320 GetArgsInfo:[INIT][DEFAULT][AIC_INFO] args(20 to 35) after execute:0x30, 0x1, 0x1, 0x1, 0x3, 0x100, 0x1, 0x1, 0x4, 0x1, 0x2, 0, 0, 0, 0,  
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.836 [davinci_kernel_task.cc:1321]155320 GetArgsInfo:[INIT][DEFAULT]tilingKey = 10330, print 2 Times totalLen=(35*8), argsSize=280, blockDim=48
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:18.527.845 [davinci_kernel_task.cc:1385]155320 PrintErrorInfoForDavinciTask:[INIT][DEFAULT][AIC_INFO] after execute:args print end
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.528.032 [dump_operator.cpp:400][tid:155320] [Dump][Exception] begin to load input tensor, index:0
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.528.616 [dump_operator.cpp:400][tid:155320] [Dump][Exception] exception info dump args data, addr:0x12c200000000; size:671088640 bytes
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.528.769 [dump_operator.cpp:400][tid:155320] [Dump][Exception] end to load input tensor, index:0
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.528.941 [dump_operator.cpp:400][tid:155320] [Dump][Exception] begin to load input tensor, index:1
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.086 [dump_operator.cpp:400][tid:155320] [Dump][Exception] exception info dump args data, addr:0x12d340000000; size:800 bytes
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.230 [dump_operator.cpp:400][tid:155320] [Dump][Exception] end to load input tensor, index:1
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.400 [dump_operator.cpp:400][tid:155320] [Dump][Exception] begin to load output tensor, index:3
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.542 [dump_operator.cpp:400][tid:155320] [Dump][Exception] exception info dump args data, addr:0x12d340000400; size:102400 bytes
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.686 [dump_operator.cpp:400][tid:155320] [Dump][Exception] end to load output tensor, index:3
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.857 [dump_operator.cpp:400][tid:155320] [Dump][Exception] begin to load workspace, index:4
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.529.996 [dump_operator.cpp:400][tid:155320] [Dump][Exception] exception info dump args data, addr:0x12d340019600; size:76801 bytes
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:18.530.139 [dump_operator.cpp:400][tid:155320] [Dump][Exception] end to load workspace, index:4
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:19.610.883 [dump_operator.cpp:286][tid:155320] [Dump][Exception] dump exception to file, file: /opt/twein/msaicerr_dev/aicerror/demo_no_cce/new/extra-info/data-dump/0/aclnnIndexSelect_0_L0.GatherV3AiCore.1.20250508095618530
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:19.611.847 [kernel_info_collector.cpp:214][tid:155320] [Dump][Exception] dump host kernel to file, file: /opt/twein/msaicerr_dev/aicerror/demo_no_cce/new/extra-info/data-dump/0/GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10330_host.o
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:20.760.116 [kernel_info_collector.cpp:292][tid:155320] [Dump][Exception] dump kernel json to file, file: /opt/twein/msaicerr_dev/aicerror/demo_no_cce/new/extra-info/data-dump/0/GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance.json
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:20.763.119 [kernel_info_collector.cpp:305][tid:155320] [Dump][Exception] dump kernel to file, file: /opt/twein/msaicerr_dev/aicerror/demo_no_cce/new/extra-info/data-dump/0/GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance.o
+[ERROR] IDEDD(155320,python3):2025-05-08-09:56:20.763.494 [dump_printf.cpp:548][tid:155320] [ASSERT] [CANN_VERSION : 7.8][TimeStamp : 0] /home/phisik3/Ascend/CANN-7.8/opp/built-in/op_impl/ai_core/tbe/impl/dynamic/../ascendc/gather_v3/gather_v3_base.h:137: Assertion `(0 <= val && val < this->gxSize_)' Index 100000000 out of range[0 655360)!
+
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.545 [stars_engine.cc:1423]155320 StarsResumeRtsq:[INIT][DEFAULT]stop scheduling in abort failure mode: stream_id=2, sq_id=2, sq_head=1, task_id=1, taskType=66.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.593 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.599 [stream.cc:1175]155320 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.604 [stream.cc:1175]155320 GetError:[INIT][DEFAULT]Aicore kernel execute failed, device_id=0, stream_id=2, report_stream_id=2, task_id=1, flip_num=0, fault kernel_name=GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10330, fault kernel info ext=none, program id=0, hash=9005124917278870274.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.679 [stream.cc:1175]155320 GetError:[INIT][DEFAULT]report error module_type=5, module_name=EZ9999
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.684 [stream.cc:1175]155320 GetError:[INIT][DEFAULT][AIC_INFO] after execute:args print end
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.700 [api_error.cc:905]155320 StreamSynchronize:[INIT][DEFAULT]Stream synchronize failed, stream_id=2, timeout=-1ms.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.715 [api_c_stream.cc:161]155320 rtStreamSynchronize:[INIT][DEFAULT]ErrCode=507035, desc=[vector core exception], InnerCode=0x715005e
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.720 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.764.727 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]rtStreamSynchronize execute failed, reason=[vector core exception]
+[ERROR] ASCENDCL(155320,python3):2025-05-08-09:56:20.764.913 [stream.cpp:120]155320 aclrtSynchronizeStream: [INIT][DEFAULT]synchronize stream failed, runtime result = 507035
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.241 [context.cc:571]155320 TaskReclaimforSyncDevice:[INIT][DEFAULT]device_id=0, the stream_id=2 is ABORT
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.251 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.257 [context.cc:674]155320 Synchronize:[INIT][DEFAULT]Synchronize streams, retCode=0x715005e.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.263 [api_error.cc:2494]155320 DeviceSynchronize:[INIT][DEFAULT]Device synchronize failed.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.273 [api_c_device.cc:259]155320 rtDeviceSynchronize:[INIT][DEFAULT]ErrCode=507035, desc=[vector core exception], InnerCode=0x715005e
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.279 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.779.285 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]rtDeviceSynchronize execute failed, reason=[vector core exception]
+[ERROR] ASCENDCL(155320,python3):2025-05-08-09:56:20.779.486 [device.cpp:268]155320 aclrtSynchronizeDevice: [INIT][DEFAULT]wait for compute device to finish failed, runtime result = 507035.
+[ERROR] APP(155320,python3):2025-05-08-09:56:20.781.094 [log_inner.cpp:76]155320 InitNpuBindings.cpp:THPModule_npu_shutdown:79: "[PTA]:"NPU shutdown synchronize device failed.""
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.116 [context.cc:571]155320 TaskReclaimforSyncDevice:[INIT][DEFAULT]device_id=0, the stream_id=2 is ABORT
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.123 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.128 [context.cc:674]155320 Synchronize:[INIT][DEFAULT]Synchronize streams, retCode=0x715005e.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.133 [api_error.cc:2494]155320 DeviceSynchronize:[INIT][DEFAULT]Device synchronize failed.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.140 [api_c_device.cc:259]155320 rtDeviceSynchronize:[INIT][DEFAULT]ErrCode=507035, desc=[vector core exception], InnerCode=0x715005e
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.145 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.781.151 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]rtDeviceSynchronize execute failed, reason=[vector core exception]
+[ERROR] ASCENDCL(155320,python3):2025-05-08-09:56:20.781.340 [device.cpp:268]155320 aclrtSynchronizeDevice: [INIT][DEFAULT]wait for compute device to finish failed, runtime result = 507035.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.782.806 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.782.814 [api_error.cc:905]155320 StreamSynchronize:[INIT][DEFAULT]Stream synchronize failed, stream_id=2, timeout=-1ms.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.782.821 [api_c_stream.cc:161]155320 rtStreamSynchronize:[INIT][DEFAULT]ErrCode=507035, desc=[vector core exception], InnerCode=0x715005e
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.782.826 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.782.832 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]rtStreamSynchronize execute failed, reason=[vector core exception]
+[ERROR] ASCENDCL(155320,python3):2025-05-08-09:56:20.783.025 [stream.cpp:120]155320 aclrtSynchronizeStream: [INIT][DEFAULT]synchronize stream failed, runtime result = 507035
+[ERROR] APP(155320,python3):2025-05-08-09:56:20.784.994 [log_inner.cpp:76]aclAppLog call vsnprintf_s failed
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.011 [context.cc:571]155320 TaskReclaimforSyncDevice:[INIT][DEFAULT]device_id=0, the stream_id=2 is ABORT
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.018 [stream.cc:1172]155320 GetError:[INIT][DEFAULT]Stream Synchronize failed, stream_id=2, retCode=0x31, [vector core exception].
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.023 [context.cc:674]155320 Synchronize:[INIT][DEFAULT]Synchronize streams, retCode=0x715005e.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.028 [api_error.cc:2494]155320 DeviceSynchronize:[INIT][DEFAULT]Device synchronize failed.
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.036 [api_c_device.cc:259]155320 rtDeviceSynchronize:[INIT][DEFAULT]ErrCode=507035, desc=[vector core exception], InnerCode=0x715005e
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.040 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]report error module_type=3, module_name=EE8888
+[ERROR] RUNTIME(155320,python3):2025-05-08-09:56:20.785.046 [error_message_manage.cc:53]155320 FuncErrorReason:[INIT][DEFAULT]rtDeviceSynchronize execute failed, reason=[vector core exception]
+[ERROR] ASCENDCL(155320,python3):2025-05-08-09:56:20.785.235 [device.cpp:268]155320 aclrtSynchronizeDevice: [INIT][DEFAULT]wait for compute device to finish failed, runtime result = 507035.

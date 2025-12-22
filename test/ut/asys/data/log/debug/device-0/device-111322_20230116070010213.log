@@ -1,0 +1,2 @@
+[WARNING] CCECPU(4910,aicpu_scheduler):2023-01-16-07:00:09.871.074 [ae_kernel_lib_manager.cc:78][BatchLoadKernelSo][tid:4910][AICPU_PROCESSER] soName is null.
+[WARNING] CCECPU(4910,aicpu_scheduler):2023-01-16-07:00:09.871.082 [ae_kernel_lib_manager.cc:78][BatchLoadKernelSo][tid:4910][AICPU_PROCESSER] soName is null.

@@ -1,0 +1,6271 @@
+graph {
+  name: "ge_default_20230713074125_11"
+  op {
+    name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+    type: "PartitionedCall"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "config"
+          s: "config_proto"
+          s: "executor_type"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "args"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 2
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+          s: "__output1"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+          i: 1
+        }
+      }
+    }
+    attr {
+      key: "config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "config_proto"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "executor_type"
+      value {
+        s: ""
+      }
+    }
+    has_out_attr: true
+    stream_id: -1
+    output_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+    output_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    subgraph_name: "ge_default_20230713074125_sub_0_input"
+  }
+  op {
+    name: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+    type: "PartitionedCall"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "config"
+          s: "config_proto"
+          s: "executor_type"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "args"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 2
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "config_proto"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "executor_type"
+      value {
+        s: ""
+      }
+    }
+    has_out_attr: true
+    id: 4
+    stream_id: -1
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 288
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    subgraph_name: "ge_default_20230713074125_sub_1_unknow"
+  }
+  op {
+    name: "ge_default_20230713074125_sub_2_unknow_PartitionedCall_2"
+    type: "PartitionedCall"
+    input: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:1"
+    input: "ge_default_20230713074125_sub_0_input_PartitionedCall_0:0"
+    input: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1:0"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+          s: "__input1"
+          s: "__input2"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+          i: 1
+          i: 2
+        }
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "config"
+          s: "config_proto"
+          s: "executor_type"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "args"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 2
+        }
+      }
+    }
+    attr {
+      key: "_is_connected_to_netoutput"
+      value {
+        list {
+          i: 0
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "config_proto"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "executor_type"
+      value {
+        s: ""
+      }
+    }
+    has_out_attr: true
+    id: 7
+    stream_id: -1
+    input_name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0: 1"
+    input_name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+    input_name: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+    src_name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+    src_name: "ge_default_20230713074125_sub_0_input_PartitionedCall_0"
+    src_name: "ge_default_20230713074125_sub_1_unknow_PartitionedCall_1"
+    src_index: 1
+    src_index: 0
+    src_index: 0
+    input_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    input_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    subgraph_name: "ge_default_20230713074125_sub_2_unknow"
+  }
+  op {
+    name: "ge_default_20230713074125_sub_3_unknow_PartitionedCall_3"
+    type: "PartitionedCall"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "config"
+          s: "config_proto"
+          s: "executor_type"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "args"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 2
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "config_proto"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "executor_type"
+      value {
+        s: ""
+      }
+    }
+    has_out_attr: true
+    id: 14
+    stream_id: -1
+    subgraph_name: "ge_default_20230713074125_sub_3_unknow"
+  }
+  op {
+    name: "Node_Output"
+    type: "NetOutput"
+    input: "ge_default_20230713074125_sub_2_unknow_PartitionedCall_2:0"
+    input: "ge_default_20230713074125_sub_3_unknow_PartitionedCall_3:-1"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_datadump_original_op_names"
+      value {
+        list {
+          val_type: VT_LIST_STRING
+        }
+      }
+    }
+    attr {
+      key: "_engine_type"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_connected_to_data"
+      value {
+        list {
+          i: 0
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_RTS"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "true_branch_stream"
+      value {
+        i: 0
+      }
+    }
+    has_out_attr: true
+    id: 17
+    stream_id: -1
+    src_name: "new_sub_graph2_PlaceHolder1"
+    src_name: "new_sub_graph2_PlaceHolder0"
+    src_index: 0
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  attr {
+    key: "GlobalOptions"
+    value {
+      func {
+        name: "GlobalOptions"
+        attr {
+          key: "GE_USE_STATIC_MEMORY"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "HCCL_algorithm"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "aoe_config_file"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "aoe_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "customize_dtypes"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "debug_dir"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "device_type"
+          value {
+            s: "default_device_type"
+          }
+        }
+        attr {
+          key: "distribute_config"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "dump_data"
+          value {
+            s: "tensor"
+          }
+        }
+        attr {
+          key: "enable_exception_dump"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "enable_scope_fusion_passes"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "es_cluster_config"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "event_sync_timeout"
+          value {
+            s: "-1"
+          }
+        }
+        attr {
+          key: "ge.aicoreNum"
+          value {
+            s: "32"
+          }
+        }
+        attr {
+          key: "ge.aoe_config_file"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.autoTuneMode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.customizeDtypes"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.debugDir"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.deterministic"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.deviceType"
+          value {
+            s: "default_device_type"
+          }
+        }
+        attr {
+          key: "ge.esClusterConfig"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.customizeDdtypes"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.deployMode"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.deviceId"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.dumpData"
+          value {
+            s: "tensor"
+          }
+        }
+        attr {
+          key: "ge.exec.enableScopeFusionPasses"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.enable_exception_dump"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.graphExecTimeout"
+          value {
+            s: "600000"
+          }
+        }
+        attr {
+          key: "ge.exec.hcclExecuteTimeOut"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.hcclFlag"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.exec.isUseHcom"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.jobId"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.logicalDeviceClusterDeployMode"
+          value {
+            s: "LB"
+          }
+        }
+        attr {
+          key: "ge.exec.logicalDeviceId"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.modelDeployDevicelist"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.modelDeployMode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.modify_mixlist"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.opDebugConfig"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.opExecuteTimeout"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.opWaitTimeout"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.op_precision_mode"
+          value {
+            s: "/home/liuzhenyu/tf/op_precision.ini"
+          }
+        }
+        attr {
+          key: "ge.exec.precision_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.profilingMode"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.profilingOptions"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.staticMemoryPolicy"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.fpCeilingMode"
+          value {
+            s: "2"
+          }
+        }
+        attr {
+          key: "ge.fusionSwitchFile"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.fusionTensorSize"
+          value {
+            s: "524288000"
+          }
+        }
+        attr {
+          key: "ge.graphRunMode"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.hardwareInfo"
+          value {
+            s: "ai_core_cnt:32;vector_core_cnt:0;l2_size:67108864;memory_size:34359738368"
+          }
+        }
+        attr {
+          key: "ge.hcomMultiMode"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.jit_compile"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.jobType"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.opDebugLevel"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.opSelectImplmode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.op_compiler_cache_dir"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.op_compiler_cache_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.optypelistForImplmode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.socVersion"
+          value {
+            s: "Ascend910A"
+          }
+        }
+        attr {
+          key: "ge.tuningPath"
+          value {
+            s: "./"
+          }
+        }
+        attr {
+          key: "graph_exec_timeout"
+          value {
+            s: "600000"
+          }
+        }
+        attr {
+          key: "graph_run_mode"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "logical_device_cluster_deploy_mode"
+          value {
+            s: "LB"
+          }
+        }
+        attr {
+          key: "logical_device_id"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "model_deploy_devicelist"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "model_deploy_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "op_compiler_cache_dir"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "op_compiler_cache_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "op_debug_config"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "op_execute_timeout"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "op_wait_timeout"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "precision_mode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "profiling_mode"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "profiling_options"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "soc_config"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "static_memory_policy"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "stream_sync_timeout"
+          value {
+            s: "-1"
+          }
+        }
+        attr {
+          key: "work_path"
+          value {
+            s: "./"
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "GraphOptions"
+    value {
+      func {
+        name: "GraphOptions"
+        attr {
+          key: "ge.exec.isVarInitGraph"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.overflow"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.graphLevelSat"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.shape_generalized_build_mode"
+          value {
+            s: "shape_precise"
+          }
+        }
+        attr {
+          key: "opt_module.aoe"
+          value {
+            s: "ALL"
+          }
+        }
+        attr {
+          key: "opt_module.fe"
+          value {
+            s: "ALL"
+          }
+        }
+        attr {
+          key: "opt_module.op_tune"
+          value {
+            s: "ALL"
+          }
+        }
+        attr {
+          key: "opt_module.pass"
+          value {
+            s: "ALL"
+          }
+        }
+        attr {
+          key: "opt_module.rl_tune"
+          value {
+            s: "ALL"
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "SessionOptions"
+    value {
+      func {
+        name: "SessionOptions"
+        attr {
+          key: "HCCL_algorithm"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "atomic_clean_policy"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "compress_weight_conf"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "dump_layer"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "external_weight"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.bufferOptimize"
+          value {
+            s: "l2_optimize"
+          }
+        }
+        attr {
+          key: "ge.dynamicDims"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.dynamicNodeType"
+          value {
+            s: "-1"
+          }
+        }
+        attr {
+          key: "ge.enableCompressWeight"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.enableGraphParallel"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.enableSmallChannel"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.atomicCleanPolicy"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.dumpDebugMode"
+          value {
+            s: "all"
+          }
+        }
+        attr {
+          key: "ge.exec.dumpLayer"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.dumpMode"
+          value {
+            s: "output"
+          }
+        }
+        attr {
+          key: "ge.exec.dumpPath"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.dumpStep"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.enableDump"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.enableDumpDebug"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.hcclExecuteTimeOut"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.isTailingOptimization"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.exec.memoryOptimizationPolicy"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.modify_mixlist"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.exec.op_precision_mode"
+          value {
+            s: "/home/liuzhenyu/tf/op_precision.ini"
+          }
+        }
+        attr {
+          key: "ge.exec.variable_acc"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.externalWeight"
+          value {
+            s: "0"
+          }
+        }
+        attr {
+          key: "ge.fusionSwitchFile"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.graphParallelOptionPath"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.graphRunMode"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.graphSliceMode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.hcomParallel"
+          value {
+            s: "1"
+          }
+        }
+        attr {
+          key: "ge.inputShape"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.insertOpFile"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.opSelectImplmode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.optypelistForImplmode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.resourceConfigPath"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.streamMaxParallelNum"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "ge.topoSortingMode"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "insert_op_file"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "memory_optimization_policy"
+          value {
+            s: ""
+          }
+        }
+        attr {
+          key: "topo_sorting_mode"
+          value {
+            s: ""
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "_dynamic_shape_partitioned"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_fe_single_op_scene"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "_graph_has_been_added"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_is_graph_inferred"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_parallel_sharded"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "_pipeline_partitioned"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "_process_node_engine_id"
+    value {
+      s: "NPU"
+    }
+  }
+  attr {
+    key: "_session_graph_id"
+    value {
+      s: "0_11"
+    }
+  }
+  attr {
+    key: "globalworkspace_size"
+    value {
+      i: 32
+    }
+  }
+  attr {
+    key: "globalworkspace_type"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "label_num"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "refresh_int64_flag"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "run_count"
+    value {
+      i: 390
+    }
+  }
+}
+graph {
+  name: "ge_default_20230713074125_sub_0_input"
+  op {
+    name: "GatherV2/axis"
+    type: "Constant"
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_GE_USE_STATIC_MEMORY"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_HCCL_algorithm"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_NpuOptimizer"
+      value {
+        s: "NpuOptimizer"
+      }
+    }
+    attr {
+      key: "_aoe_config_file"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_aoe_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_atomic_clean_policy"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_buffer_optimize"
+      value {
+        s: "l2_optimize"
+      }
+    }
+    attr {
+      key: "_compress_weight_conf"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_customize_dtypes"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_debug_dir"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_device_type"
+      value {
+        s: "default_device_type"
+      }
+    }
+    attr {
+      key: "_distribute_config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_do_npu_optimizer"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_dump_data"
+      value {
+        s: "tensor"
+      }
+    }
+    attr {
+      key: "_dump_debug_mode"
+      value {
+        s: "all"
+      }
+    }
+    attr {
+      key: "_dump_layer"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_dump_mode"
+      value {
+        s: "output"
+      }
+    }
+    attr {
+      key: "_dump_path"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_dump_step"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_dynamic_dims"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_dynamic_graph_execute_mode"
+      value {
+        s: "dynamic_execute"
+      }
+    }
+    attr {
+      key: "_dynamic_input"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_dynamic_inputs_shape_range"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_dynamic_node_type"
+      value {
+        s: "-1"
+      }
+    }
+    attr {
+      key: "_enable_compress_weight"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_enable_data_pre_proc"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_enable_dump"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_enable_dump_debug"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_enable_exception_dump"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_enable_graph_parallel"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_enable_scope_fusion_passes"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_enable_small_channel"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_es_cluster_config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_event_sync_timeout"
+      value {
+        s: "-1"
+      }
+    }
+    attr {
+      key: "_external_weight"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_frozen_variable"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_fusion_switch_file"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.aoe_config_file"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.autoTuneMode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.customizeDtypes"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.debugDir"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.deterministic"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.deviceType"
+      value {
+        s: "default_device_type"
+      }
+    }
+    attr {
+      key: "_ge.esClusterConfig"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.atomicCleanPolicy"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.exec.customizeDdtypes"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.dumpData"
+      value {
+        s: "tensor"
+      }
+    }
+    attr {
+      key: "_ge.exec.dumpLayer"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.enableScopeFusionPasses"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.enable_exception_dump"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.exec.graphExecTimeout"
+      value {
+        s: "600000"
+      }
+    }
+    attr {
+      key: "_ge.exec.hcclExecuteTimeOut"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.logicalDeviceClusterDeployMode"
+      value {
+        s: "LB"
+      }
+    }
+    attr {
+      key: "_ge.exec.logicalDeviceId"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.memoryOptimizationPolicy"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.modelDeployDevicelist"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.modelDeployMode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.modify_mixlist"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.opDebugConfig"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.opExecuteTimeout"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.opWaitTimeout"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.op_precision_mode"
+      value {
+        s: "/home/liuzhenyu/tf/op_precision.ini"
+      }
+    }
+    attr {
+      key: "_ge.exec.precision_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.profilingMode"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.exec.profilingOptions"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.exec.staticMemoryPolicy"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.externalWeight"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.fusionSwitchFile"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.graphRunMode"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_ge.hcomMultiMode"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_ge.jobType"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.opDebugLevel"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.opSelectImplmode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.op_compiler_cache_dir"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.op_compiler_cache_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.optypelistForImplmode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ge.tuningPath"
+      value {
+        s: "./"
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_graph_exec_timeout"
+      value {
+        s: "600000"
+      }
+    }
+    attr {
+      key: "_graph_parallel_option_path"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_graph_run_mode"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_graph_slice"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_hccl_timeout"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_hcom_multi_mode"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_hcom_parallel"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_in_out_pair"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_in_out_pair_flag"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_input_shape"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "value"
+        }
+      }
+    }
+    attr {
+      key: "_is_tailing_optimization"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_iterations_per_loop"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_job"
+      value {
+        s: "localhost"
+      }
+    }
+    attr {
+      key: "_local_device_list"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_local_rank_id"
+      value {
+        s: "-1"
+      }
+    }
+    attr {
+      key: "_logical_device_cluster_deploy_mode"
+      value {
+        s: "LB"
+      }
+    }
+    attr {
+      key: "_logical_device_id"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_lower_functional_ops"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_memory_optimization_policy"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_mix_compile_mode"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_model_deploy_devicelist"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_model_deploy_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_modify_mixlist"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_compiler_cache_dir"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_compiler_cache_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_debug_config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_execute_timeout"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_op_precision_mode"
+      value {
+        s: "/home/liuzhenyu/tf/op_precision.ini"
+      }
+    }
+    attr {
+      key: "_op_select_implmode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_op_wait_timeout"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_optypelist_for_implmode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "y"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_precision_mode"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_profiling_mode"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_profiling_options"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_resource_config_path"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_session_device_id"
+      value {
+        s: "-1"
+      }
+    }
+    attr {
+      key: "_soc_config"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_static_memory_policy"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_stream_max_parallel_num"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_stream_sync_timeout"
+      value {
+        s: "-1"
+      }
+    }
+    attr {
+      key: "_task_index"
+      value {
+        s: "0"
+      }
+    }
+    attr {
+      key: "_use_off_line"
+      value {
+        s: "1"
+      }
+    }
+    attr {
+      key: "_variable_location"
+      value {
+        s: "Device"
+      }
+    }
+    attr {
+      key: "_work_path"
+      value {
+        s: "./"
+      }
+    }
+    attr {
+      key: "dtype"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    has_out_attr: true
+    dst_name: "ge_default_20230713074125_sub_0_input_Node_Output"
+    dst_index: 0
+    output_i: 62277030400
+    output_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+  }
+  op {
+    name: "GatherV2/indices"
+    type: "Constant"
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "value"
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "y"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "dtype"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 1
+    dst_name: "ge_default_20230713074125_sub_0_input_Node_Output"
+    dst_index: 1
+    output_i: 62277031936
+    output_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_0_input_Node_Output"
+    type: "NetOutput"
+    input: "GatherV2/axis:0"
+    input: "GatherV2/indices:0"
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+          s: "__input1"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+          i: 1
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_RTS"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_read_write_index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 2
+    src_name: "GatherV2/axis"
+    src_name: "GatherV2/indices"
+    src_index: 0
+    src_index: 0
+    input_i: 62277030400
+    input_i: 62277031936
+    is_input_const: false
+    is_input_const: false
+    input_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "_data_visit_distance"
+        value {
+          list {
+            i: 0
+            i: -1
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "_parent_node_index"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+    input_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "_data_visit_distance"
+        value {
+          list {
+            i: 0
+            i: -1
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "_parent_node_index"
+        value {
+          i: 1
+        }
+      }
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format_is_set"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "placement"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  attr {
+    key: "_memory_discontiguous_allocation"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_session_graph_id"
+    value {
+      s: "0_11"
+    }
+  }
+}
+graph {
+  name: "ge_default_20230713074125_sub_1_unknow"
+  op {
+    name: "Variable"
+    type: "Variable"
+    input: ""
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_class"
+      value {
+        list {
+          s: "loc:@Variable/read"
+          val_type: VT_LIST_STRING
+        }
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "index"
+          s: "value"
+          s: "container"
+          s: "shared_name"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "y"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_var_format"
+      value {
+        s: "4D"
+      }
+    }
+    attr {
+      key: "container"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "dtype"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "shape"
+      value {
+        list {
+          i: 64
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "shared_name"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "value"
+      value {
+        t {
+          desc {
+            dtype: DT_FLOAT
+            shape {
+            }
+            layout: "ND"
+            attr {
+              key: "format_for_int"
+              value {
+                i: 2
+              }
+            }
+            attr {
+              key: "origin_format"
+              value {
+                s: "ND"
+              }
+            }
+            attr {
+              key: "origin_format_for_int"
+              value {
+                i: 2
+              }
+            }
+            attr {
+              key: "origin_shape_initialized"
+              value {
+                b: false
+              }
+            }
+            device_type: "NPU"
+          }
+        }
+      }
+    }
+    has_out_attr: true
+    dst_name: "ge_default_20230713074125_sub_1_unknow_Node_Output"
+    dst_index: 0
+    output_i: 62277027328
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      device_type: "NPU"
+    }
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 288
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_1_unknow_Node_Output"
+    type: "NetOutput"
+    input: "Variable:0"
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_RTS"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_read_write_index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 1
+    src_name: "Variable"
+    src_index: 0
+    input_i: 62277027328
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "_data_visit_distance"
+        value {
+          list {
+            i: 0
+            i: -1
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "_parent_node_index"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 288
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  attr {
+    key: "_memory_discontiguous_allocation"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_session_graph_id"
+    value {
+      s: "0_11"
+    }
+  }
+}
+graph {
+  name: "ge_default_20230713074125_sub_2_unknow"
+  input: "ge_default_20230713074125_sub_2_unknow_Data_0:0"
+  input: "ge_default_20230713074125_sub_2_unknow_Data_1:0"
+  input: "ge_default_20230713074125_sub_2_unknow_Data_2:0"
+  op {
+    name: "ge_default_20230713074125_sub_2_unknow_Data_0"
+    type: "Data"
+    input: ""
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_parent_node_index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    dst_name: "GatherV2"
+    dst_index: 1
+    input_i: 0
+    output_i: 0
+    input_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    output_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_2_unknow_Data_1"
+    type: "Data"
+    input: ""
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_parent_node_index"
+      value {
+        i: 1
+      }
+    }
+    has_out_attr: true
+    id: 1
+    dst_name: "GatherV2"
+    dst_index: 2
+    input_i: 0
+    output_i: 0
+    input_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+    output_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_2_unknow_Data_2"
+    type: "Data"
+    input: ""
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_parent_node_index"
+      value {
+        i: 2
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 2
+    dst_name: "Unique"
+    dst_index: 0
+    input_i: 0
+    output_i: 0
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 256
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 288
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "Unique"
+    type: "Unique"
+    input: "ge_default_20230713074125_sub_2_unknow_Data_2:0"
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "T"
+      value {
+        dt: 0
+      }
+    }
+    attr {
+      key: "_AllShape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_aicpu_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_aicpu_unknown_shape_type"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "_align_64_bytes_flag"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_engine_type"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "aicpu_tf_kernel"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "out_idx"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_AICPU"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "aicpu_tf_kernel"
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "idx"
+          s: "y"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 1
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_resource"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "_unknown_shape_type"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "async_flag"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "framework_type"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "imply_type"
+      value {
+        i: 3
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "out_idx"
+      value {
+        dt: 3
+      }
+    }
+    attr {
+      key: "output_alignment_vector"
+      value {
+        list {
+          i: 64
+          i: 64
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "output_memsize_vector"
+      value {
+        list {
+          i: 256
+          i: 256
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "t_in_datatype"
+      value {
+        list {
+          i: 1
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "t_out_datatype"
+      value {
+        list {
+          i: 1
+          i: 3
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "topic_type"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "workspace_reuse_flag"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    has_out_attr: true
+    id: 3
+    input_name: "new_sub_graph3_PlaceHolder5"
+    src_name: "ge_default_20230713074125_sub_2_unknow_Data_2"
+    src_index: 0
+    dst_name: "GatherV2"
+    dst_index: 0
+    input_i: 0
+    output_i: 0
+    output_i: 0
+    workspace_bytes: 238
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 288
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: -1
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: -1
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 0
+              list_i: 64
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 0
+              list_i: 64
+            }
+          }
+        }
+      }
+      size: 256
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    output_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 64
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 64
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 256
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "GatherV2"
+    type: "GatherV2"
+    input: "Unique:0"
+    input: "ge_default_20230713074125_sub_2_unknow_Data_0:0"
+    input: "ge_default_20230713074125_sub_2_unknow_Data_1:0"
+    attr {
+      key: "GatherV2_kernelname"
+      value {
+        s: "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0"
+      }
+    }
+    attr {
+      key: "GatherV2_pattern"
+      value {
+        s: "Opaque"
+      }
+    }
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          b: false
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "Taxis"
+      value {
+        dt: 3
+      }
+    }
+    attr {
+      key: "Tindices"
+      value {
+        dt: 3
+      }
+    }
+    attr {
+      key: "Tparams"
+      value {
+        dt: 0
+      }
+    }
+    attr {
+      key: "_cube_vector_core_type"
+      value {
+        s: "AIC"
+      }
+    }
+    attr {
+      key: "_engine_type"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_fe_imply_type"
+      value {
+        i: 6
+      }
+    }
+    attr {
+      key: "_fe_is_unknown_graph"
+      value {
+        i: 1
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_graph_name"
+      value {
+        s: "partition3_rank2_new_sub_graph4"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "axis"
+          s: "indices"
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 2
+          i: 1
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_inter_core_sync"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "batch_dims"
+          s: "is_preprocessed"
+          s: "negative_index_support"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "x"
+          s: "indices"
+          s: "axis"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 0
+          i: 0
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_custom_op"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_is_n_batch_split"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_is_op_dynamic_impl"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_kernel_bin_id"
+      value {
+        s: "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_16f36abeb8aad2356ef12c893144c5cf7863d8f934fab0f8a3e4748b49c5042ab"
+      }
+    }
+    attr {
+      key: "_kernel_names_prefix"
+      value {
+        list {
+          val_type: VT_LIST_STRING
+        }
+      }
+    }
+    attr {
+      key: "_kernelname"
+      value {
+        s: "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0"
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "AIcoreEngine"
+      }
+    }
+    attr {
+      key: "_mode_in_args_first_field"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "_node_support_dynamic_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_op_impl_mode_enum"
+      value {
+        i: 2
+      }
+    }
+    attr {
+      key: "_op_infer_depends"
+      value {
+        list {
+          s: "axis"
+          val_type: VT_LIST_STRING
+        }
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_op_slice_info"
+      value {
+        s: "{\"_op_slice_info\": {\"splitMaps\": [{\"inputList\": [{\"idx\": 1, \"axis\": [0], \"headOverLap\": [-1], \"tailOverLap\": [-1]}], \"outputList\": [{\"idx\": 0, \"axis\": [0]}]}], \"reduceMaps\": [], \"l1FusionEnable\": 0, \"minTbeL1Space\": 0}}"
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "y"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_pattern"
+      value {
+        s: "Opaque"
+      }
+    }
+    attr {
+      key: "_session_graph_id"
+      value {
+        s: "0_11"
+      }
+    }
+    attr {
+      key: "_sgt_cube_vector_core_type"
+      value {
+        s: "AiCore"
+      }
+    }
+    attr {
+      key: "_supported_16in_32out"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_task_ratio"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "_tbeKernelSize"
+      value {
+        i: 417120
+      }
+    }
+    attr {
+      key: "_tbe_kernel_name_for_load"
+      value {
+        s: "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0"
+      }
+    }
+    attr {
+      key: "batch_dims"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "compile_info_json"
+      value {
+        s: "{\"_cube_vector_core_type\":\"AiCore\",\"device_id\":\"0\",\"is_gather_v2\":true,\"is_tik\":true,\"vars\":{\"core_num\":32,\"impl_mode\":1,\"indices_dsize\":4,\"is_preprocessed\":false,\"l1_size\":1048576,\"params_dsize\":4,\"ub_size\":262144}}"
+      }
+    }
+    attr {
+      key: "compile_info_key"
+      value {
+        s: "f55454224e35cbd6c2539ee572489d0e4dfe55fcfdb65ddbb50d64078dfb3b15"
+      }
+    }
+    attr {
+      key: "continuous_input"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "continuous_output"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "core_type_value"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "fusion_scope"
+      value {
+        i: -2
+      }
+    }
+    attr {
+      key: "globalworkspace_ref"
+      value {
+        s: "globalworkspace_spec_workspace"
+      }
+    }
+    attr {
+      key: "globalworkspace_size"
+      value {
+        i: 32
+      }
+    }
+    attr {
+      key: "globalworkspace_type"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "imply_type"
+      value {
+        i: 1
+      }
+    }
+    attr {
+      key: "input_para_type_list"
+      value {
+        list {
+          i: 0
+          i: 0
+          i: 0
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          b: false
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_preprocessed"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "negative_index_support"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "op_para_size"
+      value {
+        i: 256
+      }
+    }
+    attr {
+      key: "optionalInputMode"
+      value {
+        s: "no_placeholder"
+      }
+    }
+    attr {
+      key: "support_dynamicshape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "tbe_op_atomic_workspace_flag"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "tvm_blockdim"
+      value {
+        i: 32
+      }
+    }
+    attr {
+      key: "tvm_magic"
+      value {
+        s: "RT_DEV_BINARY_MAGIC_ELF"
+      }
+    }
+    attr {
+      key: "ub_atomic_params"
+      value {
+        list {
+          i: 0
+          i: 0
+          i: 0
+          i: 0
+          i: 0
+          val_type: VT_LIST_INT
+        }
+      }
+    }
+    attr {
+      key: "wspMode"
+      value {
+        s: "unfolded"
+      }
+    }
+    has_out_attr: true
+    id: 4
+    input_name: "new_sub_graph4_PlaceHolder6"
+    input_name: "new_sub_graph4_PlaceHolder7"
+    input_name: "new_sub_graph4_PlaceHolder8"
+    src_name: "Unique"
+    src_name: "ge_default_20230713074125_sub_2_unknow_Data_0"
+    src_name: "ge_default_20230713074125_sub_2_unknow_Data_1"
+    src_index: 0
+    src_index: 0
+    src_index: 0
+    dst_name: "ge_default_20230713074125_sub_2_unknow_Node_Output"
+    dst_index: 0
+    input_i: 0
+    input_i: 0
+    input_i: 0
+    output_i: 0
+    is_input_const: false
+    is_input_const: false
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: -1
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: -1
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 0
+              list_i: 64
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 0
+              list_i: 64
+            }
+          }
+        }
+      }
+      size: -1
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    input_desc {
+      dtype: DT_INT32
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+    input_desc {
+      dtype: DT_INT32
+      shape {
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_INT32"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+    output_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_2_unknow_Node_Output"
+    type: "NetOutput"
+    input: "GatherV2:0"
+    attr {
+      key: "INPUT_IS_VAR"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_input_name_key"
+      value {
+        list {
+          s: "__input0"
+        }
+      }
+    }
+    attr {
+      key: "_input_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_RTS"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          b: false
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 5
+    src_name: "GatherV2"
+    src_index: 0
+    input_i: 0
+    is_input_const: false
+    input_desc {
+      dtype: DT_FLOAT
+      shape {
+        dim: 2
+      }
+      layout: "ND"
+      attr {
+        key: "_parent_node_index"
+        value {
+          i: 0
+        }
+      }
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "need_update_dtype_when_op_checksupport"
+        value {
+          b: false
+        }
+      }
+      attr {
+        key: "origin_data_type"
+        value {
+          s: "DT_FLOAT"
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape"
+        value {
+          list {
+            i: 2
+            val_type: VT_LIST_INT
+          }
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: true
+        }
+      }
+      attr {
+        key: "origin_shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      attr {
+        key: "shape_range"
+        value {
+          list_list_int {
+            list_list_i {
+              list_i: 2
+              list_i: 2
+            }
+          }
+        }
+      }
+      size: 64
+      device_type: "NPU"
+      real_dim_cnt: 1
+    }
+  }
+  attr {
+    key: "_memory_discontiguous_allocation"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_session_graph_id"
+    value {
+      s: "0_11"
+    }
+  }
+  attr {
+    key: "globalworkspace_size"
+    value {
+      i: 32
+    }
+  }
+  attr {
+    key: "globalworkspace_type"
+    value {
+      i: 0
+    }
+  }
+}
+graph {
+  name: "ge_default_20230713074125_sub_3_unknow"
+  op {
+    name: "ge_global_step"
+    type: "Variable"
+    attr {
+      key: "OUTPUT_IS_VAR"
+      value {
+        list {
+          b: true
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_ir_attr_names"
+      value {
+        list {
+          s: "index"
+          s: "value"
+          s: "container"
+          s: "shared_name"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_key"
+      value {
+        list {
+          s: "x"
+        }
+      }
+    }
+    attr {
+      key: "_ir_inputs_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_GE_LOCAL"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_GE_LOCAL_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_no_tiling"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_output_name_key"
+      value {
+        list {
+          s: "__output0"
+        }
+      }
+    }
+    attr {
+      key: "_output_name_value"
+      value {
+        list {
+          i: 0
+        }
+      }
+    }
+    attr {
+      key: "container"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "shared_name"
+      value {
+        s: ""
+      }
+    }
+    attr {
+      key: "value"
+      value {
+        t {
+          desc {
+            dtype: DT_FLOAT
+            shape {
+            }
+            layout: "ND"
+            attr {
+              key: "format_for_int"
+              value {
+                i: 2
+              }
+            }
+            attr {
+              key: "origin_format"
+              value {
+                s: "ND"
+              }
+            }
+            attr {
+              key: "origin_format_for_int"
+              value {
+                i: 2
+              }
+            }
+            attr {
+              key: "origin_shape_initialized"
+              value {
+                b: false
+              }
+            }
+            device_type: "NPU"
+          }
+        }
+      }
+    }
+    has_out_attr: true
+    dst_name: "ge_default_20230713074125_sub_3_unknow_Node_Output"
+    dst_index: -1
+    output_i: 62277028864
+    output_desc {
+      dtype: DT_UINT64
+      shape {
+        dim: 1
+      }
+      layout: "ND"
+      attr {
+        key: "format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_format"
+        value {
+          s: "ND"
+        }
+      }
+      attr {
+        key: "origin_format_for_int"
+        value {
+          i: 2
+        }
+      }
+      attr {
+        key: "origin_shape_initialized"
+        value {
+          b: false
+        }
+      }
+      size: 64
+      device_type: "NPU"
+    }
+  }
+  op {
+    name: "ge_default_20230713074125_sub_3_unknow_Node_Output"
+    type: "NetOutput"
+    input: "ge_global_step:-1"
+    attr {
+      key: "OwnerGraphIsUnknown"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_ge_attr_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_is_unknown_shape"
+      value {
+        b: false
+      }
+    }
+    attr {
+      key: "_lxfusion_engine_name"
+      value {
+        s: "DNN_VM_RTS"
+      }
+    }
+    attr {
+      key: "_lxfusion_op_kernel_lib_name"
+      value {
+        s: "DNN_VM_RTS_OP_STORE"
+      }
+    }
+    attr {
+      key: "_op_read_write_index"
+      value {
+        i: 0
+      }
+    }
+    attr {
+      key: "is_first_node"
+      value {
+        b: true
+      }
+    }
+    attr {
+      key: "is_input_const"
+      value {
+        list {
+          val_type: VT_LIST_BOOL
+        }
+      }
+    }
+    attr {
+      key: "is_last_node"
+      value {
+        b: true
+      }
+    }
+    has_out_attr: true
+    id: 1
+    src_name: "ge_global_step"
+  }
+  attr {
+    key: "_memory_discontiguous_allocation"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "_session_graph_id"
+    value {
+      s: "0_11"
+    }
+  }
+  attr {
+    key: "globalworkspace_size"
+    value {
+      i: 32
+    }
+  }
+  attr {
+    key: "globalworkspace_type"
+    value {
+      i: 0
+    }
+  }
+}
+attr {
+  key: "event_num"
+  value {
+    i: 0
+  }
+}
+attr {
+  key: "label_num"
+  value {
+    i: 0
+  }
+}
+attr {
+  key: "memory_size"
+  value {
+    i: 0
+  }
+}
+attr {
+  key: "p2p_memory_size"
+  value {
+    i: 0
+  }
+}
+attr {
+  key: "stream_num"
+  value {
+    i: 0
+  }
+}
+attr {
+  key: "target_type"
+  value {
+    s: "MINI"
+  }
+}
+attr {
+  key: "weight_size"
+  value {
+    i: 0
+  }
+}

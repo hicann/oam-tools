@@ -1,0 +1,164 @@
+[process]
+crash reason:6
+crash pid:570350
+crash tid:570350
+crash stack base:0x00007fffce2da000
+crash stack top:0x00007fffce2d8c00
+
+[stack]
+Thread 1 (570350, atrace_test)
+#0 0x00007f04b16b900b 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#1 0x00007f04b1698859 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#2 0x00007f04b192b911 0x00007f04b188d000 /lib/x86_64-linux-gnu/libstdc++.so.6
+#3 0x00007f04b193738c 0x00007f04b188d000 /lib/x86_64-linux-gnu/libstdc++.so.6
+#4 0x00007f04b19373f7 0x00007f04b188d000 /lib/x86_64-linux-gnu/libstdc++.so.6
+#5 0x00007f04b19376a9 0x00007f04b188d000 /lib/x86_64-linux-gnu/libstdc++.so.6
+#6 0x00007f04b192e2ce 0x00007f04b188d000 /lib/x86_64-linux-gnu/libstdc++.so.6
+#7 0x00007f04b14da562 0x00007f04b148a000 ./libatrace_test.so
+#8 0x00007f04b14d98d7 0x00007f04b148a000 ./libatrace_test.so
+#9 0x00007f04b14e08e0 0x00007f04b148a000 ./libatrace_test.so
+#10 0x00007f04b14dbf0d 0x00007f04b148a000 ./libatrace_test.so
+#11 0x00007f04b14da63c 0x00007f04b148a000 ./libatrace_test.so
+#12 0x00007f04b14d9a84 0x00007f04b148a000 ./libatrace_test.so
+#13 0x00007f04b14da067 0x00007f04b148a000 ./libatrace_test.so
+#14 0x00007f04b14d2842 0x00007f04b148a000 ./libatrace_test.so
+#15 0x00007f04b14d899f 0x00007f04b148a000 ./libatrace_test.so
+#16 0x000055b0ff4ab314 0x000055b0ff4aa000 atrace_test
+#17 0x00007f04b169a083 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#18 0x000055b0ff4ab1ae 0x000055b0ff4aa000 atrace_test
+
+Thread 2 (570358, alogFlush)
+#0 0x00007f04b175323f 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#1 0x00007f04b1758ec7 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#2 0x00007f04b178b85f 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#3 0x00007f04b13366ac 0x00007f04b132d000 /usr/local/Ascend/latest/runtime/lib64/libascendalog.so
+#4 0x00007f04b13387e1 0x00007f04b132d000 /usr/local/Ascend/latest/runtime/lib64/libascendalog.so
+#5 0x00007f04b1870609 0x00007f04b1868000 /lib/x86_64-linux-gnu/libpthread.so.0
+#6 0x00007f04b1795133 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+
+Thread 3 (570359, atrace_test)
+#0 0x00007f04b175323f 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#1 0x00007f04b1758ec7 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#2 0x00007f04b178b85f 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+#3 0x00007f04b1a7bf51 0x00007f04b1a7a000 /usr/local/Ascend/latest/runtime/lib64/libascend_watchdog.so
+#4 0x00007f04b1870609 0x00007f04b1868000 /lib/x86_64-linux-gnu/libpthread.so.0
+#5 0x00007f04b1795133 0x00007f04b1676000 /lib/x86_64-linux-gnu/libc.so.6
+
+[maps]
+e0000100000-e0000101000 rw-p 00000000 00:00 0 
+e0000140000-e0000141000 rw-p 00000000 00:00 0 
+e0000180000-e0000181000 rw-p 00000000 00:00 0 
+e00001c0000-e00001c1000 rw-p 00000000 00:00 0 
+e0000200000-e0000201000 rw-p 00000000 00:00 0 
+e0000240000-e0000241000 rw-p 00000000 00:00 0 
+e0000380000-e0000381000 rw-p 00000000 00:00 0 
+e00003c0000-e00003c1000 rw-p 00000000 00:00 0 
+55b0ff4aa000-55b0ff4ab000 r--p 00000000 fd:00 102109044                  /home/gwb/stackcore_unwind/atrace_test
+55b0ff4ab000-55b0ff4ac000 r-xp 00001000 fd:00 102109044                  /home/gwb/stackcore_unwind/atrace_test
+55b0ff4ac000-55b0ff4ad000 r--p 00002000 fd:00 102109044                  /home/gwb/stackcore_unwind/atrace_test
+55b0ff4ad000-55b0ff4ae000 r--p 00002000 fd:00 102109044                  /home/gwb/stackcore_unwind/atrace_test
+55b0ff4ae000-55b0ff4af000 rw-p 00003000 fd:00 102109044                  /home/gwb/stackcore_unwind/atrace_test
+55b1006e0000-55b10076b000 rw-p 00000000 00:00 0                          [heap]
+7f04b02e3000-7f04b02e4000 ---p 00000000 00:00 0 
+7f04b02e4000-7f04b0ae4000 rw-p 00000000 00:00 0 
+7f04b0ae4000-7f04b0ae5000 ---p 00000000 00:00 0 
+7f04b0ae5000-7f04b0f09000 rw-p 00000000 00:00 0 
+7f04b0f09000-7f04b0f0c000 r--p 00000000 fd:00 11674396                   /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f04b0f0c000-7f04b0f13000 r-xp 00003000 fd:00 11674396                   /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f04b0f13000-7f04b0f15000 r--p 0000a000 fd:00 11674396                   /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f04b0f15000-7f04b0f16000 r--p 0000b000 fd:00 11674396                   /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f04b0f16000-7f04b0f17000 rw-p 0000c000 fd:00 11674396                   /usr/lib/x86_64-linux-gnu/libnss_files-2.31.so
+7f04b0f17000-7f04b0f1d000 rw-p 00000000 00:00 0 
+7f04b0f1d000-7f04b0f1f000 r--p 00000000 fd:00 11674403                   /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f04b0f1f000-7f04b0f23000 r-xp 00002000 fd:00 11674403                   /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f04b0f23000-7f04b0f25000 r--p 00006000 fd:00 11674403                   /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f04b0f25000-7f04b0f26000 r--p 00007000 fd:00 11674403                   /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f04b0f26000-7f04b0f27000 rw-p 00008000 fd:00 11674403                   /usr/lib/x86_64-linux-gnu/librt-2.31.so
+7f04b0f34000-7f04b0f48000 r--p 00000000 fd:00 96209053                   /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+7f04b0f48000-7f04b1061000 r-xp 00014000 fd:00 96209053                   /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+7f04b1061000-7f04b10d1000 r--p 0012d000 fd:00 96209053                   /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+7f04b10d1000-7f04b10d2000 r--p 0019d000 fd:00 96209053                   /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+7f04b10d2000-7f04b10d7000 rw-p 0019e000 fd:00 96209053                   /usr/local/Ascend/driver/lib64/driver/libascend_hal.so
+7f04b10d7000-7f04b132d000 rw-p 00000000 00:00 0 
+7f04b132d000-7f04b1330000 r--p 00000000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b1330000-7f04b1340000 r-xp 00003000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b1340000-7f04b1348000 r--p 00013000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b1348000-7f04b1349000 ---p 0001b000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b1349000-7f04b134a000 r--p 0001b000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b134a000-7f04b134b000 rw-p 0001c000 fd:00 173678821                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascendalog.so
+7f04b134b000-7f04b1350000 r--p 00000000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b1350000-7f04b1358000 r-xp 00005000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b1358000-7f04b135a000 r--p 0000d000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b135a000-7f04b135b000 ---p 0000f000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b135b000-7f04b135c000 r--p 0000f000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b135c000-7f04b135d000 rw-p 00010000 fd:00 96209059                   /usr/local/Ascend/driver/lib64/common/libmmpa.so
+7f04b135d000-7f04b136a000 r--p 00000000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b136a000-7f04b1393000 r-xp 0000d000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b1393000-7f04b13a2000 r--p 00036000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b13a2000-7f04b13a3000 ---p 00045000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b13a3000-7f04b13a5000 r--p 00045000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b13a5000-7f04b13a7000 rw-p 00047000 fd:00 15335431                   /home/gwb/libascend_trace.so
+7f04b13a7000-7f04b148a000 rw-p 00000000 00:00 0 
+7f04b148a000-7f04b14c8000 r--p 00000000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b14c8000-7f04b14f2000 r-xp 0003e000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b14f2000-7f04b1502000 r--p 00068000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b1502000-7f04b1503000 ---p 00078000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b1503000-7f04b1504000 r--p 00078000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b1504000-7f04b1507000 rw-p 00079000 fd:00 102109118                  /home/gwb/stackcore_unwind/libatrace_test.so
+7f04b1507000-7f04b150c000 rw-p 00000000 00:00 0 
+7f04b150c000-7f04b150f000 r--p 00000000 fd:00 11671145                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f04b150f000-7f04b1521000 r-xp 00003000 fd:00 11671145                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f04b1521000-7f04b1525000 r--p 00015000 fd:00 11671145                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f04b1525000-7f04b1526000 r--p 00018000 fd:00 11671145                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f04b1526000-7f04b1527000 rw-p 00019000 fd:00 11671145                   /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+7f04b1527000-7f04b1534000 r--p 00000000 fd:00 11674390                   /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f04b1534000-7f04b15db000 r-xp 0000d000 fd:00 11674390                   /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f04b15db000-7f04b1674000 r--p 000b4000 fd:00 11674390                   /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f04b1674000-7f04b1675000 r--p 0014c000 fd:00 11674390                   /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f04b1675000-7f04b1676000 rw-p 0014d000 fd:00 11674390                   /usr/lib/x86_64-linux-gnu/libm-2.31.so
+7f04b1676000-7f04b1698000 r--p 00000000 fd:00 11674388                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f04b1698000-7f04b1810000 r-xp 00022000 fd:00 11674388                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f04b1810000-7f04b185e000 r--p 0019a000 fd:00 11674388                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f04b185e000-7f04b1862000 r--p 001e7000 fd:00 11674388                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f04b1862000-7f04b1864000 rw-p 001eb000 fd:00 11674388                   /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7f04b1864000-7f04b1868000 rw-p 00000000 00:00 0 
+7f04b1868000-7f04b186e000 r--p 00000000 fd:00 11674401                   /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f04b186e000-7f04b187f000 r-xp 00006000 fd:00 11674401                   /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f04b187f000-7f04b1885000 r--p 00017000 fd:00 11674401                   /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f04b1885000-7f04b1886000 r--p 0001c000 fd:00 11674401                   /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f04b1886000-7f04b1887000 rw-p 0001d000 fd:00 11674401                   /usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+7f04b1887000-7f04b188d000 rw-p 00000000 00:00 0 
+7f04b188d000-7f04b1923000 r--p 00000000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1923000-7f04b1a14000 r-xp 00096000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1a14000-7f04b1a5d000 r--p 00187000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1a5d000-7f04b1a5e000 ---p 001d0000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1a5e000-7f04b1a69000 r--p 001d0000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1a69000-7f04b1a6c000 rw-p 001db000 fd:00 11674382                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28
+7f04b1a6c000-7f04b1a6f000 rw-p 00000000 00:00 0 
+7f04b1a6f000-7f04b1a70000 r--p 00000000 fd:00 11674389                   /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f04b1a70000-7f04b1a72000 r-xp 00001000 fd:00 11674389                   /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f04b1a72000-7f04b1a73000 r--p 00003000 fd:00 11674389                   /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f04b1a73000-7f04b1a74000 r--p 00003000 fd:00 11674389                   /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f04b1a74000-7f04b1a75000 rw-p 00004000 fd:00 11674389                   /usr/lib/x86_64-linux-gnu/libdl-2.31.so
+7f04b1a7a000-7f04b1a7b000 r--p 00000000 fd:00 173678857                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascend_watchdog.so
+7f04b1a7b000-7f04b1a7e000 r-xp 00001000 fd:00 173678857                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascend_watchdog.so
+7f04b1a7e000-7f04b1a80000 r--p 00004000 fd:00 173678857                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascend_watchdog.so
+7f04b1a80000-7f04b1a81000 r--p 00005000 fd:00 173678857                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascend_watchdog.so
+7f04b1a81000-7f04b1a82000 rw-p 00006000 fd:00 173678857                  /usr/local/Ascend/CANN-7.5/x86_64-linux/lib64/libascend_watchdog.so
+7f04b1a82000-7f04b1a84000 r--p 00000000 fd:00 96209058                   /usr/local/Ascend/driver/lib64/common/libc_sec.so
+7f04b1a84000-7f04b1a91000 r-xp 00002000 fd:00 96209058                   /usr/local/Ascend/driver/lib64/common/libc_sec.so
+7f04b1a91000-7f04b1a94000 r--p 0000f000 fd:00 96209058                   /usr/local/Ascend/driver/lib64/common/libc_sec.so
+7f04b1a94000-7f04b1a95000 r--p 00011000 fd:00 96209058                   /usr/local/Ascend/driver/lib64/common/libc_sec.so
+7f04b1a95000-7f04b1a96000 rw-p 00012000 fd:00 96209058                   /usr/local/Ascend/driver/lib64/common/libc_sec.so
+7f04b1a96000-7f04b1a98000 rw-p 00000000 00:00 0 
+7f04b1a98000-7f04b1a99000 r--p 00000000 fd:00 11674384                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f04b1a99000-7f04b1abc000 r-xp 00001000 fd:00 11674384                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f04b1abc000-7f04b1ac4000 r--p 00024000 fd:00 11674384                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f04b1ac5000-7f04b1ac6000 r--p 0002c000 fd:00 11674384                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f04b1ac6000-7f04b1ac7000 rw-p 0002d000 fd:00 11674384                   /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7f04b1ac7000-7f04b1ac8000 rw-p 00000000 00:00 0 
+7fffce2b9000-7fffce2db000 rw-p 00000000 00:00 0                          [stack]
+7fffce2e5000-7fffce2e8000 r--p 00000000 00:00 0                          [vvar]
+7fffce2e8000-7fffce2e9000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+

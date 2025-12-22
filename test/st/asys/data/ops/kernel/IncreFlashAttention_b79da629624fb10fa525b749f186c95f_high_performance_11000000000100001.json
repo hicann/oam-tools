@@ -1,0 +1,34 @@
+{
+    "binFileName": "FlashAttentionScore_213e8781b9323773f21103b53d6e8517_high_performance",
+    "binFileSuffix": ".o",
+    "blockDim": -1,
+    "coreType": "MIX",
+    "intercoreSync": 1,
+    "kernelName": "IncreFlashAttention_b79da629624fb10fa525b749f186c95f_high_performance_11000000000100001",
+    "magic": "RT_DEV_BINARY_MAGIC_ELF",
+    "memoryStamping": [],
+    "opParaSize": 2416,
+    "parameters": [],
+    "sha256": "5e0d47a4b3c0680a9489033d28968dcc2cbb4c22dfa00d7b363d1bda72313759",
+    "workspace": {
+        "num": 1,
+        "size": [
+            -1
+        ],
+        "type": [
+            0
+        ]
+    },
+    "taskRation": "1:2",
+    "kernelList": [
+        {
+            "kernelName": "te_gatherv2_097ab5be870f5abfbee16f82ff39732eccfee1dbe76f3bcd6ef32b08996dd346_1__kernel0"
+        },
+        {
+            "kernelName": "te_gatherv2_097ab5be870f5abfbee16f82ff39732eccfee1dbe76f3bcd6ef32b08996dd346_2__kernel0"
+        }
+    ],
+        "optionalInputMode": "gen_placeholder",
+        "deterministic": "ignore"
+    }
+}

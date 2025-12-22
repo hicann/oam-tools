@@ -1,0 +1,18 @@
+[INFO] TDT(3485,aicpu_scheduler):2025-05-08-07:33:06.324.649 [tsd_event_client.cpp:62][TsdEventShutdown][tid:3485] [TsdEvent] Do shutdown event proc dev[0] hostPid[109157] procType[1].
+[INFO] TDT(3485,aicpu_scheduler):2025-05-08-07:33:06.324.683 [tsd_event_client.cpp:76][TsdEventShutdown][tid:3485] [TsdEventClient] Submit event TSD_EVENT_SHUTDOWN_RSP to tsd success.
+[INFO] TDT(3485,aicpu_scheduler):2025-05-08-07:33:06.324.694 [tsd_event_client.cpp:244][DoLoopProcessEvent][tid:3485] [TsdEventClient] halEschedDettachDevice dev[0].
+[INFO] TDT(3485,aicpu_scheduler):2025-05-08-07:33:06.324.701 [tsd_event_client.cpp:248][DoLoopProcessEvent][tid:3485] [TsdEventClient] Wait exit.
+[INFO] AICPU(3485,aicpu_scheduler):2025-05-08-07:33:06.324.720 [queue_schedule_sub_module_interface.cpp:202][StopQueueScheduleModule][tid:3485] enter queue schedule sub module stop process.
+[INFO] AICPU(3485,aicpu_scheduler):2025-05-08-07:33:06.324.729 [queue_schedule_sub_module_interface.cpp:204][StopQueueScheduleModule][tid:3485] no need to stop qs submodule.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.325.331 [aicpusd_interface_process.cpp:552][StopAICPUSchedulerWithFlag][tid:3485] Begin to stop aicpu scheduler, hostPid[109157]
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.458.742 [aicpusd_period_statistic.cpp:73][DoStatistic][tid:3503] DoStatistic running over
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.458.924 [aicpusd_proc_mem_statistic.cpp:260][PrintOutProcMemInfo][tid:3485] proc_metrics:pid=109157, rssavg=88156160 B, rsshwm=88969216 B, xsmemavg=0 B, xsmemhwm=0 B, svmmemavg=8388712 B, svmmemhwm=8388713 B
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.460.020 [aicpusd_interface_process.cpp:627][DettachDeviceInDestory][tid:3485] Uninit process drv queue msg on ccpu, ret is 0.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.460.100 [aicpusd_worker.cpp:171][WaitForStop][tid:3485] WaitForStop begin.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.461.205 [aicpusd_worker.cpp:177][WaitForStop][tid:3485] WaitForStop end.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.461.222 [aicpusd_interface_process.cpp:581][StopAICPUSchedulerWithFlag][tid:3485] Success to stop aicpu scheduler, hostPid[109157]
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.461.230 [main.cpp:390][main][tid:3485] Aicpu schedule stopped
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.464.961 [aicpusd_worker.cpp:171][WaitForStop][tid:3485] WaitForStop begin.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.464.990 [aicpusd_worker.cpp:177][WaitForStop][tid:3485] WaitForStop end.
+[INFO] CCECPU(3485,aicpu_scheduler):2025-05-08-07:33:06.465.831 [aicpusd_mpi_mgr.cpp:48][PrintStatisticInfo][tid:3485] Mpi Dvpp event statistic: [0]
+[INFO] DRV(3485,aicpu_scheduler):2025-05-08-07:33:06.466.605 [agentmm_svm.c:652][devmm] [devmm_agentmm_close] Svm process exit. (hostpid=109157; devpid=3485; devid_mask=1; vfid=0)

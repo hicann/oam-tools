@@ -1,0 +1,11 @@
+base info:
+==================================================
+device num:		0x1
+probe num:		0x1
+online num:		0x1
+offline num:		0x0
+
+devices info:
+==================================================
+dir        phy-id    logic-id    status
+device-0   0         0           os running

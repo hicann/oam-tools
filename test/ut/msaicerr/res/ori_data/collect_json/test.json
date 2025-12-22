@@ -1,0 +1,273 @@
+{
+    "binFileName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance",
+    "binFileSuffix": ".o",
+    "blockDim": -1,
+    "coreType": "VectorCore",
+    "core_type": "AIV",
+    "intercoreSync": 0,
+    "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance",
+    "magic": "RT_DEV_BINARY_MAGIC_ELF_AIVEC",
+    "memoryStamping": [],
+    "opParaSize": 200,
+    "parameters": [
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "sha256": "d6737dc36a45dfb09c39b7114dcd632fb22348260fd7c3829dcb74ed72aced58",
+    "workspace": {
+        "num": 1,
+        "size": [
+            -1
+        ],
+        "type": [
+            0
+        ]
+    },
+    "kernelList": [
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10430"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_10200"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_12330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_11100"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20320"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20310"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20230"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20220"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20210"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20130"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20131"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20132"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20120"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_20110"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30320"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30310"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30230"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30220"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30210"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30130"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30131"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30120"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_30110"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_40330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_40331"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_40320"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_40310"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_50330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_50320"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_50310"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_60020"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_60010"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70320"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70310"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70230"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70220"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70210"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70130"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70131"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70120"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70110"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_70001"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_80330"
+        },
+        {
+            "kernelName": "GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance_80220"
+        }
+    ],
+    "debugOptions": "assert",
+    "debugBufSize": 76800,
+    "compileInfo": {},
+    "supportInfo": {
+        "implMode": "high_performance",
+        "int64Mode": false,
+        "simplifiedKeyMode": 1,
+        "simplifiedKey": [
+            "GatherV3/d=0,p=1/3,2/9,2/9,2/3,2/,0",
+            "GatherV3/d=1,p=1/3,2/9,2/9,2/3,2/,0"
+        ],
+        "staticKey": "1176a0366ba33082ee501500b877eb1592710802347ddef9c13a0bd4d316c59b",
+        "inputs": [
+            {
+                "name": "x",
+                "index": 0,
+                "dtype": "float32",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ],
+                "dtype_match_mode": "DtypeByte"
+            },
+            [
+              {
+                "name": "indices",
+                "index": 1,
+                "dtype": "int64",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ]
+              },
+              {
+                "name": "indices",
+                "index": 2,
+                "dtype": "int64",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ]
+              }
+            ],
+            {
+                "name": "indices",
+                "index": 3,
+                "dtype": "int64",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ]
+            },
+            {
+                "name": "axis",
+                "index": 4,
+                "dtype": "int64",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "y",
+                "index": 0,
+                "dtype": "float32",
+                "format": "ND",
+                "paramType": "required",
+                "shape": [
+                    -2
+                ],
+                "dtype_match_mode": "DtypeByte"
+            }
+        ],
+        "attrs": [
+            {
+                "name": "batch_dims",
+                "dtype": "int",
+                "value": null,
+                "mode": "null"
+            },
+            {
+                "name": "negative_index_support",
+                "dtype": "bool",
+                "value": false,
+                "mode": "value"
+            }
+        ],
+        "opMode": "dynamic",
+        "deterministic": "ignore"
+    },
+    "filePath": "ascend910b/gather_v3/GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance.json"
+}
