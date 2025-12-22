@@ -45,7 +45,9 @@ oam-tools（Operations, Administration, and Maintenance）项目为开发者提�
     - CANN ops组合包：`Ascend-cann-${chip_type}-ops_${cann_version}_linux-${arch}.run`
     - protobuf >= 25.1
     - abseil >= 20230802.1
+    - json >= 3.11.3
     - googletest（仅执行UT时依赖，建议版本 release-1.11.0）
+    - mockcpp（仅执行UT时依赖，建议版本 2.7）
     - pytest（仅执行UT时依赖，建议版本 9.0.1）
     
 	其中：
