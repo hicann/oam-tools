@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include "input_parser.h"
 #include <cstdio>
 #include <cstdlib>
 #include <map>
@@ -23,6 +22,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sys/stat.h>
+#include "input_parser.h"
 #include "cmd_log/cmd_log.h"
 #include "errno/error_code.h"
 #include "param_validation.h"

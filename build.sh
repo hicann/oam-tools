@@ -368,7 +368,7 @@ oam_tools_test() {
         elif [ "$case_name" == "msaicerr_ut" ]; then
             python3 -m pytest ../test/ut/msaicerr/testcase/* --cov=../src/msaicerr > "${output_file}" 2>&1
         elif [ "$case_name" == "msprof_ut" ]; then
-            ./test/ut/msprof/msprofbin/test/msprof_bin_utest > "${output_file}" 2>&1
+            ./test/ut/msprof/msprofbin/msprof_bin_utest > "${output_file}" 2>&1
         fi
          echo "END TEST: **$case_name**"
 

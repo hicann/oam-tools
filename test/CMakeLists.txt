@@ -35,3 +35,5 @@ set(LLT_EXTEND_INCLUDE_DIR
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
 )
+
+add_subdirectory(ut/msprof/msprofbin)

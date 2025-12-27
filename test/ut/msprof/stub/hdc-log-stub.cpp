@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "hdc-log-stub.h"
+#include "dlog_pub.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -25,8 +25,7 @@ const std::map<int, std::string> LOG_LEVEL_INFO = {
     {DLOG_DEBUG, "DEBUG"},
     {DLOG_INFO,  "INFO"},
     {DLOG_WARN,  "WARING"},
-    {DLOG_ERROR, "ERROR"},
-    {DLOG_EVENT, "EVENT"},
+    {DLOG_ERROR, "ERROR"}
 };
 
 void DlogErrorInner(int moduleId, const char *format, ...) {

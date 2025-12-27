@@ -7,13 +7,16 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # -----------------------------------------------------------------------------------------------------------
-set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)\
+set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)
 
 protobuf_generate(msprof_bin_utest_proto
     CppPath
     HeaderPath
     ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto
+    TARGET
 )
+
+add_dependencies(msprof_bin_utest_proto host_protoc protobuf_host_build ascend_protobuf_static)
 
 set(common_file
     ${MSPROF_SOURCE_DIR}/dvvp/app/application.cpp
@@ -88,21 +91,13 @@ set(common_file
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/dynamic_profiling/src/dyn_prof_client.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mini_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/dc_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_lite_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_mini_v3_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mini_v3_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/tiny_v1_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/job_wrapper/src/prof_hardware_mem_job.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/job_wrapper/src/prof_hardware_mem_job_open.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/message/codec.cpp
+    #${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.pb.cc
 )
 
 
@@ -133,19 +128,28 @@ add_executable(msprof_bin_utest
     test/prof_device_transport_utest.cpp
     test/running_mode_utest.cpp
     test/adx_prof_api_utest.cpp
-    stub/drv_stub.cpp
-    stub/mmpa_stub.cpp
-    stub/profile_drv_user_stub.cpp
-    stub/hdc-api-stub.cpp
-    stub/hdc-log-stub.cpp
-    stub/devdrv_runtime_api_stub.cpp
-    stub/adx_prof_api_stub.cpp
+    ../stub/drv_stub.cpp
+    ../stub/mmpa_stub.cpp
+    ../stub/profile_drv_user_stub.cpp
+    ../stub/hdc-api-stub.cpp
+    ../stub/hdc-log-stub.cpp
+    ../stub/devdrv_runtime_api_stub.cpp
+    ../stub/adx_prof_api_stub.cpp
     ${CppPath}
 )
 
+message(STATUS "#####################ASCEND_CANN_PACKAGE_PATH:"${ASCEND_CANN_PACKAGE_PATH})
+message(STATUS "#####################PROTOBUF_HOST_INCLUDE:"${PROTOBUF_HOST_INCLUDE})
+
 set(libmsprofHeaderDir
-    ${TOP_DIR}/output/third_party/gtest_shared/include
+    ${PROTOBUF_HOST_INCLUDE}
+    ${TOP_DIR}/src/msprof/inc/toolchain
+    ${LLT_EXTEND_INCLUDE_DIR}
     ${TOP_DIR}/third_party/libc_sec/include
+    ${TOP_DIR}/third_party/gtest_shared/include
+    ${TOP_DIR}/src/dfx/msprof/collector/basic/osal
+    ${TOP_DIR}/src/dfx/msprof/collector/dvvp/proto
+    ${TOP_DIR}/src/msprof/inc
     ${TOP_DIR}/include/driver
     ${TOP_DIR}/include/external
     ${TOP_DIR}/include/external/acl
@@ -159,6 +163,14 @@ set(libmsprofHeaderDir
     ${MSPROF_SOURCE_DIR}/dvvp/common/config/open
     ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/devprof/include
+    ${TOP_DIR}/src/third_party/metadef
+    ${TOP_DIR}/src/third_party/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
+    ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
 )
 
 target_include_directories(msprof_bin_utest PRIVATE
@@ -224,11 +236,15 @@ target_compile_definitions(msprof_bin_utest PRIVATE
 
 target_link_libraries(msprof_bin_utest PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>
+    alog
+    ascend_protobuf_static
 )
 
 set_target_properties(msprof_bin_utest
     PROPERTIES
     OUTPUT_NAME msprof_bin_utest
-    LIBRARY_OUTPUT_DIRECTORY ${TOP_DIR}/test/ut/msprof/msprofbin/test
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/
 )
+
+add_dependencies(msprof_bin_utest msprof_bin_utest_proto)
 
