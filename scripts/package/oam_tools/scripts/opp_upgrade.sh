@@ -347,6 +347,7 @@ is_install_path="${10}"
 is_upgrade="${11}"
 in_feature_new="${12}"
 chip_type_new="${13}"
+pkg_version_dir="${14}"
 in_install_for_all=""
 
 logandprint "[INFO]: Command opp_upgrade"
@@ -356,17 +357,16 @@ if [ "${is_for_all}" = y ]; then
 fi
 
 get_version "pkg_version" "$_VERSION_INFO_FILE"
-get_version_dir "pkg_version_dir" "$_VERSION_INFO_FILE"
+
 is_multi_version_pkg "pkg_is_multi_version" "$_VERSION_INFO_FILE"
 
 get_package_upgrade_version_dir "upgrade_version_dir" "$_TARGET_INSTALL_PATH" "${ops_base_platform_dir}"
-upgrade_version_dir="cann"
-upgrade_old_version_dir="cann"
-upgrade_install_info="$_TARGET_INSTALL_PATH/cann/share/info/$ops_base_platform_dir/ascend_install.info"
+upgrade_version_dir="$pkg_version_dir"
+upgrade_old_version_dir="$pkg_version_dir"
+upgrade_install_info="$_TARGET_INSTALL_PATH/$pkg_version_dir/share/info/$ops_base_platform_dir/ascend_install.info"
 upgrade_old_install_info="$upgrade_install_info"
 
 if [ "$pkg_is_multi_version" = "true" ]; then
-    get_version_dir "pkg_version_dir" "$_VERSION_INFO_FILE"
     install_version_dir=${_TARGET_INSTALL_PATH}/${pkg_version_dir}/share/info
 else
     install_version_dir=${_TARGET_INSTALL_PATH}
