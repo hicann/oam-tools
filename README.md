@@ -37,7 +37,7 @@ oam-tools（Operations, Administration, and Maintenance）项目为开发者提�
 
     本项目源码编译用到的依赖如下，请注意版本要求。
 
-    - python >= 3.7.0
+    - python >= 3.9.0
     - gcc >= 7.3.0
     - cmake >= 3.16.0
     - ccache
@@ -127,7 +127,7 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 ## 本地验证 
 
 编译完成后，用户可以进行开发测试（DT：Development Testing），验证项目功能是否正常。
-> 说明：执行UT用例依赖[pytest-cov](), [coverage](), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件。
+> 说明：执行UT用例依赖[pytest-cov](), [coverage](), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件。UT不支持在虚拟机和conda环境下运行。
 
 > 要求：pytest-cov >=7.0.0, coverage >=7.10.0
 
