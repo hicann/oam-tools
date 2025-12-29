@@ -18,35 +18,75 @@
 
 import os
 import subprocess
+from datetime import datetime, timezone
 
-from common import log_error, log_info
+from common import log_error, log_info, log_debug
 from common.const import MAX_PERIOD, UNKNOWN
 from params import ParamDict
 from common import AsysProfilingSupportedChip
 
-support_profiling_list = set(["aicore", "dvpp"])
+support_profiling_list = set(["aicore", "dvpp", "os", "link", "memory", "power"])
 
 
 class AsysProfiling():
     def __init__(self):
-        self.device_id = ParamDict().get_arg("device_id")
+        self.device_id = int(ParamDict().get_arg("device_id"))
         self.period = ParamDict().get_arg("period", 0)
         self.output_path = ParamDict().get_arg("output")
         self.run_modes = ParamDict().get_arg("run_mode")
         self.aic_metrics = ParamDict().get_arg("aic_metrics", "PipeUtilization")
 
+    @staticmethod
+    def concat_aicore(self, cmd):
+        concat_cmd = f"--ai-core=on --aic-mode=sample-based --aic-metrics={self.aic_metrics}"
+        log_debug("Concat aicore command.")
+        out_cmd = cmd + " " + concat_cmd
+        return out_cmd
+
+    @staticmethod
+    def concat_dvpp(self, cmd):
+        concat_cmd = "--dvpp-profiling=on"
+        log_debug("Concat dvpp command.")
+        out_cmd = cmd + " " + concat_cmd
+        return out_cmd
+
+    @staticmethod
+    def concat_link(self, cmd):
+        concat_cmd = "--sys-interconnection-profiling=on --sys-io-profiling=on"
+        log_debug("Concat link command.")
+        out_cmd = cmd + " " + concat_cmd
+        return out_cmd
+
+    @staticmethod
+    def concat_memory(self, cmd):
+        concat_cmd = "--sys-hardware-mem=on --llc-profiling=on"
+        log_debug("Concat memory command.")
+        out_cmd = cmd + " " + concat_cmd
+        return out_cmd
+
+    @staticmethod
+    def concat_os(self, cmd):
+        concat_cmd = "--sys-profiling=on"
+        log_debug("Concat os command.")
+        out_cmd = cmd + " " + concat_cmd
+        return out_cmd
+
+    @staticmethod
+    def concat_power(self, cmd):
+        return cmd
+
     def run(self):
         if not self._check_param():
             return False
-        ret = True
+        log_info(f"Run mode is {self.run_modes}.")
+        cmd = (f"msprof --output={self.output_path} --sys-period={str(self.period)} "
+                f"--sys-devices={self.device_id} ") 
         for run_mode in self.run_modes:
-            func_name = "_run_" + run_mode
+            func_name = "_concat_" + run_mode
             func = getattr(self, func_name, None)
             if func:
-                returncode = func()
-                if not returncode:
-                    log_error(f"Error occurred while running {run_mode}. Check logs for more information.")
-                    ret = False
+                cmd = func(cmd)
+        ret = self._run_cmd(cmd)
         return ret
 
     def _check_param(self):
@@ -54,26 +94,10 @@ class AsysProfiling():
             log_error("Period is invalid, it should be in [1,2592000].")
             return False
 
-        if not self.output_path:
-            log_error("Argument 'output' can not be empty string.")
-            return False
-
-        devices = set(self.device_id.split(','))
-        try:
-            for device in devices:
-                if int(device) < 0:
-                    log_error("Device id is invalid, run 'asys profiling -h' to get help.")
-                    return False
-        except ValueError:
-            log_error("Device id is invalid, run 'asys profiling -h' to get help.")
-            return False
-
         profiling_supported = AsysProfilingSupportedChip()
-        for device in devices:
-            ret, _chip_info = profiling_supported.get_supported_chip_info(int(device))
-            if ret:
-                continue
-            elif _chip_info == UNKNOWN:
+        ret, _chip_info = profiling_supported.get_supported_chip_info(self.device_id)
+        if not ret:
+            if _chip_info == UNKNOWN:
                 log_error(f"device id {device} is invalid, please enter a vaild value.")
                 return False
             else:
@@ -84,29 +108,22 @@ class AsysProfiling():
         if not self.run_modes.issubset(support_profiling_list):
             log_error("Run mode type is unsupported, run 'asys profiling -h' to get help.")
             return False
+
+        utc_dt = datetime.now(timezone.utc)  # UTC time
+        dir_name = utc_dt.astimezone().strftime('%Y%m%d%H%M%S%f')[:-3]
+        if not self.output_path:
+            self.output_path = f"asys_profiling_result_{dir_name}"
+        else:
+            self.output_path = os.path.join(self.output_path, f"asys_profiling_result_{dir_name}")
         return True
 
-    def _run_aicore(self):
-        cmd = (f"msprof --output={self.output_path} --sys-period={str(self.period)} "
-                f"--sys-devices={self.device_id} --ai-core=on --aic-mode=sample-based "
-                f"--aic-metrics={self.aic_metrics}")
+    def _run_cmd(self, cmd):
         log_info(f"Start run: {cmd}, please wait about {self.period} seconds.")
+        # Run msprof command
         ret = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, encoding='utf-8', env=os.environ)
         if ret.returncode == 0:
-            log_info(f"Succeeded in running aicore profiling.\n{ret.stdout}")
+            log_info(f"Succeeded in running profiling.\n{ret.stdout}")
         else:
-            log_error(f"Failed to run aicore profiling.\n{ret.stdout}")
-            return False
-        return True
-
-    def _run_dvpp(self):
-        cmd = (f"msprof --output={self.output_path} --sys-period={str(self.period)} "
-                f"--sys-devices={self.device_id} --dvpp-profiling=on")
-        log_info(f"Start run: {cmd}, please wait about {self.period} seconds.")
-        ret = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, encoding='utf-8', env=os.environ)
-        if ret.returncode == 0:
-            log_info(f"Succeeded in running dvpp profiling.\n{ret.stdout}")
-        else:
-            log_error(f"Failed to run dvpp profiling.\n{ret.stdout}")
+            log_error(f"Failed to run profiling.\n{ret.stdout}")
             return False
         return True

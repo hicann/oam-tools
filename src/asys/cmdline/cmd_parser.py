@@ -54,10 +54,6 @@ class Arg(enum.Enum):
         KEY_NAME: "output", KEY_CHECKER: ArgChecker.DIR_CREATE, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_HELP: f"{OPTIONAL_Y} Specifies the flush path of the command execution result, Default: current dir."
     }
-    REQUIRED_OUTPUT = {
-        KEY_NAME: "output", KEY_CHECKER: None, KEY_REQUIRED: True, KEY_METAVAR: " ",
-        KEY_HELP: f"{POSITIONAL_R} Specifies the flush path of the command execution result, Default: current dir."
-    }
     TAR = {
         KEY_NAME: "tar", KEY_CHECKER: ArgChecker.TAR_CHECK, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_HELP: f"{OPTIONAL_Y} Specifies whether to compress the asys result directory into a tar.gz file."
@@ -175,11 +171,6 @@ class Arg(enum.Enum):
                   "It can be set to 'aicore' (aicore information), 'dvpp' (dvpp information), "
                   "or any combination of these values, separated by ','."
     }
-    PROFILING_DEVICE = {
-        KEY_NAME: "d", KEY_CHECKER: None, KEY_REQUIRED: True, KEY_METAVAR: " ",
-        KEY_HELP: f"{POSITIONAL_R} Specifies the IDs of the device for command execution. "
-                  "Multiple IDs can be entered, separated by ','."
-    }
     PERIOD = {
         KEY_NAME: "p", KEY_TYPE: int, KEY_CHECKER: None, KEY_REQUIRED: True, KEY_METAVAR: " ",
         KEY_HELP: f"{POSITIONAL_R} Specifies the profile information collection period, in seconds. "
@@ -188,7 +179,7 @@ class Arg(enum.Enum):
     AIC_METRICS = {
         KEY_NAME: "aic_metrics", KEY_CHECKER: None, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_CHOICES: ["PipeUtilization", "ArithmeticUtilization", "Memory", "MemoryL0",
-                        "MemoryUB", "ResourceConflictRatio", "L2Cache"],
+                        "MemoryUB", "ResourceConflictRatio", "L2Cache", "MemoryAccess"],
         KEY_HELP: f"{OPTIONAL_Y} Specifies the aicore metrics to be collected. "
                     "It takes effect when the run mode includes aicore. It can be set to 'PipeUtilization' "
                     "(time consumption and proportion of computing unit and handling unit), "
@@ -196,6 +187,7 @@ class Arg(enum.Enum):
                     "'Memory' (Memory IO bandwidth), 'MemoryL0' (L0 IO bandwidth), 'MemoryUB' (UB IO bandwidth), "
                     "'ResourceConflictRatio' (percentage of pipeline queue class instructions) or "
                     "'L2Cache' (read/write cache hit count and re-allocation count after misses). "
+                    "'MemoryAccess' (Bandwidth and data volume of operators accessing memory on the aicore). "
                     "If this argument is not specified, the default PipeUtilization is used."
     }
 
@@ -244,7 +236,7 @@ class Command(enum.Enum):
     }
     PROFILING = {
         KEY_NAME: "profiling",
-        KEY_ARGS: [Arg.PROFILING_DEVICE, Arg.PROFILING_RUN, Arg.REQUIRED_OUTPUT, Arg.PERIOD, Arg.AIC_METRICS],
+        KEY_ARGS: [Arg.DEVICE, Arg.PROFILING_RUN, Arg.OUTPUT, Arg.PERIOD, Arg.AIC_METRICS],
         KEY_HELP: "Collects the profiling information of the device."
     }
 
