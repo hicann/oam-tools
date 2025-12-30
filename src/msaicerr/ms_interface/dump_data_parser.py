@@ -123,6 +123,15 @@ class DumpDataParser:
             try:
                 if dtype == "bfloat16":
                     from bfloat16ext import bfloat16
+                    # 1. 以int16读取，纯粹的字节拷贝，不会触发溢出异常
+                    raw_data = np.fromfile(tensor_file, dtype=np.int16)
+                    # 2. 先转为float32处理
+                    data_f32 = raw_data.astype(np.float32)
+                    # 3. 手动设置数值边界3.3895e+38，防止无法表示的值
+                    bf16_limit = 3.3895e+38
+                    data_f32 = np.clip(data_f32, -bf16_limit, bf16_limit)
+                    # 4. 转回bfloat16， 因为clip过，所以不会触发bfloat16 overflow导致的段错误
+                    arr = data_f32.astype("bfloat16")
                 arr = np.fromfile(tensor_file, dtype=np.dtype(dtype))
                 result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {np.mean(arr)}, Std: {np.std(arr)}\n"
             except BaseException:
