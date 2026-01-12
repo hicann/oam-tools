@@ -18,6 +18,9 @@ cmake_minimum_required(VERSION 3.15)
 set(PKG_NAME oam)
 project(Oam-Tools)
 
+set(CMAKE_C_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+
 # install 参数
 set(INSTALL_LIBRARY_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging/oam_tools)
 
