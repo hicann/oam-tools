@@ -169,6 +169,8 @@ class Arg(enum.Enum):
         KEY_NAME: "r", KEY_CHECKER: None, KEY_REQUIRED: True, KEY_METAVAR: " ",
         KEY_HELP: f"{POSITIONAL_R} Specifies the type of profile information to be collected. "
                   "It can be set to 'aicore' (aicore information), 'dvpp' (dvpp information), "
+                  "'memory' (hardware memory information), 'link' (interconnection information), "
+                  "'os' (system information), 'power' (low power information), "
                   "or any combination of these values, separated by ','."
     }
     PERIOD = {
