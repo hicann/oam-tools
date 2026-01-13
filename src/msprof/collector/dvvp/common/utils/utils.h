@@ -423,6 +423,7 @@ public:
         return reinterpret_cast<TO *>(ptr);
     }
     static bool CheckDuplicateStrings(const std::string &oriStr, const std::string &subStr);
+    static bool CheckPathWithInvalidChar(const std::string &path);
 };
 
 template<class T>

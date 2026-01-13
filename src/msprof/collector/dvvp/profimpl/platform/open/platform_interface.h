@@ -147,6 +147,8 @@ enum PlatformFeature {
     PLATFORM_SYS_MEM_SERVICEFLOW,
     PLATFORM_MC2,
     PLATFORM_AICPU_HCCL,
+    // Feature analysis
+    PLATFORM_EXPORT_TYPE,
     // MAX
     PLATFORM_COLLECTOR_TYPES_MAX
 };

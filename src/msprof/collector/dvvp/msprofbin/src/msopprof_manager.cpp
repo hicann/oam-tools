@@ -39,7 +39,7 @@ MsopprofManager::MsopprofManager()
     std::string ascendToolkitHome;
     MSPROF_GET_ENV(MM_ENV_ASCEND_TOOLKIT_HOME, ascendToolkitHome);
     if (!ascendToolkitHome.empty()) {
-        msopprofPath_ = ascendToolkitHome + "/tools/msopt/bin/msopprof";
+        msopprofPath_ = ascendToolkitHome + "/tools/msopprof/bin/msopprof";
     }
 }
 

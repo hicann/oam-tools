@@ -307,7 +307,6 @@ int32_t InputParser::MsprofCmdCheckValid(const struct MsprofCmdInfo &cmdInfo, in
     }
     switch (opt) {
         case ARGS_OUTPUT:
-            ret = CheckOutputValid(cmdInfo);
             break;
         case ARGS_STORAGE_LIMIT:
             ret = CheckStorageLimitValid(cmdInfo);

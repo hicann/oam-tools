@@ -108,6 +108,7 @@ SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> InputParser::MsprofGetOp
 
     int32_t opt = 0;
     int32_t optionIndex = 0;
+    bool setOutput = false;
     MsprofString optString = "";
     struct MsprofCmdInfo cmdInfo = { {nullptr} };
     while ((opt = OsalGetOptLong(argCount, const_cast<MsprofStrBufAddrT>(argv),
@@ -118,6 +119,7 @@ SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> InputParser::MsprofGetOp
             MsprofCmdUsage("");
             return params_;
         }
+        setOutput = (opt == ARGS_OUTPUT) ? true : setOutput;
         if (PreCheckPlatform(opt, argv) == PROFILING_FAILED) {
             return nullptr;
         }
@@ -135,6 +137,10 @@ SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> InputParser::MsprofGetOp
     }
 
     if (CheckMstxValid() != MSPROF_DAEMON_OK) {
+        return nullptr;
+    }
+
+    if (setOutput && CheckOutputValid(cmdInfo) != MSPROF_DAEMON_OK) {
         return nullptr;
     }
 
@@ -542,6 +548,27 @@ int32_t InputParser::CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo)
     }
 }
 
+int32_t InputParser::CheckAnalysisOutputValid(const std::string &path, const struct MsprofCmdInfo &cmdInfo) const
+{
+    std::vector<int> analysisOpts = { ARGS_EXPORT, ARGS_PARSE, ARGS_QUERY, ARGS_ANALYZE };
+    for (auto &opt : analysisOpts) {
+        if (cmdInfo.args[opt] == nullptr) {
+            continue;
+        }
+        if (std::string(cmdInfo.args[opt]) == ON) {
+            if (!Utils::IsFileExist(path)) {
+                CmdLog::CmdErrorLog("Analysis output path(%s) does not exist.", path.c_str());
+                return MSPROF_DAEMON_ERROR;
+            }
+            if (Utils::IsSoftLink(path)) {
+                CmdLog::CmdErrorLog("Analysis output path(%s) is soft link.", path.c_str());
+                return MSPROF_DAEMON_ERROR;
+            }
+        }
+    }
+    return MSPROF_DAEMON_OK;
+}
+
 int32_t InputParser::CheckOutputValid(const struct MsprofCmdInfo &cmdInfo)
 {
     if (cmdInfo.args[ARGS_OUTPUT] == nullptr) {
@@ -550,9 +577,16 @@ int32_t InputParser::CheckOutputValid(const struct MsprofCmdInfo &cmdInfo)
     }
     std::string path = Utils::RelativePathToAbsolutePath(cmdInfo.args[ARGS_OUTPUT]);
     if (!path.empty()) {
+        if (CheckAnalysisOutputValid(path, cmdInfo) != MSPROF_DAEMON_OK) {
+            return MSPROF_DAEMON_ERROR;
+        }
         if (path.size() > MAX_PATH_LENGTH) {
             CmdLog::CmdErrorLog("Argument --output is invalid because of exceeds"
                 " the maximum length of %d", MAX_PATH_LENGTH);
+            return MSPROF_DAEMON_ERROR;
+        }
+        if (!Utils::CheckPathWithInvalidChar(path)) {
+            CmdLog::CmdErrorLog("Argument --output %s contains invalid character.", path.c_str());
             return MSPROF_DAEMON_ERROR;
         }
         if (Utils::CreateDir(path) != PROFILING_SUCCESS) {
@@ -1368,6 +1402,14 @@ void ArgsManager::AddAnalysisArgs()
     if (Platform::instance()->RunSocSide()) {
         return;
     }
+    std::string typeDesc = "The export type, only uesd when argument `export` is on \n"
+                        "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
+                        "\t\t\t\t\t\t   the default value is text.";
+    if (Platform::instance()->CheckIfSupport(PLATFORM_EXPORT_TYPE)) {
+        typeDesc = "The export type, only uesd when argument `export` is on \n"
+                "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
+                "\t\t\t\t\t\t   the default value is text(which will also export the database).";
+    }
     std::vector<Args> argsList;
     argsList = {
     {"python-path", "Specify the python interpreter path that is used for analysis, please ensure the python version"
@@ -1386,9 +1428,7 @@ void ArgsManager::AddAnalysisArgs()
         "-1"},
     {"summary-format", "The export summary file format, only uesd when argument export is on, "
         "include csv, json, the default value is csv.", "csv"},
-    {"type", "The export type, only uesd when argument `export` is on \n"
-        "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
-        "\t\t\t\t\t\t   the default value is text(which will alse export the database).", "text"},
+    {"type", typeDesc, "text"},
     {"reports", "Specify the path that is used for controlling the export scope of collecting results"}
     };
     argsList_.insert(argsList_.end(), argsList.begin(), argsList.end());

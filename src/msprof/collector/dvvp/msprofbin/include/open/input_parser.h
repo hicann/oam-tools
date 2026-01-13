@@ -175,6 +175,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"sys-hardware-mem-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HARDWARE_MEM_SAMPLING_FREQ},
     {"sys-io-sampling-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_IO_SAMPLING_FREQ},
     {"dvpp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_FREQ},
+    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"sys-cpu-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_CPU_SAMPLING_FREQ},
     {"sys-interconnection-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_INTERCONNECTION_FREQ},
     {"host-sys-usage-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE_FREQ},
@@ -182,7 +183,6 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"model-id", OSAL_OPTIONAL_ARG, nullptr, ARGS_EXPORT_MODEL_ID},
     // host
     {"host-sys", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS},
-    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"host-sys-pid", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_PID},
     {"host-sys-usage", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE},
     // end
@@ -201,6 +201,7 @@ private:
     void SplitApplicationArgv(int32_t argc, CONST_CHAR_PTR argv[], int32_t &argCount);
     void HandleApp();
     int32_t CheckPythonPathValid(const struct MsprofCmdInfo &cmdInfo) const;
+    int32_t CheckAnalysisOutputValid(const std::string &path, const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckOutputValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckStorageLimitValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t GetAppParam(const std::string &appParams);

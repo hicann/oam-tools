@@ -92,7 +92,8 @@ CloudV2Platform::CloudV2Platform()
         PLATFORM_MC2,
         PLATFORM_AICPU_HCCL,
         PLATFORM_SYS_MEM_SERVICEFLOW,
-        PLATFORM_AICSCALE_ACP
+        PLATFORM_AICSCALE_ACP,
+        PLATFORM_EXPORT_TYPE
     };
 }
 
