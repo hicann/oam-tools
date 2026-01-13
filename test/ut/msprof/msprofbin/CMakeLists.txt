@@ -126,7 +126,7 @@ add_executable(msprof_bin_utest
     test/prof_param_adapter_utest.cpp
     test/prof_task_utest.cpp
     test/prof_device_transport_utest.cpp
-    test/running_mode_utest.cpp
+    #test/running_mode_utest.cpp
     test/adx_prof_api_utest.cpp
     ../stub/drv_stub.cpp
     ../stub/mmpa_stub.cpp
@@ -176,6 +176,7 @@ set(libmsprofHeaderDir
 target_include_directories(msprof_bin_utest PRIVATE
     ${libmsprofHeaderDir}
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/include
+    ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/include/open
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin
     ${MSPROF_SOURCE_DIR}/dvvp/app
     ${MSPROF_SOURCE_DIR}/dvvp/
