@@ -35,6 +35,7 @@ target_link_options(intf_pub_base INTERFACE
     -Wl,-z,relro
     -Wl,-z,now
     -Wl,-z,noexecstack
+    -Wl,-Bsymbolic
     $<$<CONFIG:Release>:-Wl,--build-id=none>
     $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:-pie>
     $<$<CONFIG:Release>:-s>

@@ -53,6 +53,8 @@ set_target_properties(alog PROPERTIES
 # 添加Runtime中依赖的文件地址
 set(runtime_INCLUDE_DIR
     ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/dump
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
@@ -61,7 +63,5 @@ set(runtime_INCLUDE_DIR
 # 添加Driver中依赖的文件地址
 set(third_party_INCLUDE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/driver
     ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/adcore
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/metadef
 )
