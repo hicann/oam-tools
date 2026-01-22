@@ -127,7 +127,7 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 ## 本地验证 
 
 编译完成后，用户可以进行开发测试（DT：Development Testing），验证项目功能是否正常。
-> 说明：执行UT用例依赖[pytest-cov](), [coverage](), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件。UT不支持在虚拟机和conda环境下运行。
+> 说明：执行UT用例依赖[pytest-cov](https://pypi.org/project/pytest-cov/), [coverage](https://pypi.org/project/coverage/), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件。UT不支持在虚拟机和conda环境下运行。
 
 > 要求：pytest-cov >=7.0.0, coverage >=7.10.0
 
@@ -144,9 +144,9 @@ rm -rf build_out/ build/
 
 ## 相关文档
 
--[asys工具用户指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850alpha002/maintenref/troubleshooting/troubleshooting_0096.html)：介绍asys命令行工具的使用方法，支持以下功能：故障信息收集、业务复跑+故障信息收集、软硬件和Device状态信息展示、健康检查、综合检测、组件检测、trace文件解析/coredump文件解析/stackcore文件解析/coretrace文件解析、实时堆栈导出、环境配置、AI Core Error故障信息解析等。
+-[asys工具用户指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850/maintenref/troubleshooting/troubleshooting_0096.html)：介绍asys命令行工具的使用方法，支持以下功能：故障信息收集、业务复跑+故障信息收集、软硬件和Device状态信息展示、健康检查、综合检测、组件检测、trace文件解析/coredump文件解析/stackcore文件解析/coretrace文件解析、实时堆栈导出、环境配置、AI Core Error故障信息解析等。
 
--[msaicerr工具用户指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850alpha002/maintenref/troubleshooting/troubleshooting_0099.html)：介绍msaicerr命令行工具的使用方法，用于分析AI Core Error问题、解析Dump文件、检查环境等。
+-[msaicerr工具用户指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/850/maintenref/troubleshooting/troubleshooting_0099.html)：介绍msaicerr命令行工具的使用方法，用于分析AI Core Error问题、解析Dump文件、检查环境等。
 
 -[性能调优工具用户指南](https://www.hiascend.com/document/redirect/CannCommunityToolProfiling)：介绍msprof命令行工具的使用方法，用于指导用户采集和分析运行在昇腾AI处理器上的AI任务各个运行阶段的关键性能指标，以便快速定位软、硬件性能瓶颈，提升AI任务性能分析的效率。
 
