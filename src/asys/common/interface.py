@@ -40,7 +40,7 @@ class AmlStressDetectInfo(ctypes.Structure):
     ]
 
 
-def _get_devices_master_id(device_obj, all_devices):
+def get_devices_master_id(device_obj, all_devices):
     if len(all_devices) == 1:
         return {all_devices[0]: all_devices[0]}  # logic_id: master_id
 
@@ -58,7 +58,7 @@ def _get_devices_master_id(device_obj, all_devices):
     return ret
 
 
-def _run_stress_detect(device_id, device_obj, ret):
+def run_stress_detect(device_id, device_obj, ret):
     info = AmlStressDetectInfo()
     info.type.STRESS_DETECT_ALL = 0
 
@@ -75,7 +75,7 @@ def _run_stress_detect(device_id, device_obj, ret):
     return ret_code
 
 
-def _run_hbm(device_id, device_obj, ret):
+def run_hbm(device_id, device_obj, ret):
     if device_id == ERROR_DEVICE_ID:
         ret[device_id] = [ScreenResult.WARN.value, "0"]
         return ret
@@ -110,7 +110,7 @@ def _run_hbm(device_id, device_obj, ret):
     return ret_code
 
 
-def _run_cpu(device_id, device_obj, ret):
+def run_cpu(device_id, device_obj, ret):
     if device_id == ERROR_DEVICE_ID:
         ret[device_id] = ScreenResult.WARN.value
         return ret
@@ -140,11 +140,11 @@ def run_diagnose(device_obj, diagnose_devices, run_mode):
     ret = {}
 
     if run_mode == "hbm_detect":
-        _target_func = _run_hbm
+        _target_func = run_hbm
     elif run_mode == "cpu_detect":
-        _target_func = _run_cpu
+        _target_func = run_cpu
     else:
-        _target_func = _run_stress_detect
+        _target_func = run_stress_detect
 
     for device_id in diagnose_devices:
         # new thread

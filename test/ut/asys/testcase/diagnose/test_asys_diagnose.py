@@ -591,25 +591,25 @@ class TestAsysDiagnose(AssertTest):
             def get_ecc_isolated_page(self, a):
                 return 0
 
-        from common.interface import _run_hbm
+        from common.interface import run_hbm
         ret = [1, 2]
         device_id = 1
         device_obj = HbmMocker()
-        _run_hbm(device_id, device_obj, ret)
+        run_hbm(device_id, device_obj, ret)
         self.assertTrue(ret == [1, ['Warn', '0']])
         self.assertTrue(
             "Run hbm detect failed, error_msg: 'HbmMocker' object has no attribute 'ascend_ml'" in caplog.text)
 
     def test_diagnose_run_cpu_master_id_error(self):
-        from common.interface import _run_cpu
-        self.assertTrue(_run_cpu(-1, 0, {}) == {-1: "Warn"})
+        from common.interface import run_cpu
+        self.assertTrue(run_cpu(-1, 0, {}) == {-1: "Warn"})
 
     def test_diagnose_run_hbm_master_id_error(self):
-        from common.interface import _run_hbm
-        self.assertTrue(_run_hbm(-1, 0, {}) == {-1: ["Warn", "0"]})
+        from common.interface import run_hbm
+        self.assertTrue(run_hbm(-1, 0, {}) == {-1: ["Warn", "0"]})
 
     def test_diagnose_get_devices_master_id(self, mocker):
-        from common.interface import _get_devices_master_id
+        from common.interface import get_devices_master_id
         self.assertTrue(True)
 
         class HalDevice():
@@ -618,8 +618,8 @@ class TestAsysDiagnose(AssertTest):
                 return RetCode.FAILED
 
         # mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
-        self.assertTrue(_get_devices_master_id(HalDevice(), [0]) == {0: 0})
-        self.assertTrue(_get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
+        self.assertTrue(get_devices_master_id(HalDevice(), [0]) == {0: 0})
+        self.assertTrue(get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
 
     @pytest.mark.parametrize(["device_id"], [(False,), (0,), (1,), (2,), (3,)])
     def test_diagnose_device_error_d(self, device_id, mocker, caplog, capsys):
@@ -635,7 +635,7 @@ class TestAsysDiagnose(AssertTest):
         chip_info = "Unknown" if int(device_id) in [0, 1] else "Ascend 910B1 V1"
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
-        mocker.patch("common.interface._run_hbm", return_value={0: "Pass"})
+        mocker.patch("common.interface.run_hbm", return_value={0: "Pass"})
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_info)
         mocker.patch("os.path.isfile", return_value=True)

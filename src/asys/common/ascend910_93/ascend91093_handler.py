@@ -26,8 +26,8 @@ class Ascend91093Handler(DeviceInfo):
         super().__init__()
  
     @classmethod
- 	def need_lp_param(cls):
- 	    return False
+    def need_lp_param(cls):
+        return False
  
     def run_diagnose(self, device_obj, diagnose_devices, run_mode):
         """Multi-thread parallel execution"""
@@ -35,11 +35,11 @@ class Ascend91093Handler(DeviceInfo):
         ret = {}
         master_ids = {}
  
-        logic_master_info = interface._get_devices_master_id(device_obj, diagnose_devices)
+        logic_master_info = interface.get_devices_master_id(device_obj, diagnose_devices)
         if run_mode == "hbm_detect":
-            _target_func = interface._run_hbm
+            _target_func = interface.run_hbm
         elif run_mode == "cpu_detect":
-            _target_func = interface._run_cpu
+            _target_func = interface.run_cpu
         else:
             return interface.run_diagnose(device_obj, diagnose_devices, run_mode)
  

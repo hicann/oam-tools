@@ -104,7 +104,7 @@ class TestDiagnose(AssertTest):
         sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=stress_detect"]
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch("common.interface._run_hbm", return_value={0: "Pass"})
+        mocker.patch("common.interface.run_hbm", return_value={0: "Pass"})
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
         mocker.patch("os.path.isfile", return_value=True)
@@ -445,14 +445,14 @@ class TestDiagnose(AssertTest):
     def test_diagnose_get_devices_master_id(self, mocker):
         self.assertTrue(True)
 
-        from common.interface import _get_devices_master_id
+        from common.interface import get_devices_master_id
         class HalDevice():
             @staticmethod
             def get_phyid_from_logicid(device_id):
                 return RetCode.FAILED
         # mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
-        self.assertTrue(_get_devices_master_id(HalDevice(), [0]) == {0: 0})
-        self.assertTrue(_get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
+        self.assertTrue(get_devices_master_id(HalDevice(), [0]) == {0: 0})
+        self.assertTrue(get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
 
     @pytest.mark.parametrize(["d"], [(False,), (0,), (1,), (2,), (3,)])
     def test_diagnose_device_error_d(self, d, mocker, caplog, capsys):
@@ -463,7 +463,7 @@ class TestDiagnose(AssertTest):
         chip_info = "Unknown" if int(d) in [0, 1] else "Ascend 910B1 V1"
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
-        mocker.patch("common.interface._run_hbm", return_value={0: "Pass"})
+        mocker.patch("common.interface.run_hbm", return_value={0: "Pass"})
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_info)
         mocker.patch("os.path.isfile", return_value=True)
