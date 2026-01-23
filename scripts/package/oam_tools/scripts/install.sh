@@ -1646,16 +1646,7 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
         logandprint "[INFO]: msprof_install.sh"
         bash ${target_dir}/oam_tools/script/msprof_install.sh --install-path=${target_dir}/../..
     fi
-    logandprint "[INFO] ${target_dir} ${opp_platform_dir}"
-#    aicpuinfofile "add"
-    # repairaicpu "${target_dir}"
-    # if [ $(id -u) -eq 0 ]; then
-    #     chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-    #     chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null
-    # else
-    #     chmod -R 550 "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-    #     chmod 440 "${target_dir}/${opp_platform_dir}/script/filelist.csv" 2> /dev/null
-    # fi
+    logandprint "[INFO]: ${target_dir} ${opp_platform_dir}"
     logoperationretstatus "install" "${in_install_type}" "$?" "${in_cmd_list}"
 fi
 

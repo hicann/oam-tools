@@ -1,4 +1,5 @@
 Version=8.5.0
 version_dir=cann
+timestamp=
 required_package_runtime_version="8.5.0"
 required_package_metadef_version="8.5.0"
