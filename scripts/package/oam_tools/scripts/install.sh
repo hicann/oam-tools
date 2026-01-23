@@ -168,15 +168,10 @@ logoperationretstatus() {
     _curr_ip="127.0.0.1"
     _pkg_name="Oam-tools"
     _cur_date_res=$(getdate)
-    echo "Install ${_event_level} ${_curr_user} ${_cur_date_res} ${_curr_ip} \
-${_pkg_name} ${_ret_status_des} install_type=${_install_type}; \
-cmdlist=${_cmd_list}."
     if [ -f "${_OPERATE_LOG_FILE}" ]; then
         echo "Install ${_event_level} ${_curr_user} ${_cur_date_res} ${_curr_ip} \
 ${_pkg_name} ${_ret_status_des} install_type=${_install_type}; \
 cmdlist=${_cmd_list}." >> "${_OPERATE_LOG_FILE}"
-    else
-        echo "[WARNING]: Operation log file not exist."
     fi
 
     if [ "${_ret_status}" != 0 ]; then
@@ -1651,7 +1646,6 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
         logandprint "[INFO]: msprof_install.sh"
         bash ${target_dir}/oam_tools/script/msprof_install.sh --install-path=${target_dir}/../..
     fi
-    logandprint "[INFO]: To re."
     logandprint "[INFO] ${target_dir} ${opp_platform_dir}"
 #    aicpuinfofile "add"
     # repairaicpu "${target_dir}"

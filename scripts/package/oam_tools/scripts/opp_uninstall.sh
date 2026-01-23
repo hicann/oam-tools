@@ -299,17 +299,7 @@ if [ "${is_change_dir_mode}" = "true" ]; then
     chmod u-w "${_ABS_INSTALL_PATH}" 2> /dev/null
 fi
 
-temp=$(ls "${_ABS_INSTALL_PATH}/${ops_base_platform_dir}" 2> /dev/null)
-if [ -d "${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/" ]; then
-    # find custom file in path and print log
-    for file in $(ls -A ${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/* 2> /dev/null)
-    do
-        if [ "${file##*.}" != "info" ] && [ "${file}" != "Ascend310" ] && [ "${file}" != "Ascend310RC" ] && [ "${file}" != "Ascend910" ] && [ "${file}" != "Ascend310P" ] && [ "${file}" != "Ascend" ] && [ "${file}" != "aicpu" ];then
-            logandprint "[WARNING]: ${file}, has files changed by users, cannot be delete."
-        fi
-    done
-fi
-# delete scene.info 
+# delete scene.info
 scene_dir="${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/scene.info"
 if [ -f ${scene_dir} ]; then
     rm -f ${scene_dir}

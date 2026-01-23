@@ -23,8 +23,18 @@ LEVEL_ERROR="ERROR"
 
 source "${COMMON_SHELL_PATH}"
  
+# log functions
+getdate() {
+    _cur_date=$(date +"%Y-%m-%d %H:%M:%S")
+    echo "${_cur_date}"
+}
+
 logandprint() {
-    echo "[Oam-Tools] ""$1"
+    is_error_level=$(echo $1 | grep -E 'ERROR|WARN|INFO')
+    if [ "${is_quiet}" != "y" ] || [ "${is_error_level}" != "" ]; then
+        echo "[Oam-Tools] [$(getdate)] ""$1"
+    fi
+    echo "[Oam-Tools] [$(getdate)] ""$1" >> "${_INSTALL_LOG_FILE}"
 }
  
 installMsprofPython() {
@@ -47,8 +57,8 @@ installMsprofWhlPackage() {
     local _package=$1
     local _python_local_path=$2
  
-    logandprint "start to begin install ${_package}."
-    logandprint "The installation path ${_python_local_path} of whl package"
+    logandprint "[INFO]: start to begin install ${_package}."
+    logandprint "[INFO]: The installation path ${_python_local_path} of whl package"
     if [ ! -f "${_package}" ]; then
         # log_and_print ${LEVEL_ERROR} "ERR_NO:0x0080;ERR_DES: The ${_package} does not exist."
         return 1
@@ -61,7 +71,7 @@ installMsprofWhlPackage() {
     fi
     changeDirMode 555 ${_python_local_path}
     changeFileMode 555 ${_python_local_path}
-    logandprint "install ${_package} succeed."
+    logandprint "[INFO]: install ${_package} succeed."
     return 0
 }
  
