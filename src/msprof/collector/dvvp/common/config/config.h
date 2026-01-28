@@ -77,9 +77,9 @@ constexpr int32_t MSVP_CLN_SENDER_POOL_THREAD_NUM = 2;
 
 constexpr uint64_t STORAGE_LIMIT_DOWN_THD = 200; // 200MB
 
-constexpr int32_t MAX_PMU_EVENT = 1294;      // max ai core event is 0x50E
+constexpr int32_t MAX_PMU_EVENT = 2147483647; // max ai core event is now 0x7FFFFFFF
 constexpr int32_t LITE_MAX_PMU_EVENT = 1813; // max ai core event is 0x715 for chip:12
-constexpr int32_t ACC_MAX_PMU_EVENT = 1815;  // max ai core event is 0x717 for chip:15
+constexpr int32_t ACC_MAX_PMU_EVENT = 2147483647;  // max ai core event is 0x7FFFFFFF for chip:15
 
 constexpr int32_t MAX_PARAMS_LEN = 70;
 constexpr int32_t MAX_APP_LEN = 2048;
