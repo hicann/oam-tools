@@ -7,7 +7,7 @@ HCCL Test提供HCCL通信性能与正确性测试
 * 安装CANN Toolkit包
 
   运行HCCL Test工具依赖CANN Toolkit开发套件包和CANN算子包，请根据操作系统架构，下载对应版本的CANN软件包，参考[昇腾文档中心-CANN软件安装指南](https://www.hiascend.com/document/redirect/CannCommunityInstWizard)进行安装。
-  
+
 * 设置CANN软件环境变量
 
   ```shell
@@ -18,9 +18,9 @@ HCCL Test提供HCCL通信性能与正确性测试
   ```
 
 * 安装并配置MPI环境变量
-  
+
   MPI的安装请参见[HCCL性能测试工具用户指南](https://www.hiascend.com/document/redirect/CannCommunityToolHcclTest)的"MPI安装与配置"章节。
-  
+
   环境变量配置示例如下：
 
   ```shell
@@ -114,7 +114,11 @@ HCCL Test提供HCCL通信性能与正确性测试
 * 性能
   * `-n,--iters <iteration count>` 迭代次数，默认值：20
   * `-w,--warmup_iters <warmup iteration count>` 预热迭代次数（不参与性能统计，仅影响HCCL Test执行耗时），默认值：10
-  
+  * `-t,--onlydevicetime <0/1>` 将通信算子host侧软件耗时与kernel加载耗时排除在通信执行耗时之外，只统计device执行时间（影响HCCL TEST执行耗时），默认值：0
+      注：
+      1、当启动 -t 参数时，-w\-n参数配置不大于100轮次
+      2、当启动 -t 参数时，不支持aicpu_ts模式
+      3、当启动 -t 参数时，并且HCCL_BUFFSIZE配置小于等于100MB时，-t 参数不生效
 * 结果校验
   
   * `-c,--check <0/1>` 校验集合通信操作结果正确性（大规模集群场景下，开启结果校验会使HCCL Test执行耗时增加），默认值：1（开启）
@@ -222,11 +226,11 @@ HCCL Test提供HCCL通信性能与正确性测试
       $1
       ```
     * 用例执行：
-    
+
       ```shell
       mpirun -n 4 ./run.sh "./all_reduce_test -b 8K -e 64M -f 2 -p 4"
       ```
- 
+
 * 多server场景（计算节点1启动0，1，2，3卡，计算节点2启动4，5，6，7卡）
 
   * 计算节点1：
@@ -258,11 +262,11 @@ HCCL Test提供HCCL通信性能与正确性测试
 ## 开启性能数据采集
 
   执行HCCL Test工具前，设置如下环境变量，即可开启性能数据采集功能。
-  
+
   ```shell
   # “1”代表开启profiling，“0”代表关闭profiling，默认值为“0”，开启时，执行HCCL Test时采集性能数据
   export HCCL_TEST_PROFILING=1
   # 指定profiling数据存放路径，默认为“/var/log/npu/profiling”
   export HCCL_TEST_PROFILING_PATH=/home/profiling
-  ```  
+  ```
   HCCL Test工具执行完成后会在HCCL_TEST_PROFILING_PATH指定目录下生成profiling数据。

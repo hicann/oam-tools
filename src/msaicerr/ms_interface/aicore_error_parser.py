@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd. All Rights Reserved.
@@ -88,55 +88,65 @@ class AicoreErrorParser:
                 if arg_after == arg_before:
                     return True
             return False
+        
+    @staticmethod
+    def parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id):
+        stream_id, task_id, kernel_name, hash_id = kernel_name_ret[0]
+        if err_stream_id and err_task_id:
+            for k_stream_id, k_task_id, k_kernel_name, k_hash_id in kernel_name_ret:
+                if k_stream_id == err_stream_id and k_task_id == err_task_id:
+                    stream_id, task_id, kernel_name, hash_id = k_stream_id, k_task_id, k_kernel_name, k_hash_id
+                    break
+        return stream_id, task_id, kernel_name, hash_id
+    
+    @staticmethod
+    def parser_kernel_info_with_ext_info(kernel_name_ret, err_stream_id, err_task_id):
+        stream_id, task_id = kernel_name_ret[0][0], kernel_name_ret[0][1]
+        kernel_name, hash_id = kernel_name_ret[0][3], kernel_name_ret[0][4]
+        if err_stream_id and err_task_id:
+            for k_r in kernel_name_ret:
+                if k_r[0] == err_stream_id and k_r[1] == err_task_id and k_r[3] != "none":
+                    stream_id, task_id, kernel_name, hash_id = k_r[0], k_r[1], k_r[3], k_r[4]
+                    break
+        return stream_id, task_id, kernel_name, hash_id
 
     def get_kernel_name_l0(self: any, data_name) -> Optional[tuple]:
         # 获取kernel_name
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
+        err_stream_id, err_task_id = self.parser_data_name(data_name)
         if not self.ffts_flag:
             kernel_name_cmd = ['grep', 'Aicore kernel execute failed', '-inrE', plog_dir]
 
             kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?" \
                                  r"fault kernel info ext=(.*?),.*?hash=(\d+)"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
-
             if kernel_name_ret and kernel_name_ret[0][3] != "none":
-                stream_id = kernel_name_ret[0][0]
-                task_id = kernel_name_ret[0][1]
-                kernel_name = kernel_name_ret[0][3]
-                hash_id = kernel_name_ret[0][4]
-                node_name = data_name
-
-                AicoreErrorInfo = namedtuple("AicoreErrorInfo",
-                                             ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])
-                error_info = AicoreErrorInfo(stream_id, task_id, node_name, kernel_name, hash_id)
-                return error_info
-
-            kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
-            kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
-            if not kernel_name_ret:
-                utils.print_error_log(f"Failed to get \"Aicore kernel execute failed\" in plog.")
-                return None
+                stream_id, task_id, kernel_name, hash_id = self.parser_kernel_info_with_ext_info(
+                    kernel_name_ret, err_stream_id, err_task_id)
+            else:
+                kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
+                kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
+                if not kernel_name_ret:
+                    utils.print_error_log(f"Failed to get \"Aicore kernel execute failed\" in plog.")
+                    return None
+                stream_id, task_id, kernel_name, hash_id = \
+                    self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
+                utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
+                                    f"kernel_name: {kernel_name}")
         else:
             kernel_name_cmd = ['grep', 'fftsplus task execute failed', '-inrE', plog_dir]
-
             kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if not kernel_name_ret:
                 utils.print_error_log(f"Failed to get \"fftsplus task execute failed\" in plog.")
                 return None
-        stream_id = kernel_name_ret[0][0]
-        task_id = kernel_name_ret[0][1]
-        kernel_name = kernel_name_ret[0][2]
-        hash_id = kernel_name_ret[0][3]
-        utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
-                                f"kernel_name: {kernel_name}")
+            stream_id, task_id, kernel_name, hash_id = \
+                self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
+            utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
+                                  f"kernel_name: {kernel_name}")
 
         node_name = data_name
-
-        AicoreErrorInfo = namedtuple("AicoreErrorInfo",
-                                        ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])
-
-        # 使用具名元组
+        AicoreErrorInfo = namedtuple("AicoreErrorInfo", ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])
         error_info = AicoreErrorInfo(stream_id, task_id, node_name, kernel_name, hash_id)
         return error_info
 
@@ -301,29 +311,32 @@ class AicoreErrorParser:
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
         if self.parse_level == 1:
             dump_data_cmd = ['grep', 'dump exception to file', '-inrE', plog_dir]
-            adump_dump_data_regexp = r"tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
-            ge_dump_data_regexp = r"(\d+) DumpNodeInfo:.*?extra-info\/data-dump\/\d+\/([\w.]+)"
+            adump_dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
+                "tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
+            ge_dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
+                "(\d+) DumpNodeInfo:.*?extra-info\/data-dump\/\d+\/([\w.]+)"
             adump_dump_data_ret = utils.get_inquire_result(dump_data_cmd, adump_dump_data_regexp)
+            adump_dump_data_ret = [item[1:] for item in sorted(adump_dump_data_ret)]
             ge_dump_data_ret = utils.get_inquire_result(dump_data_cmd, ge_dump_data_regexp)
+            ge_dump_data_ret = [item[1:] for item in sorted(ge_dump_data_ret)]
             if not adump_dump_data_ret and not ge_dump_data_ret:
                 utils.print_error_log(f"Dump file cannot be found in {self.collect_path}.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
             if adump_dump_data_ret:
-                thread_id, data_name = adump_dump_data_ret[0]
-                return thread_id, data_name
+                return adump_dump_data_ret[:2]
             else:
-                thread_id, data_name = ge_dump_data_ret[0]
-                return thread_id, data_name
+                return ge_dump_data_ret[:2]
         else:
             dump_data_cmd = ['grep', 'dump exception to file', '-inrE', plog_dir]
 
-            dump_data_regexp = r"tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
+            dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
+                "tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
             dump_data_ret = utils.get_inquire_result(dump_data_cmd, dump_data_regexp)
+            dump_data_ret = [item[1:] for item in sorted(dump_data_ret)]
             if not dump_data_ret:
                 utils.print_error_log(f"Dump file cannot be found in {self.collect_path}.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
-            thread_id, data_name = dump_data_ret[0]
-            return thread_id, data_name
+            return dump_data_ret[:2]
 
     def set_info(self, aic_err_ret, plog_path, data_name, rts_block_dim):
         info = AicErrorInfo()
@@ -378,7 +391,7 @@ class AicoreErrorParser:
 
     def get_op_info(self: any) -> Optional[AicErrorInfo]:
         try:
-            thread_id, data_name = self.get_dump_data_info()
+            dump_data_info_list = self.get_dump_data_info()
         except utils.AicErrException:
             return None
 
@@ -386,13 +399,24 @@ class AicoreErrorParser:
         aicore_err_cmd = ['grep', 'error info:', '-inrE', plog_path]
         aic_err_rets = utils.get_inquire_result(aicore_err_cmd, RegexPattern.AICORE_ERR_OCCUR, match_dict=True)
         if not aic_err_rets:
-            utils.print_error_log("Aicore error exception does not match.")
-            return None
+            utils.print_info_log("Aicore error exception use outstanding regex.")
+            aic_err_rets = utils.get_inquire_result(aicore_err_cmd, RegexPattern.AICORE_ERR_OCCUR_OST, match_dict=True)
+            if not aic_err_rets:
+                utils.print_error_log("Aicore error exception does not match.")
+                return None
+            
+        aic_err_rets = sorted(aic_err_rets, key=lambda x: (x.get('err_time') is None, x.get('err_time')))
 
+        error_stream_task, dump_data_info = \
+            self.update_dumpinfo_for_outstanding(plog_path, dump_data_info_list, aic_err_rets)
+
+        thread_id, data_name = dump_data_info
         aic_err_ret = aic_err_rets
         for aic_err_info in aic_err_rets:
             if thread_id == aic_err_info['thread_id']:
                 aic_err_ret = aic_err_info
+                if "s_start_pc" in aic_err_ret.keys() and error_stream_task and error_stream_task["is_second_error"]:
+                    aic_err_ret["start_pc"] = aic_err_ret["s_start_pc"]
                 break
             else:
                 utils.print_error_log("Dump data pid is not the same with rts pid.")
@@ -1446,6 +1470,62 @@ exit()"""
         else:
             return Constant.MS_AICERR_NONE_ERROR
 
+    @staticmethod
+    def parser_data_name(data_name):
+        err_stream_id, err_task_id = None, None
+        exception_file_split_str = data_name.split(".")
+        if len(exception_file_split_str) > 3:
+            try:
+                int(exception_file_split_str[1])
+                int(exception_file_split_str[2])
+                err_stream_id, err_task_id = exception_file_split_str[1], exception_file_split_str[2]
+            except ValueError:
+                return err_stream_id, err_task_id
+        return err_stream_id, err_task_id
+    
+    @staticmethod
+    def is_scalar_register_err(tid, aic_err_rets):
+        ost_su_err_code_start_include = 256     # outstanding 场景下 su 寄存器的错误码，起始错误码，包含256
+        ost_su_err_code_end_noincldue = 320     # outstanding 场景下 su 寄存器的错误码，结束错误码，不包含320
+        if not aic_err_rets:
+            return False
+        for aic_err_ret in aic_err_rets:
+            if tid == aic_err_ret['thread_id']:
+                error_code = utils.get_str_value(aic_err_ret['error_code'])
+                if ost_su_err_code_start_include <= error_code < ost_su_err_code_end_noincldue:
+                    return True
+        return False
+    
+    @staticmethod
+    def get_is_concurrentexe_value(log_path):
+        result = {}
+        if not os.path.exists(log_path):
+            utils.print_info_log(f"log path is not exist : {log_path}")
+            return result
+        
+        isconcurrentexe_data_cmd = ['grep', 'isconcurrentexe', '-inrE', log_path]
+        regex_str = r'^.*\[(?:[^:]+:\d+)\](\d+).*?first taskid:\s*(\d+).*?first streamid:\s*(\d+)' \
+                    r'.*?second taskid:\s*(\d+).*?second streamid:\s*(\d+).*?isconcurrentexe:\s*(\d+)'
+        status, data = utils.execute_command(isconcurrentexe_data_cmd)
+        if status != 0:
+            utils.print_warn_log(f"Failed to execute command:{isconcurrentexe_data_cmd}.")
+            return result
+        match_result = re.findall(regex_str, data, re.M)
+        if len(match_result) == 0:
+            utils.print_warn_log(f"Log info does not match:{regex_str} in command result.")
+            return result
+        
+        for tid, ftsk_id, ftsk_stream_id, stsk_id, stsk_stream_id, is_concurrentexe in match_result:
+            if tid not in result.keys():
+                result = {
+                    tid: {
+                        "first": "{}.{}".format(ftsk_stream_id, ftsk_id),
+                        "second": "{}.{}".format(stsk_stream_id, stsk_id), 
+                        "is_concurrentexe": is_concurrentexe
+                    }
+                }
+        return result
+    
     def get_node_and_kernel_name_l1(self: any) -> Optional[tuple]:
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
         # 获取kernel_name
@@ -1472,15 +1552,32 @@ exit()"""
         node_name, stream_id, task_id = result[0]
         node_name = node_name.replace('/', '_').replace('.', '_')
         hash_id_cmd = ['grep', 'hash=', '-inrE', plog_dir]
-        hash_id_regexp = r" stream_id=\d+,.*?task_id=\d+,.*?fault kernel_name=.*?,.*?hash=(\d+)"
+        hash_id_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=.*?,.*?hash=(\d+)"
         hash_id_ret = utils.get_inquire_result(hash_id_cmd, hash_id_regexp)
         if not hash_id_ret:
             utils.print_error_log(f"Cannot get hash id in plog.")
             return None
-        hash_id = list(set(hash_id_ret))
-        hash_id = hash_id_ret[0]
+        hash_id = hash_id_ret[0][2]
         AicoreErrorInfo = namedtuple("AicoreErrorInfo",
                                      ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])
         # 使用具名元组
         error_info = AicoreErrorInfo(stream_id, task_id, node_name, kernel_name, hash_id)
         return error_info
+    
+    def update_dumpinfo_for_outstanding(self, plog_path, dump_data_info_list, aic_err_rets):
+        error_stream_task = None
+        dump_data_info = dump_data_info_list[0]
+        isconcurrentexe_dict = self.get_is_concurrentexe_value(plog_path)
+        for tid, task_info in isconcurrentexe_dict.items():
+            error_stream_task = {tid: task_info["first"], "is_second_error": False}
+            if int(task_info["is_concurrentexe"]) == 1 and self.is_scalar_register_err(tid, aic_err_rets):
+                error_stream_task[tid] = task_info["second"]
+                error_stream_task["is_second_error"] = True
+
+        if error_stream_task is not None:
+            for dump_info in dump_data_info_list:
+                thread_id, data_name = dump_info
+                if thread_id in error_stream_task.keys() and error_stream_task[tid] in data_name:
+                    dump_data_info = dump_info
+        
+        return error_stream_task, dump_data_info

@@ -26,10 +26,9 @@ function(gen_opbuild_target)
   endif()
 
   add_library(gen_op_host_${OPBUILD_PREFIX} SHARED ${OPBUILD_IN_SRCS})
-  target_link_libraries(gen_op_host_${OPBUILD_PREFIX} PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17> exe_graph register
+  target_link_libraries(gen_op_host_${OPBUILD_PREFIX} PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17_unasan> exe_graph register
                                                               c_sec)
   target_compile_options(gen_op_host_${OPBUILD_PREFIX} PRIVATE -fno-common)
-
   add_custom_command(
     OUTPUT ${OPBUILD_OUT_SRCS} ${OPBUILD_OUT_HEADERS}
     COMMAND
@@ -126,7 +125,7 @@ function(gen_aclnn_with_opdef)
                      opbuild_out_srcs opbuild_out_headers)
   gen_aclnn_classify(${OPHOST_NAME}_opdef_aclnn_exclude_obj aclnnExc "${opbuild_out_srcs}" "${opbuild_out_headers}"
                      opbuild_out_srcs opbuild_out_headers)
-
+  list(FILTER opbuild_out_headers EXCLUDE REGEX ".*detect.*")
   # 创建汇总头文件
   if(ENABLE_CUSTOM)
     set(aclnn_master_header_name "aclnn_ops_oam_${VENDOR_NAME}")

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "json_parser.h"
 #include <vector>
 #include "ai_drv_prof_api.h"

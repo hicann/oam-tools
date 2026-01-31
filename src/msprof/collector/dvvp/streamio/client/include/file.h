@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef COLLECT_IO_FILE_H_INCLUDED
 #define COLLECT_IO_FILE_H_INCLUDED
 

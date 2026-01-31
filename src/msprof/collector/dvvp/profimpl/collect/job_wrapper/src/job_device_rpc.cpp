@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "job_device_rpc.h"
 #include "errno/error_code.h"
 #include "message/codec.h"

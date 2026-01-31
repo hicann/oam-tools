@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "cmd_log/cmd_log.h"
 #include <cstdarg>
 #include "securec.h"

@@ -5,6 +5,10 @@
         <file value="libopapi_oam.so" install_mod="555"/>
     </file_info>
 
+    <file_info value="aclnn_inc" copy_type="delivery" src_path="built-in/op_api" dst_path="include" install_path="$(TARGET_ENV)/include">
+        <file value="aclnnop" optional="true" install_mod="555"/>
+    </file_info>
+
     <file_info value="ops_info" src_path="op_host" dst_path="built-in/op_impl/ai_core/tbe" install_path="opp/built-in/op_impl/ai_core/tbe">
         <file value="config" install_mod="555"/>
     </file_info>

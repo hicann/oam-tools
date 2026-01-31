@@ -29,18 +29,11 @@ set(SOURCE_DIR ${PROTOBUF_SRC_DIR})
 set(PROTOBUF_HOST_STATIC_PKG_DIR ${CMAKE_BINARY_DIR}/protobuf_host_static)
 set(SECURITY_COMPILE_OPT "-Wl,-z,relro,-z,now,-z,noexecstack -s -Wl,-Bsymbolic")
 
-set(HOST_PROTOBUF_CXXFLAGS "${SECURITY_COMPILE_OPT} -Wno-attributes -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-unused-parameter -fPIC -fstack-protector-all -D_FORTIFY_SOURCE=2 -D_GLIBCXX_USE_CXX11_ABI=0 -O2 -Dgoogle=ascend_private")
+set(HOST_PROTOBUF_CXXFLAGS "${SECURITY_COMPILE_OPT} -Wno-maybe-uninitialized -Wno-unused-parameter -fPIC -fstack-protector-all -D_FORTIFY_SOURCE=2 -D_GLIBCXX_USE_CXX11_ABI=0 -O2 -Dgoogle=ascend_private")
 include(${CMAKE_CURRENT_LIST_DIR}/protobuf_sym_rename.cmake)
 set(HOST_PROTOBUF_CXXFLAGS "${HOST_PROTOBUF_CXXFLAGS} ${PROTOBUF_SYM_RENAME}")
 
-if (EXISTS ${CANN_3RD_LIB_PATH}/protobuf/protobuf-all-25.1.tar.gz)
-    set(PROTOBUF_PATH ${CANN_3RD_LIB_PATH}/protobuf/protobuf-all-25.1.tar.gz)
-else ()
-    set(PROTOBUF_PATH ${CANN_3RD_LIB_PATH}/protobuf/protobuf-25.1.tar.gz)
-endif ()
-
-set(ABSEIL_PATH ${CANN_3RD_LIB_PATH}/abseil-cpp/abseil-cpp-20230802.1.tar.gz)
-if (NOT EXISTS "${ABSEIL_PATH}")
+if (NOT EXISTS "${CANN_3RD_LIB_PATH}/protobuf/protobuf-all-25.1.tar.gz" OR NOT EXISTS "${CANN_3RD_LIB_PATH}/abseil-cpp/abseil-cpp-20230802.1.tar.gz")
     set(REQ_URL "https://gitcode.com/cann-src-third-party/protobuf/releases/download/v25.1/protobuf-25.1.tar.gz")
     set(ABS_REQ_URL "https://gitcode.com/cann-src-third-party/abseil-cpp/releases/download/20230802.1/abseil-cpp-20230802.1.tar.gz")
     ExternalProject_Add(protobuf_src_dl
@@ -71,11 +64,11 @@ if (NOT EXISTS "${ABSEIL_PATH}")
     )
     add_dependencies(protobuf_src protobuf_src_dl abseil_src_dl)
 else()
-  set(OPEN_SOURCE_DIR ${TOP_DIR}/../open_source)
+  set(OPEN_SOURCE_DIR ${TOP_DIR}/../../open_source)
   ExternalProject_Add(protobuf_src
       DOWNLOAD_COMMAND ""
-      COMMAND tar -zxf ${PROTOBUF_PATH} --strip-components 1 -C ${SOURCE_DIR}
-      COMMAND tar -zxf ${ABSEIL_PATH} --strip-components 1 -C ${SOURCE_DIR}/third_party/abseil-cpp
+      COMMAND tar -zxf ${OPEN_SOURCE_DIR}/protobuf/protobuf-all-25.1.tar.gz --strip-components 1 -C ${SOURCE_DIR}
+      COMMAND tar -zxf ${OPEN_SOURCE_DIR}/abseil-cpp/abseil-cpp-20230802.1.tar.gz --strip-components 1 -C ${SOURCE_DIR}/third_party/abseil-cpp
       PATCH_COMMAND cd ${SOURCE_DIR} && patch -p1 < ${TOP_DIR}/cmake/protobuf_25.1_change_version.patch && cd ${SOURCE_DIR}/third_party/abseil-cpp && patch -p1 < ${TOP_DIR}/cmake/protobuf-hide_absl_symbols.patch
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
@@ -122,7 +115,6 @@ ExternalProject_Add(protobuf_host_build
         -Dprotobuf_BUILD_TESTS=OFF
         -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
         -DCMAKE_CXX_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-        -DCMAKE_CXX_FLAGS=${HOST_PROTOBUF_CXXFLAGS}
         -Dprotobuf_WITH_ZLIB=OFF
         <SOURCE_DIR>
     BUILD_COMMAND $(MAKE)

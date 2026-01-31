@@ -86,6 +86,7 @@ include(cmake/intf_pub.cmake)
 add_subdirectory(src/asys)
 add_subdirectory(src/msaicerr)
 add_subdirectory(src/hccl_test)
+add_subdirectory(src/operator_cmp)
 
 set(TOP_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Project top directory")
 set(HI_PYTHON "python" CACHE PATH "Python Path")
@@ -94,6 +95,7 @@ set(MSPROF_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/msprof)
 set(PROF_BASIC_DIR "${MSPROF_DIR}/collector/basic")
 set(TARGET_SYSTEM_NAME "Linux")
 add_subdirectory(src/msprof/collector/dvvp/msprofbin)
+add_subdirectory(src/msprof/collector/dvvp/acp)
 
 if (ENABLE_COV OR ENABLE_UT)
     set(ASCEND_3RD_LIB_PATH ${CANN_3RD_LIB_PATH})
@@ -110,12 +112,11 @@ endif()
 
 #拷贝闭源包到制定目录
 set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
-if (EXISTS ${BUNDLE_PKG}/aml)
-    FILE(COPY ${BUNDLE_PKG}/aml DESTINATION ${INSTALL_LIBRARY_DIR}/.)
-    FILE(COPY ${BUNDLE_PKG}/built-in DESTINATION ${INSTALL_LIBRARY_DIR}/.)
-    FILE(COPY ${BUNDLE_PKG}/profiler DESTINATION ${INSTALL_LIBRARY_DIR}/.)
-    FILE(COPY ${BUNDLE_PKG}/operator_cmp DESTINATION ${INSTALL_LIBRARY_DIR}/.)
-endif()
+foreach(subdir IN ITEMS "aml" "built-in" "include" "profiler" "operator_cmp")
+    if (EXISTS "${BUNDLE_PKG}/${subbdir}")
+      file(COPY "${BUNDLE_PKG}/${subbdir}" DESTINATION ${INSTALL_LIBRARY_DIR}/.)
+    endif()
+endforeach()
 
 # 生成version.info timestamp
 set(OAM_TOOLS_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/version/version.info)

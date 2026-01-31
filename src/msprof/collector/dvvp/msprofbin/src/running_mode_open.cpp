@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "running_mode.h"
 #include <chrono>
 #include "errno/error_code.h"
-#include "input_parser.h"
+#include "input_parser_open.h"
 #include "cmd_log/cmd_log.h"
 #include "msprof_dlog.h"
 #include "ai_drv_dev_api.h"

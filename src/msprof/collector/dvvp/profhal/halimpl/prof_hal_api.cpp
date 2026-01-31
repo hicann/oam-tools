@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_hal_api.h"
 #include "msprof_dlog.h"
 #include "prof_server_manager.h"

@@ -1459,6 +1459,13 @@ int32_t ProfAclMgr::MsprofAclJsonParamConstruct(NanoJson::Json &acljsonCfg)
     params_->runtimeApi = GetJsonStringParam(acljsonCfg, "runtime_api", MSVP_PROF_ON);
     params_->taskTrace = GetJsonStringParam(acljsonCfg, "task_trace", MSVP_PROF_ON);
     params_->prof_level = params_->taskTrace;
+    if (GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF).compare(MSVP_PROF_ALL) == 0) {
+        params_->taskBlock = MSVP_PROF_ON;
+        params_->taskBlockShink = MSVP_PROF_OFF;
+    } else {
+        params_->taskBlock = GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF);
+        params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) ? MSVP_PROF_ON : MSVP_PROF_OFF;
+    }
     params_->taskTsfw = GetJsonStringParam(acljsonCfg, "task_tsfw", MSVP_PROF_OFF);
     params_->aicpuTrace = GetJsonStringParam(acljsonCfg, "aicpu", MSVP_PROF_OFF);
     params_->hcclTrace = GetJsonStringParam(acljsonCfg, "hccl", MSVP_PROF_OFF);
@@ -1598,7 +1605,13 @@ void ProfAclMgr::MsprofInitGeOptionsParamAdaper(SHARED_PTR_ALIA<analysis::dvvp::
     params->runtimeApi = GetJsonStringParam(geoptionCfg, "runtime_api", MSVP_PROF_OFF);
     params->taskTrace = GetJsonStringParam(geoptionCfg, "task_trace", MSVP_PROF_ON);
     params->prof_level = params->taskTrace;
-    params->taskBlock = GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF);
+    if (GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF).compare(MSVP_PROF_ALL) == 0) {
+        params->taskBlock = MSVP_PROF_ON;
+        params->taskBlockShink = MSVP_PROF_OFF;
+    } else {
+        params->taskBlock = GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF);
+        params->taskBlockShink = params->taskBlock.compare(MSVP_PROF_ON) ? MSVP_PROF_ON : MSVP_PROF_OFF;
+    }
     params->taskTsfw = GetJsonStringParam(geoptionCfg, "task_tsfw", MSVP_PROF_OFF);
     params->aicpuTrace = GetJsonStringParam(geoptionCfg, "aicpu", MSVP_PROF_OFF);
     params->hcclTrace = GetJsonStringParam(geoptionCfg, "hccl", MSVP_PROF_OFF);

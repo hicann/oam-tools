@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef DVVP_COLLECT_REPORT_MSPROF_REPORTER_MGR_H
 #define DVVP_COLLECT_REPORT_MSPROF_REPORTER_MGR_H
 #include <mutex>

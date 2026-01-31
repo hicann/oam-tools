@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_ge_core.h"
 #include <unordered_set>
 #include "logger/msprof_dlog.h"

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd. All Rights Reserved.
@@ -132,7 +132,8 @@ class DumpDataParser:
                     data_f32 = np.clip(data_f32, -bf16_limit, bf16_limit)
                     # 4. 转回bfloat16， 因为clip过，所以不会触发bfloat16 overflow导致的段错误
                     arr = data_f32.astype("bfloat16")
-                arr = np.fromfile(tensor_file, dtype=np.dtype(dtype))
+                else:
+                    arr = np.fromfile(tensor_file, dtype=np.dtype(dtype))
                 result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {np.mean(arr)}, Std: {np.std(arr)}\n"
             except BaseException:
                 result_info += f"Can not read with dtype {dtype}!\n"

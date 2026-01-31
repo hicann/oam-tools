@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_aicpu_api.h"
 #include "prof_hal_plugin.h"
 

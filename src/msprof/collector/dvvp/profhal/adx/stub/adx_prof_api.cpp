@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "adx_prof_api.h"
 #include "msprof_dlog.h"
 #include "memory_utils.h"

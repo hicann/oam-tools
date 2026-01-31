@@ -66,3 +66,30 @@ target_compile_options(intf_pub_cxx17 INTERFACE
 target_link_libraries(intf_pub_cxx17 INTERFACE
     $<BUILD_INTERFACE:intf_pub_base>
 )
+
+############ intf_pub c++17 unasan ############
+add_library(intf_pub_cxx17_unasan INTERFACE)
+target_compile_options(intf_pub_cxx17_unasan INTERFACE
+    -Wall
+    -fPIC
+    -pipe
+    -Wextra
+    -Wfloat-equal
+    -fno-common
+    -fstack-protector-strong
+    -D_GLIBCXX_USE_CXX11_ABI=0
+    $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>
+)
+target_link_options(intf_pub_cxx17_unasan INTERFACE
+    -Wl,-z,relro
+    -Wl,-z,now
+    -Wl,-z,noexecstack
+    -Wl,-Bsymbolic
+    $<$<CONFIG:Release>:-s>
+    $<$<CONFIG:Release>:-Wl,--build-id=none>
+    $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:-pie>
+)
+target_link_directories(intf_pub_cxx17_unasan INTERFACE)
+target_link_libraries(intf_pub_cxx17_unasan INTERFACE
+  -lpthread
+)

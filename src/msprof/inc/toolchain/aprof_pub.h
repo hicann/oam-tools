@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef APROF_PUB_H
 #define APROF_PUB_H
 

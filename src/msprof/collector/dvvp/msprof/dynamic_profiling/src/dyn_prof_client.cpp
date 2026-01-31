@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "dyn_prof_client.h"
 #include "cmd_log/cmd_log.h"
 #include "config/config.h"

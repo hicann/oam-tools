@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_reporter_mgr.h"
 #include <algorithm>
 #include "receive_data.h"

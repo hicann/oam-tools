@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
-
 if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()

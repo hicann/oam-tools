@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "mstx_domain_mgr.h"
 #include "msprof_dlog.h"
 #include "errno/error_code.h"

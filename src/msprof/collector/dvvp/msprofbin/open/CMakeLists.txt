@@ -29,7 +29,6 @@ set(msprofBinHeader
     ${MSPROF_DIR}/inc/toolchain
     ${PROTOBUF_HOST_STATIC_INCLUDE}
     ../include
-    ../include/open
     ../../
     ../../app
     ../../common/utils
@@ -141,9 +140,15 @@ set(msprofbinCpp
     ../../profimpl/adapter/src/json_parser.cpp
     ../../profimpl/platform/platform_interface.cpp
     ../../profimpl/platform/base_analyzer.cpp
+    ../../profimpl/platform/mini_platform.cpp
     ../../profimpl/platform/cloud_v2_platform.cpp
+    ../../profimpl/platform/david_platform.cpp
+    ../../profimpl/platform/david_v121_platform.cpp
     ../../profimpl/platform/cloud_platform.cpp
     ../../profimpl/platform/dc_platform.cpp
+    ../../profimpl/platform/mdc_lite_platform.cpp
+    ../../profimpl/platform/mdc_mini_v3_platform.cpp
+    ../../profimpl/platform/mdc_platform.cpp
     ../../profimpl/platform/mini_v3_platform.cpp
     ../../message/codec.cpp
     ../../transport/file_transport.cpp
@@ -228,7 +233,7 @@ set_target_properties(msprofbin
 )
 
 install(TARGETS msprofbin OPTIONAL
-    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
+    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/msprof/bin
 )
 
 ### onetrack target interface

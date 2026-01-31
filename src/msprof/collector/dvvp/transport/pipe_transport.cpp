@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "pipe_transport.h"
 #include "errno/error_code.h"
 #include "msprof_dlog.h"

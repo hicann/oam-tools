@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "cloud_v2_platform.h"
 #include "cloud_v2_analyzer.h"
 

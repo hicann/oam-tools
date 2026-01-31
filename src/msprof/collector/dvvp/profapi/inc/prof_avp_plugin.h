@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef PROF_AVP_PLUGIN_H
 #define PROF_AVP_PLUGIN_H
 #include <vector>

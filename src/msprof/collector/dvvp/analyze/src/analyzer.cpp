@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "analyzer.h"
 #include "acl_prof.h"
 #include "analyzer_base.h"

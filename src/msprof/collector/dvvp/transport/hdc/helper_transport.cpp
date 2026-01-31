@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "helper_transport.h"
 #include "config/config.h"
 #include "utils/utils.h"

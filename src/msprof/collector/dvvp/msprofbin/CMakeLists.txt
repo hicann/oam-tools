@@ -13,4 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
-add_subdirectory(open)
+if(BUILD_OPEN_PROJECT)
+    add_subdirectory(open)
+else()
+    add_subdirectory(closed)
+endif()

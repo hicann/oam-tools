@@ -1648,6 +1648,7 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
     fi
     logandprint "[INFO]: ${target_dir} ${opp_platform_dir}"
     logoperationretstatus "install" "${in_install_type}" "$?" "${in_cmd_list}"
+    logandprint "[INFO]: Oam tools install successfully"
 fi
 
 if [ "${is_upgrade}" = "y" ];then

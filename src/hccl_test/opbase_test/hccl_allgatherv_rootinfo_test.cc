@@ -26,7 +26,7 @@
 #include "hccl_allgatherv_rootinfo_test.h"
 #include "hccl_opbase_rootinfo_base.h"
 #include "hccl_check_buf_init.h"
-
+#include <thread>
 hccl::HcclTest* hccl::init_opbase_ptr(hccl::HcclTest* opbase)
 {
     opbase = new hccl::HcclOpBaseAllgatherVTest();
@@ -184,6 +184,12 @@ int HcclOpBaseAllgatherVTest::hccl_op_base_test()  // 主函数
         ACLCHECK(init_buf_val());
     }
 
+    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6);
+    if (only_device_exec_time && !(isCcuSched && data->data_size >= 16*1024*1024)) {
+        ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
+        ACLCHECK(aclrtResetEvent(sync_event, stream));
+    }
+
     //执行集合通信操作
     for(int j = 0; j < warmup_iters; ++j) {
         HCCLCHECK(HcclAllGatherV((void *)send_buff, data->count, (void*)recv_buff, recv_counts, recv_disp, (HcclDataType)dtype, hccl_comm, stream));
@@ -196,7 +202,11 @@ int HcclOpBaseAllgatherVTest::hccl_op_base_test()  // 主函数
     }
     //等待stream中集合通信任务执行完成
     ACLCHECK(aclrtRecordEvent(end_event, stream));
-
+    if (only_device_exec_time) {
+        int sleepTime = 50 +warmup_iters * 2 + iters * 2;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+        ACLCHECK(aclrtRecordEvent(sync_event, sync_stream));
+    }
     ACLCHECK(aclrtSynchronizeStream(stream));
 
     float time;

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "command_handle.h"
 #include <map>
 #include <thread>

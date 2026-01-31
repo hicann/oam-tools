@@ -206,6 +206,7 @@ const char * const MSVP_PROF_EMPTY_STRING = "";
 const char * const MSVP_PROF_ACLAPI_MODE = "aclapi";
 const char * const MSVP_PROF_SUBSCRIBE_MODE = "subscribe";
 const char * const MSVP_PROF_SYSTEM_MODE = "system";
+const char * const MSVP_PROF_ALL = "all";
 const char * const HELPER_HOST_CPU_MODE = "64";
 
 // dynamic profiling

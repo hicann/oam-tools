@@ -28,7 +28,7 @@ class Ascend91093Handler(DeviceInfo):
     @classmethod
     def need_lp_param(cls):
         return False
- 
+
     def run_diagnose(self, device_obj, diagnose_devices, run_mode):
         """Multi-thread parallel execution"""
         threads = []

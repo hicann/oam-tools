@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "dyn_prof_server.h"
 #include "config/config.h"
 #include "errno/error_code.h"

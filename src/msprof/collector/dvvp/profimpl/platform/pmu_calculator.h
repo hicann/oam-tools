@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef DVVP_ACP_ANALYZE_PMU_CALCULATOR_H
 #define DVVP_ACP_ANALYZE_PMU_CALCULATOR_H
 

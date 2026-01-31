@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "running_mode.h"
 #include <chrono>
 #include "errno/error_code.h"
@@ -603,6 +602,11 @@ int32_t AppMode::RunModeTasks()
     auto endTime = std::chrono::high_resolution_clock::now();
     UpdateOutputDirInfo();
 
+    if (isQuit_) {
+        isQuit_ = false;
+        MSPROF_LOGI("reset isQuit_=false to analsys data");
+    }
+
     if (jobResultDirList_.empty()) {
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime);
         if (!params_->delayTime.empty() && static_cast<uint64_t>(duration.count()) <= std::stoull(params_->delayTime)) {
@@ -860,6 +864,10 @@ int32_t SystemMode::RunModeTasks()
         }
         return ret;
     }
+    if (isQuit_) {
+        isQuit_ = false;
+        MSPROF_LOGI("reset isQuit_=false to analsys data");
+    }
     UpdateOutputDirInfo();
     if (CheckAnalysisEnv() != PROFILING_SUCCESS) {
         MSPROF_LOGW("[System Mode] Analysis environment is not OK, auto parse will not start.");
@@ -884,6 +892,7 @@ int32_t SystemMode::RunModeTasks()
 void SystemMode::SetSysDefaultParams() const
 {
     if (params_->ai_core_profiling == "on") {
+        params_->ai_core_lpm = "on";
         params_->aiv_profiling = "on";
         params_->ai_core_profiling_mode = PROFILING_MODE_SAMPLE_BASED;
         params_->aiv_profiling_mode = PROFILING_MODE_SAMPLE_BASED;

@@ -130,7 +130,7 @@ int32_t ProfNetDevStatJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     sampleIntervalNs_ =
         static_cast<uint64_t>(collectionJobCfg_->comParams->params->io_sampling_interval) * MS_TO_NS;
     std::vector<std::string> profDataFilePathV{collectionJobCfg_->comParams->tmpResultDir,
-                                            "data", PROF_NETDEV_STATS_FILE};
+                                               "data", PROF_NETDEV_STATS_FILE};
     collectionJobCfg_->jobParams.dataPath = analysis::dvvp::common::utils::Utils::JoinPath(profDataFilePathV);
 
     MSPROF_LOGI("Netdev stats profiling enabled, sample interval: %llu ns", sampleIntervalNs_);
@@ -154,8 +154,12 @@ int32_t ProfNetDevStatJob::Process()
         MSVP_MAKE_SHARED4(statHandler, NetDevStatsHandler, netDevStatsBufSize, sampleIntervalNs_,
             collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->jobCtx,
             return  PROFILING_FAILED);
-        if (statHandler->Init() != PROFILING_SUCCESS) {
+        auto ret = statHandler->Init();
+        if (ret == PROFILING_FAILED) {
             MSPROF_LOGE("NetDevStatsHandler Init Failed");
+            return PROFILING_FAILED;
+        } else if (ret == PROFILING_NOTSUPPORT) {
+            MSPROF_LOGW("NetDevStatsHandler Not Support");
             return PROFILING_FAILED;
         }
         MSPROF_LOGI("NetDevStatsHandler Init succ, sampleIntervalNs_:%llu", sampleIntervalNs_);
@@ -172,12 +176,16 @@ int32_t ProfNetDevStatJob::Process()
             return PROFILING_FAILED;
         }
     }
+    isStarted_ = true;
     return PROFILING_SUCCESS;
 }
 
 int32_t ProfNetDevStatJob::Uninit()
 {
     std::lock_guard<std::mutex> lock(jobMtx_); // 保证同时只有一个NetDevStatsJob实例从TimerManager注销
+    if (!isStarted_) {
+        return PROFILING_SUCCESS;
+    }
     auto curHandler = TimerManager::instance()->GetProfTimerHandler(PROF_NETDEV_STATS);
     if (curHandler == nullptr) {
         if (collectionJobCfg_->comParams->devId != DEFAULT_HOST_ID) {

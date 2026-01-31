@@ -112,7 +112,7 @@ positional arguments:
     diagnose            Diagnoses the hardware status of the device. It has
                         diagnostic capabilities for component, stress_detect,
                         hbm_detect and cpu_detect. The detect diagnostic only
-                        supports [910B, 910_93, 910_95].
+                        supports [910B, 910_93, 950].
     health              Diagnoses the health status of the device.
     info                Collects the software and hardware information of the
                         host and device.

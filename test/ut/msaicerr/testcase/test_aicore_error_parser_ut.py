@@ -189,7 +189,8 @@ class TestUtilsMethods(CommonAssert):
     def test_get_dump_data_info(self):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts'))
-        thread_id, data_name = parser.get_dump_data_info()
+        dump_data_info_list = parser.get_dump_data_info()
+        thread_id, data_name = dump_data_info_list[0]
         self.assertEqual(thread_id, '1592077')
 
     def test_collect_driver_aicore_number(self, mocker):
@@ -713,9 +714,9 @@ class TestUtilsMethods(CommonAssert):
     @pytest.mark.parametrize(
         'get_dump_data_info, get_inquire_result, execute_command, log_res',
         [
-            (['1', 'data_name'], [], ['',''], "Aicore error exception does not match"),
-            (['1', 'data_name'], [{'thread_id': '2'}], ['',''], "Dump data pid is not the same with rts pid."),
-            (['1', 'data_name'], [{'thread_id': '1'}], ['aa','aa'], "Get runtime block_dim failed"),
+            ([('1', 'data_name')], [], ['',''], "Aicore error exception does not match"),
+            ([('1', 'data_name')], [{'thread_id': '2'}], ['',''], "Dump data pid is not the same with rts pid."),
+            ([('1', 'data_name')], [{'thread_id': '1'}], ['aa','aa'], "Get runtime block_dim failed"),
         ]
     )
     def test_get_op_info_failed(self, mocker, get_dump_data_info, get_inquire_result, execute_command, log_res):

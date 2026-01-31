@@ -209,7 +209,7 @@ TEST_F(INPUT_PARSER_UTEST, UninitCheckHostSysCmd) {
 TEST_F(INPUT_PARSER_UTEST, CheckOutputValid) {
     GlobalMockObject::verify();
     InputParser parser = InputParser();
-    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    struct MsprofCmdInfo cmdInfo = { {nullptr, nullptr} };
 
     EXPECT_EQ(PROFILING_FAILED, parser.CheckOutputValid(cmdInfo));
     cmdInfo.args[ARGS_OUTPUT] = "";
@@ -445,6 +445,7 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform) {
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::END_TYPE))
+        //.then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CLOUD_TYPE))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CLOUD_TYPE));
     EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_AIV, argv));
     MOCKER(mmGetOptInd)

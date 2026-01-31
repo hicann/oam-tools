@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "input_parser.h"
 #include <cstdio>
 #include <cstdlib>
@@ -1403,12 +1402,12 @@ void ArgsManager::AddAnalysisArgs()
         return;
     }
     std::string typeDesc = "The export type, only uesd when argument `export` is on \n"
-                        "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
-                        "\t\t\t\t\t\t   the default value is text.";
+                           "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
+                           "\t\t\t\t\t\t   the default value is text.";
     if (Platform::instance()->CheckIfSupport(PLATFORM_EXPORT_TYPE)) {
         typeDesc = "The export type, only uesd when argument `export` is on \n"
-                "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
-                "\t\t\t\t\t\t   the default value is text(which will also export the database).";
+                   "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
+                   "\t\t\t\t\t\t   the default value is text(which will also export the database).";
     }
     std::vector<Args> argsList;
     argsList = {

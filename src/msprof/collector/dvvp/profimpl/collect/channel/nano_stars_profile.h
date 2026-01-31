@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef DVVP_COLLECT_JOB_WRAPPER_STARS_NANO_PROFILE_H
 #define DVVP_COLLECT_JOB_WRAPPER_STARS_NANO_PROFILE_H
 #include "channel_job.h"

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "file_manager.h"
 #include "file_transport.h"
 #include "config/config.h"

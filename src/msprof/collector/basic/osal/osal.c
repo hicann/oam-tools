@@ -24,7 +24,11 @@
  */
 int32_t OsalSleep(uint32_t milliSecond)
 {
+#ifdef OSAL
+    return LinuxSleep(milliSecond);
+#else
     return mmSleep(milliSecond);
+#endif
 }
 
 /*
@@ -34,7 +38,11 @@ int32_t OsalSleep(uint32_t milliSecond)
  */
 int32_t OsalGetPid(void)
 {
+#ifdef OSAL
+    return LinuxGetPid();
+#else
     return mmGetPid();
+#endif
 }
 
 /*
@@ -44,9 +52,14 @@ int32_t OsalGetPid(void)
  */
 int32_t OsalGetTid(void)
 {
+#ifdef OSAL
+    return LinuxGetTid();
+#else
     return mmGetTid();
+#endif
 }
 
+#ifndef LITE_OS
 /*
  * 描述:创建socket
  * 参数: sockFamily--协议域
@@ -56,7 +69,11 @@ int32_t OsalGetTid(void)
  */
 OsalSockHandle OsalSocket(int32_t sockFamily, int32_t type, int32_t protocol)
 {
+#ifdef OSAL
+    return LinuxSocket(sockFamily, type, protocol);
+#else
     return mmSocket(sockFamily, type, protocol);
+#endif
 }
 
 /*
@@ -68,7 +85,11 @@ OsalSockHandle OsalSocket(int32_t sockFamily, int32_t type, int32_t protocol)
  */
 int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
 {
+#ifdef OSAL
+    return LinuxBind(sockFd, addr, addrLen);
+#else
     return mmBind(sockFd, addr, addrLen);
+#endif
 }
 
 /*
@@ -79,7 +100,11 @@ int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
  */
 int32_t OsalListen(OsalSockHandle sockFd, int32_t backLog)
 {
+#ifdef OSAL
+    return LinuxListen(sockFd, backLog);
+#else
     return mmListen(sockFd, backLog);
+#endif
 }
 
 /*
@@ -91,7 +116,11 @@ int32_t OsalListen(OsalSockHandle sockFd, int32_t backLog)
  */
 OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen *addrLen)
 {
+#ifdef OSAL
+    return LinuxAccept(sockFd, addr, addrLen);
+#else
     return mmAccept(sockFd, addr, addrLen);
+#endif
 }
 
 /*
@@ -103,7 +132,11 @@ OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen
  */
 int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
 {
+#ifdef OSAL
+    return LinuxConnect(sockFd, addr, addrLen);
+#else
     return mmConnect(sockFd, addr, addrLen);
+#endif
 }
 
 /*
@@ -116,7 +149,11 @@ int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrL
  */
 OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, int32_t sendFlag)
 {
+#ifdef OSAL
+    return LinuxSocketSend(sockFd, sendBuf, sendLen, sendFlag);
+#else
     return mmSocketSend(sockFd, sendBuf, sendLen, sendFlag);
+#endif
 }
 /*
  * 描述:在建立连接的socket上接收数据
@@ -128,8 +165,13 @@ OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, 
  */
 OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, int32_t recvFlag)
 {
+#ifdef OSAL
+    return LinuxSocketRecv(sockFd, recvBuf, recvLen, recvFlag);
+#else
     return mmSocketRecv(sockFd, recvBuf, recvLen, recvFlag);
+#endif
 }
+#endif
 
 /*
  * 描述:获取错误码
@@ -137,7 +179,11 @@ OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, 
  */
 int32_t OsalGetErrorCode(void)
 {
+#ifdef OSAL
+    return LinuxGetErrorCode();
+#else
     return mmGetErrorCode();
+#endif
 }
 
 /*
@@ -150,7 +196,11 @@ int32_t OsalGetErrorCode(void)
  */
 int32_t OsalCreateProcess(const CHAR *fileName, const OsalArgvEnv *env, const CHAR *stdoutRedirectFile, OsalProcess *id)
 {
+#ifdef OSAL
+    return LinuxCreateProcess(fileName, env, stdoutRedirectFile, id);
+#else
     return mmCreateProcess(fileName, env, stdoutRedirectFile, id);
+#endif
 }
 
 /*
@@ -163,7 +213,11 @@ int32_t OsalCreateProcess(const CHAR *fileName, const OsalArgvEnv *env, const CH
 int32_t OsalCreateTaskWithThreadAttr(OsalThread *threadHandle,
     const OsalUserBlock *funcBlock, const OsalThreadAttr *threadAttr)
 {
+#ifdef OSAL
+    return LinuxCreateTaskWithThreadAttr(threadHandle, funcBlock, threadAttr);
+#else
     return mmCreateTaskWithThreadAttr(threadHandle, funcBlock, threadAttr);
+#endif
 }
 
 /*
@@ -178,7 +232,11 @@ int32_t OsalCreateTaskWithThreadAttr(OsalThread *threadHandle,
  */
 int32_t OsalWaitPid(OsalProcess pid, int32_t *status, int32_t options)
 {
+#ifdef OSAL
+    return LinuxWaitPid(pid, status, options);
+#else
     return mmWaitPid(pid, status, options);
+#endif
 }
 
 /*
@@ -190,7 +248,11 @@ int32_t OsalWaitPid(OsalProcess pid, int32_t *status, int32_t options)
  */
 int32_t OsalJoinTask(OsalThread *threadHandle)
 {
+#ifdef OSAL
+    return LinuxJoinTask(threadHandle);
+#else
     return mmJoinTask(threadHandle);
+#endif
 }
 /*
  * 描述:获取系统开机到现在经过的时间
@@ -198,9 +260,14 @@ int32_t OsalJoinTask(OsalThread *threadHandle)
  */
 OsalTimespec OsalGetTickCount(void)
 {
+#ifdef OSAL
+    return LinuxGetTickCount();
+#else
     return mmGetTickCount();
+#endif
 }
 
+#ifndef LITE_OS
 /*
  * 描述:获取当前指定路径下文件大小
  * 参数:fileName--文件路径名
@@ -209,7 +276,11 @@ OsalTimespec OsalGetTickCount(void)
  */
 int32_t OsalGetFileSize(const CHAR *fileName, uint64_t *length)
 {
+#ifdef OSAL
+    return LinuxGetFileSize(fileName, length);
+#else
     return mmGetFileSize(fileName, (ULONGLONG*)(length));
+#endif
 }
 
 /*
@@ -220,7 +291,11 @@ int32_t OsalGetFileSize(const CHAR *fileName, uint64_t *length)
  */
 int32_t OsalGetDiskFreeSpace(const CHAR *path, OsalDiskSize *diskSize)
 {
+#ifdef OSAL
+    return LinuxGetDiskFreeSpace(path, diskSize);
+#else
     return mmGetDiskFreeSpace(path, diskSize);
+#endif
 }
 
 /*
@@ -230,7 +305,11 @@ int32_t OsalGetDiskFreeSpace(const CHAR *path, OsalDiskSize *diskSize)
  */
 int32_t OsalIsDir(const CHAR *fileName)
 {
+#ifdef OSAL
+    return LinuxIsDir(fileName);
+#else
     return mmIsDir(fileName);
+#endif
 }
 
 /*
@@ -241,7 +320,11 @@ int32_t OsalIsDir(const CHAR *fileName)
  */
 int32_t OsalAccess2(const CHAR *pathName, int32_t mode)
 {
+#ifdef OSAL
+    return LinuxAccess2(pathName, mode);
+#else
     return mmAccess2(pathName, mode);
+#endif
 }
 
 /*
@@ -251,7 +334,11 @@ int32_t OsalAccess2(const CHAR *pathName, int32_t mode)
  */
 int32_t OsalAccess(const CHAR *pathName)
 {
+#ifdef OSAL
+    return LinuxAccess(pathName);
+#else
     return mmAccess(pathName);
+#endif
 }
 /*
  * 描述:截取目录, 比如/usr/bin/test, 截取后为 /usr/bin
@@ -260,7 +347,11 @@ int32_t OsalAccess(const CHAR *pathName)
  */
 CHAR *OsalDirName(CHAR *path)
 {
+#ifdef OSAL
+    return LinuxDirName(path);
+#else
     return mmDirName(path);
+#endif
 }
 
 /*
@@ -270,7 +361,11 @@ CHAR *OsalDirName(CHAR *path)
  */
 CHAR *OsalBaseName(CHAR *path)
 {
+#ifdef OSAL
+    return LinuxBaseName(path);
+#else
     return mmBaseName(path);
+#endif
 }
 
 /*
@@ -281,7 +376,11 @@ CHAR *OsalBaseName(CHAR *path)
  */
 int32_t OsalGetCwd(CHAR *buffer, int32_t maxLen)
 {
+#ifdef OSAL
+    return LinuxGetCwd(buffer, maxLen);
+#else
     return mmGetCwd(buffer, maxLen);
+#endif
 }
 
 /*
@@ -292,7 +391,11 @@ int32_t OsalGetCwd(CHAR *buffer, int32_t maxLen)
  */
 int32_t OsalMkdir(const CHAR *pathName, OsalMode mode)
 {
+#ifdef OSAL
+    return LinuxMkdir(pathName, mode);
+#else
     return mmMkdir(pathName, mode);
+#endif
 }
 
 /*
@@ -303,7 +406,11 @@ int32_t OsalMkdir(const CHAR *pathName, OsalMode mode)
  */
 int32_t OsalChmod(const CHAR *filename, int32_t mode)
 {
+#ifdef OSAL
+    return LinuxChmod(filename, mode);
+#else
     return mmChmod(filename, mode);
+#endif
 }
 /*
  * 描述:改变当前工作目录
@@ -312,7 +419,11 @@ int32_t OsalChmod(const CHAR *filename, int32_t mode)
  */
 int32_t OsalChdir(const CHAR *path)
 {
+#ifdef OSAL
+    return LinuxChdir(path);
+#else
     return mmChdir(path);
+#endif
 }
 
 /*
@@ -325,7 +436,11 @@ int32_t OsalChdir(const CHAR *path)
  */
 int32_t OsalScandir(const CHAR *path, OsalDirent ***entryList, OsalFilter filterFunc, OsalSort sort)
 {
+#ifdef OSAL
+    return LinuxScandir(path, entryList, filterFunc, sort);
+#else
     return mmScandir(path, entryList, filterFunc, sort);
+#endif
 }
 
 /*
@@ -336,7 +451,11 @@ int32_t OsalScandir(const CHAR *path, OsalDirent ***entryList, OsalFilter filter
  */
 VOID OsalScandirFree(OsalDirent **entryList, int32_t count)
 {
+#ifdef OSAL
+    return LinuxScandirFree(entryList, count);
+#else
     return mmScandirFree(entryList, count);
+#endif
 }
 /*
  * 描述:删除目录下所有文件及目录, 包括子目录
@@ -345,7 +464,11 @@ VOID OsalScandirFree(OsalDirent **entryList, int32_t count)
  */
 int32_t OsalRmdir(const CHAR *pathName)
 {
+#ifdef OSAL
+    return LinuxRmdir(pathName);
+#else
     return mmRmdir(pathName);
+#endif
 }
 
 /*
@@ -355,7 +478,11 @@ int32_t OsalRmdir(const CHAR *pathName)
  */
 int32_t OsalUnlink(const CHAR *filename)
 {
+#ifdef OSAL
+    return LinuxUnlink(filename);
+#else
     return mmUnlink(filename);
+#endif
 }
 
 /*
@@ -367,7 +494,11 @@ int32_t OsalUnlink(const CHAR *filename)
  */
 int32_t OsalRealPath(const CHAR *path, CHAR *realPath, int32_t realPathLen)
 {
+#ifdef OSAL
+    return LinuxRealPath(path, realPath, realPathLen);
+#else
     return mmRealPath(path, realPath, realPathLen);
+#endif
 }
 
 /*
@@ -379,7 +510,11 @@ int32_t OsalRealPath(const CHAR *path, CHAR *realPath, int32_t realPathLen)
 */
 CHAR *OsalGetErrorFormatMessage(OsalErrorMsg errnum, CHAR *buf, OsalSize size)
 {
+#ifdef OSAL
+    return LinuxGetErrorFormatMessage(errnum, buf, size);
+#else
     return mmGetErrorFormatMessage(errnum, buf, size);
+#endif
 }
 
 /*
@@ -390,7 +525,11 @@ CHAR *OsalGetErrorFormatMessage(OsalErrorMsg errnum, CHAR *buf, OsalSize size)
  */
 int32_t OsalStatGet(const CHAR *path, OsalStat *buffer)
 {
+#ifdef OSAL
+    return LinuxStatGet(path, buffer);
+#else
     return mmStatGet(path, buffer);
+#endif
 }
 
 /*
@@ -402,7 +541,11 @@ int32_t OsalStatGet(const CHAR *path, OsalStat *buffer)
  */
 int32_t OsalOpen(const CHAR *pathName, int32_t flags, OsalMode mode)
 {
+#ifdef OSAL
+    return LinuxOpen(pathName, flags, mode);
+#else
     return mmOpen2(pathName, flags, mode);
+#endif
 }
 
 /*
@@ -412,7 +555,11 @@ int32_t OsalOpen(const CHAR *pathName, int32_t flags, OsalMode mode)
  */
 int32_t OsalClose(int32_t fd)
 {
+#ifdef OSAL
+    return LinuxClose(fd);
+#else
     return mmClose(fd);
+#endif
 }
 
 /*
@@ -424,7 +571,11 @@ int32_t OsalClose(int32_t fd)
  */
 OsalSsize OsalWrite(int32_t fd, VOID *buf, uint32_t bufLen)
 {
+#ifdef OSAL
+    return LinuxWrite(fd, buf, bufLen);
+#else
     return mmWrite(fd, buf, bufLen);
+#endif
 }
 
 /*
@@ -434,17 +585,29 @@ OsalSsize OsalWrite(int32_t fd, VOID *buf, uint32_t bufLen)
  */
 int32_t OsalSetCurrentThreadName(const CHAR* name)
 {
+#ifdef OSAL
+    return LinuxSetCurrentThreadName(name);
+#else
     return mmSetCurrentThreadName(name);
+#endif
 }
 
 int32_t OsalGetOptInd(void)
 {
+#ifdef OSAL
+    return LinuxGetOptInd();
+#else
     return mmGetOptInd();
+#endif
 }
 
 CHAR *OsalGetOptArg(void)
 {
+#ifdef OSAL
+    return LinuxGetOptArg();
+#else
     return mmGetOptArg();
+#endif
 }
 
 /*
@@ -455,7 +618,11 @@ CHAR *OsalGetOptArg(void)
  */
 int32_t OsalGetOsName(CHAR *name, int32_t nameSize)
 {
+#ifdef OSAL
+    return LinuxGetOsName(name, nameSize);
+#else
     return mmGetOsName(name, nameSize);
+#endif
 }
 
 /*
@@ -466,7 +633,11 @@ int32_t OsalGetOsName(CHAR *name, int32_t nameSize)
  */
 VOID *OsalDlopen(const CHAR *fileName, int32_t mode)
 {
+#ifdef OSAL
+    return LinuxDlopen(fileName, mode);
+#else
     return mmDlopen(fileName, mode);
+#endif
 }
 
 /*
@@ -477,7 +648,11 @@ VOID *OsalDlopen(const CHAR *fileName, int32_t mode)
  */
 VOID *OsalDlsym(VOID *handle, const CHAR *funcName)
 {
+#ifdef OSAL
+    return LinuxDlsym(handle, funcName);
+#else
     return mmDlsym(handle, funcName);
+#endif
 }
 
 /*
@@ -488,7 +663,11 @@ VOID *OsalDlsym(VOID *handle, const CHAR *funcName)
  */
 int32_t OsalDlclose(VOID *handle)
 {
+#ifdef OSAL
+    return LinuxDlclose(handle);
+#else
     return mmDlclose(handle);
+#endif
 }
 
 /*
@@ -497,8 +676,13 @@ int32_t OsalDlclose(VOID *handle)
  */
 CHAR *OsalDlerror(void)
 {
+#ifdef OSAL
+    return LinuxDlerror();
+#else
     return mmDlerror();
+#endif
 }
+#endif
 
 /*
  * 描述:分析命令行参数-长参数
@@ -512,7 +696,11 @@ CHAR *OsalDlerror(void)
 int32_t OsalGetOptLong(int32_t argc, CHAR * const * argv, const CHAR *opts, const OsalStructOption *longOpts,
     int32_t *longIndex)
 {
+#ifdef OSAL
+    return LinuxGetOptLong(argc, argv, opts, longOpts, longIndex);
+#else
     return mmGetOptLong(argc, argv, opts, longOpts, longIndex);
+#endif
 }
 
 /*
@@ -523,7 +711,11 @@ int32_t OsalGetOptLong(int32_t argc, CHAR * const * argv, const CHAR *opts, cons
  */
 int32_t OsalGetOsVersion(CHAR *versionInfo, int32_t versionLength)
 {
+#ifdef OSAL
+    return LinuxGetOsVersion(versionInfo, versionLength);
+#else
     return mmGetOsVersion(versionInfo, versionLength);
+#endif
 }
 
 /*
@@ -534,7 +726,11 @@ int32_t OsalGetOsVersion(CHAR *versionInfo, int32_t versionLength)
  */
 int32_t OsalGetCpuInfo(OsalCpuDesc **cpuInfo, int32_t *count)
 {
+#ifdef OSAL
+    return LinuxGetCpuInfo(cpuInfo, count);
+#else
     return mmGetCpuInfo(cpuInfo, count);
+#endif
 }
 
 /*
@@ -545,7 +741,11 @@ int32_t OsalGetCpuInfo(OsalCpuDesc **cpuInfo, int32_t *count)
  */
 int32_t OsalCpuInfoFree(OsalCpuDesc *cpuInfo, int32_t count)
 {
+#ifdef OSAL
+    return LinuxCpuInfoFree(cpuInfo, count);
+#else
     return mmCpuInfoFree(cpuInfo, count);
+#endif
 }
 
 /*
@@ -555,7 +755,11 @@ int32_t OsalCpuInfoFree(OsalCpuDesc *cpuInfo, int32_t count)
  */
 int32_t OsalGetLocalTime(OsalSystemTime *sysTimePtr)
 {
+#ifdef OSAL
+    return LinuxGetLocalTime(sysTimePtr);
+#else
     return mmGetLocalTime(sysTimePtr);
+#endif
 }
 
 /*
@@ -566,5 +770,9 @@ int32_t OsalGetLocalTime(OsalSystemTime *sysTimePtr)
  */
 int32_t OsalGetTimeOfDay(OsalTimeval *timeVal, OsalTimezone *timeZone)
 {
+#ifdef OSAL
+    return LinuxGetTimeOfDay(timeVal, timeZone);
+#else
     return mmGetTimeOfDay(timeVal, timeZone);
+#endif
 }

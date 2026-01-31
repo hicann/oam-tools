@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 #include "transport/hdc/dev_mgr_api.h"
 #include "logger/msprof_dlog.h"
 #include "transport/hdc/device_transport.h"

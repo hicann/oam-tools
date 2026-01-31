@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef PROF_SERVER_MANAGER_H
 #define PROF_SERVER_MANAGER_H
 #include <cstdint>

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef MSTX_DOMAIN_MGR_H
 #define MSTX_DOMAIN_MGR_H
 

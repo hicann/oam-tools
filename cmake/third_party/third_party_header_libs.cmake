@@ -22,7 +22,7 @@ set_target_properties(slog_headers PROPERTIES
 )
 
 # 添加头文件库mmpa_headers
-set(mmpa_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/include")
+set(mmpa_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/pkg_inc")
 add_library(mmpa_headers INTERFACE IMPORTED)
 set_target_properties(mmpa_headers PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${mmpa_INCLUDE_DIR};${mmpa_INCLUDE_DIR}/mmpa;${mmpa_INCLUDE_DIR}/mmpa/sub_inc"

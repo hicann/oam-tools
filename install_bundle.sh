@@ -20,35 +20,42 @@ WORKING_DIR=$(pwd)
 echo "工作目录: $WORKING_DIR"
 
 # Define default values
-VERSION="${1:-8.5.0}"
+BUILD_TYPE="${1:-release}"
 ARCH="${2:-x86_64}"
-BASE_NAME="cann-oam-tools-bundle"
-SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/2025121901_newest/cann-oam-tools-bundle_${VERSION}_linux-${ARCH}.tar.gz"
+BASE_NAME="cann-oam-tools"
+SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/2025121901_newest/cann-oam-tools-bundle_8.5.0_linux-${ARCH}.tar.gz"
 BUNDLE_DIR="bundle"
-OUTPUT_FILE="${BASE_NAME}_${VERSION}_linux-${ARCH}.tar.gz"
+OUTPUT_FILE="${BASE_NAME}-${BUILD_TYPE}-${ARCH}.tar.gz"
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 [version] [architecture]"
-    echo "Example: $0 8.5.0 x86_64"
-    echo "Defaults: version=8.5.0, architecture=x86_64"
+    echo "Usage: $0 [build_type] [architecture]"
+    echo "Example: $0 release x86_64"
+    echo "Defaults: build_type=release, architecture=x86_64"
     echo ""
 }
 # Display current directory
 echo "Current directory: $(pwd)"
-echo "Building $BASE_NAME package version $VERSION for $ARCH"
+echo "Building $BASE_NAME package $BUILD_TYPE for $ARCH"
 echo ""
 
 # Create necessary directories
 echo "Creating directories..."
 mkdir -p "$BUNDLE_DIR"
 
-# Download Ascend CANN Toolkit
-echo "Downloading Ascend CANN Toolkit..."
-wget -O "$OUTPUT_FILE" "$SOURCE_URL" --no-check-certificate
+if [ -f "../oam-tools-diag/build_out/$OUTPUT_FILE" ]; then
+    # Using compiled oam-tools.tar.gz
+    echo "Using compiled $OUTPUT_FILE"
+    cp ../oam-tools-diag/build_out/$OUTPUT_FILE .
+    chmod 755 ../oam-tools-diag/build_out/$OUTPUT_FILE
+else
+    # Download Ascend CANN Toolkit
+    echo "Downloading $OUTPUT_FILE"
+    wget -O "$OUTPUT_FILE" "$SOURCE_URL" --no-check-certificate
+fi
 
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to download Ascend CANN Toolkit"
+    echo "Error: Failed to get $OUTPUT_FILE"
     rm -rf "$BUNDLE_DIR"
     exit 1
 fi

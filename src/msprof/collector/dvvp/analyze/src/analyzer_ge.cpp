@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "analyzer_ge.h"
 #include "data_struct.h"
 #include "errno/error_code.h"

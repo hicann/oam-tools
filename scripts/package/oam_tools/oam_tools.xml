@@ -28,17 +28,13 @@
     <file_info copy_type="source" src_path="" dst_path="oam_tools" install_path="tools" install_type="all">
         <file value="hccl_test" install_mod="550" entity="true"/>
         <file value="profiler" install_mod="550" entity="true"/>
+        <file value="operator_cmp" install_mod="550" entity="true" optional="true"/>
     </file_info>
     <file_info copy_type="source" src_path="" dst_path="oam_tools/msaicerr" install_path="tools" install_type="all">
         <file value="msaicerr" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="source" src_path="" dst_path="oam_tools" install_path="tools/ascend_system_advisor" install_type="all">
         <file value="asys" install_mod="550" entity="true"/>
-    </file_info>
-    <file_info copy_type="source" src_path="" dst_path="oam_tools/asys/conf" install_path="tools/ascend_system_advisor/conf" install_type="all">
-        <file value="asys.ini" install_mod="550" entity="true"/>
-        <file value="config_table.csv" install_mod="550" entity="true"/>
-        <file value="dependent_package.csv" install_mod="550" entity="true"/>
     </file_info>
     <file_info value="aml_lib" copy_type="delivery" src_path="" dst_path="oam_tools/aml/lib64" install_path="$(TARGET_ENV)/lib64" install_mod="440">
         <file value="libascend_ml.so" file_type="shared"/>
@@ -49,10 +45,18 @@
     <file_info value="mix_test" copy_type="delivery" src_path="" dst_path="oam_tools/aml/lib64/plugin" install_path="tools/aml/lib64/plugin" install_mod="440">
         <file value="libascend_mix_test.so" file_type="shared"/>
     </file_info>
+    <file_info value="sdma_bin" copy_type="delivery" src_path="" dst_path="oam_tools/aml/lib64/plugin/bin" install_path="tools/aml/lib64/plugin" install_mod="440">
+        <file value="matmul_input_0.bin" optional="true"/>
+        <file value="matmul_input_1.bin" optional="true"/>
+    </file_info>
     <file_info value="ascend_dump_parser_lib" copy_type="delivery" src_path="" dst_path="oam_tools/msaicerr/lib" install_path="$(TARGET_ENV)/lib64" install_mod="440">
         <file value="libascend_dump_parser.so" file_type="shared"/>
     </file_info>
+    <file_info value="profiler_lib" copy_type="delivery" src_path="" dst_path="oam_tools/profiler/lib64" install_path="tools/profiler/lib64" install_mod="440">
+        <file value="libascend_profinj.so" file_type="shared" optional="true"/>
+    </file_info>
     <file_info value="profiler_bin" copy_type="delivery" src_path="" dst_path="oam_tools/profiler/bin" install_path="tools/profiler/bin" install_mod="440">
+        <file value="acp" file_type="shared" optional="true"/>
         <file value="msprof" file_type="shared"/>
     </file_info>
     <block_info dependtree="false" dst_path="oam_tools" block_conf_path="ascend">
@@ -77,6 +81,7 @@
         <path value="tools/operator_cmp"/>
         <path value="tools/profiler"/>
         <path value="tools/profiler/bin"/>
+        <path value="tools/profiler/lib64"/>
         <path value="tools/profiler/profiler_tool" install_mod="750"/>
         <path value="tools/profiler/profiler_tool/analysis" install_mod="750"/>
         <path value="tools/ascend_system_advisor"/>

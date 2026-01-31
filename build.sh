@@ -154,15 +154,15 @@ print_success() {
 
 # build msprof analysis
 build_msprof_analysis() {
-    if [ -d "${BASEPATH}/../abl/msprof/build/build_hiprof" ]; then
+    if [ -d "${BASEPATH}/../../abl/msprof/build/build_hiprof" ]; then
         BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/"
-        cd ${BASEPATH}/../abl/msprof/build/build_hiprof
+        cd ${BASEPATH}/../../abl/msprof/build/build_hiprof
         echo "----------------------------------"
         echo ${BASEPATH}
         echo ${build_path1}
         echo "----------------------------------"
         ./build_for_hiprof.sh
-        cp ${BASEPATH}/../abl/msprof/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+        cp ${BASEPATH}/../../abl/msprof/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
         cd ${BASEPATH}
     fi
 }
@@ -191,85 +191,12 @@ cmake_generate_make() {
 
 REPOSITORY_NAME="oam"
 
-build_ops_detect() {
-  echo $dotted_line
-  BUILD_LIBS=("ophost_${REPOSITORY_NAME}" "opapi_${REPOSITORY_NAME}")
-  echo "Start to build libs ${BUILD_LIBS[@]}"
-
-  git submodule init && git submodule update
-  local all_targets=$(cmake --build . --target help)
-  for lib in "${BUILD_LIBS[@]}"; do
-    if grep -wq "$lib" <<< "${all_targets}"; then
-      echo "Building target ${lib}"
-      cmake --build . --target ${lib} -- ${VERBOSE} -j $THREAD_NUM
-    else
-      echo "No need to build target ${lib}"
-    fi
-  done
-
-  print_success "Build libs ${BUILD_LIBS[@]} success!"
-}
-
-build_binary() {
-  echo $dotted_line
-  echo "Start to build binary"
-  mkdir -p "${BUILD_PATH}"
-  echo "--------------- build tiling start ---------------"
-  local tilingLib="ophost_${REPOSITORY_NAME}"
-  local tilingSo="${BUILD_PATH}/lib${tilingLib}.so"
-  rm -f ${tilingSo}  # 临时方案，简单实现，强制先删再编，tiling代码不变时仅浪费链接时间
-  local TMP_BUILD_LIBS=${BUILD_LIBS}
-  local TMP_CMAKE_ARGS=${CMAKE_ARGS}
-  CMAKE_ARGS="-DBUILD_PATH=$BUILD_PATH -DENABLE_CUSTOM=FALSE -DENABLE_PACKAGE=FALSE"
-  BUILD_LIBS+=("${tilingLib}")
-  build_ops_detect
-  BUILD_LIBS=${TMP_BUILD_LIBS}
-  CMAKE_ARGS=${TMP_CMAKE_ARGS}
-
-  export ASCEND_OPP_PATH=${BUILD_PATH}/opp
-  local fakeTilingSoPath=${BUILD_PATH}/opp/op_impl/built-in/ai_core/tbe/op_tiling/lib/linux/$(arch)
-  mkdir -p ${fakeTilingSoPath}
-  ln -sf ${tilingSo} ${fakeTilingSoPath}/liboptiling.so
-  ln -sf ${tilingSo} ${fakeTilingSoPath}/libopmaster_ct.so
-  rm -f ${BUILD_PATH}/opp/scene.info
-  echo "os=linux"     >> ${BUILD_PATH}/opp/scene.info
-  echo "os_version="  >> ${BUILD_PATH}/opp/scene.info
-  echo "arch=$(arch)" >> ${BUILD_PATH}/opp/scene.info
-  echo "--------------- build tiling end ---------------"
-  #cd "${BUILD_PATH}" && cmake .. ${CMAKE_ARGS}
-
-  echo "--------------- prepare build start ---------------"
-  local all_targets=$(cmake --build . --target help)
-  if grep -wq "ascendc_impl_gen" <<< "${all_targets}"; then
-    cmake --build . --target ascendc_impl_gen -- ${VERBOSE} -j $THREAD_NUM
-    if [ $? -ne 0 ]; then exit 1; fi
-  fi
-  if grep -wq "gen_bin_scripts" <<< "${all_targets}"; then
-    cmake --build . --target gen_bin_scripts -- ${VERBOSE} -j $THREAD_NUM
-    if [ $? -ne 0 ]; then exit 1; fi
-  fi
-  echo "--------------- prepare build end ---------------"
-
-  echo "--------------- binary build start ---------------"
-  if grep -wq "binary" <<< "${all_targets}"; then
-    export ASCENDC_PER_COMPILE_JOB_THREAD=$THREAD_NUM
-    cmake --build . --target binary -- ${VERBOSE} -j1 # TODO: fix -j1
-    if [ $? -ne 0 ]; then
-      print_error "Kernel compile failed!" && exit 1
-    fi
-  fi
-  if grep -wq "gen_bin_info_config" <<< "${all_targets}"; then
-    cmake --build . --target gen_bin_info_config -- ${VERBOSE} -j $THREAD_NUM
-    if [ $? -ne 0 ]; then exit 1; fi
-  fi
-
-  print_success "Build binary success!"
-}
-
 # create build path
 build_oam_tools() {
     echo "ARCH: $(arch)"
-    bash install_bundle.sh 8.5.0 $(arch)
+    ARCH_LOWER=$(uname -m | tr '[:upper:]' '[:lower:]')
+    BUILD_TYPE_LOWER=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
+    bash install_bundle.sh $BUILD_TYPE_LOWER $ARCH_LOWER
     build_msprof_analysis
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"
@@ -293,7 +220,6 @@ build_oam_tools() {
     -DENABLE_PACKAGE=TRUE"
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
-    build_ops_detect
     make ${VERBOSE} -j${THREAD_NUM} && make package
     # make package
     if [ 0 -ne $? ]; then
@@ -351,15 +277,7 @@ oam_tools_test() {
         echo "---"
         echo "STARTING TEST: **$case_name** (Framework: $framework)"
         # --- ACTUAL EXECUTION STEP ---
-        if [ "$case_name" == "aml_config_st" ]; then
-            ./test/st/aml/testcase/aml_configure/aml_configure_stest > "${output_file}" 2>&1
-        elif [ "$case_name" == "aml_config_ut" ]; then
-            ./test/ut/aml/testcase/aml_configure/aml_configure_utest > "${output_file}" 2>&1
-        elif [ "$case_name" == "aml_diagnose_st" ]; then
-            ./test/st/aml/testcase/aml_diagnose/aml_stest > "${output_file}" 2>&1
-        elif [ "$case_name" == "aml_diagnose_ut" ]; then
-            ./test/ut/aml/testcase/aml_diagnose/aml_utest > "${output_file}" 2>&1
-        elif [ "$case_name" == "asys_st" ]; then
+        if [ "$case_name" == "asys_st" ]; then
             python3 -m pytest ../test/st/asys/testcase/* --cov=../src/asys > "${output_file}" 2>&1
         elif [ "$case_name" == "asys_ut" ]; then
             python3 -m pytest ../test/ut/asys/testcase/* --cov=../src/asys > "${output_file}" 2>&1

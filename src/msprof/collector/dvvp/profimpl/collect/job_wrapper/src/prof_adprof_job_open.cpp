@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_adprof_job.h"
 #include "collection_job.h"
 #include "platform/platform.h"

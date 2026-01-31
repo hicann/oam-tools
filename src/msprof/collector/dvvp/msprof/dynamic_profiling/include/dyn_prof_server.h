@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef COLLECTOR_DVVP_MSPROF_DYNAMIC_PROFILING_DYN_PROF_SERVER_H
 #define COLLECTOR_DVVP_MSPROF_DYNAMIC_PROFILING_DYN_PROF_SERVER_H
 

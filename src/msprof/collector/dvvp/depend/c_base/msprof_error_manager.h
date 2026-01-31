@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef C_BASE_MSPROF_ERROR_MANAGER_H
 #define C_BASE_MSPROF_ERROR_MANAGER_H
 #include <vector>

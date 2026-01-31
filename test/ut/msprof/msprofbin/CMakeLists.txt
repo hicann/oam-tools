@@ -176,7 +176,6 @@ set(libmsprofHeaderDir
 target_include_directories(msprof_bin_utest PRIVATE
     ${libmsprofHeaderDir}
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/include
-    ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/include/open
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin
     ${MSPROF_SOURCE_DIR}/dvvp/app
     ${MSPROF_SOURCE_DIR}/dvvp/

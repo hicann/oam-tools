@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "job_device_soc.h"
 #include "ai_drv_prof_api.h"
 #include "ai_drv_dev_api.h"

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "file_slice.h"
 #include "file_ageing.h"
 #include "config/config.h"

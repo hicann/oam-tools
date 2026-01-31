@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef ANALYSIS_DVVP_COMMON_PARAM_VALIDATION_H
 #define ANALYSIS_DVVP_COMMON_PARAM_VALIDATION_H
 
@@ -96,6 +95,7 @@ public:
     bool CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t eventSize, int32_t &maxEvent) const;
     bool CheckScaleIsValid(const std::string &scaleInput, std::string &scaleType, std::string &scaleName,
         std::string &errInfo) const;
+    bool CheckTaskBlockValid(const std::string &switchName, const std::string &config) const;
 
 private:
     bool CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params);

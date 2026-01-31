@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <ctime>
 #include <cstring>
 #include "prof_inner_api.h"

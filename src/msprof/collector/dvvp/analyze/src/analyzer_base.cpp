@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "analyzer_base.h"
 #include "analyzer.h"
 #include "config/config_manager.h"

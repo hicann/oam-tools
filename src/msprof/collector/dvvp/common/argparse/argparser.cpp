@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "argparser.h"
 #include "cmd_log/cmd_log.h"
 #include "errno/error_code.h"

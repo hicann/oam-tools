@@ -50,7 +50,7 @@ function(add_infer_modules)
       )
     target_link_libraries(
       ${OPHOST_NAME}_infer_obj
-      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
               $<BUILD_INTERFACE:dlog_headers>
               $<$<TARGET_EXISTS:ops_base_util_objs>:$<TARGET_OBJECTS:ops_base_util_objs>>
               $<$<TARGET_EXISTS:ops_base_infer_objs>:$<TARGET_OBJECTS:ops_base_infer_objs>>
@@ -79,7 +79,7 @@ function(add_tiling_modules)
       )
     target_link_libraries(
       ${OPHOST_NAME}_tiling_obj
-      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
               $<BUILD_INTERFACE:dlog_headers>
               $<$<TARGET_EXISTS:${COMMON_NAME}_obj>:$<TARGET_OBJECTS:${COMMON_NAME}_obj>>
               $<$<TARGET_EXISTS:ops_base_util_objs>:$<TARGET_OBJECTS:ops_base_util_objs>>
@@ -109,7 +109,7 @@ function(add_opapi_modules)
     target_compile_definitions(${OPHOST_NAME}_opapi_obj PRIVATE LOG_CPP)
     target_link_libraries(
       ${OPHOST_NAME}_opapi_obj
-      PUBLIC $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PUBLIC $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
       PRIVATE $<BUILD_INTERFACE:adump_headers> $<BUILD_INTERFACE:dlog_headers>
       )
   endif()
@@ -130,7 +130,7 @@ function(add_aicpu_kernel_modules)
       )
     target_link_libraries(
       ${OPHOST_NAME}_aicpu_obj
-      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
               $<BUILD_INTERFACE:dlog_headers>
       )
   endif()
@@ -154,7 +154,7 @@ function(add_aicpu_cust_kernel_modules target_name)
       )
     target_link_libraries(
       ${target_name}
-      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
               $<BUILD_INTERFACE:dlog_headers>
               -Wl,--no-whole-archive
               Eigen3::EigenNn
@@ -180,7 +180,7 @@ function(add_graph_plugin_modules)
       )
     target_link_libraries(
       ${GRAPH_PLUGIN_NAME}_obj
-      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17>>
+      PRIVATE $<BUILD_INTERFACE:$<IF:$<BOOL:${ENABLE_TEST}>,intf_llt_pub_asan_cxx17,intf_pub_cxx17_unasan>>
               $<BUILD_INTERFACE:dlog_headers>
               $<$<TARGET_EXISTS:ops_base_util_objs>:$<TARGET_OBJECTS:ops_base_util_objs>>
               $<$<TARGET_EXISTS:ops_base_infer_objs>:$<TARGET_OBJECTS:ops_base_infer_objs>>

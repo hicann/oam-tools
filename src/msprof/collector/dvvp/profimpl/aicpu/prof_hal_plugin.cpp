@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_hal_plugin.h"
 #include "msprof_dlog.h"
 #include "osal.h"

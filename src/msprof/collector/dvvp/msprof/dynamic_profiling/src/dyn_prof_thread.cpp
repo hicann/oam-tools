@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "dyn_prof_thread.h"
 #include "config.h"
 #include "utils/utils.h"

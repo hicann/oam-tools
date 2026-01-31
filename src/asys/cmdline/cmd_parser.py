@@ -213,7 +213,7 @@ class Command(enum.Enum):
         KEY_ARGS: [Arg.DIS_RUN, Arg.DEVICE, Arg.TIMEOUT, Arg.OUTPUT],
         KEY_HELP: "Diagnoses the hardware status of the device. It has diagnostic capabilities for "
                   "component, stress_detect, hbm_detect and cpu_detect. "
-                  "The detect diagnostic only supports [910B, 910_93, 910_95]. "
+                  "The detect diagnostic only supports [910B, 910_93, 950]. "
     }
     HEALTH = {
         KEY_NAME: "health",

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef ANALYSIS_DVVP_TRANSPORT_UPLOADER_MGR_H
 #define ANALYSIS_DVVP_TRANSPORT_UPLOADER_MGR_H
 

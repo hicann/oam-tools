@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef ADPROF_COLLECTOR_H
 #define ADPROF_COLLECTOR_H
 #include <map>

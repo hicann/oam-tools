@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "msprofiler_adaptor.h"
 #include "command_handle.h"
 #include "prof_api_common.h"

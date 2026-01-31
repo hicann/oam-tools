@@ -299,7 +299,7 @@ if [ "${is_change_dir_mode}" = "true" ]; then
     chmod u-w "${_ABS_INSTALL_PATH}" 2> /dev/null
 fi
 
-# delete scene.info
+# delete scene.info 
 scene_dir="${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/scene.info"
 if [ -f ${scene_dir} ]; then
     rm -f ${scene_dir}

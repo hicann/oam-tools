@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef ANALYSIS_DVVP_MESSAGE_PROFILE_PARAMS_H
 #define ANALYSIS_DVVP_MESSAGE_PROFILE_PARAMS_H
 #include <set>
@@ -453,6 +452,7 @@ struct ProfileParams : public BaseInfo {
     {
         SET_VALUE(object, stars_acsq_task);
         SET_VALUE(object, taskBlock);
+        SET_VALUE(object, taskBlockShink);
         SET_VALUE(object, sysLp);
         SET_VALUE(object, sysLpFreq);
         SET_VALUE(object, aicScale);
@@ -573,6 +573,7 @@ struct ProfileParams : public BaseInfo {
         FROM_STRING_VALUE(object, hwts_log1);
         FROM_STRING_VALUE(object, stars_acsq_task);
         FROM_STRING_VALUE(object, taskBlock);
+        FROM_STRING_VALUE(object, taskBlockShink);
         FROM_STRING_VALUE(object, sysLp);
         FROM_INT_VALUE(object, sysLpFreq, DEFAULT_PROFILING_INTERVAL_10000US);
         FROM_STRING_VALUE(object, aicScale);

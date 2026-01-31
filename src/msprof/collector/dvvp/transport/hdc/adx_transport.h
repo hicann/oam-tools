@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef ANALYSIS_DVVP_TRANSPORT_ADX_TRANSPORT_H
 #define ANALYSIS_DVVP_TRANSPORT_ADX_TRANSPORT_H
 #include "transport.h"

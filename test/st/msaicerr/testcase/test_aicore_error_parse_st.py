@@ -78,9 +78,9 @@ class TestUtilsMethods(CommonAssert):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/notffts'))
         parser.parse_level = 1
-        thread_id, data_name = parser.get_dump_data_info()
+        dump_data_info_list = parser.get_dump_data_info()
+        thread_id, data_name = dump_data_info_list[0]
         self.assertEqual(thread_id, '1534205')
-
 
     def test_null_collect_driver_aicore_number(self, mocker):
         info = AicErrorInfo()
@@ -493,9 +493,9 @@ class TestUtilsMethods(CommonAssert):
             write_log_keyword_to_file(plog_path, [ERROR_INFO])
         parser = AicoreErrorParser(collect_path)
         if 'block_dim' in log_res:
-            mocker.patch.object(parser, 'get_dump_data_info', return_value=['1592077', 'data_name'])
+            mocker.patch.object(parser, 'get_dump_data_info', return_value=[('1592077', 'data_name')])
         else:
-            mocker.patch.object(parser, 'get_dump_data_info', return_value=['1', 'data_name'])
+            mocker.patch.object(parser, 'get_dump_data_info', return_value=[('1', 'data_name')])
         mocker.patch.object(parser, 'add_objdump_to_path', return_value=False)
         mocker.patch.object(parser, 'check_plog_info', return_value=False)
         res = parser.parse()

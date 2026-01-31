@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "prof_inner_api.h"
 #include "prof_acl_plugin.h"
 #include "prof_cann_plugin.h"

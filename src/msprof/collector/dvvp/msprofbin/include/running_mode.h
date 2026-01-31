@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef COLLECTOR_DVVP_MSPROFBIN_RUNNING_MODE_H
 #define COLLECTOR_DVVP_MSPROFBIN_RUNNING_MODE_H
 #include <set>

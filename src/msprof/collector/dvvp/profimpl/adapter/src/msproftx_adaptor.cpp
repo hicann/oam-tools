@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "msproftx_adaptor.h"
 #include "msprof_tx_manager.h"
 #include "platform/platform.h"

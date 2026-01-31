@@ -27,8 +27,7 @@ function(gen_ophost_symbol)
 
   target_link_libraries(
     ${OPHOST_NAME}
-    PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17>
-            nnopbase
+    PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
             c_sec
             -Wl,--no-as-needed
             register
@@ -61,7 +60,7 @@ function(gen_opgraph_symbol)
 
       target_link_libraries(
         ${OPGRAPH_NAME}
-        PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17>
+        PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
                 c_sec
                 -Wl,--no-as-needed
                 register
@@ -104,7 +103,7 @@ function(gen_opapi_symbol)
   endif()
   target_link_libraries(
     ${OPAPI_NAME}
-    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17>
+    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
     PRIVATE c_sec nnopbase $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:$<BUILD_INTERFACE:opapi>>
     )
 
@@ -132,7 +131,7 @@ function(gen_cust_opapi_symbol)
     )
   target_link_libraries(
     cust_opapi
-    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17>
+    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
     PRIVATE $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:$<BUILD_INTERFACE:opapi>>
     )
 endfunction()
@@ -155,7 +154,7 @@ function(gen_cust_optiling_symbol)
 
   target_link_libraries(
     cust_opmaster
-    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17>
+    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
     PRIVATE $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:$<BUILD_INTERFACE:optiling>>
             $<$<TARGET_EXISTS:opsbase>:opsbase>
     )
@@ -174,7 +173,7 @@ function(gen_cust_proto_symbol)
     )
   target_link_libraries(
     cust_proto
-    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17>
+    PUBLIC $<BUILD_INTERFACE:intf_pub_cxx17_unasan>
     PRIVATE $<$<TARGET_EXISTS:opsbase>:opsbase>
     )
   file(GLOB_RECURSE proto_headers ${ASCEND_AUTOGEN_PATH}/*_proto.h)

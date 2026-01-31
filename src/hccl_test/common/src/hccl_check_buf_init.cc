@@ -640,6 +640,7 @@ std::map<int, ReduceCheckBufInitFunc> functionReduceMap = {
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_INT16, reduce_check_buf_init_int16),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_INT64, reduce_check_buf_init_int64),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_UINT64, reduce_check_buf_init_int64),
+    std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_FP64, reduce_check_buf_init_int64),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_BFP16, reduce_check_buf_init_bfp16)};
 
 std::map<int, AllToAllCheckResult> functionAllToAllMap = {

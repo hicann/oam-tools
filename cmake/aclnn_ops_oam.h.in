@@ -18,7 +18,6 @@
  * \file aclnn_ops_nn.h.in
  * \brief
  */
-
 #ifndef @aclnn_master_header_name@_H_
 #define @aclnn_master_header_name@_H_
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef PROF_RUNTIME_API_H
 #define PROF_RUNTIME_API_H
 #include <cstdint>

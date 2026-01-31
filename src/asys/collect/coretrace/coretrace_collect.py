@@ -118,6 +118,8 @@ class ParseCoreTrace:
                 return self.parse_addr_src_line(fp, parse_data, shift)
             elif line_parts[0] == "[<0>]" or "(deleted)" in line:
                 return this_line
+            elif "udma4" in line or "davinci_manager" in line:
+                return ''
             else:
                 start_addr, end_addr = map(lambda x: int(x, base=16), line_parts[0].split("-"))
                 bin_name = line_parts[1].strip('\x00')

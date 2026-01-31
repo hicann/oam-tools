@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef DVVP_COLLECT_JOB_WRAPPER_CHANNEL_JOB_H
 #define DVVP_COLLECT_JOB_WRAPPER_CHANNEL_JOB_H
 #include "collection_job.h"

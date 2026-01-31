@@ -127,6 +127,7 @@ public:
 
     int check_data_count();
     int check_cmd_line();
+    int check_only_device_exec_time();
 
     // 计算当前进程rank号, 同一个服务器内的rank从0开始编号[0,nDev-1]
     int get_mpi_proc();
@@ -138,6 +139,7 @@ public:
     {}
     virtual int destory_alloc_buf(); // 销毁集合通信内存资源
     virtual int init_hcclComm();
+    virtual int init_hcclComm_without_nslb();
 
     int opbase_test_by_data_size();
 
@@ -199,12 +201,14 @@ public:
     int rank_id = 0;
     int rank_size = 0;
     int accelerator_config = 0;
+    int only_device_exec_time = 0;
 
+    aclrtStream sync_stream;
     aclrtStream stream;
     HcclComm hccl_comm;
     HcclRootInfo comm_id;
 
-    aclrtEvent start_event, end_event;
+    aclrtEvent start_event, end_event, sync_event;
 
     bool print_header = true;
     bool print_dump = true;
@@ -222,6 +226,7 @@ private:
     aclprofConfig *profiling_config = NULL;
     int npus_flag = 0;
     int nslb_flag = 0;
+    u64 hccl_buffsize = 200;
 };
 
 HcclTest* init_opbase_ptr(HcclTest* opbase);

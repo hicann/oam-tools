@@ -65,14 +65,14 @@ inline std::string ConstructNetDevStatsData(const uint64_t timeStamp, const dcmi
 {
     std::stringstream ss;
     ss << timeStamp << ' '
-    << stat.mac_tx_pfc_pkt_num << ' ' << stat.mac_rx_pfc_pkt_num << ' '
-    << stat.mac_tx_total_oct_num << ' ' << stat.mac_rx_total_oct_num << ' '
-    << stat.mac_tx_bad_oct_num << ' ' << stat.mac_rx_bad_oct_num << ' '
-    << stat.roce_tx_all_pkt_num << ' ' << stat.roce_rx_all_pkt_num << ' '
-    << stat.roce_tx_err_pkt_num << ' ' << stat.roce_rx_err_pkt_num << ' '
-    << stat.roce_tx_cnp_pkt_num << ' ' << stat.roce_rx_cnp_pkt_num << ' '
-    << stat.roce_new_pkt_rty_num << ' '
-    << stat.nic_tx_all_oct_num << ' ' << stat.nic_rx_all_oct_num << '\n';
+       << stat.mac_tx_pfc_pkt_num << ' ' << stat.mac_rx_pfc_pkt_num << ' '
+       << stat.mac_tx_total_oct_num << ' ' << stat.mac_rx_total_oct_num << ' '
+       << stat.mac_tx_bad_oct_num << ' ' << stat.mac_rx_bad_oct_num << ' '
+       << stat.roce_tx_all_pkt_num << ' ' << stat.roce_rx_all_pkt_num << ' '
+       << stat.roce_tx_err_pkt_num << ' ' << stat.roce_rx_err_pkt_num << ' '
+       << stat.roce_tx_cnp_pkt_num << ' ' << stat.roce_rx_cnp_pkt_num << ' '
+       << stat.roce_new_pkt_rty_num << ' '
+       << stat.nic_tx_all_oct_num << ' ' << stat.nic_rx_all_oct_num << '\n';
     return ss.str();
 }
 
@@ -886,7 +886,7 @@ int32_t NetDevStatsHandler::Init()
         MSPROF_INNER_ERROR("EK9999", "NetDevStatsHandler load dcmi failed");
         return PROFILING_FAILED;
     } else if (ret == PROFILING_NOTSUPPORT) {
-        return PROFILING_FAILED;
+        return PROFILING_NOTSUPPORT;
     }
     if (dcmiInit_() != PROFILING_SUCCESS) {
         MSPROF_LOGE("NetDevStatsHandler dcmi init failed");
@@ -999,7 +999,7 @@ void NetDevStatsHandler::StoreData(uint32_t devId, std::string data)
     }
     size_t usedSize = buf->GetUsedSize();
     errno_t err = memcpy_s(static_cast<void *>(const_cast<UNSIGNED_CHAR_PTR>(dataBuf + usedSize)),
-                        buf->GetFreeSize(), data.c_str(), data.size());
+                           buf->GetFreeSize(), data.c_str(), data.size());
     if (err != EOK) {
         MSPROF_LOGE("memcpy stat data failed: %d", err);
         MSPROF_INNER_ERROR("EK9999", "memcpy stat data failed: %d", err);

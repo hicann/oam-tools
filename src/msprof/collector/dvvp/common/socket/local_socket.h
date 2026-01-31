@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef COLLECTOR_DVVP_COMMON_SOCKET_LOCAL_SOCKET_H
 #define COLLECTOR_DVVP_COMMON_SOCKET_LOCAL_SOCKET_H
 
