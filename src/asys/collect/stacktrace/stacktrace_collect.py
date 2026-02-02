@@ -188,10 +188,11 @@ class AsysStackTrace(AscendTraceDll):
             return False
         log_warning(f"This command sends signal 35 to the process:{self.remote_id}. "
                     "If the process is executed to disable signal receiving through the environment variable "
-                    f"ASCEND_COREDUMP_SIGNAL=none, the process:{self.remote_id} will be killed. "
-                    "Are you sure that signal reception is not disabled? (Y/N)")
-        if not self.quiet and input().upper() != "Y":
-            return True
+                    f"ASCEND_COREDUMP_SIGNAL=none, the process:{self.remote_id} will be killed. ")
+        if not self.quiet:
+            log_warning("Are you sure that signal reception is not disabled? (Y/N)")
+            if input().upper() != "Y":
+                return True
 
         if not self._check_collect_stacktrace_parallel():
             log_error('Collect stacktrace not support Parallelism.')
