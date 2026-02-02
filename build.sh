@@ -197,6 +197,10 @@ build_oam_tools() {
     ARCH_LOWER=$(uname -m | tr '[:upper:]' '[:lower:]')
     BUILD_TYPE_LOWER=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
     bash install_bundle.sh $BUILD_TYPE_LOWER $ARCH_LOWER
+    if [ 0 -ne $? ]; then
+        echo "cannot find cann-oam-tools's tar.gz, exit."
+        exit 1
+    fi
     build_msprof_analysis
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"

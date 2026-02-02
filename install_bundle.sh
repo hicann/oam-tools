@@ -23,9 +23,9 @@ echo "工作目录: $WORKING_DIR"
 BUILD_TYPE="${1:-release}"
 ARCH="${2:-x86_64}"
 BASE_NAME="cann-oam-tools"
-SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/2025121901_newest/cann-oam-tools-bundle_8.5.0_linux-${ARCH}.tar.gz"
+SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260202_newest"
 BUNDLE_DIR="bundle"
-OUTPUT_FILE="${BASE_NAME}-${BUILD_TYPE}-${ARCH}.tar.gz"
+OUTPUT_FILE="${BASE_NAME}-release-${ARCH}.tar.gz"
 
 # Function to display usage
 usage() {
@@ -36,28 +36,37 @@ usage() {
 }
 # Display current directory
 echo "Current directory: $(pwd)"
-echo "Building $BASE_NAME package $BUILD_TYPE for $ARCH"
+echo "Building $BASE_NAME package release for $ARCH"
 echo ""
 
 # Create necessary directories
 echo "Creating directories..."
 mkdir -p "$BUNDLE_DIR"
 
-if [ -f "../oam-tools-diag/build_out/$OUTPUT_FILE" ]; then
+if [ -f "./build/$OUTPUT_FILE" ]; then
     # Using compiled oam-tools.tar.gz
     echo "Using compiled $OUTPUT_FILE"
-    cp ../oam-tools-diag/build_out/$OUTPUT_FILE .
-    chmod 755 ../oam-tools-diag/build_out/$OUTPUT_FILE
+    chmod 755 ./build/$OUTPUT_FILE
+    cp ./build/$OUTPUT_FILE $OUTPUT_FILE
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to cp $OUTPUT_FILE"
+        exit 1 
+    fi
 else
-    # Download Ascend CANN Toolkit
-    echo "Downloading $OUTPUT_FILE"
-    wget -O "$OUTPUT_FILE" "$SOURCE_URL" --no-check-certificate
-fi
+    # 添加了 --tries, --timeout 和 --connect-timeout
+    wget -O "$OUTPUT_FILE" "$SOURCE_URL/$OUTPUT_FILE" \
+        --no-check-certificate \
+        --tries=1 \
+        --timeout=5 \
+        --connect-timeout=5
 
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to get $OUTPUT_FILE"
-    rm -rf "$BUNDLE_DIR"
-    exit 1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to get $OUTPUT_FILE"
+        # 如果下载不完整，建议清理可能存在的残留文件
+        [ -f "$OUTPUT_FILE" ] && rm "$OUTPUT_FILE"
+        rm -rf "$BUNDLE_DIR"
+        exit 1 
+    fi
 fi
 
 tar -zxvf "$OUTPUT_FILE" -C "$BUNDLE_DIR"> /dev/null 2>&1
