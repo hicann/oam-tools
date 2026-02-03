@@ -85,7 +85,7 @@ class CompileOP:
         new_env["PATH"] = new_env["PATH"] + ":" + python_bin_path
         # 1、生成自定义算子模板
         utils.print_debug_log("Start run msopgen!")
-        cmd = f"msopgen gen -i {json_file} -c ai_core-Ascend910_95 -lan cpp -out {self.op_name}"
+        cmd = f"msopgen gen -i {json_file} -c ai_core-Ascend950 -lan cpp -out {self.op_name}"
         res = utils.run_cmd_output(cmd, cwd=compile_temp_dir, env=new_env)
         utils.print_debug_log("Generating a custom operator Template")
         if not res:

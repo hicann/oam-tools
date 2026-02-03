@@ -112,6 +112,7 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 
 - `--cann_3rd_lib_path`为第三方库的编译结果存储目录，默认值为`./third_party`。执行编译脚本时，若本地没有第三方库，会从gitcode开源仓库下载各个第三方库的源码。
 - 更多编译参数可以通过`bash build.sh -h`查看。
+- 编译过程中会下载tar包，tar包中包含一些保证功能正常运行的库及头文件，tar包只提供release版本，**即使编译选项为debug，也只会下载release版本的tar包**
 
 编译完成之后会在`build_out`目录下生成`cann-oam-tools_<cann_version>_linux-<arch>.run`软件包。
 \<cann_version>表示版本号。

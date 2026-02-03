@@ -23,9 +23,9 @@ echo "工作目录: $WORKING_DIR"
 BUILD_TYPE="${1:-release}"
 ARCH="${2:-x86_64}"
 BASE_NAME="cann-oam-tools"
-SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260202_newest"
+SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260202_newest/cann-oam-tools-release-${ARCH}.tar.gz"
 BUNDLE_DIR="bundle"
-OUTPUT_FILE="${BASE_NAME}-release-${ARCH}.tar.gz"
+OUTPUT_FILE="${BASE_NAME}-${BUILD_TYPE}-${ARCH}.tar.gz"
 
 # Function to display usage
 usage() {
@@ -36,7 +36,6 @@ usage() {
 }
 # Display current directory
 echo "Current directory: $(pwd)"
-echo "Building $BASE_NAME package release for $ARCH"
 echo ""
 
 # Create necessary directories
@@ -54,7 +53,7 @@ if [ -f "./build/$OUTPUT_FILE" ]; then
     fi
 else
     # 添加了 --tries, --timeout 和 --connect-timeout
-    wget -O "$OUTPUT_FILE" "$SOURCE_URL/$OUTPUT_FILE" \
+    wget -O "$OUTPUT_FILE" "$SOURCE_URL" \
         --no-check-certificate \
         --tries=1 \
         --timeout=5 \
