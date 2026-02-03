@@ -38,6 +38,7 @@
     </file_info>
     <file_info value="aml_lib" copy_type="delivery" src_path="" dst_path="oam_tools/aml/lib64" install_path="$(TARGET_ENV)/lib64" install_mod="440">
         <file value="libascend_ml.so" file_type="shared"/>
+        <file value="libascend_ml_detect.so" file_type="shared"/>
     </file_info>
     <file_info value="stress_detect" copy_type="delivery" src_path="" dst_path="oam_tools/aml/lib64/plugin_v2" install_path="tools/aml/lib64/plugin_v2" install_mod="440">
         <file value="libascend_stress_detect.so" file_type="shared"/>

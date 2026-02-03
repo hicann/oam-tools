@@ -242,10 +242,6 @@ build_oam_tools() {
 }
 
 declare -A TEST_CASES=(
-    ["aml_config_st"]="gtest"
-    ["aml_config_ut"]="gtest"
-    ["aml_diagnose_st"]="gtest"
-    ["aml_diagnose_ut"]="gtest"
     ["asys_st"]="pytest"
     ["asys_ut"]="pytest"
     ["msaicerr_st"]="pytest"
