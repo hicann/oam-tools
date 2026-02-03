@@ -154,16 +154,36 @@ print_success() {
 
 # build msprof analysis
 build_msprof_analysis() {
-    if [ -d "${BASEPATH}/../../abl/msprof/build/build_hiprof" ]; then
-        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/"
-        cd ${BASEPATH}/../../abl/msprof/build/build_hiprof
-        echo "----------------------------------"
-        echo ${BASEPATH}
-        echo ${build_path1}
-        echo "----------------------------------"
-        ./build_for_hiprof.sh
-        cp ${BASEPATH}/../../abl/msprof/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
-        cd ${BASEPATH}
+    if [ -d "${BASEPATH}/../../mindstudio/msprof" ]; then
+        ROOT_PATH="${BASEPATH}/../.."
+        BUILD_PATH="${ROOT_PATH}/mindstudio/msprof"
+        cd ${BUILD_PATH}
+        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
+        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+    else
+        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        [ ! -d "msprof" ] && git clone https://gitcode.com/Ascend/msprof.git
+        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule/msprof"
+        cd ${BUILD_PATH}
+        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
+        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+    fi
+}
+
+# build adump analysis
+build_adump_analysis() {
+    if [ -d "${BASEPATH}/../../mindstudio/msaccucmp" ]; then
+        SOURCE_PATH="${BASEPATH}/../../mindstudio/msaccucmp"
+        cd ${BASEPATH}/src/operator_cmp
+        [ ! -d "msaccucmp" ] && mkdir -p ${BASEPATH}/src/operator_cmp/msaccucmp
+        cp -r ${SOURCE_PATH}/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+    else
+        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
+        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        [ ! -d "msprobe" ] && git clone https://gitcode.com/Ascend/msprobe.git
+        cd ${BASEPATH}/src/operator_cmp
+        [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
+        cp -r ${BUILD_PATH}/submodule/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
     fi
 }
 
@@ -202,6 +222,7 @@ build_oam_tools() {
         exit 1
     fi
     build_msprof_analysis
+    build_adump_analysis
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"
     ENABLE_BINARY=TRUE

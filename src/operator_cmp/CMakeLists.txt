@@ -16,21 +16,22 @@
 cmake_minimum_required(VERSION 3.15)
 project(Operator_cmp)
 
-set(ORIGIN_MSACCUCMP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../asl/devtools/msaccucmp)
-message("MSACCUCMP_DIR : ${ORIGIN_MSACCUCMP_DIR}")
-if(EXISTS ${ORIGIN_MSACCUCMP_DIR})
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/msaccucmp)
     set(DEST_MSACCUCMP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/msaccucmp)
-    file(COPY ${ORIGIN_MSACCUCMP_DIR}/
-        DESTINATION ${DEST_MSACCUCMP_DIR}
-        FILES_MATCHING PATTERN "*")
-    
-    set(COPIED_CMAKE_FILE ${DEST_MSACCUCMP_DIR}/CMakeLists.txt)
-    file(READ ${COPIED_CMAKE_FILE} CMAKE_CONTENT)
-    string(REPLACE "lib" "\${INSTALL_LIBRARY_DIR}" CMAKE_CONTENT ${CMAKE_CONTENT})
-    file(WRITE ${COPIED_CMAKE_FILE} ${CMAKE_CONTENT})
-    set(TOP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
-    add_subdirectory(${DEST_MSACCUCMP_DIR})
-    add_dependencies(OperatorCmpFiles host_protoc protobuf_host_build ascend_protobuf_static)
+    set(CMP_TAR_NAME cmp_py.tgz)
+    set(OPERATOR_CMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/operator_cmp)
+    set(COMPARE compare)
+    add_custom_target(OperatorCmpFiles ALL DEPENDS ${CMP_TAR_NAME})
+    add_custom_command(OUTPUT ${CMP_TAR_NAME}
+        COMMAND rm -rf ${OPERATOR_CMP_DIR}
+        COMMAND mkdir ${OPERATOR_CMP_DIR}
+        COMMAND cd ${DEST_MSACCUCMP_DIR} && rm -rf ${CMP_TAR_NAME}
+        COMMAND cd ${DEST_MSACCUCMP_DIR} && find ./ -name '*.py' |xargs tar czf ${CMP_TAR_NAME}
+        COMMAND echo ${OPERATOR_CMP_DIR}/$(CMP_TAR_NAME)
+        COMMAND mv ${DEST_MSACCUCMP_DIR}/${CMP_TAR_NAME} ${OPERATOR_CMP_DIR} && tar zxvf ${OPERATOR_CMP_DIR}/${CMP_TAR_NAME} -C ${OPERATOR_CMP_DIR}
+        COMMAND rm -rf ${OPERATOR_CMP_DIR}/${CMP_TAR_NAME}
+    )
+    install(DIRECTORY ${OPERATOR_CMP_DIR} DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL)
 else()
     set(OPERATOR_CMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/operator_cmp)
     file(MAKE_DIRECTORY ${OPERATOR_CMP_DIR})
