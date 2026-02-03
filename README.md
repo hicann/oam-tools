@@ -113,7 +113,7 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 - `--cann_3rd_lib_path`为第三方库的编译结果存储目录，默认值为`./third_party`。执行编译脚本时，若本地没有第三方库，会从gitcode开源仓库下载各个第三方库的源码。
 - 更多编译参数可以通过`bash build.sh -h`查看。
 
-编译完成之后会在`build_out`目录下生产`cann-oam-tools_<cann_version>_linux-<arch>.run`软件包。
+编译完成之后会在`build_out`目录下生成`cann-oam-tools_<cann_version>_linux-<arch>.run`软件包。
 \<cann_version>表示版本号。
 \<arch>表示操作系统架构，取值包括x86_64与aarch64。
 可执行如下命令安装编译生成的oam-tools软件包：
@@ -136,7 +136,12 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 ```bash
 bash build.sh -u
 ```
-`--cov`可以获取覆盖率（如无需获取覆盖率，可省略此参数）; UT测试用例编译输出目录为`build`，如果想清除历史编译记录，可以执行如下操作：
+如需获取覆盖率，可使用`--cov`参数（如无需获取覆盖率，可省略此参数）：
+
+```bash
+bash build.sh -u --cov
+```
+UT测试用例编译输出目录为`build`，如果想清除历史编译记录，可以执行如下操作：
 
 ```bash
 rm -rf build_out/ build/

@@ -17,7 +17,7 @@
 
 - 文档纠错
 
-    如果您在本项目中发现某些算子文档描述错误，欢迎您新建Issue进行反馈和修复。
+    如果您在本项目中发现某些文档描述错误，欢迎您新建Issue进行反馈和修复。
 
     您可以按照[提交Issue/处理Issue任务](https://gitcode.com/cann/community#提交Issue处理Issue任务)指引新建 `Documentation|文档反馈` 类Issue指出对应文档的问题，然后在评论框中输入“/assign”或“/assign @yourself”，将该Issue分配给您纠正对应文档描述。
 

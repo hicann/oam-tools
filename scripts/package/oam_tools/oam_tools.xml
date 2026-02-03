@@ -86,6 +86,5 @@
         <path value="tools/profiler/profiler_tool/analysis" install_mod="750"/>
         <path value="tools/ascend_system_advisor"/>
         <path value="tools/ascend_system_advisor/asys"/>
-        <path value="tools/ascend_system_advisor/conf"/>
     </dir_info>
 </config>
