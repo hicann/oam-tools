@@ -40,9 +40,12 @@ class TestUtilsMethods(CommonAssert):
 
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
+        self.old_cwd = os.getcwd()
         self.temp = tmp_path
         self.debug_info = tmp_path.joinpath("debug_info.txt")
         os.chdir(tmp_path)
+        yield
+        os.chdir(self.old_cwd)
 
     @staticmethod
     def common_mock(mocker):
@@ -97,7 +100,7 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.kernel_name = 'kernel_name'
         info.node_name = 'node_name'
-        os.environ['LD_LIBRARY_PATH'] = '/runtime'
+        os.environ['LD_LIBRARY_PATH'] += '/runtime'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts1/'))
         mocker.patch('ctypes.cdll.LoadLibrary', return_value=Selflib())
@@ -319,7 +322,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(res, result)
 
     def test_get_op_info(self, mocker):
-        os.environ['LD_LIBRARY_PATH'] = './'
+        os.environ['LD_LIBRARY_PATH'] += './'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect_milan'))
         mocker.patch.object(

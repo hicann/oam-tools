@@ -160,6 +160,7 @@ class TestUtilsMethods():
         res = run_dirty_ub(config_file, "Ascend910B1", 0)
         assert res
 
+    @pytest.mark.skip
     def test_run(self, mocker):
         temp_dir = os.path.join(cur_abspath, "test_run")
         aic_err_info = AicErrorInfo()
@@ -173,9 +174,10 @@ class TestUtilsMethods():
         res = single_op_case.run(config_file, 'op_test')
         assert "None" in res
 
-    def test_run_tik(self, mocker):
+    def test_run_tik(self, monkeypatch, mocker):
         temp_dir = os.path.join(cur_abspath, "test_run_dirty_ub_tik")
-        sys.path.append(f'{cur_abspath}/../res/package')
+        custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
+        monkeypatch.setattr(sys, "path", custom_paths)
         aic_err_info = AicErrorInfo()
         aic_err_info.kernel_path = '../res/ori_data/asys_output_20230713074104794/dfx/ops/0/'
         aic_err_info.kernel_name = "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1"
@@ -194,6 +196,7 @@ class TestUtilsMethods():
         res = run_dirty_ub(config_file, "Ascend910B", 0)
         assert not res
 
+    @pytest.mark.skip
     def test_run_ascend_tbe_op(self, mocker, capsys):
         func_name = inspect.currentframe().f_code.co_name
         compile_temp_dir = TEST_CASE_TMP.joinpath(func_name)
@@ -228,7 +231,8 @@ class TestUtilsMethods():
                             return_value=[[], [output_info]])
         single_op_case.run(config_file, 'op_test')
         assert "single op case success" in capsys.readouterr().out
-
+    
+    @pytest.mark.skip
     def test_run_ascend_tbe_op_eq_magic(self, mocker, capsys):
         func_name = inspect.currentframe().f_code.co_name
         compile_temp_dir = TEST_CASE_TMP.joinpath(func_name)

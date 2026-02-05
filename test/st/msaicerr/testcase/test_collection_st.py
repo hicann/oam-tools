@@ -50,9 +50,12 @@ class TestUtilsMethods(CommonAssert):
 
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
+        self.old_cwd = os.getcwd()
         self.temp = tmp_path
         self.debug_info = tmp_path.joinpath("debug_info.txt")
         os.chdir(tmp_path)
+        yield
+        os.chdir(self.old_cwd)
 
     @pytest.mark.parametrize(
         "src_path, expected",

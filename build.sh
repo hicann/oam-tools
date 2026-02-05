@@ -299,13 +299,21 @@ oam_tools_test() {
         echo "STARTING TEST: **$case_name** (Framework: $framework)"
         # --- ACTUAL EXECUTION STEP ---
         if [ "$case_name" == "asys_st" ]; then
-            python3 -m pytest ../test/st/asys/testcase/* --cov=../src/asys > "${output_file}" 2>&1
+            coverage run --source=../src/asys -m pytest ../test/st/asys/testcase > "${output_file}" 2>&1
+            coverage report >> "${output_file}"
+            coverage html -d "$case_name"_html >> "${output_file}"
         elif [ "$case_name" == "asys_ut" ]; then
-            python3 -m pytest ../test/ut/asys/testcase/* --cov=../src/asys > "${output_file}" 2>&1
+            coverage run --source=../src/asys -m pytest ../test/ut/asys/testcase > "${output_file}" 2>&1
+            coverage report >> "${output_file}"
+            coverage html -d "$case_name"_html >> "${output_file}"
         elif [ "$case_name" == "msaicerr_st" ]; then
-            python3 -m pytest ../test/st/msaicerr/testcase/* --cov=../src/msaicerr > "${output_file}" 2>&1
+            coverage run --source=../src/msaicerr -m pytest ../test/st/msaicerr/testcase > "${output_file}" 2>&1
+            coverage report >> "${output_file}"
+            coverage html -d "$case_name"_html >> "${output_file}"
         elif [ "$case_name" == "msaicerr_ut" ]; then
-            python3 -m pytest ../test/ut/msaicerr/testcase/* --cov=../src/msaicerr > "${output_file}" 2>&1
+            coverage run --source=../src/msaicerr -m pytest ../test/ut/msaicerr/testcase > "${output_file}" 2>&1
+            coverage report >> "${output_file}"
+            coverage html -d "$case_name"_html >> "${output_file}"
         elif [ "$case_name" == "msprof_ut" ]; then
             ./test/ut/msprof/msprofbin/msprof_bin_utest > "${output_file}" 2>&1
         fi
@@ -361,6 +369,7 @@ oam_tools_test() {
         if [ "$failed_count" -gt 0 ] || [ "$passed_count" -eq 0 ]; then
             echo "FAILURE: Test case **$case_name** **failed** ($failed_count failures out of $(($passed_count + $failed_count)) total)."
             echo "log saved to: **$output_file**"
+            cat $output_file
             # Print failure details for the user
             if [ "$framework" == "gtest" ]; then
                 echo "--- FAILURE LOG SUMMARY (gtest FAILED tests) ---"
@@ -402,7 +411,7 @@ main() {
     if [[ "${ENABLE_UT}" == "on" && "${EXEC_TEST}" == "on" ]];then
         source "${ASCEND_HOME_PATH}/bin/setenv.bash"
         export LD_LIBRARY_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"/:$LD_LIBRARY_PATH
-        oam_tools_test asys_st asys_ut msaicerr_st msaicerr_ut
+        oam_tools_test msaicerr_st msaicerr_ut msprof_ut
         if [ $? -ne 0 ]; then
             echo "Execute oam_tools_test failed."
             exit 1

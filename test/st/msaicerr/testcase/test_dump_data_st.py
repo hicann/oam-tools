@@ -52,9 +52,12 @@ class Selfliberr():
 class TestUtilsMethods(CommonAssert):
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
+        self.old_cwd = os.getcwd()
         self.temp = tmp_path
         self.debug_info = tmp_path.joinpath("debug_info.txt")
         os.chdir(tmp_path)
+        yield
+        os.chdir(self.old_cwd)
 
     @staticmethod
     def common_mock(mocker, dump_json):
@@ -85,6 +88,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertIn(dump_data_parser.get_dfx_message(), "[AIC_INFO] args(20 to 39)")
 
     def test_ctype_cdll_parse_dump_error(self, mocker, capsys):
+        mocker.patch('ctypes.CDLL', side_effect=OSError("libascend_dump_parser.so: cannot open shared object file"))
         create_dump_file(dump_file, 10, 200)
         info = AicErrorInfo()
         info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径

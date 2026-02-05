@@ -197,7 +197,7 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.kernel_name = 'kernel_name'
         info.node_name = 'node_name'
-        os.environ['LD_LIBRARY_PATH'] = '/runtime/libruntime.so'
+        os.environ['LD_LIBRARY_PATH'] += '/runtime/libruntime.so'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts1/'))
         mocker.patch('ctypes.cdll.LoadLibrary', return_value=Selflib())
@@ -463,7 +463,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(res, data)
 
     def test_get_op_info(self, mocker):
-        os.environ['LD_LIBRARY_PATH'] = './'
+        os.environ['LD_LIBRARY_PATH'] += './'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect_milan'))
         mocker.patch.object(

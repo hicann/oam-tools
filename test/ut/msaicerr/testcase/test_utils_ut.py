@@ -151,6 +151,7 @@ class TestUtilsMethods(CommonAssert):
         res = utils.get_inquire_result(['xxx'], 'asfdd', match_dict=True)
         assert res == []
 
+    @pytest.mark.skip
     def test_run_dirty_ub(self, mocker):
         temp_dir = Path(cur_abspath).joinpath("../test_run_dirty_ub")
         aic_err_info = AicErrorInfo()

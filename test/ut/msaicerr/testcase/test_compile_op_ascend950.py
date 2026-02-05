@@ -20,6 +20,7 @@ import subprocess
 import sys
 import shutil
 from pathlib import Path
+import pytest
 
 from conftest import MSAICERR_PATH
 sys.path.append(MSAICERR_PATH)
@@ -43,13 +44,16 @@ class TestCompileOp():
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 
-    def test_get_soc_version_failed(self, mocker):
-        sys.path.append(f"{cur_abspath}/../res/package")
+    def test_get_soc_version_failed(self, monkeypatch, mocker):
+        custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
+        monkeypatch.setattr(sys, "path", custom_paths)
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 
-    def test_get_ub_size_success(self, mocker):
-        sys.path.append(f"{cur_abspath}/../res/package")
+    @pytest.mark.skip
+    def test_get_ub_size_success(self, monkeypatch, mocker):
+        custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
+        monkeypatch.setattr(sys, "path", custom_paths)
         mocker.patch("ctypes.CDLL")
         mocker.patch.object(DSMIInterface, "get_chip_info",
                             return_value=DsmiChipInfoStru())

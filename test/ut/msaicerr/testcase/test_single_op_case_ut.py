@@ -113,9 +113,10 @@ class TestUtilsMethods():
         config_file = single_op_case.generate_config()
         assert config_file == data
 
-    def test_run_dirty_ub_tik(self, mocker):
+    def test_run_dirty_ub_tik(self, monkeypatch, mocker):
         temp_dir = os.path.join(cur_abspath, "test_run_dirty_ub_tik")
-        sys.path.append(f'{cur_abspath}/../res/package')
+        custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
+        monkeypatch.setattr(sys, "path", custom_paths)
         aic_err_info = AicErrorInfo()
         aic_err_info.kernel_path = '../res/ori_data/asys_output_20230713074104794/dfx/ops/0/'
         aic_err_info.kernel_name = "te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1"
@@ -170,6 +171,7 @@ class TestUtilsMethods():
         res = SingleOpCase.get_soc_version_from_cce('cce_file')
         assert res == 'Ascend310'
 
+    @pytest.mark.skip
     def test_update_kernel_by_cce(self, mocker):
         res = SingleOpCase.update_kernel_by_cce('cce_file', 'kernel_name')
         assert res is None

@@ -23,10 +23,9 @@ import shutil
 from pathlib import Path
 from collections import namedtuple
 
-from conftest import MSAICERR_PATH
+from conftest import MSAICERR_PATH, RES_PATH
 cur_abspath = os.path.dirname(__file__)
 sys.path.append(MSAICERR_PATH)
-sys.path.append(f'{cur_abspath}/../res/package')
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
 from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernel, AscendOpKernelRunner
 from ms_interface.golden_op import GoldenOp
@@ -35,7 +34,9 @@ from ms_interface.constant import ModeCustom
 
 class TestGoldenOp:
 
-    def test_run_golden(self, mocker, caplog):
+    def test_run_golden(self, monkeypatch, mocker, caplog):
+        custom_paths = [MSAICERR_PATH, f"{RES_PATH}/package"]
+        monkeypatch.setattr(sys, "path", custom_paths)
         mocker.patch.object(AscendOpKernelRunner, 'run')
         mocker.patch.object(AscendRTSApi, '_load_runtime_so')
         mocker.patch.object(AscendRTSApi, 'register_kernel_launch_fill_func')

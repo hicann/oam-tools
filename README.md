@@ -128,7 +128,7 @@ bash build.sh --cann_3rd_lib_path=${THIRD_LIB_PATH}
 ## 本地验证 
 
 编译完成后，用户可以进行开发测试（DT：Development Testing），验证项目功能是否正常。
-> 说明：执行UT用例依赖[pytest-cov](https://pypi.org/project/pytest-cov/), [coverage](https://pypi.org/project/coverage/), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件。UT不支持在虚拟机和conda环境下运行。
+> 说明：执行UT用例依赖[pytest-cov](https://pypi.org/project/pytest-cov/), [coverage](https://pypi.org/project/coverage/), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件, UT不支持在虚拟机和conda环境下运行。
 
 > 要求：pytest-cov >=7.0.0, coverage >=7.10.0
 
