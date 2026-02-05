@@ -1510,7 +1510,7 @@ void ArgsManager::PrintMsopprofHelp()
 void ArgsManager::PrintHelp()
 {
     std::cout << std::endl << "Usage:" << std::endl;
-    std::cout << "      ./msprof [--options]" << std::endl << std::endl;
+    std::cout << "      msprof [--options]" << std::endl << std::endl;
     PrintMsopprofHelp();
     std::cout << "Options:" << std::endl;
     for (auto args : argsList_) {
