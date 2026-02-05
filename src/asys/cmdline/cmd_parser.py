@@ -111,10 +111,11 @@ class Arg(enum.Enum):
 
     ANALYZE_RUN = {
         KEY_NAME: "r", KEY_CHECKER: None, KEY_REQUIRED: True,
-        KEY_CHOICES: ["trace", "coredump", "coretrace", "stackcore", "aicore_error"],
+        KEY_CHOICES: ["trace", "coredump", "coretrace", "stackcore", "aicore_error", "ub"],
         KEY_HELP: f"{POSITIONAL_R} Specifies the type of data to be analyzed. It can be set to 'trace' "
                   "(trace binary file), 'coredump' (system core file), 'coretrace' (coretrace file), "
-                  "'stackcore' (stackcore file) or 'aicore_error' (aicore error dump and log)."
+                  "'stackcore' (stackcore file), 'aicore_error' (aicore error dump and log) or "
+                  "'ub' (UB binary files)."
     }
     FILE = {
         KEY_NAME: "file", KEY_CHECKER: ArgChecker.FILE_PATH_EXIST_R, KEY_REQUIRED: False, KEY_METAVAR: " ",
@@ -229,7 +230,7 @@ class Command(enum.Enum):
         KEY_NAME: "analyze",
         KEY_ARGS: [Arg.ANALYZE_RUN, Arg.DEVICE, Arg.FILE, Arg.PATH, Arg.EXE_FILE, Arg.CORE_FILE, Arg.SYMBOL,
                    Arg.SYMBOL_PATH, Arg.REG, Arg.OUTPUT],
-        KEY_HELP: "Analyzes the trace, coredump, coretrace, stackcore and aicore_error info."
+        KEY_HELP: "Analyzes the trace, coredump, coretrace, stackcore, aicore_error and ub info."
     }
     CONFIG = {
         KEY_NAME: "config",

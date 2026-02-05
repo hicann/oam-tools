@@ -68,6 +68,31 @@ LP_MODE_LP = 2
 SIGRTMIN = 34
 STACKTRACE = 'stacktrace'
 
+DSMI_UB_PORT_NUM = 36
+DL_PORT_RX_VL_NUM = 16
+STATS_ITEM_NUM = 50
+UBQOS_MAX_SL_NUM = 16
+
+UB_ENTIRE_STATUS_MAP = {
+    0: "DSMI_UB_ALL_PORT_NO_LINK (All ports have no link)",
+    1: "DSMI_UB_ALL_PORT_LINK (All ports have link)",
+    2: "DSMI_UB_PARTIAL_PORT_LINK (Partial ports have link)",
+    3: "DSMI_UB_NO_NEED_LINK (No link required)"
+}
+
+UB_PORT_STATUS_MAP = {
+    0: "DSMI_UB_PORT_STATUS_INITIAL (Initial status)",
+    1: "DSMI_UB_PORT_STATUS_FULL_LANE (Full lane normal)",
+    2: "DSMI_UB_PORT_STATUS_PARTIAL_LANE (Partial lane normal)",
+    3: "DSMI_UB_PORT_STATUS_NONE_LANE (No lane normal)"
+}
+
+BALANCE_ALGORITHM_MAP = {
+    1: "Hash by lower 2 bits of address (only check address low 2 bits)",
+    2: "Hash by multiple bits of address (check multiple address bits)",
+    0: "Reserved/Unspecified algorithm",
+}
+
 GET_DEVICES_INFO_TIMEOUT = 10
 
 ALL_NOT_SUPPORTED_CHIP_TYPE = 'NULL'
