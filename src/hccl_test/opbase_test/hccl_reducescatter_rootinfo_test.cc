@@ -177,7 +177,7 @@ int HcclOpBaseReducescatterTest::hccl_op_base_test() //主函数
     ACLCHECK(aclrtEventElapsedTime(&time, start_event, end_event));
 
     if (check == 1) {
-        if (enable_zero_copy && (iters || warmup_iters)) {
+        if ((enable_zero_copy || enable_symmetric_memory) && (iters || warmup_iters)) {
             ACLCHECK(aclrtMemcpy((void *)send_buff, malloc_kSize * rank_size, (void *)host_buf, malloc_kSize * rank_size, ACL_MEMCPY_HOST_TO_DEVICE));
             HCCLCHECK(HcclReduceScatter((void *)send_buff, (void *)recv_buff, data->count, (HcclDataType)dtype, (HcclReduceOp)op_type, hccl_comm, stream));
             ACLCHECK(aclrtSynchronizeStream(stream));

@@ -110,6 +110,7 @@ HCCL Test提供HCCL通信性能与正确性测试
   * `-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64>` 数据类型，默认值：fp32（即float32）
 
   * `-z,--zero_copy <0/1>` 开启0拷贝，allgather, reduce_scatter, broadcast, allreduce操作符合约束条件生效，默认值：0
+  * `-m,--symmetric_memory <0/1>` 开启对称内存，allgather, reduce_scatter, allreduce操作符合约束条件生效，默认值：0
  
 * 性能
   * `-n,--iters <iteration count>` 迭代次数，默认值：20

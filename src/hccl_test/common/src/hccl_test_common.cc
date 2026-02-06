@@ -282,7 +282,8 @@ struct option HcclTest::longopts[] = {{"op", required_argument, 0, 'o'},
     {"help", no_argument, 0, 'h'},
     {"zero_copy", required_argument, 0, 'z'},
     {"nslb", required_argument, 0, 's'},
-    {"onlydevicetime", required_argument, 0, 't'}
+    {"onlydevicetime", required_argument, 0, 't'},
+    {"symmetric_memory", required_argument, 0, 'm'}
 };
 
 void HcclTest::print_help()
@@ -303,6 +304,7 @@ void HcclTest::print_help()
            "[-c,--check <result verification> 0:disabled 1:enabled.] \n\t"
            "[-p,--npus <npus used for one node>] \n\t"
            "[-z,--zero_copy  0:disabled 1:enabled.] \n\t"
+           "[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t"
            "[-s,--nslb  0:disabled 1:enabled.] \n\t"
            "[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not support aicpu_ts.] \n\t"
            "[-h,--help]\n");
@@ -461,6 +463,11 @@ int HcclTest::check_cmd_line()
         return -1;
     }
 
+    if (enable_zero_copy && enable_symmetric_memory) {
+        printf("Error: Zero-copy and symmetric memory cannot be enabled simultaneously.\n");
+        return -1;
+    }
+
     return 0;
 }
 
@@ -603,6 +610,9 @@ int HcclTest::parse_opt(int opt)
         case 'z':
             enable_zero_copy = std::stoi(optarg);
             break;
+        case 'm':
+            enable_symmetric_memory = std::stoi(optarg);
+            break;
         case 's':
             nslb_flag = 1;
             break;
@@ -626,7 +636,7 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     int longindex = 0;
     int ret = 0;
     long parsed;
-    while (-1 != (opt = getopt_long(argc, argv, "o:d:b:e:i:f:r:n:w:c:p:z:a:s:t:h", longopts, &longindex))) {
+    while (-1 != (opt = getopt_long(argc, argv, "o:d:b:e:i:f:r:n:w:c:p:z:a:s:t:h:m:", longopts, &longindex))) {
         ret = parse_opt(opt);
         if (ret != 0) {
             return ret;
@@ -920,14 +930,17 @@ int HcclTest::init_hcclComm()
 int HcclTest::opbase_test_by_data_size()
 {
     int ret = 0;
+    CommSymWindow sym_win;
     for (data->data_size = data->min_bytes; data->data_size <= data->max_bytes;
          (data->step_factor <= 1.0 ? data->data_size += data->step_bytes : data->data_size *= data->step_factor)) {
         size_t send_bytes = 0;
         size_t recv_bytes = 0;
         get_buff_size(send_bytes, recv_bytes);
         HCCLCHECK(static_cast<HcclResult>(prepare_zero_copy(send_bytes, recv_bytes)));
+        HCCLCHECK(static_cast<HcclResult>(register_symmetric_memory(send_bytes, recv_bytes, sym_win)));
         HCCLCHECK(static_cast<HcclResult>(alloc_hccl_send_recv_buffer(send_buff, send_bytes, recv_buff, recv_bytes)));
         ret = hccl_op_base_test();
+        HCCLCHECK(static_cast<HcclResult>(deregister_symmetric_memory(sym_win)));
         HCCLCHECK(static_cast<HcclResult>(free_send_recv_buff_and_disable_local_buffer()));
         if (ret != 0) {
             printf("hccl_op_base execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
@@ -1022,7 +1035,13 @@ enableerr0:
 int HcclTest::alloc_hccl_send_recv_buffer(
     void *&send_buff, const size_t &send_bytes, void *&recv_buff, const size_t &recv_bytes)
 {
-    if (!enable_zero_copy) {
+    if (enable_zero_copy) {
+        // 2M对齐
+        send_buff = vir_ptr;
+        recv_buff = reinterpret_cast<void *>(
+            reinterpret_cast<uintptr_t>(vir_ptr) +
+            (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity));
+    } else if(!enable_symmetric_memory) {
         // 申请集合通信操作的内存
         if (send_bytes) {
             ACLCHECK(aclrtMalloc((void **)&send_buff, send_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
@@ -1030,19 +1049,13 @@ int HcclTest::alloc_hccl_send_recv_buffer(
         if (recv_bytes) {
             ACLCHECK(aclrtMalloc((void **)&recv_buff, recv_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
         }
-    } else {
-        // 2M对齐
-        send_buff = vir_ptr;
-        recv_buff = reinterpret_cast<void *>(
-            reinterpret_cast<uintptr_t>(vir_ptr) +
-            (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity));
     }
     return 0;
 }
 
 int HcclTest::free_send_recv_buff_and_disable_local_buffer()
 {
-    if (!enable_zero_copy) {
+    if (!enable_zero_copy && !enable_symmetric_memory) {
         // 申请集合通信操作的内存
         if (send_buff) {
             ACLCHECK(aclrtFree(send_buff));
@@ -1059,4 +1072,106 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
     }
     return HCCL_SUCCESS;
 }
+
+int HcclTest:: hccl_mem_alloc(void **ptr, size_t size)
+{
+    if (ptr == nullptr || size == 0) {
+        printf("[%s][%d] Invalid parameter: ptr[%p], size[%zu].\n", __FUNCTION__, __LINE__, ptr, size);
+        return HCCL_E_PARA;
+    }
+
+    int32_t deviceId;
+    ACLCHECK(aclrtGetDevice(&deviceId));
+    aclrtPhysicalMemProp prop;
+    prop.handleType = ACL_MEM_HANDLE_TYPE_NONE;
+    prop.allocationType = ACL_MEM_ALLOCATION_TYPE_PINNED;
+    prop.memAttr = ACL_HBM_MEM_HUGE;
+    prop.location.id = deviceId;
+    prop.location.type = ACL_MEM_LOCATION_TYPE_DEVICE;
+    prop.reserve = 0;
+
+    size_t allocSize = size;
+    size_t granularity = 0;
+    aclError ret = aclrtMemGetAllocationGranularity(&prop, ACL_RT_MEM_ALLOC_GRANULARITY_RECOMMENDED, &granularity);
+    if (ret != ACL_SUCCESS || granularity == 0) {
+        printf("[%s][%d] GetAllocationGranularity failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    allocSize = (allocSize + granularity - 1) / granularity * granularity;
+
+    ret = aclrtReserveMemAddress(ptr, allocSize, 0, nullptr, 1);
+    if (ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    void *virPtr = *ptr;
+    aclrtDrvMemHandle handle;
+    ret = aclrtMallocPhysical(&handle, allocSize, &prop, 0);
+    if(ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
+        aclrtReleaseMemAddress(virPtr);
+        return HCCL_E_RUNTIME;
+    }
+    ret = aclrtMapMem(virPtr, allocSize, 0, handle, 0);
+    if(ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
+        aclrtFreePhysical(handle);
+        aclrtReleaseMemAddress(virPtr);
+        return HCCL_E_RUNTIME;
+    }
+
+    return HCCL_SUCCESS;
+}
+
+int HcclTest:: hccl_mem_free(void *ptr)
+{
+    if (ptr == nullptr) {
+        return HCCL_SUCCESS;
+    }
+    aclError ret = ACL_SUCCESS;
+    aclrtDrvMemHandle handle;
+    ret = aclrtMemRetainAllocationHandle(ptr, &handle);
+    if (ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtMemRetainAllocationHandle failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    ret = aclrtUnmapMem(ptr);
+    if (ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtUnmapMem failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    ret = aclrtFreePhysical(handle);
+    if (ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtFreePhysical failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    ret = aclrtReleaseMemAddress(ptr);
+    if (ret != ACL_SUCCESS) {
+        printf("[%s][%d] aclrtReleaseMemAddress failed.\n", __FUNCTION__, __LINE__);
+        return HCCL_E_RUNTIME;
+    }
+    return HCCL_SUCCESS;
+}
+
+int HcclTest::register_symmetric_memory(const size_t &send_bytes, const size_t &recv_bytes, CommSymWindow &sym_win)
+{
+    if (!enable_symmetric_memory || (send_bytes + recv_bytes) == 0) {
+        return HCCL_SUCCESS;
+    }
+    HCCLCHECK(static_cast<HcclResult>( hccl_mem_alloc(&send_buff, send_bytes + recv_bytes)));
+    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, send_buff, send_bytes + recv_bytes, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
+    recv_buff = static_cast<char*>(send_buff) + send_bytes;
+    return 0;
+}
+
+int HcclTest::deregister_symmetric_memory(CommSymWindow &sym_win)
+{
+    if (!enable_symmetric_memory) {
+        return HCCL_SUCCESS;
+    }
+    HCCLCHECK(HcclCommSymWinDeregister(sym_win));
+    HCCLCHECK(static_cast<HcclResult>( hccl_mem_free(send_buff)));
+    return 0;
+}
+
 }  // namespace hccl
