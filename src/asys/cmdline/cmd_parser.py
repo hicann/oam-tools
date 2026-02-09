@@ -52,7 +52,7 @@ class Arg(enum.Enum):
     }
     OUTPUT = {
         KEY_NAME: "output", KEY_CHECKER: ArgChecker.DIR_CREATE, KEY_REQUIRED: False, KEY_METAVAR: " ",
-        KEY_HELP: f"{OPTIONAL_Y} Specifies the flush path of the command execution result, Default: current dir."
+        KEY_HELP: f"{OPTIONAL_Y} Specifies the path to save the command execution results, Default: current dir."
     }
     TAR = {
         KEY_NAME: "tar", KEY_CHECKER: ArgChecker.TAR_CHECK, KEY_REQUIRED: False, KEY_METAVAR: " ",
@@ -85,6 +85,12 @@ class Arg(enum.Enum):
     DEVICE = {
         KEY_NAME: "d", KEY_TYPE: int, KEY_CHECKER: ArgChecker.DEVICE_ID, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_HELP: f"{OPTIONAL_Y} Specifies the ID of the device for command execution."
+    }
+
+    ANALYZE_DEVICE = {
+        KEY_NAME: "d", KEY_TYPE: int, KEY_CHECKER: ArgChecker.DEVICE_ID, KEY_REQUIRED: False, KEY_METAVAR: " ",
+        KEY_HELP: f"{OPTIONAL_Y} Specifies the ID of the device for command execution. This argument "
+                    "is valid only for 'aicore_error'."
     }
 
     DIS_RUN = {
@@ -120,12 +126,12 @@ class Arg(enum.Enum):
     FILE = {
         KEY_NAME: "file", KEY_CHECKER: ArgChecker.FILE_PATH_EXIST_R, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_HELP: f"{POSITIONAL_R} Specifies the single file to be analyzed. This argument is valid only for 'trace', "
-                  "'coretrace' and 'stackcore'. Use either this argument or '--path'."
+                  "'coretrace' and 'stackcore'. Mutually exclusive with '--path'."
     }
     PATH = {
         KEY_NAME: "path", KEY_CHECKER: ArgChecker.FILE_PATH_EXIST_R, KEY_REQUIRED: False, KEY_METAVAR: " ",
         KEY_HELP: f"{POSITIONAL_R} Specifies the path to be analyzed. This argument is valid only for 'trace', "
-                  "'coretrace' and 'stackcore'. Use either this argument or '--file'."
+                  "'coretrace' and 'stackcore'. Mutually exclusive with '--file'."
     }
     EXE_FILE = {
         KEY_NAME: "exe_file", KEY_CHECKER: None, KEY_REQUIRED: False, KEY_METAVAR: " ",
@@ -228,7 +234,7 @@ class Command(enum.Enum):
     }
     ANALYZE = {
         KEY_NAME: "analyze",
-        KEY_ARGS: [Arg.ANALYZE_RUN, Arg.DEVICE, Arg.FILE, Arg.PATH, Arg.EXE_FILE, Arg.CORE_FILE, Arg.SYMBOL,
+        KEY_ARGS: [Arg.ANALYZE_RUN, Arg.ANALYZE_DEVICE, Arg.FILE, Arg.PATH, Arg.EXE_FILE, Arg.CORE_FILE, Arg.SYMBOL,
                    Arg.SYMBOL_PATH, Arg.REG, Arg.OUTPUT],
         KEY_HELP: "Analyzes the trace, coredump, coretrace, stackcore, aicore_error and ub info."
     }

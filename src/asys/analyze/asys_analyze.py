@@ -275,6 +275,8 @@ class AsysAnalyze:
                 for idx, (p, u, c, e, t, a, g) in enumerate(acl_list):
                     txt_f.write(f"{idx:<4}|{p:<10}|{u:<8}|{c:<8}|{e:<32}|{t:<10}|{a:<8}|{g:<10}\n")
 
+            log_info(f"Conversion successful! {bin_file_path} has been converted to text file {txt_file_path}")
+
         except FileNotFoundError:
             log_warning(f"Error: {bin_file_path} not found")
         except (struct.error, ValueError) as e:

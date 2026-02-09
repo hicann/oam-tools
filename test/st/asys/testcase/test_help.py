@@ -256,7 +256,7 @@ optional arguments:
         sys.argv = [ASYS_MAIN_PATH, "analyze", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
-        except_msg = """usage: asys analyze [-h] -r {trace,coredump,coretrace,stackcore,aicore_error}
+        except_msg = """usage: asys analyze [-h] -r {trace,coredump,coretrace,stackcore,aicore_error,ub}
                 [-d ] [--file   | --path  ] [--exe_file ] [--core_file ]
                     [--symbol {0,1}] [--symbol_path ] [--reg {0,1,2}]
                     [--output ]
@@ -270,15 +270,16 @@ optional arguments:
                         (coretrace file), 'stackcore' (stackcore file) or
                         'aicore_error' (aicore error dump and log).
   -d                    <Optional> Specifies the ID of the device for
-                        command execution.
+                        command execution. This argument is valid only 
+                        for 'aicore_error'.
   --file                <Positional> Specifies the single file to be
                         analyzed. This argument is valid only for 'trace',
-                        'coretrace' and 'stackcore'. Use either this argument
-                        or '--path'.
+                        'coretrace' and 'stackcore'. Mutually exclusive with 
+                        '--path'.
   --path                <Positional> Specifies the path to be
                         analyzed. This argument is valid only for 'trace',
-                        'coretrace' and 'stackcore'. Use either this argument
-                        or '--file'.
+                        'coretrace' and 'stackcore'. Mutually exclusive with 
+                        '--file'.
   --exe_file            <Positional> Specifies the executable file to
                         be debugged. This argument is valid only for
                         'coredump'.
@@ -298,8 +299,8 @@ optional arguments:
                         register data for analysis. 0: not add; 1: add only
                         for threads; 2: add for all stack frames. Defaults to
                         0.
-  --output              <Optional> Specifies the flush path of the
-                        command execution result, Default: current dir."""
+  --output              <Optional> Specifies the path to save the command 
+                        execution results, Default: current dir."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
         output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n",
                                                                                                                  "").replace(
