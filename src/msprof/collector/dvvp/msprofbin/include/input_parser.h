@@ -222,6 +222,7 @@ private:
     int32_t CheckAppValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckEnvironmentValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckDynProfValid(struct MsprofCmdInfo &cmdInfo) const;
+    bool CheckDynaProfPidValid(const std::string &pid, std::vector<int32_t> &validPids) const;
     bool CheckDynConflict(struct MsprofCmdInfo &cmdInfo) const;
     bool ConflictChecking(struct MsprofCmdInfo &cmdInfo, int32_t opt, const std::string &conflictArgs) const;
     int32_t CheckSampleModeValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;

@@ -96,6 +96,7 @@ public:
     bool CheckScaleIsValid(const std::string &scaleInput, std::string &scaleType, std::string &scaleName,
         std::string &errInfo) const;
     bool CheckTaskBlockValid(const std::string &switchName, const std::string &config) const;
+    bool CheckDynaPidIsValid(const int32_t pid) const;
 
 private:
     bool CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params);

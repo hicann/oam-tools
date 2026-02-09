@@ -16,9 +16,11 @@
 #ifndef COLLECTOR_DVVP_MSPROF_DYNAMIC_PROFILING_DYN_PROF_CLIENT_H
 #define COLLECTOR_DVVP_MSPROF_DYNAMIC_PROFILING_DYN_PROF_CLIENT_H
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <set>
 #include "dyn_prof_def.h"
 #include "thread/thread.h"
 
@@ -49,18 +51,23 @@ protected:
 private:
     void DynProfCliInitProcFunc();
     int32_t DynProfCliCreate();
-    int32_t DynProfCliSendParams() const;
+    int32_t DynProfCliSendParams();
 
-    DynProfMsgRsqCode DynProfCliSendCmd(DynProfMsgType req) const;
-    void DynProfCliProcStart() const;
-    void DynProfCliProcStop() const;
-    void DynProfCliProcQuit() const;
+    DynProfMsgRsqCode DynProfCliSendCmd(const int32_t cliSockFd, DynProfMsgType req) const;
+    void DynProfCliProcStart(const int32_t cliSockFd);
+    void DynProfCliProcStop(const int32_t cliSockFd);
+    void DynProfCliProcQuit(const int32_t cliSockFd) const;
     void DynProfCliHelpInfo() const;
+    int32_t DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain);
+    void DynProfCliStopSocket(int32_t cliSockFd);
+    void CheckServerPidsIfValid();
+    int TryReadInputCmd(std::string &inputCmd);
 
-    int32_t cliSockFd_ { -1 };
-    bool cliStarted_ { false };
+    std::set<int32_t> cliSockFds_;
+    std::atomic<bool> cliStarted_ { false };
     std::string dynProfParams_;
     std::map<DynProfCliCmd, ProcFunc> procFuncMap_;
+    std::map<int32_t, int32_t> cliSockFdMap_;
 };
 
 class DynProfCliMgr : public analysis::dvvp::common::singleton::Singleton<DynProfCliMgr> {
@@ -70,8 +77,8 @@ public:
     ~DynProfCliMgr() override;
     int32_t StartDynProfCli(const std::string &params);
     void StopDynProfCli();
-    void SetKeyPid(int32_t pid);
-    int32_t GetKeyPid() const;
+    void SetKeyPid(const std::vector<int32_t> pids);
+    std::set<int32_t> GetKeyPid() const;
     std::string GetKeyPidEnv() const;
     void EnableDynProfCli();
     bool IsDynProfCliEnable() const;
@@ -85,7 +92,7 @@ private:
     DynProfCliMgr() = default;
     bool enabled_ { false };
     bool isAppMode_ { false }; // --application
-    int32_t keyPid_ { 0 };         // --application: msprofbin pid; --pid: app pid
+    std::set<int32_t> keyPids_; // --application: msprofbin pid; --pid: app pid
     SHARED_PTR_ALIA<Collector::Dvvp::DynProf::DynProfClient> dynProfCli_;
 };
 } // namespace DynProf

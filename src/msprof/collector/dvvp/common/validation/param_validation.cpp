@@ -1134,6 +1134,20 @@ bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, co
     FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
     return true;
 }
+
+/**
+ * @brief  : Check dynamic pid is valid by checking socket file if exist
+ * @param  : [in] pid : dynamic pid
+ * @return : true
+ *           false
+ */
+bool ParamValidation::CheckDynaPidIsValid(const int32_t pid) const
+{
+    std::string dynaSocketFilePath = Utils::IdeGetHomedir() + "/dyn_prof_sock_" + std::to_string(pid);
+    FUNRET_CHECK_EXPR_ACTION(!Utils::IsFileExist(dynaSocketFilePath), return false,
+                            "dynamic socket file for pid %d does not exist", pid);
+    return true;
+}
 }
 }
 }

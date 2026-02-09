@@ -808,17 +808,55 @@ int32_t InputParser::CheckDynProfValid(struct MsprofCmdInfo &cmdInfo) const
         "Failed to check the parameter conflict about dynamic mode.");
 
     // --pid is non-empty, save pid to DynProfCliMgr
+    std::vector<int32_t> pids;
     if (!pid.empty()) {
-        int32_t pidInt = 0;
-        FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(pidInt, pid), return MSPROF_DAEMON_ERROR, 
-            "pid %s is invalid", pid.c_str());
-        DynProfCliMgr::instance()->SetKeyPid(pidInt);
+        if (!CheckDynaProfPidValid(pid, pids)) {
+            return MSPROF_DAEMON_ERROR;
+        }
+        DynProfCliMgr::instance()->SetKeyPid(pids);
     } else { // app mode, set msprofbin pid
         DynProfCliMgr::instance()->SetAppMode();
-        DynProfCliMgr::instance()->SetKeyPid(Utils::GetPid());
+        pids.push_back(Utils::GetPid());
+        DynProfCliMgr::instance()->SetKeyPid(pids);
     }
     DynProfCliMgr::instance()->EnableDynProfCli();
     return MSPROF_DAEMON_OK;
+}
+
+bool InputParser::CheckDynaProfPidValid(const std::string &pid, std::vector<int32_t> &validPids) const
+{
+    int32_t pidInt = 0;
+    std::vector<std::string> nonNumPidVec;
+    std::vector<std::string> invalidPidVec;
+    auto pidStrVec = Utils::Split(pid, false, "", ",");
+    for (auto &pidStr : pidStrVec) {
+        if (pidStr.empty()) {
+            continue;
+        }
+        if (!Utils::StrToInt32(pidInt, pidStr)) {
+            nonNumPidVec.push_back(pidStr);
+        } else if (!ParamValidation::instance()->CheckDynaPidIsValid(pidInt)) {
+            invalidPidVec.push_back(pidStr);
+        } else {
+            validPids.push_back(pidInt);
+        }
+    }
+    UtilsStringBuilder<std::string> builder;
+    if (!nonNumPidVec.empty()) {
+        CmdLog::CmdErrorLog("Argument --pid: invalid non-numeric pid value: %s, stop profiling.",
+                            builder.Join(nonNumPidVec, ",").c_str());
+        return false;
+    }
+    if (validPids.empty()) {
+        CmdLog::CmdErrorLog("Argument --pid: no valid pid values, stop profiling.");
+        return false;
+    }
+    if (!invalidPidVec.empty()) {
+        CmdLog::CmdWarningLog("Argument --pid: invalid pid value: %s, "
+                            "will not collect profiling data for these process.",
+                            builder.Join(invalidPidVec, ",").c_str());
+    }
+    return true;
 }
 
 bool InputParser::CheckDynConflict(struct MsprofCmdInfo &cmdInfo) const
@@ -1294,7 +1332,6 @@ int32_t InputParser::MsprofDynamicCheckValid(const struct MsprofCmdInfo &cmdInfo
             ret = CheckArgOnOff(cmdInfo, opt);
             break;
         case ARGS_DYNAMIC_PROF_PID:
-            ret = CheckArgRange(cmdInfo, opt, 1, PROF_MAX_DYNAMIC_PID);
             break;
         case ARGS_DELAY_PROF:
             ret = CheckArgRange(cmdInfo, opt, 1, PROF_MAX_DYNAMIC_TIME);
@@ -1548,7 +1585,7 @@ void ArgsManager::AddDynProfArgs()
         return;
     }
     Args dynamic = {"dynamic", "Dynamic profiling switch, the default value is off.", OFF};
-    Args pid = {"pid", "Dynamic profiling pid of the target process", "0"};
+    Args pid = {"pid", "Dynamic profiling pids of the target processes"};
     argsList_.push_back(dynamic);
     argsList_.push_back(pid);
 }
