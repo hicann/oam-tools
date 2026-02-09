@@ -2843,6 +2843,8 @@ void ProfAclMgr::ChangeProfWarmupToStart(const std::vector<uint32_t> &devIds) co
     for (auto &devId : devIds) {
         ProfAclMgr::instance()->DumpStartInfoFile(devId);
     }
+    // flush drv data
+    ProfChannelManager::instance()->FlushChannel();
     UploaderMgr::instance()->SetUploadDataIfStart(true);
 }
 }   // namespace Api
