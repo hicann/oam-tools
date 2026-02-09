@@ -54,6 +54,7 @@ int32_t Uploader::Init(size_t size)
 
 int32_t Uploader::Uinit()
 {
+    MSPROF_LOGD("Uploader Uinit, isInited_:%d.", (isInited_ ? 1 : 0));
     if (isInited_) {
         (void)Stop(true);
         transport_.reset();

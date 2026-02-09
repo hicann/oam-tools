@@ -208,6 +208,8 @@ void RunningMode::StopRunningTasks() const
     int32_t ret = analysis::dvvp::common::utils::Utils::ExecCmd(execCmdParams, argsV, envsV, exitCode, killProces);
     MSPROF_LOGI("[%s mode] Stop %s Process:%d, ret=%d", modeName_.c_str(), taskName_.c_str(),
                 static_cast<int32_t>(taskPid_), ret);
+    analysis::dvvp::transport::UploaderMgr::instance()->DelAllUploader();
+    MSPROF_LOGI("delete all uploader in running mode");
 }
 
 void RunningMode::SetEnvList(std::vector<std::string> &envsV) const

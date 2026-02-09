@@ -57,6 +57,7 @@ void FILETransport::SetAbility(bool needSlice)
 
 void FILETransport::WriteDone()
 {
+    MSPROF_LOGD("File transport write done");
     fileSlice_->FileSliceFlush();
 }
 
