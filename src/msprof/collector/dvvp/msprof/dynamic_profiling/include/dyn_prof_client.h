@@ -62,6 +62,7 @@ private:
     void DynProfCliStopSocket(int32_t cliSockFd);
     void CheckServerPidsIfValid();
     int TryReadInputCmd(std::string &inputCmd);
+    void SetSocketTimeout();
 
     std::set<int32_t> cliSockFds_;
     std::atomic<bool> cliStarted_ { false };

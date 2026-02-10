@@ -134,10 +134,8 @@ void DynProfClient::CheckServerPidsIfValid()
     }
 }
 
-void DynProfClient::Run(const struct error_message::Context &errorContext)
+void DynProfClient::SetSocketTimeout()
 {
-    MsprofErrorManager::instance()->SetErrorContext(errorContext);
-
     for (auto cliSockFd : cliSockFds_) {
         if (LocalSocket::SetRecvTimeOut(cliSockFd, DYN_PROF_PROC_TIME_OUT, 0) == PROFILING_FAILED ||
             LocalSocket::SetSendTimeOut(cliSockFd, DYN_PROF_PROC_TIME_OUT, 0) == PROFILING_FAILED) {
@@ -145,15 +143,25 @@ void DynProfClient::Run(const struct error_message::Context &errorContext)
             DynProfCliStopSocket(cliSockFd);
         }
     }
+}
+
+void DynProfClient::Run(const struct error_message::Context &errorContext)
+{
+    MsprofErrorManager::instance()->SetErrorContext(errorContext);
+
+    SetSocketTimeout();
     if (cliSockFds_.empty()) {
         MSPROF_LOGE("set client recv time out for all pids failed.");
         return;
     }
 
     std::string inputCmd;
+    std::cout << "> " << std::flush;
     while (cliStarted_) {
         CheckServerPidsIfValid();
-        std::cout << "> " << std::flush;
+        if (cliSockFds_.empty()) {
+            break;
+        }
         if (TryReadInputCmd(inputCmd) < 0) {
             continue;
         }
@@ -165,10 +173,12 @@ void DynProfClient::Run(const struct error_message::Context &errorContext)
         if (it == DYN_PROF_CLI_CMD_MAP.cend()) {
             CmdLog::CmdLogNoLevel("invalid option -- '%s'\n", inputCmd.c_str());
             DynProfCliHelpInfo();
+            std::cout << "> " << std::flush;
             continue;
         }
         if (inputCmd == "help" || inputCmd == "h") {
             DynProfCliHelpInfo();
+            std::cout << "> " << std::flush;
             continue;
         }
         for (auto cliSockFd : cliSockFds_) {
@@ -178,6 +188,7 @@ void DynProfClient::Run(const struct error_message::Context &errorContext)
             MSPROF_LOGI("receive quit signal, stop dynamic profiler");
             break;
         }
+        std::cout << "> " << std::flush;
     }
     for (auto cliSockFd : cliSockFds_) {
         DynProfCliStopSocket(cliSockFd);
