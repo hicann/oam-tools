@@ -931,16 +931,15 @@ int HcclTest::opbase_test_by_data_size()
 {
     int ret = 0;
     CommSymWindow sym_win;
+    HCCLCHECK(static_cast<HcclResult>(register_symmetric_memory(sym_win)));
     for (data->data_size = data->min_bytes; data->data_size <= data->max_bytes;
          (data->step_factor <= 1.0 ? data->data_size += data->step_bytes : data->data_size *= data->step_factor)) {
         size_t send_bytes = 0;
         size_t recv_bytes = 0;
         get_buff_size(send_bytes, recv_bytes);
         HCCLCHECK(static_cast<HcclResult>(prepare_zero_copy(send_bytes, recv_bytes)));
-        HCCLCHECK(static_cast<HcclResult>(register_symmetric_memory(send_bytes, recv_bytes, sym_win)));
         HCCLCHECK(static_cast<HcclResult>(alloc_hccl_send_recv_buffer(send_buff, send_bytes, recv_buff, recv_bytes)));
         ret = hccl_op_base_test();
-        HCCLCHECK(static_cast<HcclResult>(deregister_symmetric_memory(sym_win)));
         HCCLCHECK(static_cast<HcclResult>(free_send_recv_buff_and_disable_local_buffer()));
         if (ret != 0) {
             printf("hccl_op_base execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
@@ -955,6 +954,7 @@ int HcclTest::opbase_test_by_data_size()
         }
         phy_alloc_mem_handle.clear();
     }
+    HCCLCHECK(static_cast<HcclResult>(deregister_symmetric_memory(sym_win)));
     return ret;
 }
 
@@ -1041,7 +1041,10 @@ int HcclTest::alloc_hccl_send_recv_buffer(
         recv_buff = reinterpret_cast<void *>(
             reinterpret_cast<uintptr_t>(vir_ptr) +
             (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity));
-    } else if(!enable_symmetric_memory) {
+    } else if(enable_symmetric_memory) {
+        send_buff = vir_ptr;
+        recv_buff = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + send_bytes);
+    } else {
         // 申请集合通信操作的内存
         if (send_bytes) {
             ACLCHECK(aclrtMalloc((void **)&send_buff, send_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
@@ -1153,24 +1156,34 @@ int HcclTest:: hccl_mem_free(void *ptr)
     return HCCL_SUCCESS;
 }
 
-int HcclTest::register_symmetric_memory(const size_t &send_bytes, const size_t &recv_bytes, CommSymWindow &sym_win)
+int HcclTest::register_symmetric_memory(CommSymWindow &sym_win)
 {
-    if (!enable_symmetric_memory || (send_bytes + recv_bytes) == 0) {
+    if (!enable_symmetric_memory) {
         return HCCL_SUCCESS;
     }
-    HCCLCHECK(static_cast<HcclResult>( hccl_mem_alloc(&send_buff, send_bytes + recv_bytes)));
-    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, send_buff, send_bytes + recv_bytes, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
-    recv_buff = static_cast<char*>(send_buff) + send_bytes;
+    // 获取send recv内存大小
+    data->data_size = data->min_bytes;
+    if (!(stepbytes_flag && !data->step_bytes)) {
+        for (; data->data_size < data->max_bytes;
+                (data->step_factor <= 1.0 ? data->data_size += data->step_bytes
+                                        : data->data_size *= data->step_factor)) {
+        }
+    }
+    size_t send_bytes = 0;
+    size_t recv_bytes = 0;
+    get_buff_size(send_bytes, recv_bytes);
+    size_t reserve_mem = send_bytes + recv_bytes;
+    HCCLCHECK(static_cast<HcclResult>( hccl_mem_alloc(&vir_ptr, reserve_mem)));
+    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_mem, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
     return 0;
 }
 
 int HcclTest::deregister_symmetric_memory(CommSymWindow &sym_win)
 {
-    if (!enable_symmetric_memory) {
-        return HCCL_SUCCESS;
+    if (enable_symmetric_memory) {
+        HCCLCHECK(HcclCommSymWinDeregister(sym_win));
+        HCCLCHECK(static_cast<HcclResult>( hccl_mem_free(vir_ptr)));
     }
-    HCCLCHECK(HcclCommSymWinDeregister(sym_win));
-    HCCLCHECK(static_cast<HcclResult>( hccl_mem_free(send_buff)));
     return 0;
 }
 

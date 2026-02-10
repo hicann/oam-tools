@@ -111,6 +111,7 @@ HCCL Test提供HCCL通信性能与正确性测试
 
   * `-z,--zero_copy <0/1>` 开启0拷贝，allgather, reduce_scatter, broadcast, allreduce操作符合约束条件生效，默认值：0
   * `-m,--symmetric_memory <0/1>` 开启对称内存，allgather, reduce_scatter, allreduce操作符合约束条件生效，默认值：0
+      注：不支持零拷贝和对称内存同时开启。
  
 * 性能
   * `-n,--iters <iteration count>` 迭代次数，默认值：20

@@ -167,9 +167,9 @@ protected:
     int alloc_hccl_send_recv_buffer(
         void *&send_buff, const size_t &send_bytes, void *&recv_buff, const size_t &recv_bytes);
     int free_send_recv_buff_and_disable_local_buffer();
-    int  hccl_mem_free(void *ptr);
-    int  hccl_mem_alloc(void **ptr, size_t size);
-    int register_symmetric_memory(const size_t &send_bytes, const size_t &recv_bytes, CommSymWindow &sym_win);
+    int hccl_mem_free(void *ptr);
+    int hccl_mem_alloc(void **ptr, size_t size);
+    int register_symmetric_memory(CommSymWindow &sym_win);
     int deregister_symmetric_memory(CommSymWindow &sym_win);
 
 private:
