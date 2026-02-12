@@ -145,6 +145,28 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(device_id, device_id_res)
         self.assertEqual(data_name, data_name_res)
 
+    @pytest.mark.parametrize(
+        "collect_level, reg_inquire_result",
+        [
+            (0, [('2026-01-27-16:19:25.335.417', '1', 'MoeReRouting.MoeReRouting.7.20260127161925313'), 
+                 ('2026-01-27-16:19:24.987.629', '1', 'MoeReRouting.MoeReRouting.7.20260127161724963')]),
+            (1, [('2026-01-27-16:19:25.335.417', '1', 'MoeReRouting.MoeReRouting.7.20260127161925313'), 
+                 ('2026-01-27-16:19:24.987.629', '1', 'MoeReRouting.MoeReRouting.7.20260127161724963')])
+        ]
+    )
+    def test_get_dump_file_with_order(self, mocker, collect_level, reg_inquire_result):
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection = Collection(input_path, output_path)
+        collection.collect_level = collect_level
+        mocker.patch("ms_interface.utils.get_inquire_result", side_effect=[reg_inquire_result, []])
+        err_time, device_id, data_name = collection.get_dump_data_info()
+        self.assertEqual(err_time, "2026-01-27-16:19:24.987.629")
+        self.assertEqual(device_id, "1")
+        self.assertEqual(data_name, "MoeReRouting.MoeReRouting.7.20260127161724963")
+
     def test_get_dump_data_info_collect_error_level_one(self):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")

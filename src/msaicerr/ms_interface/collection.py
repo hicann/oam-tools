@@ -111,7 +111,9 @@ class Collection:
             ge_dump_data_regexp = (r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).+? "
                                    r"DumpNodeInfo:.*?extra-info\/data-dump\/(\d+)\/([\w.]+)")
             adump_dump_data_ret = utils.get_inquire_result(dump_data_cmd, adump_dump_data_regexp)
+            adump_dump_data_ret = sorted(adump_dump_data_ret, key=lambda x: x[0])
             ge_dump_data_ret = utils.get_inquire_result(dump_data_cmd, ge_dump_data_regexp)
+            ge_dump_data_ret = sorted(ge_dump_data_ret, key=lambda x: x[0])
             if not adump_dump_data_ret and not ge_dump_data_ret:
                 utils.print_error_log(f"Check whether open exception dump.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
@@ -128,6 +130,7 @@ class Collection:
             dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).+?tid\:\d+" \
                                r".*?extra-info\/data-dump\/(\d)+\/([\w.]+)"
             dump_data_ret = utils.get_inquire_result(dump_data_cmd, dump_data_regexp)
+            dump_data_ret = sorted(dump_data_ret, key=lambda x: x[0])
             if not dump_data_ret:
                 utils.print_error_log(f"Check whether open exception dump.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
