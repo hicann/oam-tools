@@ -167,8 +167,8 @@ protected:
     int alloc_hccl_send_recv_buffer(
         void *&send_buff, const size_t &send_bytes, void *&recv_buff, const size_t &recv_bytes);
     int free_send_recv_buff_and_disable_local_buffer();
-    int hccl_mem_free(void *ptr);
-    int hccl_mem_alloc(void **ptr, size_t size);
+    int hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle);
+    int hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle);
     int register_symmetric_memory(CommSymWindow &sym_win);
     int deregister_symmetric_memory(CommSymWindow &sym_win);
 
@@ -218,6 +218,7 @@ public:
     bool print_dump = true;
     bool need_ranksize_alignment = false;
     bool enable_symmetric_memory{false};
+    aclrtDrvMemHandle symmetric_handle{nullptr};    // 注册对称内存用到的物理内存handle
 
 private:
     // 当前进程在通信域(MPI_COMM_WORLD)内的进程号

@@ -1076,9 +1076,9 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
     return HCCL_SUCCESS;
 }
 
-int HcclTest:: hccl_mem_alloc(void **ptr, size_t size)
+int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
 {
-    if (ptr == nullptr || size == 0) {
+    if (ptr == nullptr || size == 0 || handle == nullptr) {
         printf("[%s][%d] Invalid parameter: ptr[%p], size[%zu].\n", __FUNCTION__, __LINE__, ptr, size);
         return HCCL_E_PARA;
     }
@@ -1108,17 +1108,16 @@ int HcclTest:: hccl_mem_alloc(void **ptr, size_t size)
         return HCCL_E_RUNTIME;
     }
     void *virPtr = *ptr;
-    aclrtDrvMemHandle handle;
-    ret = aclrtMallocPhysical(&handle, allocSize, &prop, 0);
+    ret = aclrtMallocPhysical(handle, allocSize, &prop, 0);
     if(ret != ACL_SUCCESS) {
         printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
         aclrtReleaseMemAddress(virPtr);
         return HCCL_E_RUNTIME;
     }
-    ret = aclrtMapMem(virPtr, allocSize, 0, handle, 0);
+    ret = aclrtMapMem(virPtr, allocSize, 0, *handle, 0);
     if(ret != ACL_SUCCESS) {
         printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
-        aclrtFreePhysical(handle);
+        aclrtFreePhysical(*handle);
         aclrtReleaseMemAddress(virPtr);
         return HCCL_E_RUNTIME;
     }
@@ -1126,18 +1125,12 @@ int HcclTest:: hccl_mem_alloc(void **ptr, size_t size)
     return HCCL_SUCCESS;
 }
 
-int HcclTest:: hccl_mem_free(void *ptr)
+int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
 {
-    if (ptr == nullptr) {
+    if (ptr == nullptr || handle == nullptr) {
         return HCCL_SUCCESS;
     }
     aclError ret = ACL_SUCCESS;
-    aclrtDrvMemHandle handle;
-    ret = aclrtMemRetainAllocationHandle(ptr, &handle);
-    if (ret != ACL_SUCCESS) {
-        printf("[%s][%d] aclrtMemRetainAllocationHandle failed.\n", __FUNCTION__, __LINE__);
-        return HCCL_E_RUNTIME;
-    }
     ret = aclrtUnmapMem(ptr);
     if (ret != ACL_SUCCESS) {
         printf("[%s][%d] aclrtUnmapMem failed.\n", __FUNCTION__, __LINE__);
@@ -1172,9 +1165,9 @@ int HcclTest::register_symmetric_memory(CommSymWindow &sym_win)
     size_t send_bytes = 0;
     size_t recv_bytes = 0;
     get_buff_size(send_bytes, recv_bytes);
-    size_t reserve_mem = send_bytes + recv_bytes;
-    HCCLCHECK(static_cast<HcclResult>( hccl_mem_alloc(&vir_ptr, reserve_mem)));
-    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_mem, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
+    size_t reserve_size = send_bytes + recv_bytes;
+    HCCLCHECK(static_cast<HcclResult>(hccl_mem_alloc(reserve_size, &vir_ptr, &symmetric_handle)));
+    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_size, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
     return 0;
 }
 
@@ -1182,7 +1175,8 @@ int HcclTest::deregister_symmetric_memory(CommSymWindow &sym_win)
 {
     if (enable_symmetric_memory) {
         HCCLCHECK(HcclCommSymWinDeregister(sym_win));
-        HCCLCHECK(static_cast<HcclResult>( hccl_mem_free(vir_ptr)));
+        MPI_Barrier(MPI_COMM_WORLD);
+        HCCLCHECK(static_cast<HcclResult>(hccl_mem_free(vir_ptr, symmetric_handle)));
     }
     return 0;
 }
