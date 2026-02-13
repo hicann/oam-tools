@@ -167,6 +167,26 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(device_id, "1")
         self.assertEqual(data_name, "MoeReRouting.MoeReRouting.7.20260127161724963")
 
+    @pytest.mark.parametrize(
+        "collect_level, reg_inquire_result",
+        [
+            (0, [None, None]),
+            (1, [None, None])
+        ]
+    )
+    def test_get_dump_file_none_reg_result(self, mocker, collect_level, reg_inquire_result):
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection = Collection(input_path, output_path)
+        collection.collect_level = collect_level
+        mocker.patch("ms_interface.utils.get_inquire_result", side_effect=reg_inquire_result)
+        with pytest.raises(utils.AicErrException) as e:
+            collection.get_dump_data_info()
+            self.assertEqual(str(e), str(
+                Constant.MS_AICERR_INVALID_PATH_ERROR))
+
     def test_get_dump_data_info_collect_error_level_one(self):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
