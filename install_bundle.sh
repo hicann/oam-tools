@@ -15,7 +15,7 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-# 获取当前工作目录
+# Define current work path
 WORKING_DIR=$(pwd)
 echo "工作目录: $WORKING_DIR"
 
@@ -23,7 +23,12 @@ echo "工作目录: $WORKING_DIR"
 BUILD_TYPE="${1:-release}"
 ARCH="${2:-x86_64}"
 BASE_NAME="cann-oam-tools"
-SOURCE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260202_newest/cann-oam-tools-release-${ARCH}.tar.gz"
+
+# Base url
+OBS_BASE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN"
+# Stable tar.gz url
+STABLE_URL="https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260213_newest/cann-oam-tools-release-${ARCH}.tar.gz"
+
 BUNDLE_DIR="bundle"
 OUTPUT_FILE="${BASE_NAME}-${BUILD_TYPE}-${ARCH}.tar.gz"
 
@@ -34,6 +39,7 @@ usage() {
     echo "Defaults: build_type=release, architecture=x86_64"
     echo ""
 }
+
 # Display current directory
 echo "Current directory: $(pwd)"
 echo ""
@@ -52,16 +58,44 @@ if [ -f "./build/$OUTPUT_FILE" ]; then
         exit 1 
     fi
 else
-    # 添加了 --tries, --timeout 和 --connect-timeout
-    wget -O "$OUTPUT_FILE" "$SOURCE_URL" \
-        --no-check-certificate \
-        --tries=1 \
-        --timeout=5 \
-        --connect-timeout=5
+    # Get date str, work for different os and bash env
+    CURRENT_DATE_STR=$(date +%Y%m%d)
+    
+    # Define newest tar.gz url
+    URL_TODAY="${OBS_BASE_URL}/${CURRENT_DATE_STR}_newest/cann-oam-tools-release-${ARCH}.tar.gz"
+    
+    download_success=false
 
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to get $OUTPUT_FILE"
-        # 如果下载不完整，建议清理可能存在的残留文件
+    try_download() {
+        local url=$1
+        local label=$2
+        echo "----------------------------------------------"
+        echo "Attempting to download $label..."
+        echo "URL: $url"
+        
+        wget -O "$OUTPUT_FILE" "$url" \
+            --no-check-certificate \
+            --tries=1 \
+            --timeout=5 \
+            --connect-timeout=5
+        return $?
+    }
+
+    if try_download "$URL_TODAY" "TODAY'S PACKAGE"; then
+        echo "Success: Downloaded today's package."
+        download_success=true
+    else
+        echo "Notice: Today's package not found or download failed."
+        if try_download "$STABLE_URL" "STABLE PACKAGE"; then
+            echo "Success: Downloaded stable package."
+            download_success=true
+        else
+            echo "Error: Both today's package and stable package failed to download."
+        fi
+    fi
+
+    if [ "$download_success" = false ]; then
+        echo "Error: Failed to get $OUTPUT_FILE from any source."
         [ -f "$OUTPUT_FILE" ] && rm "$OUTPUT_FILE"
         rm -rf "$BUNDLE_DIR"
         exit 1 
@@ -74,7 +108,6 @@ if [ $? -eq 0 ]; then
     echo "Package verification successful"
     echo "Extracted to: $OUTPUT_FILE"
 
-    # 显示解压后的文件结构
     echo "Extracted directory structure:"
     find "$BUNDLE_DIR" -type f | head -20
 else
@@ -88,9 +121,7 @@ rm -f "$OUTPUT_FILE"
 
 echo ""
 echo "=============================================="
-echo "Package created successfully!"
+echo "Final Status: DONE"
 echo "Location: $BUNDLE_DIR/"
-echo "Package type: Tool Compatibility Package"
-echo "Version: $VERSION"
 echo "Architecture: $ARCH"
 echo "=============================================="
