@@ -636,7 +636,7 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     int longindex = 0;
     int ret = 0;
     long parsed;
-    while (-1 != (opt = getopt_long(argc, argv, "o:d:b:e:i:f:r:n:w:c:p:z:a:s:t:h:m:", longopts, &longindex))) {
+    while (-1 != (opt = getopt_long(argc, argv, "o:d:b:e:i:f:r:n:w:c:p:z:a:s:t:m:h", longopts, &longindex))) {
         ret = parse_opt(opt);
         if (ret != 0) {
             return ret;
