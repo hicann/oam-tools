@@ -345,22 +345,30 @@ int HcclTest::check_data_count()
 
     // 数据量需要被ranksize整除
     if (need_ranksize_alignment) {
-        u64 algin_size = rank_size * BUF_ALGIN_SIZE;
-        if (data->min_bytes < rank_size) {
-            data->min_bytes = rank_size;
-        }
-        if (data->min_bytes > BUF_ALGIN_LINE) {
-            data->min_bytes = data->min_bytes / algin_size * algin_size;
-        } else {
-            data->min_bytes = data->min_bytes / rank_size * rank_size;
-        }
+        // 计算对齐大小：rank_size * BUF_ALGIN_SIZE(512)
+        u64 align_size = rank_size * BUF_ALGIN_SIZE;
 
-        if (data->max_bytes < rank_size) {
-            data->max_bytes = rank_size;
-        }
-        data->max_bytes = data->max_bytes / rank_size * rank_size;
+        // 辅助函数：对齐字节数
+        auto align_bytes = [&](u64 bytes) -> u64 {
+            if (bytes < rank_size) {
+                bytes = rank_size;
+            }
+            if (bytes > BUF_ALGIN_LINE) {
+                // 大于BUF_ALGIN_LINE时，对齐到align_size的倍数
+                bytes = (bytes / align_size) * align_size;
+            } else {
+                // 小于等于BUF_ALGIN_LINE时，对齐到rank_size的倍数
+                bytes = (bytes / rank_size) * rank_size;
+            }
+            return bytes;
+        };
 
-        data->step_bytes = (data->step_bytes + rank_size - 1) / rank_size * rank_size;
+        // 对齐min_bytes和max_bytes
+        data->min_bytes = align_bytes(data->min_bytes);
+        data->max_bytes = align_bytes(data->max_bytes);
+
+        // 对齐step_bytes到rank_size的倍数（向上取整）
+        data->step_bytes = ((data->step_bytes + rank_size - 1) / rank_size) * rank_size;
     }
 
     if (stepfactor_flag != 0 && data->step_factor <= 1.0) {
