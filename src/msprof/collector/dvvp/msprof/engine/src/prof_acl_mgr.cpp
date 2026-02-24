@@ -2386,7 +2386,7 @@ int32_t ProfAclMgr::ProfStopCommon(const MsprofConfig *config)
     AddOpDetailConf(profSwitch);
     std::vector<uint32_t> devIds;
     GetRunningDevices(devIds);
-    uint32_t devIdList[devIds.size()] = {0};
+    uint32_t devIdList[PROF_MAX_DEV_NUM] = {0};
     std::copy(devIds.begin(), devIds.end(), devIdList);
     MSPROF_LOGI("[ProfStopCommon] get running device task success, devTask size: %zu", devIds.size());
     int32_t ret = CommandHandleProfStop(devIdList, devIds.size(), profSwitch, profSwitchHi);
