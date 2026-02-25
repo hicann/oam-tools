@@ -222,8 +222,8 @@ int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const st
                 break;
             }
             if (tryTimes >= timeout) {
-                CmdLog::CmdErrorLog("cannot connect to server for pid %s, timeout", pidStr);
-                MSPROF_LOGE("cannot connect to server for pid %s, timeout", pidStr);
+                CmdLog::CmdErrorLog("cannot connect to server for pid %s, timeout", pidStr.c_str());
+                MSPROF_LOGE("cannot connect to server for pid %s, timeout", pidStr.c_str());
                 result = PROFILING_FAILED;
                 break;
             }
@@ -232,8 +232,8 @@ int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const st
         }
     } else {
         if (LocalSocket::Connect(cliSockFd, srvSockDomain) == PROFILING_FAILED) {
-            CmdLog::CmdErrorLog("cannot connect to server for pid %s, maybe server is closed", pidStr);
-            MSPROF_LOGE("cannot connect to server for pid %s, maybe server is closed", pidStr);
+            CmdLog::CmdErrorLog("cannot connect to server for pid %s, maybe server is closed", pidStr.c_str());
+            MSPROF_LOGE("cannot connect to server for pid %s, maybe server is closed", pidStr.c_str());
             result = PROFILING_FAILED;
         }
     }
