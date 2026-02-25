@@ -18,6 +18,7 @@
 #include "ai_drv_prof_api.h"
 #include "utils/utils.h"
 #include "config/config.h"
+#include "platform/platform.h"
 #include "uploader_mgr.h"
 
 namespace Analysis {
@@ -26,6 +27,7 @@ namespace JobWrapper {
 using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::utils;
+using namespace Analysis::Dvvp::Common::Platform;        
 
 /*
  * @berif  : Collect milan frequency conversion data
@@ -58,6 +60,16 @@ int32_t ProfLpmFreqConvJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     return PROFILING_SUCCESS;
 }
 
+int32_t ProfLpmFreqConvJob::Process()
+{
+    if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_AICORE_LPM_INFO)) {
+        std::string filePath =
+            collectionJobCfg_->comParams->tmpResultDir + MSVP_SLASH + "lpmInfoConv.data";
+        collectionJobCfg_->jobParams.dataPath = filePath;
+    }
+    return ProfPeripheralJob::Process();
+}
+
 /*
  * @berif  : Frequency Peripheral Set Config
  * @param  : None
@@ -73,7 +85,7 @@ int32_t ProfLpmFreqConvJob::SetPeripheralConfig()
         return PROFILING_FAILED;
     }
     configP->period = DEFAULT_INTERVAL;
-    configP->res = 0;
+    configP->version = 1;
     peripheralCfg_.configP = configP;
     peripheralCfg_.configSize = configSize;
     return PROFILING_SUCCESS;

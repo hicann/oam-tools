@@ -24,6 +24,7 @@ class ProfLpmFreqConvJob : public ProfPeripheralJob {
 public:
     ProfLpmFreqConvJob();
     ~ProfLpmFreqConvJob() override;
+    int32_t Process() override;
     int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) override;
     int32_t SetPeripheralConfig() override;
 };

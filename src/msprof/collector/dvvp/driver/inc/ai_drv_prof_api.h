@@ -354,7 +354,7 @@ struct TagMemProfileConfig {
 
 struct LpmConvProfileConfig {
     uint32_t period;
-    uint32_t res;
+    uint32_t version;
 };
 
 struct TagDdrProfileConfig {
