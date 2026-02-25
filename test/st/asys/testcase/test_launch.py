@@ -95,7 +95,8 @@ class TestLaunch(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", "bash {}/data/asys_test_dir/test_launch_error_task.bash".format(st_root_path))])
+    @pytest.mark.parametrize(["arg_name", "arg_val"],
+                            [("--task", "bash {}/data/asys_test_dir/test_launch_error_task.sh".format(st_root_path))])
     def test_launch_task_return_error(self, caplog, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数可执行, 任务返回码非0

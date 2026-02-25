@@ -59,7 +59,7 @@ createrelativelysoftlink() {
     fi
 }
 
-changeMode() {
+change_mode() {
     local _mode=$1
     local _path=$2
     local _type=$3
@@ -73,14 +73,14 @@ changeMode() {
     fi
 }
  
-changeFileMode() {
+change_file_mode() {
     local _mode=$1
     local _path=$2
-    changeMode ${_mode} "${_path}" "file"
+    change_mode ${_mode} "${_path}" "file"
 }
  
-changeDirMode() {
+change_dir_mode() {
     local _mode=$1
     local _path=$2
-    changeMode ${_mode} "${_path}" "dir"
+    change_mode ${_mode} "${_path}" "dir"
 }
