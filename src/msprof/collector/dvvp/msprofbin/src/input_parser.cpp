@@ -329,11 +329,6 @@ int32_t InputParser::CheckHostSysValid(const struct MsprofCmdInfo &cmdInfo)
         SetHostSysParam(hostSysArray[i]);
     }
     if (params_->host_osrt_profiling.compare(ON) == 0) {
-        if (params_->result_dir.empty() && params_->app_dir.empty()) {
-            CmdLog::CmdErrorLog("If you want to use this parameter:--host-sys,"
-                " please put it behind the --output or --application.");
-            return MSPROF_DAEMON_ERROR;
-        }
         MSPROF_LOGI("Start the detection tool.");
         if (CheckHostSysToolsIsExist(TOOL_NAME_PERF, PROF_SCRIPT_FILE_PATH) != MSPROF_DAEMON_OK) {
             CmdLog::CmdErrorLog("The tool perf is invalid, please check"
@@ -375,14 +370,7 @@ void InputParser::SetHostSysParam(const std::string hostSysParam)
 
 int32_t InputParser::CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd)
 {
-    std::string tmpDir;
-    if (!params_->result_dir.empty()) {
-        tmpDir = params_->result_dir;
-    } else if (!params_->app_dir.empty()) {
-        tmpDir = params_->app_dir;
-    } else {
-        tmpDir = analysis::dvvp::common::utils::Utils::IdeGetHomedir();
-    }
+    std::string tmpDir = analysis::dvvp::common::utils::Utils::IdeGetHomedir();
     static const std::string ENV_PATH = "PATH=/usr/bin/:/usr/sbin:/var";
     std::vector<std::string> envV;
     envV.push_back(ENV_PATH);
