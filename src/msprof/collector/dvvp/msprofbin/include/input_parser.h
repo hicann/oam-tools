@@ -155,7 +155,6 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"task-tsfw", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TSFW},             // the default value is off
     {"task-time", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TIME},             // the default value is on
     {"ge-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_GE_API},
-    {"task-trace", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TRACE},           // the default value is on
     {"task-memory", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_MEMORY},         // the default value is off
     {"aicpu", OSAL_OPTIONAL_ARG, nullptr, ARGS_AICPU},
     {"msproftx", OSAL_OPTIONAL_ARG, nullptr, ARGS_MSPROFTX},

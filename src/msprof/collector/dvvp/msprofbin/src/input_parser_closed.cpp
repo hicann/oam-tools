@@ -702,8 +702,6 @@ ArgsManager::ArgsManager()
     {"runtime-api", "Show runtime api profiling data, the default value is off.", OFF},
     {"task-time", "Show task profiling data, the default value is on. "
         "The possible parameters are " + task_trace_ranges, ON},
-    {"task-trace", "Show task profiling data, the default value is on."
-        "The possible parameters are " + task_trace_ranges, ON},
     {"task-tsfw", "Specify the start of collection of ts management data, the default value is off.", OFF},
     {"task-memory", "Show the memory usage of the operator, the default value is off. "
         "The possible parameters are 'on' or 'off'.", ON},
