@@ -55,6 +55,7 @@ class ConstManager:
     }
 
     COMMON_DTYPE = ["float32", "float16", "bfloat16", "int32", "int64"]
+    VALID_DTYPES = list(DATA_TYPE_TO_DTYPE_MAP.values())
 
 
 class DumpDataParser:
@@ -62,7 +63,7 @@ class DumpDataParser:
     The class for dump data parser
     """
 
-    def __init__(self, dump_path, info: AicErrorInfo, output_path=""):
+    def __init__(self, dump_path, info: AicErrorInfo, dest_dtype="", output_path=""):
         self.dump_path = dump_path
         self.info = info
         self.input_data_list = []
@@ -72,6 +73,10 @@ class DumpDataParser:
         self.dfx_message = ""
         self.output_path = os.path.realpath(output_path) if output_path else ''
         self.parse_types = ['input', 'output', 'space']
+        self.dest_dtype = dest_dtype
+        if self.dest_dtype and self.dest_dtype not in ConstManager.VALID_DTYPES:
+            utils.print_error_log(f"Invalid dtype: {self.dest_dtype}, valid types are {ConstManager.VALID_DTYPES}.")
+            raise utils.AicErrException(Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
     def get_input_data(self):
         return self.input_data_list
@@ -189,11 +194,20 @@ class DumpDataParser:
         for index, item in enumerate(dump_json_data.get(parse_type)):
             try:
                 if parse_type == "space":
-                    dtype = "int8"
+                    original_dtype = "int8"
                     parse_type = "workspace"
                 else:
-                    dtype = (ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(str(item.get('data_type', '0'))) or
-                             json_dtype.get(parse_type, {}).get(index))
+                    original_dtype = (ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(str(item.get('data_type', '0'))) or
+                                     json_dtype.get(parse_type, {}).get(index))
+                
+                if self.dest_dtype and original_dtype and self.dest_dtype != original_dtype:
+                    warn_msg = (f"WARNING: For {parse_type}[{index}] in {dump_file_name}, "
+                        f"original dtype is '{original_dtype}', but forced to use dest_dtype '{self.dest_dtype}'.")
+                    utils.print_warn_log(warn_msg)
+                    result_info += warn_msg + "\n"
+                
+                dtype = self.dest_dtype if self.dest_dtype else original_dtype
+
                 shape = [int(i) for i in item.get('shape', {}).get('dim', [])]
                 result_info += (f"shape: {tuple(shape)} size: {item.get('size', 0)} "
                                 f"dtype: {dtype if dtype else 'unknown'}\n")

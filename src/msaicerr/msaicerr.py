@@ -129,7 +129,7 @@ def convert_dump_data(args, data_path):
 
     try:
         info = AicErrorInfo()
-        DumpDataParser(data_path, info, args.output_path).parse()
+        DumpDataParser(data_path, info, args.dest_dtype, args.output_path).parse()
         utils.print_debug_log(info.dump_info)
         return Constant.MS_AICERR_NONE_ERROR
     except BaseException:
@@ -214,13 +214,16 @@ def main() -> int:
     parser.add_argument(
         "-out", "--output_path", dest="output_path", default="",
         help="Specify the output directory of the result. This argument is valid only for --report_path and --data.",
-        required=False,
-        action=RequireOtherArgs, required_args=['report_path', 'data'])
+        required=False, action=RequireOtherArgs, required_args=['report_path', 'data'])
     parser.add_argument(
         "-dev", "--device_id", dest="device_id", default=0, type=int,
         help="Specify the ID of the device for running the operator. Defaults to 0 if not specified. "
              "This argument is valid only for --report_path and --env.", required=False,
         action=RequireOtherArgs, required_args=['report_path', 'env'])
+    parser.add_argument(
+        "-dtype", "--dest_dtype", dest="dest_dtype", default="",
+        help="Specify the data type when parsing dump files. This argument is valid only for --data. ",
+        required=False, action=RequireOtherArgs, required_args=['data'])
 
     ascend_opp_path = os.environ.get("ASCEND_OPP_PATH")
     if not ascend_opp_path:
