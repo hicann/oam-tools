@@ -278,8 +278,7 @@ int32_t InputParser::CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t 
             }
             return MSPROF_DAEMON_OK;
         }
-        case ARGS_TASK_TIME:
-        case ARGS_TASK_TRACE: {
+        case ARGS_TASK_TIME: {
             const bool supportL3 = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3);
             const std::vector<std::string> cmpCode = {OFF, L0, L2, L3, L1, ON};
             std::string msgEnd = supportL3 ? ", 'l2' or 'l3'" : " or 'l2'.";
@@ -319,10 +318,6 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t
             break;
         case ARGS_TASK_TIME:
             params_->taskTime = cmdInfo.args[opt];
-            SetTaskTimeSwitch(cmdInfo.args[opt]);
-            break;
-        case ARGS_TASK_TRACE:
-            params_->taskTrace = cmdInfo.args[opt];
             SetTaskTimeSwitch(cmdInfo.args[opt]);
             break;
         case ARGS_TASK_MEMORY:

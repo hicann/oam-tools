@@ -69,7 +69,6 @@ enum MsprofArgsType {
     ARGS_TASK_TSFW,
     ARGS_TASK_TIME,
     ARGS_GE_API,
-    ARGS_TASK_TRACE,
     ARGS_TASK_MEMORY,
     ARGS_AICPU,
     ARGS_MSPROFTX,
@@ -102,8 +101,8 @@ enum MsprofArgsType {
     ARGS_HARDWARE_MEM_SAMPLING_FREQ, // 50 1-10000 hz
     ARGS_IO_SAMPLING_FREQ,           // 100 1-100 hz
     ARGS_DVPP_FREQ,                  // 50 1-100 hz
-    ARGS_INVALID = 63,              // OsalGetOptLong will return opt = 63 for invalid argument
     ARGS_CPU_SAMPLING_FREQ,          // 50 1-50 hz
+    ARGS_INVALID = 63,              // OsalGetOptLong will return opt = 63 for invalid argument
     ARGS_INTERCONNECTION_FREQ,       // 50 1-50 hz
     ARGS_HOST_SYS_USAGE_FREQ,        // 50 1-50 hz
     ARGS_SYS_LOW_POWER_FREQ,         // 10000 1-10000hz
@@ -187,8 +186,8 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"sys-hardware-mem-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HARDWARE_MEM_SAMPLING_FREQ},
     {"sys-io-sampling-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_IO_SAMPLING_FREQ},
     {"dvpp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_FREQ},
-    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"sys-cpu-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_CPU_SAMPLING_FREQ},
+    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"sys-interconnection-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_INTERCONNECTION_FREQ},
     {"host-sys-usage-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE_FREQ},
     {"sys-lp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_LOW_POWER_FREQ},
