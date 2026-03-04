@@ -27,6 +27,8 @@ namespace dvvp {
 namespace host {
 const char *const PLATFORM_CLOUD = "cloud";
 const char INFO_FILE_NAME[] = "info.json";
+const double DAVID_BASE_HWTS_FREQ = 1000.0;
+const double ERROR_THRESHOLD = DAVID_BASE_HWTS_FREQ * 0.0005;  // 万分之5 = 0.0005，对应绝对值0.5
 
 #define CPU_ID_STR(id_str, begin, num)                                                                              \
     do {                                                                                                            \
@@ -133,6 +135,7 @@ private:
     std::string GetHostOscFrequency() const;
     std::string GetDeviceOscFrequency(uint32_t deviceId, const std::string &freq) const;
     std::string EncodeInfoMainJson(SHARED_PTR_ALIA<InfoMain> infoMain) const;
+    std::string GetHwtsFreq(std::string freq) const;
     void SetDrvVersion(SHARED_PTR_ALIA<InfoMain> infoMain) const;
 
 private:

@@ -16,6 +16,7 @@
 #include "info_json.h"
 #include <cstdio>
 #include <fstream>
+#include <cmath>
 #if (defined(linux) || defined(__linux__))
 #include <unistd.h>
 #endif
@@ -82,7 +83,7 @@ std::string InfoJson::EncodeInfoMainJson(SHARED_PTR_ALIA<InfoMain> infoMain) con
         infoMainJson["DeviceInfo"][i]["ctrl_cpu_id"] = infoMain->deviceInfos[i].ctrlCpuId;
         infoMainJson["DeviceInfo"][i]["ctrl_cpu"] = infoMain->deviceInfos[i].ctrlCpu;
         infoMainJson["DeviceInfo"][i]["ai_cpu"] = infoMain->deviceInfos[i].aiCpu;
-        infoMainJson["DeviceInfo"][i]["hwts_frequency"] = infoMain->deviceInfos[i].hwtsFrequency;
+        infoMainJson["DeviceInfo"][i]["hwts_frequency"] = GetHwtsFreq(infoMain->deviceInfos[i].hwtsFrequency);
         infoMainJson["DeviceInfo"][i]["aic_frequency"] = infoMain->deviceInfos[i].aicFrequency;
         infoMainJson["DeviceInfo"][i]["aiv_frequency"] = infoMain->deviceInfos[i].aivFrequency;
     }
@@ -119,6 +120,20 @@ std::string InfoJson::EncodeInfoMainJson(SHARED_PTR_ALIA<InfoMain> infoMain) con
     infoMainJson["drvVersion"] = infoMain->drvVersion;
 
     return infoMainJson.ToString();
+}
+
+std::string InfoJson::GetHwtsFreq(std::string freq) const
+{
+    double errorFrqValue = std::fabs(std::stod(freq) - DAVID_BASE_HWTS_FREQ);
+    std::string hwtsFrequency;
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 &&
+        errorFrqValue > ERROR_THRESHOLD) {
+        MSPROF_LOGW("The original hwtsFrequency is %s", freq.c_str());
+        hwtsFrequency = std::to_string(static_cast<int>(DAVID_BASE_HWTS_FREQ));
+    } else {
+        hwtsFrequency = freq;
+    }
+    return hwtsFrequency;
 }
 
 int32_t InfoJson::Generate(std::string &content)
