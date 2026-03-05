@@ -27,7 +27,7 @@
 #include <arpa/inet.h>
 
 constexpr s32 HCCL_TEST_REDUCE_RESERVED = 4;
-constexpr s32 HCCL_TEST_DATA_TYPE_RESERVED = 17;
+constexpr s32 HCCL_TEST_DATA_TYPE_RESERVED = 18;
 constexpr s32 HCCL_TEST_ACCELERATOR_CONFIG_RESERVED = 8;
 constexpr u32 HCCL_TEST_DATATYPE_BF16_SAT = 13;
 HcclReduceOp test_ops[HCCL_TEST_REDUCE_RESERVED] = {
@@ -52,11 +52,12 @@ HcclDataType test_types[HCCL_TEST_DATA_TYPE_RESERVED] = {HCCL_DATA_TYPE_INT8, /*
     HCCL_DATA_TYPE_HIF8,                                                      /**< hif8 */
     HCCL_DATA_TYPE_FP8E4M3,                                                   /**< fp8e4m3 */
     HCCL_DATA_TYPE_FP8E5M2,                                                   /**< fp8e5m2 */
-    HCCL_DATA_TYPE_FP8E8M0                                                    /**< fp8e8m0 */
+    HCCL_DATA_TYPE_FP8E8M0,                                                   /**< fp8e8m0 */
+    HCCL_DATA_TYPE_MXFP8                                                      /**< mxfp8 */
 };
 const char *test_typenames[HCCL_TEST_DATA_TYPE_RESERVED] = {
     "int8", "int16", "int32", "fp16", "fp32", "int64", "uint64", "uint8", "uint16", "uint32", "fp64", "bfp16",
-    "int128", "hif8", "fp8e4m3", "fp8e5m2", "fp8e8m0"};
+    "int128", "hif8", "fp8e4m3", "fp8e5m2", "fp8e8m0", "mxfp8"};
 
 int get_hccl_op_from_str(char *str)
 {

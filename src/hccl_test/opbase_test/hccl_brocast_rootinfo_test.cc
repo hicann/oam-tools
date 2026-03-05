@@ -82,6 +82,7 @@ int HcclOpBaseBrocastTest::check_buf_result()
         case HCCL_DATA_TYPE_FP8E4M3:
         case HCCL_DATA_TYPE_FP8E5M2:
         case HCCL_DATA_TYPE_FP8E8M0:
+        case HCCL_DATA_TYPE_MXFP8:
             ret = check_buf_result_int8((char*)recv_buff_temp, (char*)check_buf, data->count);
             break;
         case HCCL_DATA_TYPE_INT32:
