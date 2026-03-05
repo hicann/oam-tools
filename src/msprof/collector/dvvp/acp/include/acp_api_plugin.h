@@ -17,6 +17,7 @@
 #define PROF_ACP_PLUGIN_H
 #include <cstdint>
 #include <map>
+#include <string>
 #include "singleton/singleton.h"
 #include "runtime/base.h"
 #include "runtime/kernel.h"
