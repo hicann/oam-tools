@@ -119,8 +119,9 @@ function(pack_built_in)
   set(CONF_FILES
       ${CMAKE_SOURCE_DIR}/scripts/package/common/cfg/path.cfg
   )
-  install(FILES ${OAM_TOOLS_VERSION_FILE}
+  install(FILES ${CMAKE_BINARY_DIR}/version.oam-tools.info
       DESTINATION share/info/oam_tools
+      RENAME version.info
   )
   install(FILES ${CONF_FILES}
       DESTINATION oam_tools/conf

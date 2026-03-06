@@ -44,6 +44,11 @@ else()
 endif()
 set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_DIR})
 
+include(cmake/func.cmake)
+include(version.cmake)
+check_pkg_build_deps("oam-tools")
+add_version_info_targets()
+
 set(ASCEND_COMPUTE_UNIT
     "ascend910b"
     CACHE STRING "soc that need to be compiled")
@@ -117,20 +122,6 @@ foreach(subdir IN ITEMS "aml" "built-in" "include" "profiler" "operator_cmp")
       file(COPY "${BUNDLE_PKG}/${subbdir}" DESTINATION ${INSTALL_LIBRARY_DIR}/.)
     endif()
 endforeach()
-
-# 生成version.info timestamp
-set(OAM_TOOLS_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/version/version.info)
-add_custom_command(
-    OUTPUT ${OAM_TOOLS_VERSION_FILE}
-    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_version_info/update_version_info.sh
-            ${CMAKE_CURRENT_SOURCE_DIR}/version.info
-            ${OAM_TOOLS_VERSION_FILE}
-    DEPENDS 
-        ${CMAKE_CURRENT_SOURCE_DIR}/version.info
-    VERBATIM
-)
-
-add_custom_target(generate_version_file ALL DEPENDS "${OAM_TOOLS_VERSION_FILE}")
 
 # 打run包
 include(cmake/package.cmake)
