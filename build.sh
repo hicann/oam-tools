@@ -155,12 +155,22 @@ print_success() {
 # build msprof analysis
 build_msprof_analysis() {
     if [ -d "${BASEPATH}/../../mindstudio/msprof" ]; then
+        echo "msprof using mindstudio"
         ROOT_PATH="${BASEPATH}/../.."
         BUILD_PATH="${ROOT_PATH}/mindstudio/msprof"
         cd ${BUILD_PATH}
         python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
         cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+    elif [ -d "${CANN_3RD_LIB_PATH}/msprof" ]; then
+        echo "msprof using thrid_party"
+        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        [ ! -d "msprof" ] && cp -r "${CANN_3RD_LIB_PATH}/msprof" .
+        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule/msprof"
+        cd ${BUILD_PATH}
+        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
+        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
     else
+        echo "msprof download"
         mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
         [ ! -d "msprof" ] && git clone https://gitcode.com/Ascend/msprof.git
         BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule/msprof"
@@ -173,11 +183,21 @@ build_msprof_analysis() {
 # build adump analysis
 build_adump_analysis() {
     if [ -d "${BASEPATH}/../../mindstudio/msaccucmp" ]; then
+        echo "msprobe using mindstudio"
         SOURCE_PATH="${BASEPATH}/../../mindstudio/msaccucmp"
         cd ${BASEPATH}/src/operator_cmp
         [ ! -d "msaccucmp" ] && mkdir -p ${BASEPATH}/src/operator_cmp/msaccucmp
         cp -r ${SOURCE_PATH}/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+    elif [ -d "${CANN_3RD_LIB_PATH}/msprobe" ]; then
+        echo "msprobe using thrid_party"
+        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
+        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        [ ! -d "msprobe" ] && cp -r "${CANN_3RD_LIB_PATH}/msprobe" .
+        cd ${BASEPATH}/src/operator_cmp
+        [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
+        cp -r ${BUILD_PATH}/submodule/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
     else
+        echo "msprobe download"
         BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
         mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
         [ ! -d "msprobe" ] && git clone https://gitcode.com/Ascend/msprobe.git

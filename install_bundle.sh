@@ -22,6 +22,7 @@ echo "工作目录: $WORKING_DIR"
 # Define default values
 BUILD_TYPE="${1:-release}"
 ARCH="${2:-x86_64}"
+THIRD_PARTY_PATH="${3:-third_party}"
 BASE_NAME="cann-oam-tools"
 
 # Base url
@@ -50,9 +51,18 @@ mkdir -p "$BUNDLE_DIR"
 
 if [ -f "./build/$OUTPUT_FILE" ]; then
     # Using compiled oam-tools.tar.gz
-    echo "Using compiled $OUTPUT_FILE"
+    echo "Using compiled ./build/$OUTPUT_FILE"
     chmod 755 ./build/$OUTPUT_FILE
     cp ./build/$OUTPUT_FILE $OUTPUT_FILE
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to cp $OUTPUT_FILE"
+        exit 1 
+    fi
+elif [ -f "./$THIRD_PARTY_PATH/$OUTPUT_FILE" ]; then
+    # Using compiled oam-tools.tar.gz
+    echo "Using compiled ./$THIRD_PARTY_PATH/$OUTPUT_FILE"
+    chmod 755 ./$THIRD_PARTY_PATH/$OUTPUT_FILE
+    cp ./$THIRD_PARTY_PATH/$OUTPUT_FILE $OUTPUT_FILE
     if [ $? -ne 0 ]; then
         echo "Error: Failed to cp $OUTPUT_FILE"
         exit 1 
