@@ -26,6 +26,7 @@
 #include "uploader_mgr.h"
 #include "utils/utils.h"
 #include "validation/param_validation.h"
+#include "osal.h"
 
 namespace analysis {
 namespace dvvp {
@@ -76,6 +77,11 @@ bool ProfManager::CreateDoneFile(const std::string &absolutePath, const std::str
         MSPROF_INNER_ERROR("EK9999", "Failed to open %s", Utils::BaseName(absolutePath).c_str());
         return false;
     }
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        file.close();
+        MSPROF_LOGE("[CreateDoneFile]Failed to change file mode for %s", absolutePath.c_str());
+        return false;
+    }
     MSPROF_LOGI("ProfManager::CreateDoneFile");
     file << "filesize:" << fileSize << std::endl;
     file.flush();
@@ -101,6 +107,11 @@ int32_t ProfManager::WriteCtrlDataToFile(const std::string &absolutePath, const 
     if (!file.is_open()) {
         MSPROF_LOGE("[WriteCtrlDataToFile]Failed to open %s", Utils::BaseName(absolutePath).c_str());
         MSPROF_INNER_ERROR("EK9999", "Failed to open %s", Utils::BaseName(absolutePath).c_str());
+        return PROFILING_FAILED;
+    }
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        file.close();
+        MSPROF_LOGE("[WriteCtrlDataToFile]Failed to change file mode for %s", absolutePath.c_str());
         return PROFILING_FAILED;
     }
     file.write(data.c_str(), dataLen);

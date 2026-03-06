@@ -929,6 +929,11 @@ int32_t SystemMode::RecordOutPut() const
         MSPROF_LOGE("Failed to open %s", Utils::BaseName(recordFile).c_str());
         return PROFILING_FAILED;
     }
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        file.close();
+        MSPROF_LOGE("Failed to change file mode for %s", absolutePath.c_str());
+        return PROFILING_FAILED;
+    }
     file << baseDir_ << std::endl << std::flush;
     file.close();
 
@@ -1125,6 +1130,11 @@ bool SystemMode::CreateDoneFile(const std::string &absolutePath, const std::stri
         MSPROF_LOGE("Failed to open %s", Utils::BaseName(absolutePath).c_str());
         return false;
     }
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        file.close();
+        MSPROF_LOGE("Failed to change file mode for %s", absolutePath.c_str());
+        return false;
+    }
     file << "filesize: " << fileSize << std::endl;
     file.flush();
     file.close();
@@ -1148,6 +1158,11 @@ int32_t SystemMode::WriteCtrlDataToFile(const std::string &absolutePath, const s
     file.open(absolutePath, std::ios::out | std::ios::trunc);
     if (!file.is_open()) {
         MSPROF_LOGE("Failed to open %s", Utils::BaseName(absolutePath).c_str());
+        return PROFILING_FAILED;
+    }
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        file.close();
+        MSPROF_LOGE("Failed to change file mode for %s", absolutePath.c_str());
         return PROFILING_FAILED;
     }
     file.write(data.c_str(), dataLen);
