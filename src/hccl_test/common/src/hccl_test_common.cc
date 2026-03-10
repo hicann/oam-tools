@@ -25,7 +25,7 @@
 #include "hccl_test_common.h"
 #include <algorithm>
 #include <arpa/inet.h>
-
+#include <thread>
 constexpr s32 HCCL_TEST_REDUCE_RESERVED = 4;
 constexpr s32 HCCL_TEST_DATA_TYPE_RESERVED = 18;
 constexpr s32 HCCL_TEST_ACCELERATOR_CONFIG_RESERVED = 8;
@@ -1188,6 +1188,28 @@ int HcclTest::deregister_symmetric_memory(CommSymWindow &sym_win)
         HCCLCHECK(static_cast<HcclResult>(hccl_mem_free(vir_ptr, symmetric_handle)));
     }
     return 0;
+}
+// 由于ccu在大数据量场景下开启-t可能会卡死，-t参数对于ccu alltoallvc以外数据量大于等于 16MB的算子 -t不生效
+// -t参数对于ccu alltoallvc 算子数据量大于等于 128MB的场景 -t不生效
+aclError HcclTest::start_profile_device_time_if_needed(size_t data_size)
+{
+    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6) && IsSupport910_95();
+    if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
+        ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
+        ACLCHECK(aclrtResetEvent(sync_event, stream));
+    }
+    return ACL_SUCCESS;
+}
+
+aclError HcclTest::end_profile_device_time_if_needed(size_t data_size)
+{
+    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6) && IsSupport910_95();
+    if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
+        int sleepTime = 50 + warmup_iters * 2 + iters * 2;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+        ACLCHECK(aclrtRecordEvent(sync_event, sync_stream));
+    }
+    return ACL_SUCCESS;
 }
 
 }  // namespace hccl

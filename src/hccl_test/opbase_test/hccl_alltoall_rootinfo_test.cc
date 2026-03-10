@@ -137,11 +137,8 @@ int HcclOpBaseAlltoallTest::hccl_op_base_test() //主函数
 
     sendCount_ = data->count / rank_size;
     recvCount_ = data->count / rank_size;
-    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6);
-    if (only_device_exec_time && !(isCcuSched && data->data_size >= 16*1024*1024)) {
-        ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
-        ACLCHECK(aclrtResetEvent(sync_event, stream));
-    }
+    // 输入数据量，根据条件判断是否开启仅计算device执行时间
+ 	ACLCHECK(start_profile_device_time_if_needed(16*1024*1024));
     //执行集合通信操作
     for(int j = 0; j < warmup_iters; ++j) {
         HCCLCHECK(HcclAlltoAll((void *)send_buff, sendCount_, (HcclDataType)dtype,\
@@ -156,11 +153,7 @@ int HcclOpBaseAlltoallTest::hccl_op_base_test() //主函数
     }
     //等待stream中集合通信任务执行完成
     ACLCHECK(aclrtRecordEvent(end_event, stream));
-    if (only_device_exec_time) {
-        int sleepTime = 50 +warmup_iters * 2 + iters * 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-        ACLCHECK(aclrtRecordEvent(sync_event, sync_stream));
-    }
+    ACLCHECK(end_profile_device_time_if_needed(16*1024*1024));
     ACLCHECK(aclrtSynchronizeStream(stream));
 
     float time;

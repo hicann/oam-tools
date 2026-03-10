@@ -151,6 +151,8 @@ public:
 
     int start_test();
     int device_init();
+    aclError start_profile_device_time_if_needed(size_t data_size);
+    aclError end_profile_device_time_if_needed(size_t data_size);
 protected:
     virtual size_t init_malloc_Ksize_by_data()
     {
