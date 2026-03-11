@@ -25,7 +25,6 @@
 #include "hccl_alltoallv_rootinfo_test.h"
 #include "hccl_opbase_rootinfo_base.h"
 #include "hccl_check_buf_init.h"
-#include <thread>
 using namespace hccl;
 
 HcclTest* hccl::init_opbase_ptr(HcclTest* opbase)
@@ -154,11 +153,8 @@ int HcclOpBaseAlltoallvTest::hccl_op_base_test() //主函数
     ACLCHECK(aclrtMallocHost((void**)&host_buf, malloc_kSize));
     hccl_host_buf_init((char*)host_buf, data->count, dtype, rank_id + 1);
     ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
-    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6);
-    if (only_device_exec_time && !(isCcuSched && data->data_size >= 16*1024*1024)) {
-        ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
-        ACLCHECK(aclrtResetEvent(sync_event, stream));
-    }
+    // 输入数据量，根据条件判断是否开启仅计算device执行时间
+ 	ACLCHECK(start_profile_device_time_if_needed(16*1024*1024));
     //执行集合通信操作
     for(int j = 0; j < warmup_iters; ++j) {
         HCCLCHECK(HcclAlltoAllV((void *)send_buff, send_counts, send_disp, (HcclDataType)dtype,\
@@ -173,11 +169,7 @@ int HcclOpBaseAlltoallvTest::hccl_op_base_test() //主函数
     }
     //等待stream中集合通信任务执行完成
     ACLCHECK(aclrtRecordEvent(end_event, stream));
-    if (only_device_exec_time) {
-        int sleepTime = 50 +warmup_iters * 2 + iters * 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-        ACLCHECK(aclrtRecordEvent(sync_event, sync_stream));
-    }
+    ACLCHECK(end_profile_device_time_if_needed(16*1024*1024));
     ACLCHECK(aclrtSynchronizeStream(stream));
 
     float time;

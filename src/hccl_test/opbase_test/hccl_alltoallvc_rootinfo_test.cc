@@ -133,11 +133,8 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
     ACLCHECK(aclrtMallocHost((void**)&host_buf, malloc_kSize));
     hccl_host_buf_init(host_buf, data->count, dtype, rank_id + 1);
     ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
-    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6);
-    if (only_device_exec_time && !(isCcuSched && data->data_size >= 128*1024*1024)) {
-        ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
-        ACLCHECK(aclrtResetEvent(sync_event, stream));
-    }
+    // 输入数据量，根据条件判断是否开启仅计算device执行时间
+ 	ACLCHECK(start_profile_device_time_if_needed(128*1024*1024));
 
     for (int j = 0; j < warmup_iters; ++j) {
         HCCLCHECK(HcclAlltoAllVC((void*)send_buff, send_count_matrix, (HcclDataType)dtype,
@@ -150,11 +147,7 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
                                  (void*)recv_buff, (HcclDataType)dtype, hccl_comm, stream));
     }
     ACLCHECK(aclrtRecordEvent(end_event, stream));
-    if (only_device_exec_time) {
-        int sleepTime = 50 +warmup_iters * 2 + iters * 2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-        ACLCHECK(aclrtRecordEvent(sync_event, sync_stream));
-    }
+    ACLCHECK(end_profile_device_time_if_needed(128*1024*1024));
     ACLCHECK(aclrtSynchronizeStream(stream));
 
     float time;
