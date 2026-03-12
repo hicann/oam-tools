@@ -31,15 +31,15 @@ __all__ = ["AsysConfigParser"]
 class IniConfItem(NamedTuple):
     para_name: str
     conf_val_map: dict
-    default_val: str
+    default_key: str
 
 
 ASYS_INI_VALUE_MAP = {
     "graph": IniConfItem(
-        "graph", {"TRUE": "1", "FALSE": "0"}, "1"
+        "graph", {"TRUE": "1", "FALSE": "0"}, "TRUE"
     ),
     "ops": IniConfItem(
-        "ops", {"TRUE": "1", "FALSE": "0"}, "1"
+        "ops", {"TRUE": "1", "FALSE": "0"}, "TRUE"
     ),
     "dump_ge_graph": IniConfItem(
         "DUMP_GE_GRAPH", {"1": "1", "2": "2", "3": "3"}, "2"
@@ -48,13 +48,13 @@ ASYS_INI_VALUE_MAP = {
         "DUMP_GRAPH_LEVEL", {"1": "1", "2": "2", "3": "3"}, "2"
     ),
     "log_level": IniConfItem(
-        "ASCEND_GLOBAL_LOG_LEVEL", {"DEBUG": "0", "INFO": "1", "WARNING": "2", "ERROR": "3", "NULL": "4"}, "1"
+        "ASCEND_GLOBAL_LOG_LEVEL", {"DEBUG": "0", "INFO": "1", "WARNING": "2", "ERROR": "3", "NULL": "4"}, "INFO"
     ),
     "log_event_enable": IniConfItem(
-        "ASCEND_GLOBAL_EVENT_ENABLE", {"FALSE": "0", "TRUE": "1"}, "1"
+        "ASCEND_GLOBAL_EVENT_ENABLE", {"FALSE": "0", "TRUE": "1"}, "TRUE"
     ),
     "log_print_to_stdout": IniConfItem(
-        "ASCEND_SLOG_PRINT_TO_STDOUT", {"FALSE": "0", "TRUE": "1"}, "0"
+        "ASCEND_SLOG_PRINT_TO_STDOUT", {"FALSE": "0", "TRUE": "1"}, "FALSE"
     ),
 }
 
@@ -68,7 +68,7 @@ class AsysConfigParser:
     def __parse_deps(self):
         dep_info = f.read_file(self.dep_file_path)
         if not dep_info:
-            log_error("Read the dependencies file: \"{}\" failed.".format(self.dep_file_path))
+            log_error(f"Read the dependencies file: {self.dep_file_path} failed.")
             return RetCode.READ_FILE_FAILED
 
         ParamDict().set_deps(dep_info)
@@ -77,26 +77,26 @@ class AsysConfigParser:
     def __parse_ini(self):
         ini_parser = f.read_file(self.ini_file_path)
         if not ini_parser:
-            log_error("Read the config file: \"{}\" failed.".format(self.ini_file_path))
+            log_error(f"Read the config file: {self.ini_file_path} failed.")
             return RetCode.READ_FILE_FAILED
 
         command = ParamDict().get_command()
         if command not in ini_parser.sections():
-            log_debug("No ini conf items for command: \"{}\".".format(command))
+            log_debug(f"No ini conf items for command: {command}.")
             return RetCode.SUCCESS
         k_v_pairs = ini_parser.items(command)
         for conf_k, conf_v in k_v_pairs:
             info_item = ASYS_INI_VALUE_MAP.get(conf_k)
             if info_item is None:
-                log_warning("Ini conf item: \"{}\" is not available.".format(conf_k))
+                log_warning(f"ini conf item: {conf_k} is not available.")
                 continue
 
             ini_name = info_item.para_name
             ini_value = info_item.conf_val_map.get(conf_v)
             if ini_value is None:
-                ini_value = info_item.default_val
-                log_warning("Ini conf value: \"{}\" is not in available range, use default value: \"{}\"" \
-                            .format(conf_v, ini_value))
+                ini_value = info_item.conf_val_map.get(info_item.default_key)
+                log_warning(f"ini conf item {ini_name} value error: {conf_v} is not in available range, "
+                            f"use default value: {info_item.default_key}.")
             ParamDict().set_ini(ini_name, ini_value)
 
         return RetCode.SUCCESS
