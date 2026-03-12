@@ -357,7 +357,7 @@ class BigDumpDataParser:
 
     def _parse_dump_to_json(self):
         # read header length
-        path_dir, file_name = os.path.split(self.dump_file_path)
+        path_dir, file_name = os.path.split(os.path.abspath(self.dump_file_path))
         json_file = os.path.join(path_dir, file_name + ".json")
         try:
             with open(self.dump_file_path, 'rb') as dump_file:

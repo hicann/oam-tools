@@ -54,6 +54,11 @@ class Selfliberr():
         return 1
 
 
+class SelflibCheckPath():
+    def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
+        return len(path_ptr) != 0
+
+
 class TestUtilsMethods(CommonAssert):
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
@@ -110,6 +115,15 @@ class TestUtilsMethods(CommonAssert):
 
     def test_parse_dump_to_json_load_so_failed(self, mocker):
         big_dump_parser = BigDumpDataParser(dump_file)
+        create_dump_file(dump_file, 10, 200)
+        try:
+            big_dump_parser._parse_dump_to_json()
+        except Exception as e:
+            self.assertEqual(str(e), "3")
+
+    def test_parse_dump_to_json_check_path(self, mocker):
+        big_dump_parser = BigDumpDataParser(dump_file)
+        mocker.patch('ctypes.CDLL', return_value=SelflibCheckPath())
         create_dump_file(dump_file, 10, 200)
         try:
             big_dump_parser._parse_dump_to_json()
