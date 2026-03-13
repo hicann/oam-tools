@@ -368,7 +368,7 @@ void InputParser::SetHostSysParam(const std::string hostSysParam)
     }
 }
 
-int32_t InputParser::CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd)
+int32_t InputParser::CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd) const
 {
     std::string tmpDir = analysis::dvvp::common::utils::Utils::IdeGetHomedir();
     static const std::string ENV_PATH = "PATH=/usr/bin/:/usr/sbin:/var";
@@ -1520,7 +1520,7 @@ void ArgsManager::AddDvvpArgs()
     argsList_.push_back(dvppFreq);
 }
 
-void ArgsManager::PrintMsopprofHelp()
+void ArgsManager::PrintMsopprofHelp() const
 {
     if (!MsopprofManager::instance()->IsMsopprofExist()) {
         return;

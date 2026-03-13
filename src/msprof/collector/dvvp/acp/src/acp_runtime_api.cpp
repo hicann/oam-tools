@@ -233,66 +233,66 @@ extern "C" MSVP_PROF_API rtError_t rtRegisterAllKernel(const rtDevBinary_t *bin,
     return error;
 }
 
-extern "C" MSVP_PROF_API rtError_t rtKernelLaunch(const void *stubFunc, uint32_t blockDim, void *args,
+extern "C" MSVP_PROF_API rtError_t rtKernelLaunch(const void *stubFunc, uint32_t numBlocks, void *args,
     uint32_t argsSize, rtSmDesc_t *smDesc, rtStream_t stm)
 {
     MSPROF_LOGI("Acp %s reloaded start.", __FUNCTION__);
     auto func = AcpApiPlugin::instance()->GetPluginApiStubFunc(__FUNCTION__);
     FUNRET_CHECK_EXPR_ACTION(func == nullptr, return ACL_ERROR_RT_PROFILING_ERROR,
         "Failed to get api stub[%s] func.", __FUNCTION__);
-    AcpManager::instance()->SetTaskBlockDim(blockDim);
+    AcpManager::instance()->SetTaskBlockDim(numBlocks);
     return KernelExec(stm, reinterpret_cast<RtKernelLaunchFunc>(func),
-        stubFunc, blockDim, args, argsSize, smDesc, stm);
+        stubFunc, numBlocks, args, argsSize, smDesc, stm);
 }
 
-extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithHandle(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
+extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithHandle(void *hdl, const uint64_t tilingKey, uint32_t numBlocks,
     rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm, const void *kernelInfo)
 {
     MSPROF_LOGI("Acp %s reloaded start.", __FUNCTION__);
     auto func = AcpApiPlugin::instance()->GetPluginApiStubFunc(__FUNCTION__);
     FUNRET_CHECK_EXPR_ACTION(func == nullptr, return ACL_ERROR_RT_PROFILING_ERROR,
         "Failed to get api stub[%s] func.", __FUNCTION__);
-    AcpManager::instance()->SetTaskBlockDim(blockDim);
+    AcpManager::instance()->SetTaskBlockDim(numBlocks);
     AcpManager::instance()->SaveBinaryHandle(hdl);
     return KernelExec(stm, reinterpret_cast<RtKernelLaunchWithHandleFunc>(func),
-        hdl, tilingKey, blockDim, argsInfo, smDesc, stm, kernelInfo);
+        hdl, tilingKey, numBlocks, argsInfo, smDesc, stm, kernelInfo);
 }
 
-extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithHandleV2(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
+extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithHandleV2(void *hdl, const uint64_t tilingKey, uint32_t numBlocks,
     rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm, const rtTaskCfgInfo_t *cfgInfo)
 {
     MSPROF_LOGI("Acp %s reloaded start.", __FUNCTION__);
     auto func = AcpApiPlugin::instance()->GetPluginApiStubFunc(__FUNCTION__);
     FUNRET_CHECK_EXPR_ACTION(func == nullptr, return ACL_ERROR_RT_PROFILING_ERROR,
         "Failed to get api stub[%s] func.", __FUNCTION__);
-    AcpManager::instance()->SetTaskBlockDim(blockDim);
+    AcpManager::instance()->SetTaskBlockDim(numBlocks);
     AcpManager::instance()->SaveBinaryHandle(hdl);
     return KernelExec(stm, reinterpret_cast<RtKernelLaunchWithHandleV2Func>(func),
-        hdl, tilingKey, blockDim, argsInfo, smDesc, stm, cfgInfo);
+        hdl, tilingKey, numBlocks, argsInfo, smDesc, stm, cfgInfo);
 }
 
-extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithFlag(const void *stubFunc, uint32_t blockDim, rtArgsEx_t *argsInfo,
+extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithFlag(const void *stubFunc, uint32_t numBlocks, rtArgsEx_t *argsInfo,
     rtSmDesc_t *smDesc, rtStream_t stm, uint32_t flags)
 {
     MSPROF_LOGI("Acp %s reloaded start.", __FUNCTION__);
     auto func = AcpApiPlugin::instance()->GetPluginApiStubFunc(__FUNCTION__);
     FUNRET_CHECK_EXPR_ACTION(func == nullptr, return ACL_ERROR_RT_PROFILING_ERROR,
         "Failed to get api stub[%s] func.", __FUNCTION__);
-    AcpManager::instance()->SetTaskBlockDim(blockDim);
+    AcpManager::instance()->SetTaskBlockDim(numBlocks);
     return KernelExec(stm, reinterpret_cast<RtKernelLaunchWithFlagFunc>(func),
-        stubFunc, blockDim, argsInfo, smDesc, stm, flags);
+        stubFunc, numBlocks, argsInfo, smDesc, stm, flags);
 }
 
-extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim,
+extern "C" MSVP_PROF_API rtError_t rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t numBlocks,
     rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm, uint32_t flags, const rtTaskCfgInfo_t *cfgInfo)
 {
     MSPROF_LOGI("Acp %s reloaded start.", __FUNCTION__);
     auto func = AcpApiPlugin::instance()->GetPluginApiStubFunc(__FUNCTION__);
     FUNRET_CHECK_EXPR_ACTION(func == nullptr, return ACL_ERROR_RT_PROFILING_ERROR,
         "Failed to get api stub[%s] func.", __FUNCTION__);
-    AcpManager::instance()->SetTaskBlockDim(blockDim);
+    AcpManager::instance()->SetTaskBlockDim(numBlocks);
     return KernelExec(stm, reinterpret_cast<RtKernelLaunchWithFlagV2Func>(func),
-       stubFunc, blockDim, argsInfo, smDesc, stm, flags, cfgInfo);
+       stubFunc, numBlocks, argsInfo, smDesc, stm, flags, cfgInfo);
 }
 
 /**

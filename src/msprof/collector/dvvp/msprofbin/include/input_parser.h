@@ -265,7 +265,7 @@ private:
     int32_t HostAndDevParamsCheck();
     int32_t ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo);
     void SetTaskTimeSwitch(const std::string timeSwitch);
-    int32_t CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd);
+    int32_t CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd) const;
     void SetHostSysParam(const std::string hostSysParam);
     int32_t CheckHostSysCmdOutIsExist(const std::string tmpDir, const std::string toolName,
         const OsalProcess tmpProcess) const;
@@ -325,7 +325,7 @@ private:
     void AddDynProfArgs();
     void AddDelayDurationArgs();
     void AddScaleArgs();
-    void PrintMsopprofHelp();
+    void PrintMsopprofHelp() const;
 private:
     std::vector<Args> argsList_;
 };
