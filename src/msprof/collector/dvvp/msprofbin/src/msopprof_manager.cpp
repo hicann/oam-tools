@@ -34,7 +34,7 @@ using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::cmdlog;
 using namespace Analysis::Dvvp::App;
 
-MsopprofManager::MsopprofManager()
+MsopprofManager::MsopprofManager(): msopprofPid_(MSVP_PROCESS)
 {
     std::string ascendToolkitHome;
     MSPROF_GET_ENV(MM_ENV_ASCEND_TOOLKIT_HOME, ascendToolkitHome);

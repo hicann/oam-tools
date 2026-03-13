@@ -75,6 +75,7 @@ STATIC void SetEnvList(CONST_CHAR_PTR &envp, std::vector<std::string> &envpList)
 
 STATIC void StopProfiling(int signum)
 {
+    UNUSED(signum);
     usleep(OSAL_TIMES_MILLIONS);
     if (DynProfCliMgr::instance()->IsCliStarted()) {
         CmdLog::CmdLogNoLevel("Use 'quit' or 'q' to exit dynamic profiling.");

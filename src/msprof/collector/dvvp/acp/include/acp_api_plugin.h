@@ -37,17 +37,17 @@ using RtFunctionRegisterFunc = rtError_t (*)(void *, const void *, const char_t 
 using RtRegisterAllKernelFunc = rtError_t (*)(const rtDevBinary_t *, void **);
 using RtGetBinaryDeviceBaseAddressFunc = rtError_t (*)(const void* handle, void** launchBase);
 using RtProfSetProSwitchFunc = rtError_t (*)(void *data, uint32_t len);
-using RtKernelLaunchFunc = rtError_t (*)(const void *stubFunc, uint32_t blockDim, void *args, uint32_t argsSize,
+using RtKernelLaunchFunc = rtError_t (*)(const void *stubFunc, uint32_t numBlocks, void *args, uint32_t argsSize,
                                          rtSmDesc_t *smDesc, rtStream_t stm);
-using RtKernelLaunchWithHandleFunc = rtError_t (*)(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
+using RtKernelLaunchWithHandleFunc = rtError_t (*)(void *hdl, const uint64_t tilingKey, uint32_t numBlocks,
                                                    rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm,
                                                    const void *kernelInfo);
-using RtKernelLaunchWithHandleV2Func = rtError_t (*)(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
+using RtKernelLaunchWithHandleV2Func = rtError_t (*)(void *hdl, const uint64_t tilingKey, uint32_t numBlocks,
                                                      rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm,
                                                      const rtTaskCfgInfo_t *cfgInfo);
-using RtKernelLaunchWithFlagFunc = rtError_t (*)(const void *stubFunc, uint32_t blockDim, rtArgsEx_t *argsInfo,
+using RtKernelLaunchWithFlagFunc = rtError_t (*)(const void *stubFunc, uint32_t numBlocks, rtArgsEx_t *argsInfo,
                                                  rtSmDesc_t *smDesc, rtStream_t stm, uint32_t flags);
-using RtKernelLaunchWithFlagV2Func = rtError_t (*)(const void *stubFunc, uint32_t blockDim, rtArgsEx_t *argsInfo,
+using RtKernelLaunchWithFlagV2Func = rtError_t (*)(const void *stubFunc, uint32_t numBlocks, rtArgsEx_t *argsInfo,
                                                    rtSmDesc_t *smDesc, rtStream_t stm, uint32_t flags,
                                                    const rtTaskCfgInfo_t *cfgInfo);
 using RtMallocFunc = rtError_t (*)(void **devPtr, uint64_t size, rtMemType_t type, const uint16_t moduleId);

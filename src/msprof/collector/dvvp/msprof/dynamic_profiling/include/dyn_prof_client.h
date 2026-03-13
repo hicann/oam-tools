@@ -58,10 +58,10 @@ private:
     void DynProfCliProcStop(const int32_t cliSockFd);
     void DynProfCliProcQuit(const int32_t cliSockFd) const;
     void DynProfCliHelpInfo() const;
-    int32_t DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain);
+    int32_t DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain) const;
     void DynProfCliStopSocket(int32_t cliSockFd);
     void CheckServerPidsIfValid();
-    int TryReadInputCmd(std::string &inputCmd);
+    int TryReadInputCmd(std::string &inputCmd) const;
     void SetSocketTimeout();
 
     std::set<int32_t> cliSockFds_;

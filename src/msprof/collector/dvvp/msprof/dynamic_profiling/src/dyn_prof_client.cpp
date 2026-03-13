@@ -104,7 +104,7 @@ bool DynProfClient::IsCliStarted() const
     return cliStarted_;
 }
 
-int DynProfClient::TryReadInputCmd(std::string &inputCmd)
+int DynProfClient::TryReadInputCmd(std::string &inputCmd) const
 {
     timeval timeout = {DYN_PROF_READ_INPUT_CMD_WAIT_TIME, 0};
     fd_set fdSet;
@@ -207,7 +207,7 @@ void DynProfClient::DynProfCliInitProcFunc()
         this, std::placeholders::_1);
 }
 
-int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain)
+int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain) const
 {
     // app 场景下, 每秒重试一次直到超时或者连接上
     const int32_t sleepIntervalUs = 1000000;
@@ -314,7 +314,7 @@ int32_t DynProfClient::DynProfCliSendParams()
     return PROFILING_SUCCESS;
 }
 
-DynProfMsgRsqCode DynProfClient::DynProfCliSendCmd(int32_t cliSockFd, DynProfMsgType req) const
+DynProfMsgRsqCode DynProfClient::DynProfCliSendCmd(const int32_t cliSockFd, DynProfMsgType req) const
 {
     DynProfMsg reqMsg;
     reqMsg.msgType = req;

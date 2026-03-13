@@ -35,7 +35,7 @@ public:
     MsopprofManager();
     ~MsopprofManager() {}
     int MsopprofProcess(int argc, CONST_CHAR_PTR argv[]);
-    OsalProcess GetMsopprofPid() { return msopprofPid_; }
+    OsalProcess GetMsopprofPid() const { return msopprofPid_; }
     bool IsMsopprofExist() const;
 
  private:
