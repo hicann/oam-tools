@@ -77,7 +77,7 @@ bool ProfManager::CreateDoneFile(const std::string &absolutePath, const std::str
         MSPROF_INNER_ERROR("EK9999", "Failed to open %s", Utils::BaseName(absolutePath).c_str());
         return false;
     }
-    if (OsalChmod(absolutePath.c_str(), OSAL_FILE_MODE) != OSAL_EN_OK) {
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
         file.close();
         MSPROF_LOGE("[CreateDoneFile]Failed to change file mode for %s", absolutePath.c_str());
         return false;
@@ -109,7 +109,7 @@ int32_t ProfManager::WriteCtrlDataToFile(const std::string &absolutePath, const 
         MSPROF_INNER_ERROR("EK9999", "Failed to open %s", Utils::BaseName(absolutePath).c_str());
         return PROFILING_FAILED;
     }
-    if (OsalChmod(absolutePath.c_str(), OSAL_FILE_MODE) != OSAL_EN_OK) {
+    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
         file.close();
         MSPROF_LOGE("[WriteCtrlDataToFile]Failed to change file mode for %s", absolutePath.c_str());
         return PROFILING_FAILED;
