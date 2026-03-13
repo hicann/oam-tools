@@ -22,7 +22,7 @@
 namespace Collector {
 namespace Dvvp {
 namespace DynProf {
-static const std::string DYN_PROF_SOCK_UNIX_DOMAIN = "/dyn_prof_sock_";
+static const std::string DYN_PROF_SOCK_UNIX_DOMAIN = "/dynamic_profiling_socket_";
 constexpr uint32_t DYN_PROF_PARAMS_MAX_LEN = 4096;
 constexpr uint32_t DYN_PROF_MAX_ACCEPT_TIMES = 128;
 constexpr uint32_t DYN_PROF_IDLE_LINK_HOLD_TIME = 1800; // 30 mins
