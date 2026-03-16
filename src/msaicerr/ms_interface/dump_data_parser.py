@@ -74,9 +74,6 @@ class DumpDataParser:
         self.output_path = os.path.realpath(output_path) if output_path else ''
         self.parse_types = ['input', 'output', 'space']
         self.dest_dtype = dest_dtype
-        if self.dest_dtype and self.dest_dtype not in ConstManager.VALID_DTYPES:
-            utils.print_error_log(f"Invalid dtype: {self.dest_dtype}, valid types are {ConstManager.VALID_DTYPES}.")
-            raise utils.AicErrException(Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
     def get_input_data(self):
         return self.input_data_list
@@ -194,19 +191,11 @@ class DumpDataParser:
         for index, item in enumerate(dump_json_data.get(parse_type)):
             try:
                 if parse_type == "space":
-                    original_dtype = "int8"
+                    dtype = "int8"
                     parse_type = "workspace"
                 else:
-                    original_dtype = (ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(str(item.get('data_type', '0'))) or
-                                     json_dtype.get(parse_type, {}).get(index))
-                
-                if self.dest_dtype and original_dtype and self.dest_dtype != original_dtype:
-                    warn_msg = (f"WARNING: For {parse_type}[{index}] in {dump_file_name}, "
-                        f"original dtype is '{original_dtype}', but forced to use dest_dtype '{self.dest_dtype}'.")
-                    utils.print_warn_log(warn_msg)
-                    result_info += warn_msg + "\n"
-                
-                dtype = self.dest_dtype if self.dest_dtype else original_dtype
+                    dtype = (ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(str(item.get('data_type', '0'))) or	 
+                              json_dtype.get(parse_type, {}).get(index))
 
                 shape = [int(i) for i in item.get('shape', {}).get('dim', [])]
                 result_info += (f"shape: {tuple(shape)} size: {item.get('size', 0)} "
@@ -234,6 +223,62 @@ class DumpDataParser:
             except (ValueError, IOError, OSError, MemoryError) as error:
                 utils.print_error_log(f'Failed to parse the data of {parse_type}:{index} of "{dump_file}". {error}')
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
+        return result_info
+
+    def convert_bin_file_to_npy(self):
+        result_info = ''
+        if not self.dest_dtype:
+            result_info += "Need to specify the dtype when convert a bin file."
+            utils.print_error_log(result_info)
+            return result_info
+
+        if self.dest_dtype not in ConstManager.VALID_DTYPES:
+            result_info += f"Invalid dest_dtype: {self.dest_dtype}, valid types are {ConstManager.VALID_DTYPES}"
+            utils.print_error_log(result_info)
+            return result_info
+
+        dump_file_dir, dump_file_name = os.path.split(self.dump_path)
+        file_base_name = os.path.splitext(dump_file_name)[0]
+        original_dtype = None
+        for dtype in ConstManager.VALID_DTYPES:
+            if f".{dtype}" in file_base_name:
+                original_dtype = dtype
+                break
+
+        if original_dtype and original_dtype != self.dest_dtype:
+            result_info += (
+                f"Warning: Original bin file dtype {original_dtype} is different from dest_dtype {self.dest_dtype}. "
+                f"Will process with dest_dtype {self.dest_dtype} as specified."
+            )
+            utils.print_info_log(result_info)
+
+        output_dir = self.output_path or dump_file_dir
+        os.makedirs(output_dir, exist_ok=True)
+
+        for dtype in ConstManager.VALID_DTYPES:
+            if f".{dtype}" in file_base_name:
+                file_base_name = file_base_name.replace(f".{dtype}", "")
+        npy_file_name = f"{file_base_name}.{self.dest_dtype}.npy"
+        npy_file_path = os.path.join(output_dir, npy_file_name)
+
+        try:
+            if self.dest_dtype == "bfloat16":
+                from bfloat16ext import bfloat16
+                raw_data = np.fromfile(self.dump_path, dtype=np.int16)
+                data_f32 = raw_data.astype(np.float32)
+                bf16_limit = 3.3895e+38
+                data_f32 = np.clip(data_f32, -bf16_limit, bf16_limit)
+                array = data_f32.astype("bfloat16")
+            else:
+                array = np.fromfile(self.dump_path, dtype=np.dtype(self.dest_dtype))
+
+            np.save(npy_file_path, array)
+            utils.print_info_log(f"Success convert bin to npy: {self.dump_path} -> {npy_file_path}")
+            self.bin_data_list.append(npy_file_path)
+
+        except Exception as e:
+            utils.print_error_log(f"Failed to convert bin to npy: {str(e)}")
+            raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
         return result_info
 
     def parse_dump_data(self, dump_file):
@@ -267,10 +312,14 @@ class DumpDataParser:
         """
         # get parse data list
         if os.path.isfile(self.dump_path):
-            if self.dump_path.endswith(".npy") or self.dump_path.endswith(".bin"):
-                utils.print_error_log(f"The dump file cannot be an npy file or a bin file.")
+            if self.dump_path.endswith(".npy"):
+                utils.print_error_log(f"The dump file cannot be an npy file.")
                 return
-            match_dump_list = [self.dump_path]
+            elif self.dump_path.endswith(".bin"):
+                self.info.dump_info = self.convert_bin_file_to_npy()
+                return
+            else:
+                match_dump_list = [self.dump_path]
         else:
             match_dump_list = []
             match_name = self.info.node_name

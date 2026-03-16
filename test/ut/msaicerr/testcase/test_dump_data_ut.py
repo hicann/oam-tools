@@ -29,11 +29,13 @@ from unittest.mock import Mock
 
 sys.path.append(MSAICERR_PATH)
 from ms_interface import utils
+from ms_interface.constant import Constant
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.dump_data_parser import DumpDataParser, BigDumpDataParser
 
 
 dump_file = "exception_info.2.1.20250609144925349"
+bin_file = "aclnnAbs_0_L0.AbsAicore.2.20260202152928444.input.0.bin"
 
 
 def create_dump_file(file_name, header_length, body_length):
@@ -204,6 +206,16 @@ class TestUtilsMethods(CommonAssert):
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
         res = dump_data_parser._check_tensor_data('input', 1, np.array([1, 2]), 'bfloat112')
         self.assertIn(res, 'Can not read with dtype bfloat112!')
+
+    def test_convert_bin_check_input(self):
+        dump_data_parser = DumpDataParser(bin_file, AicErrorInfo())
+        res = dump_data_parser.convert_bin_file_to_npy()
+        self.assertIn(res, 'Need to specify the dtype when convert a bin file.')
+
+    def test_convert_bin_check_input_dtype_error(self):
+        dump_data_parser = DumpDataParser(bin_file, AicErrorInfo(), 'fint8')
+        res = dump_data_parser.convert_bin_file_to_npy()
+        self.assertIn(res, 'Invalid dest_dtype: fint8')
 
     def test_check_tensor_data_type_inf_error(self):
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())

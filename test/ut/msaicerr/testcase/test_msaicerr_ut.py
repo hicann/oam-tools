@@ -175,8 +175,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('sys.argv', args)
         mock_stdout = mocker.patch("sys.stdout", new_callable=StringIO)
         msaicerr.main()
-        self.assertEqual(
-            'The dump file cannot be an npy file or a bin file.' in mock_stdout.getvalue(), True)
+        self.assertEqual('The dump file cannot be an npy file.' in mock_stdout.getvalue(), True)
 
     def test_check_env_invalid_dev(self, mocker):
         args = ['msaicerr.py', '-e', '-dev', '6']
