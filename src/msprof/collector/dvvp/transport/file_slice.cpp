@@ -150,7 +150,7 @@ int32_t FileSlice::WriteToLocalFiles(const std::string &key, CONST_CHAR_PTR data
                 errorNo, OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
             return PROFILING_FAILED;
         }
-        if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+        if (OsalChmod(absolutePath.c_str(), FILE_MODE) != OSAL_EN_OK) {
             out.close();
             MSPROF_LOGE("Failed to change file mode for %s", absolutePath.c_str());
             return PROFILING_FAILED;
@@ -236,7 +236,7 @@ int32_t FileSlice::WriteCtrlDataToFile(const std::string &absolutePath, const st
         MSPROF_LOGE("Failed to open %s", Utils::BaseName(absolutePath).c_str());
         return PROFILING_FAILED;
     }
-    if (OsalChmod(absolutePath.c_str(), 0640) != OSAL_EN_OK) {
+    if (OsalChmod(absolutePath.c_str(), FILE_MODE) != OSAL_EN_OK) {
         file.close();
         MSPROF_LOGE("Failed to change file mode for %s", absolutePath.c_str());
         return PROFILING_FAILED;
@@ -328,7 +328,7 @@ bool FileSlice::CreateDoneFile(const std::string &absolutePath, const std::strin
                     OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
         return false;
     }
-    if (OsalChmod(tempPath.c_str(), 0640) != OSAL_EN_OK) {
+    if (OsalChmod(tempPath.c_str(), FILE_MODE) != OSAL_EN_OK) {
         file.close();
         MSPROF_LOGE("Failed to change file mode for %s", tempPath.c_str());
         return false;

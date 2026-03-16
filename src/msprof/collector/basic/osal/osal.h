@@ -31,7 +31,6 @@ extern "C" {
 #define OSAL_TIMES_THOUSANDS 1000
 #define OSAL_COMPUTER_BEGIN_YEAR 1900
 #define OSAL_TIMES_MILLIONS 1000000
-#define OSAL_FILE_MODE 0640
 
 #ifdef OSAL
 /************************************* Linux Macro Definition *************************************/

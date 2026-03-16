@@ -57,6 +57,8 @@ struct ProfileFileChunk {
 namespace common {
 namespace utils {
 
+#define FILE_MODE 0640
+
 #define MSVP_MAKE_SHARED0(instance, Type, action)                          \
     do {                                                                   \
         try {                                                              \
