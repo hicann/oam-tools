@@ -151,7 +151,6 @@ typedef void* VOID_PTR;
 #define PROF_TASK_MEMORY_MASK          0x00001000ULL
 #define PROF_TASK_TIME_L2_MASK         0x00002000ULL
 #define PROF_OP_ATTR_MASK              0x00004000ULL
-#define PROF_TASK_TIME_L3_MASK         0x00008000ULL
 
 // system profiling mask
 #define PROF_CPU_MASK                  0x00010000ULL

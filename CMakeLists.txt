@@ -100,7 +100,6 @@ set(MSPROF_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/msprof)
 set(PROF_BASIC_DIR "${MSPROF_DIR}/collector/basic")
 set(TARGET_SYSTEM_NAME "Linux")
 add_subdirectory(src/msprof/collector/dvvp/msprofbin)
-add_subdirectory(src/msprof/collector/dvvp/acp)
 
 if (ENABLE_COV OR ENABLE_UT)
     set(ASCEND_3RD_LIB_PATH ${CANN_3RD_LIB_PATH})

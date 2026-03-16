@@ -208,10 +208,6 @@ ACL_PROF_CONFIG_PTR aclprofCreateConfig(uint32_t *deviceIdList, uint32_t deviceN
     if ((dataTypeConfig & PROF_TASK_TIME_L2_MASK) != 0 || (dataTypeConfig & PROF_OP_ATTR_MASK) != 0) {
         profConfig->config.dataTypeConfig |= PROF_TASK_TIME | PROF_TASK_TIME_L1;
     }
-    // 采集task time L3, 同时配置task time L0, L1, L2
-    if ((dataTypeConfig & PROF_TASK_TIME_L3_MASK) != 0) {
-        profConfig->config.dataTypeConfig |= PROF_TASK_TIME | PROF_TASK_TIME_L1 | PROF_TASK_TIME_L2;
-    }
     profConfig->config.devIdList[profConfig->config.devNums] = PROF_DEFAULT_HOST_ID;
     profConfig->config.devNums++;
     MSPROF_LOGI("Successfully create prof config");

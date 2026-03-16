@@ -44,7 +44,6 @@ extern "C" {
 #define ACL_PROF_FWK_SCHEDULE_L1        0x01000000ULL
 #define ACL_PROF_TASK_TIME_L2           0x2000ULL
 #define ACL_PROF_OP_ATTR                0x4000ULL
-#define ACL_PROF_TASK_TIME_L3           0x8000ULL
 
 /**
  * @deprecated please use aclprofGetOpTypeLen and aclprofGetOpTNameLen instead
@@ -93,7 +92,6 @@ typedef enum {
     ACL_PROF_HOST_SYS_USAGE             = 9,
     ACL_PROF_HOST_SYS_USAGE_FREQ        = 10,
     ACL_PROF_LOW_POWER_FREQ             = 11,
-    ACL_PROF_SYS_MEM_SERVICEFLOW        = 12,
     ACL_PROF_SYS_CPU_FREQ               = 13,
     ACL_PROF_SCALE                      = 14,
     ACL_PROF_ARGS_MAX                   = 15

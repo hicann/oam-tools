@@ -197,16 +197,13 @@ const char * const MSVP_PROF_OFF = "off";
 const char * const MSVP_PROF_L0 = "l0";
 const char * const MSVP_PROF_L1 = "l1";
 const char * const MSVP_PROF_L2 = "l2";
-const char * const MSVP_PROF_L3 = "l3";
 const char * const MSVP_LEVEL_L0 = "level0";
 const char * const MSVP_LEVEL_L1 = "level1";
 const char * const MSVP_LEVEL_L2 = "level2";
-const char * const MSVP_LEVEL_L3 = "level3";
 const char * const MSVP_PROF_EMPTY_STRING = "";
 const char * const MSVP_PROF_ACLAPI_MODE = "aclapi";
 const char * const MSVP_PROF_SUBSCRIBE_MODE = "subscribe";
 const char * const MSVP_PROF_SYSTEM_MODE = "system";
-const char * const MSVP_PROF_ALL = "all";
 const char * const HELPER_HOST_CPU_MODE = "64";
 
 // dynamic profiling

@@ -193,22 +193,16 @@ bool ParamValidation::CheckAicoreMetricsIsValid(const std::string &aicoreMetrics
         return false;
     }
 
-    if (aicoreMetrics.compare(0, CUSTOM_METRICS.length(), CUSTOM_METRICS) == 0) {
-        std::string aicoreEvent = aicoreMetrics.substr(CUSTOM_METRICS.length());
-        std::transform(aicoreEvent.begin(), aicoreEvent.end(), aicoreEvent.begin(), ::tolower);
-        int32_t sw = CustomHexCharConfig(aicoreEvent, ",");
-        if (sw == PROFILING_FAILED) {
-            MSPROF_LOGE("The aic_metrics[%s] of input config is invalid", aicoreMetrics.c_str());
-            return false;
-        }
-        return true;
-    }
+    std::string errReason = "The aic_metrics include ArithmeticUtilization, PipeUtilization, \
+    Memory, MemoryL0, ResourceConflictRatio, MemoryUB, L2Cache, MemoryAccess";
     auto featureMetrics = Platform::instance()->PmuToFeature(aicoreMetrics);
     if (Platform::instance()->CheckIfSupport(featureMetrics)) {
         return true;
     }
 
     MSPROF_LOGE("The aic_metrics[%s] of input config is invalid", aicoreMetrics.c_str());
+    MSPROF_INPUT_ERROR("EK0003", std::vector<std::string>({"config", "value", "reason"}),
+        std::vector<std::string>({"aic_metrics", aicoreMetrics.c_str(), errReason}));
     return false;
 }
 
@@ -497,9 +491,6 @@ bool ParamValidation::CheckProfilingSwitchIsValid(SHARED_PTR_ALIA<analysis::dvvp
     if (params == nullptr) {
         return false;
     }
-    if (!CheckControlSwitchProfiling(params)) {
-        return false;
-    }
     if (!CheckTsSwitchProfiling(params)) {
         return false;
     }
@@ -529,12 +520,8 @@ bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const
     }
     if (!Platform::instance()->CheckIfSupport(switchName)) {
         MSPROF_LOGE("Argument [%s] is not supported.", switchName.c_str());
-        MSPROF_INPUT_ERROR("EK0001", std::vector<std::string>({"config", "value", "reason"}),
-            std::vector<std::string>({switchName, switchStr, "Argument is not supported."}));
-        return false;
-    }
-    if (switchStr.compare(MSVP_PROF_L3) == 0 && !Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3)) {
-        MSPROF_LOGE("l3 is not supported on this platform.");
+        MSPROF_INPUT_ERROR("EK0005", std::vector<std::string>({"param"}),
+            std::vector<std::string>({switchName}));
         return false;
     }
     std::string errInfo = "Please input 'l0', 'l1' or 'off'.";
@@ -543,16 +530,12 @@ bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const
             switchStr.compare(MSVP_PROF_OFF) == 0) {
             return true;
         }
-    } else if (switchName.compare("task_trace") == 0) {
+    } else if (switchName.compare("task_trace") == 0 || switchName.compare("task_time") == 0) {
         if (switchStr.compare(MSVP_PROF_L0) == 0 || switchStr.compare(MSVP_PROF_L1) == 0 ||
-            switchStr.compare(MSVP_PROF_L2) == 0 || switchStr.compare(MSVP_PROF_L3) == 0 ||
-            IsValidSwitch(switchStr)) {
+            switchStr.compare(MSVP_PROF_L2) == 0 || IsValidSwitch(switchStr)) {
             return true;
         } else {
-            std::string task_trace_ranges = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3)
-                        ? "'on', 'off', 'l0', 'l1', 'l2' or 'l3'." 
-                        : "'on', 'off', 'l0', 'l1' or 'l2'.";
-            errInfo = "Please input " + task_trace_ranges;
+            errInfo = "Please input 'on', 'off', 'l0', 'l1' or 'l2'.";
         }
     }
     MSPROF_LOGE("Argument %s: invalid value: %s. %s", switchName.c_str(), switchStr.c_str(), errInfo.c_str());
@@ -578,14 +561,6 @@ bool ParamValidation::CheckParamEmptyInvalid(const std::string &switchName, cons
     MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(),
         switchStr.c_str());
     return false;
-}
-
-bool ParamValidation::CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
-    if (!IsValidSwitch(params->taskTsfw)) {
-        MSPROF_LOGE("Control switch taskTsfw is not valid.");
-    }
-    return true;
 }
 
 bool ParamValidation::CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
@@ -1118,21 +1093,6 @@ bool ParamValidation::CheckFreqIsValid(const std::string &switchName, uint32_t f
         return CheckArgRange(switchName, std::to_string(freq), it->second[0], it->second[1]);
     }
     return false;
-}
-
-/**
- * @brief  : Check mem serviceflow is valid
- * @param  : [in] switchName : the switch name
- * @param  : [in] config : sys mem serviceflow config
- * @return : true
- *           false
- */
-bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, const std::string &config) const
-{
-    FUNRET_CHECK_EXPR_ACTION(!Platform::instance()->CheckIfSupport(PLATFORM_SYS_MEM_SERVICEFLOW), return false,
-        "Argument %s is not supported", switchName.c_str());
-    FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
-    return true;
 }
 
 /**

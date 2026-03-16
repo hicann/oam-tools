@@ -53,7 +53,6 @@ DavidV121Platform::DavidV121Platform()
         PLATFORM_TASK_AICORE_LPM,
         PLATFORM_TASK_GE_API,
         PLATFORM_TASK_HCCL,
-        PLATFORM_TASK_TSFW,
         PLATFORM_TASK_L2_CACHE_REG,
         PLATFORM_TASK_MEMORY,
         PLATFORM_TASK_MSPROFTX,
@@ -78,7 +77,6 @@ DavidV121Platform::DavidV121Platform()
         PLATFORM_DIAGNOSTIC_COLLECTION,
         PLATFORM_AICSCALE_ACP,
         PLATFORM_STARS_QOS,
-        PLATFORM_SYS_MEM_SERVICEFLOW,
     };
     InsertSysFeature();
 }

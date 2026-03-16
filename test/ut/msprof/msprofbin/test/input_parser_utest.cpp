@@ -466,7 +466,6 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     struct MsprofCmdInfo cmdInfo = { {nullptr} };
     cmdInfo.args[ARGS_AIV_MODE] = "sample-baseddddd";
     cmdInfo.args[ARGS_AIC_METRICS] = "PipeUtilization";
-    cmdInfo.args[ARGS_TASK_BLOCK] = "aa";
     cmdInfo.args[ARGS_SYS_LOW_POWER] = "bb";
     cmdInfo.args[ARGS_SUMMARY_FORMAT] = "csv";
     cmdInfo.args[ARGS_PYTHON_PATH] = "123";
@@ -474,13 +473,11 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     cmdInfo.args[ARGS_DYNAMIC_PROF_PID] = "123";
     cmdInfo.args[ARGS_DELAY_PROF] = "1";
     cmdInfo.args[ARGS_DURATION_PROF] = "1";
-    cmdInfo.args[ARGS_NPU_EVENTS] = "";
     MOCKER(mmGetOptInd)
         .stubs()
         .will(returnValue(1));
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIV_MODE);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIC_METRICS);
-    parser.MsprofCmdCheckValid(cmdInfo, ARGS_TASK_BLOCK);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_SYS_LOW_POWER);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_SUMMARY_FORMAT);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_PYTHON_PATH);
