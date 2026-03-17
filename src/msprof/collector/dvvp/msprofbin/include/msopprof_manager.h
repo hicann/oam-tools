@@ -33,7 +33,7 @@ using namespace analysis::dvvp::common::config;
 class MsopprofManager : public analysis::dvvp::common::singleton::Singleton<MsopprofManager> {
 public:
     MsopprofManager();
-    ~MsopprofManager() {}
+    ~MsopprofManager() override {}
     int MsopprofProcess(int argc, CONST_CHAR_PTR argv[]);
     OsalProcess GetMsopprofPid() const { return msopprofPid_; }
     bool IsMsopprofExist() const;
