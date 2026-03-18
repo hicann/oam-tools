@@ -466,7 +466,6 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     struct MsprofCmdInfo cmdInfo = { {nullptr} };
     cmdInfo.args[ARGS_AIV_MODE] = "sample-baseddddd";
     cmdInfo.args[ARGS_AIC_METRICS] = "PipeUtilization";
-    cmdInfo.args[ARGS_TASK_BLOCK] = "aa";
     cmdInfo.args[ARGS_SYS_LOW_POWER] = "bb";
     cmdInfo.args[ARGS_SUMMARY_FORMAT] = "csv";
     cmdInfo.args[ARGS_PYTHON_PATH] = "123";
@@ -480,7 +479,6 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
         .will(returnValue(1));
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIV_MODE);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIC_METRICS);
-    parser.MsprofCmdCheckValid(cmdInfo, ARGS_TASK_BLOCK);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_SYS_LOW_POWER);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_SUMMARY_FORMAT);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_PYTHON_PATH);
@@ -488,6 +486,19 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DYNAMIC_PROF_PID));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DELAY_PROF));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DURATION_PROF));
+}
+
+TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    cmdInfo.args[ARGS_TASK_BLOCK] = "aa";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
+    cmdInfo.args[ARGS_TASK_BLOCK] = "on";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
+    cmdInfo.args[ARGS_TASK_BLOCK] = "off";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
+    cmdInfo.args[ARGS_TASK_BLOCK] = "all";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
 }
 
 TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid) {

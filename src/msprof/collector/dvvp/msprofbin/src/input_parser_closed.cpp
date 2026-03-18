@@ -453,7 +453,7 @@ void InputParser::ParamsSwitchValid2(const struct MsprofCmdInfo &cmdInfo, int32_
                 params_->taskBlockShink = MSVP_PROF_OFF;
             } else {
                 params_->taskBlock = cmdInfo.args[opt];
-                params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) ? MSVP_PROF_ON : MSVP_PROF_OFF;
+                params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
             }
             break;
         case ARGS_SYS_LOW_POWER:

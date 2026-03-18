@@ -1426,11 +1426,11 @@ void ArgsManager::AddAnalysisArgs()
     if (Platform::instance()->RunSocSide()) {
         return;
     }
-    std::string typeDesc = "The export type, only uesd when argument `export` is on \n"
+    std::string typeDesc = "The export type, only used when argument `export` is on \n"
                            "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
                            "\t\t\t\t\t\t   the default value is text.";
     if (Platform::instance()->CheckIfSupport(PLATFORM_EXPORT_TYPE)) {
-        typeDesc = "The export type, only uesd when argument `export` is on \n"
+        typeDesc = "The export type, only used when argument `export` is on \n"
                    "\t\t\t\t\t\t   or when collecting data, include text, db.\n"
                    "\t\t\t\t\t\t   the default value is text(which will also export the database).";
     }
@@ -1441,16 +1441,16 @@ void ArgsManager::AddAnalysisArgs()
     {"parse", "Switch for using msprof to parse collecting data, the default value is off.", OFF},
     {"query", "Switch for using msprof to query collecting data, the default value is off.", OFF},
     {"export", "Switch for using msprof to export collecting data, the default value is off.", OFF},
-    {"clear", "Swith for using msprof to analyze or export data in clear mode, the default value is off.", OFF},
+    {"clear", "Switch for using msprof to analyze or export data in clear mode, the default value is off.", OFF},
     {"analyze", "Switch for using msprof to analyze collecting data, the default value is off.", OFF},
     {"rule", "Switch specified rule for using msprof to analyze collecting data, "
         "include communication, communication_matrix.\n"
         "\t\t\t\t\t\t   the default value is communication,communication_matrix."},
-    {"iteration-id", "The export iteration id, only uesd when argument export is on, the default value is 1.", "1"},
-    {"model-id", "The export model id, only uesd when argument export is on, "
+    {"iteration-id", "The export iteration id, only used when argument export is on, the default value is 1.", "1"},
+    {"model-id", "The export model id, only used when argument export is on, "
         "msprof will export minium accessible model by default.",
         "-1"},
-    {"summary-format", "The export summary file format, only uesd when argument export is on, "
+    {"summary-format", "The export summary file format, only used when argument export is on, "
         "include csv, json, the default value is csv.", "csv"},
     {"type", typeDesc, "text"},
     {"reports", "Specify the path that is used for controlling the export scope of collecting results"}
