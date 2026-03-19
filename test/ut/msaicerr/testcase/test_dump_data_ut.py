@@ -207,6 +207,11 @@ class TestUtilsMethods(CommonAssert):
         res = dump_data_parser._check_tensor_data('input', 1, np.array([1, 2]), 'bfloat112')
         self.assertIn(res, 'Can not read with dtype bfloat112!')
 
+    def test_check_input_nonbin_with_dtype(self):
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo(), 'float16')
+        res = dump_data_parser.parse()
+        self.assertEqual(res, None)
+
     def test_convert_bin_check_input(self):
         dump_data_parser = DumpDataParser(bin_file, AicErrorInfo())
         res = dump_data_parser.convert_bin_file_to_npy()

@@ -319,6 +319,9 @@ class DumpDataParser:
             elif self.dump_path.endswith(".bin"):
                 self.info.dump_info = self.convert_bin_file_to_npy()
                 return
+            elif self.dest_dtype:
+                utils.print_error_log("Invalid parameter: dest_dtype is only valid for bin file conversion.")
+                return
             else:
                 match_dump_list = [self.dump_path]
         else:
