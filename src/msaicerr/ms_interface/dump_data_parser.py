@@ -237,6 +237,7 @@ class DumpDataParser:
             utils.print_error_log(result_info)
             return result_info
 
+        self.dump_path = os.path.abspath(self.dump_path)
         dump_file_dir, dump_file_name = os.path.split(self.dump_path)
         file_base_name = os.path.splitext(dump_file_name)[0]
         original_dtype = None
