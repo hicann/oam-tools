@@ -32,6 +32,7 @@ set(LLT_EXTEND_INCLUDE_DIR
     ${runtime_INCLUDE_DIR}
     ${third_party_INCLUDE_DIR}
     ${MOCKCPP_INCLUDE_DIR}
+    ${BOOST_INCLUDE_PATH}
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
 )

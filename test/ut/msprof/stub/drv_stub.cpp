@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include <map>
-#include <cstring>
+#include <string>
 #include "ascend_hal.h"
 #include "mmpa_api.h"
 

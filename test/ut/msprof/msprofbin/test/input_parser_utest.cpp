@@ -559,11 +559,12 @@ TEST_F(INPUT_PARSER_UTEST, CheckDynProfValid)
     cmdInfo.args[ARGS_DYNAMIC_PROF] = "on";
 
     MOCKER_CPP(&DynProfCliMgr::SetKeyPid)
-        .stubs()
-        .will(ignoreReturnValue());
+        .stubs();
     MOCKER_CPP(&DynProfCliMgr::EnableDynProfCli)
+        .stubs();
+    MOCKER_CPP(&ParamValidation::CheckDynaPidIsValid)
         .stubs()
-        .will(ignoreReturnValue());
+        .will(returnValue(true));
 
     InputParser parser = InputParser();
     parser.params_->app = "";
