@@ -161,6 +161,12 @@ int HcclOpBaseAlltoallTest::hccl_op_base_test() //主函数
 
     // 校验计算结果
     if (check == 1) {
+        if (iters || warmup_iters) {
+            ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
+            HCCLCHECK(HcclAlltoAll((void *)send_buff, sendCount_, (HcclDataType)dtype,\
+                (void*)recv_buff, recvCount_, (HcclDataType)dtype, hccl_comm, stream));
+            ACLCHECK(aclrtSynchronizeStream(stream));
+        }
         ACLCHECK(check_buf_result());
     }
 
