@@ -91,6 +91,17 @@ void host_buf_init_int64(void* dst_buf, u64 count, int val)
     return;
 }
 
+void host_buf_init_fp64(void* dst_buf, u64 count, int val)
+{
+    double* tmp_buf = NULL;
+    tmp_buf = (double*)dst_buf;
+    for(u64 j = 0; j < count; ++j)
+    {
+        tmp_buf[j] = val;
+    }
+    return;
+}
+
 void host_buf_init_bfp16(void* dst_buf, u64 count, int val)
 {
     unsigned short *f16_temp = (u16*)dst_buf;
@@ -271,6 +282,34 @@ void reduce_check_buf_init_int64(void* dst_buf, u64 count, int val, int op, int 
 {
     int64_t* temp = nullptr;
     temp = (int64_t*)dst_buf;
+    if(op == HCCL_REDUCE_SUM)
+    {
+        for(u64 j = 0; j < count; ++j)
+        {
+            temp[j] = val * rank_size;
+        }
+    }
+    else if(op == HCCL_REDUCE_PROD)
+    {
+        for(u64 j = 0; j < count; ++j)
+        {
+            temp[j] = pow(val, rank_size);
+        }
+    }
+    else if(op == HCCL_REDUCE_MIN || op == HCCL_REDUCE_MAX)
+    {
+        for(u64 j = 0; j < count; ++j)
+        {
+            temp[j] = val;
+        }
+    }
+    return;
+}
+
+void reduce_check_buf_init_fp64(void* dst_buf, u64 count, int val, int op, int rank_size)
+{
+    double* temp = nullptr;
+    temp = (double*)dst_buf;
     if(op == HCCL_REDUCE_SUM)
     {
         for(u64 j = 0; j < count; ++j)
@@ -622,7 +661,7 @@ std::map<int,HostBufInitFunc> functionMap = {
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_INT16, host_buf_init_int16),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_UINT16, host_buf_init_int16),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_INT64, host_buf_init_int64),
-    std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP64, host_buf_init_int64),
+    std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP64, host_buf_init_fp64),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_UINT64, host_buf_init_int64),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_BFP16, host_buf_init_bfp16),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_HIF8, host_buf_init_int8),
@@ -641,7 +680,7 @@ std::map<int, ReduceCheckBufInitFunc> functionReduceMap = {
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_INT16, reduce_check_buf_init_int16),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_INT64, reduce_check_buf_init_int64),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_UINT64, reduce_check_buf_init_int64),
-    std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_FP64, reduce_check_buf_init_int64),
+    std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_FP64, reduce_check_buf_init_fp64),
     std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_BFP16, reduce_check_buf_init_bfp16)};
 
 std::map<int, AllToAllCheckResult> functionAllToAllMap = {
