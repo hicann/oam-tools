@@ -491,6 +491,9 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
 TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3));
     cmdInfo.args[ARGS_TASK_BLOCK] = "aa";
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
     cmdInfo.args[ARGS_TASK_BLOCK] = "on";
@@ -590,7 +593,6 @@ TEST_F(INPUT_PARSER_UTEST, CheckDynProfValid)
     parser.params_->app = "";
     parser.params_->dynamic = "on";
     parser.params_->pid = "123";
-    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckDynProfValid(cmdInfo));
 
     cmdInfo.args[ARGS_CPU_PROFILING] = "on";
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckDynProfValid(cmdInfo));

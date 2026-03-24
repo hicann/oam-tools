@@ -17,6 +17,7 @@
 
 
 BASEPATH=$(cd "$(dirname $0)"; pwd)
+SCRIPT_DIR="${BASEPATH}"
 BUILD_RELATIVE_PATH="build"
 BUILD_OUT="build_out"
 CORE_NUMS=$(cat /proc/cpuinfo| grep "processor"| wc -l)
@@ -44,6 +45,10 @@ usage() {
     echo "    -u             Build and run all unit tests"
     echo "    --noexec       Only compile ut, do not execute"
     echo "    --cov          Enable code coverage for unit tests"
+    echo "    --component <name>"
+    echo "                   Specify component to test: asys, msaicerr, msprof, all (default: all)"
+    echo "    --ut           Run UT tests only (default when -u is specified)"
+    echo "    --st           Run ST tests only"
     echo ""
 }
 
@@ -57,6 +62,9 @@ checkopts() {
     BUILD_TYPE="Release"
     BUILD_MODE=""
     ENABLE_COVERAGE="off"
+    TEST_COMPONENT="all"
+    RUN_UT_ONLY="off"
+    RUN_ST_ONLY="off"
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
     elif [ $UID -eq 0 ]; then
@@ -67,7 +75,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,noexec,pkg,asan,cann_3rd_lib_path: -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,noexec,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
     usage
     exit 1
     }
@@ -119,6 +127,18 @@ checkopts() {
         ;;
         --asan)
         ENABLE_ASAN="on"
+        shift
+        ;;
+        --component)
+        TEST_COMPONENT="$2"
+        shift 2
+        ;;
+        --ut)
+        RUN_UT_ONLY="on"
+        shift
+        ;;
+        --st)
+        RUN_ST_ONLY="on"
         shift
         ;;
         --pkg)
@@ -282,140 +302,6 @@ build_oam_tools() {
     echo "oam_tools build success!"
 }
 
-declare -A TEST_CASES=(
-    ["asys_st"]="pytest"
-    ["asys_ut"]="pytest"
-    ["msaicerr_st"]="pytest"
-    ["msaicerr_ut"]="pytest"
-    ["msprof_ut"]="gtest"
-)
-oam_tools_test() {
-    local return_code=0
-    local test_list=()
-
-    # --- 1. Determine which test cases to run ---
-    if [ $# -eq 0 ]; then
-        # Run all cases if no arguments are provided
-        test_list=("${!TEST_CASES[@]}")
-        echo "INFO: Running all test cases: ${test_list[@]}"
-    else
-        # Run only the specified cases
-        for arg in "$@"; do
-            if [[ -v TEST_CASES[$arg] ]]; then
-                test_list+=("$arg")
-            else
-                echo "ERROR: Invalid test case name '$arg'. Valid cases are: ${!TEST_CASES[*]}" >&2
-                return 1
-            fi
-        done
-        echo "INFO: Running specified test cases: ${test_list[*]}"
-    fi
-
-    # --- 2. Loop through and execute each test case ---
-    for case_name in "${test_list[@]}"; do
-        local output_file="${case_name}_output.log"
-        local framework="${TEST_CASES[$case_name]}"
-        echo "---"
-        echo "STARTING TEST: **$case_name** (Framework: $framework)"
-        # --- ACTUAL EXECUTION STEP ---
-        if [ "$case_name" == "asys_st" ]; then
-            coverage run --source=../src/asys -m pytest ../test/st/asys/testcase > "${output_file}" 2>&1
-            coverage report >> "${output_file}"
-            coverage html -d "$case_name"_html >> "${output_file}"
-        elif [ "$case_name" == "asys_ut" ]; then
-            coverage run --source=../src/asys -m pytest ../test/ut/asys/testcase > "${output_file}" 2>&1
-            coverage report >> "${output_file}"
-            coverage html -d "$case_name"_html >> "${output_file}"
-        elif [ "$case_name" == "msaicerr_st" ]; then
-            coverage run --source=../src/msaicerr -m pytest ../test/st/msaicerr/testcase > "${output_file}" 2>&1
-            coverage report >> "${output_file}"
-            coverage html -d "$case_name"_html >> "${output_file}"
-        elif [ "$case_name" == "msaicerr_ut" ]; then
-            coverage run --source=../src/msaicerr -m pytest ../test/ut/msaicerr/testcase > "${output_file}" 2>&1
-            coverage report >> "${output_file}"
-            coverage html -d "$case_name"_html >> "${output_file}"
-        elif [ "$case_name" == "msprof_ut" ]; then
-            ./test/ut/msprof/msprofbin/msprof_bin_utest > "${output_file}" 2>&1
-        fi
-         echo "END TEST: **$case_name**"
-
-        # --- 3. Check the output file for FAILED/Failed keywords ---
-        if [ ! -f "$output_file" ]; then
-            echo "ERROR: Test case $case_name failed to generate output file: $output_file" >&2
-            return_code=1
-            continue
-        fi
-
-        local passed_count=0
-        local failed_count=0
-        
-        # --- gtest LOGIC (aml_st, aml_ut) ---
-        if [ "$framework" == "gtest" ]; then
-            # Extract PASSED count
-            passed_count=$(grep -E "^\[  PASSED  \]" "$output_file" | awk '{print $4}' | sed 's/tests\.$//')
-            # Extract FAILED count
-            failed_count=$(grep -E "^\[  FAILED  \]" "$output_file" | awk '{print $4}' | sed 's/tests, listed below:$//')
-
-            # Default to 0 if grep/awk finds nothing (may happen if the run crashed before summary)
-            passed_count=${passed_count:-0}
-            failed_count=${failed_count:-0}
-            
-            echo "${case_name}: gtest parsed: Passed=$passed_count, Failed=$failed_count"
-            
-        # --- pytest LOGIC (asys_st, asys_ut) ---
-        elif [ "$framework" == "pytest" ]; then
-            # Pytest summary line example: '== 1 failed, 2 passed, 1 skipped in 1.50s =='
-            summary_line=$(grep -E "^=+ .* in [0-9.]+s =+$" "$output_file")
-            
-            # Extract failed count
-            failed_count=$(echo "$summary_line" | grep -oE '[0-9]+ failed' | awk '{print $1}')
-            
-            # Extract passed count
-            passed_count=$(echo "$summary_line" | grep -oE '[0-9]+ passed' | awk '{print $1}')
-            
-            # Default to 0 if grep/awk finds nothing
-            passed_count=${passed_count:-0}
-            failed_count=${failed_count:-0}
-
-            coverage_line=$(grep -E "TOTAL" "$output_file")
-            cov_total_line=$(echo "$coverage_line" | awk '{print $2}')
-            cov_covered_line=$(echo "$coverage_line" | awk '{print $3}')
-            cov_covered_ratio=$(echo "$coverage_line" | awk '{print $4}' | sed 's/%//')
-
-            echo "${case_name}: pytest parsed: Passed=$passed_count, Failed=$failed_count, Cov=$cov_covered_ratio%"
-        fi
-
-        # --- Final Judgment ---
-        if [ "$failed_count" -gt 0 ] || [ "$passed_count" -eq 0 ]; then
-            echo "FAILURE: Test case **$case_name** **failed** ($failed_count failures out of $(($passed_count + $failed_count)) total)."
-            echo "log saved to: **$output_file**"
-            cat $output_file
-            # Print failure details for the user
-            if [ "$framework" == "gtest" ]; then
-                echo "--- FAILURE LOG SUMMARY (gtest FAILED tests) ---"
-                grep -E "^\[  FAILED  \]" "$output_file"
-            elif [ "$framework" == "pytest" ]; then
-                echo "--- FAILURE LOG SUMMARY (pytest short summary info) ---"
-                grep -A 5 -E "short test summary info" "$output_file"
-            fi
-            echo "-------------------------------------------------------------"
-            return_code=1
-        else
-            echo "SUCCESS: Test case **$case_name** **passed** ($passed_count successful tests)."
-            echo "log saved to: **$output_file**"
-        fi
-    done
-
-    # --- 4. Return Final Result ---
-    echo "---"
-    if [ $return_code -eq 0 ]; then
-        echo "RESULT: All specified test cases passed. Returning exit code: 0"
-    else
-        echo "RESULT: One or more test cases failed. Returning exit code: 1"
-    fi
-    return "$return_code"
-}
-
 main() {
     cd "${BASEPATH}"
     checkopts "$@"
@@ -431,12 +317,24 @@ main() {
     if [[ "${ENABLE_UT}" == "on" && "${EXEC_TEST}" == "on" ]];then
         source "${ASCEND_HOME_PATH}/bin/setenv.bash"
         export LD_LIBRARY_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"/:$LD_LIBRARY_PATH
-        oam_tools_test msaicerr_st msaicerr_ut msprof_ut
+        
+        local run_tests_args=()
+        if [[ "$TEST_COMPONENT" != "all" ]]; then
+            run_tests_args+=("--component" "$TEST_COMPONENT")
+        fi
+        if [[ "$RUN_UT_ONLY" == "on" ]]; then
+            run_tests_args+=("--ut")
+        fi
+        if [[ "$RUN_ST_ONLY" == "on" ]]; then
+            run_tests_args+=("--st")
+        fi
+        
+        bash "${BASEPATH}/scripts/run_tests.sh" "${run_tests_args[@]}"
         if [ $? -ne 0 ]; then
-            echo "Execute oam_tools_test failed."
+            echo "Execute run_tests.sh failed."
             exit 1
         fi
-        echo "Execute oam_tools_test successful."
+        echo "Execute run_tests.sh successful."
     fi
 }
 
