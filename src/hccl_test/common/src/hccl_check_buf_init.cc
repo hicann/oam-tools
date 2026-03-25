@@ -476,6 +476,27 @@ int alltoall_check_result_int64(const void *check_buf, u64 *recv_counts, u64 *re
     return ret;
 }
 
+int alltoall_check_result_fp64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+{
+    int ret = 0;
+    double *result = NULL;
+    for(int i = 0; i < rank_size; ++i)
+    {
+        double check_val = i + 1;
+        result = (double *)check_buf + recv_disp[i];
+        for(u64 j = 0; j < recv_counts[i]; ++j)
+        {
+            if(result[j] != check_val)
+            {
+                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%f, act:%f\n", rank_id, i, j, check_val, result[j]);
+                ret++;
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
 int alltoall_check_result_int16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
 {
     int ret = 0;
@@ -694,7 +715,7 @@ std::map<int, AllToAllCheckResult> functionAllToAllMap = {
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_UINT8, alltoall_check_result_uint8),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_UINT16, alltoall_check_result_uint16),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_UINT32, alltoall_check_result_uint32),
-    std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP64, alltoall_check_result_int64),
+    std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP64, alltoall_check_result_fp64),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_BFP16, alltoall_check_result_bfp16),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_HIF8, alltoall_check_result_uint8),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E4M3, alltoall_check_result_uint8),
