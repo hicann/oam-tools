@@ -136,7 +136,12 @@ class DumpDataParser:
                     arr = data_f32.astype("bfloat16")
                 else:
                     arr = np.fromfile(tensor_file, dtype=np.dtype(dtype))
-                result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {np.mean(arr)}, Std: {np.std(arr)}\n"
+                if arr.size == 0:
+                    result_info += "Max: N/A, Min: N/A, Mean: N/A, Std: N/A\n"
+                else:
+                    mean_val = np.mean(arr, dtype=np.float64)
+                    std_val = np.std(arr, dtype=np.float64)
+                    result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {mean_val}, Std: {std_val}\n"
             except BaseException:
                 result_info += f"Can not read with dtype {dtype}!\n"
         return result_info
