@@ -202,6 +202,13 @@ class TestUtilsMethods(CommonAssert):
         res = dump_data_parser._summary_tensor_without_dtype('text.bin', 'bfloat16')
         self.assertIn(res, "Can not read with dtype bfloat16")
 
+    def test_summary_tensor_empty_array(self, mocker):
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        empty_arr = np.array([], dtype=np.float32)
+        mocker.patch.object(np, "fromfile", return_value=empty_arr)
+        res = dump_data_parser._summary_tensor_without_dtype("text.bin", "float32")
+        self.assertIn(res, "Max: N/A, Min: N/A, Mean: N/A, Std: N/A")
+
     def test_check_tensor_data_type_error(self):
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
         res = dump_data_parser._check_tensor_data('input', 1, np.array([1, 2]), 'bfloat112')

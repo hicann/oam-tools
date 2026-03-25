@@ -18,7 +18,7 @@
 """
 shape utils module
 """
-import functools
+import numpy as np
 from ms_interface.single_op_test_frame.common import dtype_trans
 
 
@@ -30,7 +30,14 @@ def calc_shape_size(shape):
     """
     if not shape:
         return 0
-    return functools.reduce(lambda x, y: x * y, shape)
+
+    shape_nums = np.array(shape, dtype=np.int64)
+    shape_nums = shape_nums[np.where(shape_nums >= 0)]
+    if len(shape_nums) == 0:
+        return 0
+    
+    size = np.prod(shape_nums, dtype=np.int64)
+    return int(size)
   
   
 def calc_op_param_size(shape_size, dtype):
