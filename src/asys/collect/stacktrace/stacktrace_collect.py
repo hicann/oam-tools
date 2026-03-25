@@ -27,7 +27,7 @@ from params import ParamDict
 from collect.stacktrace import AscendTraceDll
 
 EVERY_ROUND_TIME = 0.5
-CHECK_BIN_TIMEOUT = 10
+CHECK_BIN_TIMEOUT = 60
 
 
 class AsysStackTrace(AscendTraceDll):
