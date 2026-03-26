@@ -41,14 +41,26 @@ std::string PlatformInterface::GetAivDefaultFreq()
     return EMPTY_FREQUENCY;
 }
 
-int32_t PlatformInterface::GetAiPmuMetrics(const std::string &key, std::string &vaule)
+int32_t PlatformInterface::GetAiPmuMetrics(const std::string &key, std::string &value)
 {
+    if (key.compare(0, CUSTOM_METRICS.length(), CUSTOM_METRICS) == 0) {
+        std::string aicoreEvent = key.substr(CUSTOM_METRICS.length());
+        std::transform(aicoreEvent.begin(), aicoreEvent.end(), aicoreEvent.begin(), ::tolower);
+        int32_t sw = ParamValidation::instance()->CustomHexCharConfig(aicoreEvent, ",");
+        if (sw == PROFILING_FAILED) {
+            MSPROF_LOGE("The aic_metrics[%s] of input config is invalid", key.c_str());
+            return PROFILING_FAILED;
+        }
+        value = aicoreEvent;
+        return PROFILING_SUCCESS;
+    }
+
     const PlatformFeature feature = PmuMetricsToFeature(key);
     if (!FeatureIsSupport(feature)) {
         return PROFILING_FAILED;
     }
 
-    vaule = GetMetricsValue(feature);
+    value = GetMetricsValue(feature);
     return PROFILING_SUCCESS;
 }
 

@@ -194,7 +194,17 @@ bool ParamValidation::CheckAicoreMetricsIsValid(const std::string &aicoreMetrics
     }
 
     std::string errReason = "The aic_metrics include ArithmeticUtilization, PipeUtilization, \
-    Memory, MemoryL0, ResourceConflictRatio, MemoryUB, L2Cache, MemoryAccess";
+        Memory, MemoryL0, ResourceConflictRatio, MemoryUB, L2Cache, MemoryAccess";
+    if (aicoreMetrics.compare(0, CUSTOM_METRICS.length(), CUSTOM_METRICS) == 0) {
+        std::string aicoreEvent = aicoreMetrics.substr(CUSTOM_METRICS.length());
+        std::transform(aicoreEvent.begin(), aicoreEvent.end(), aicoreEvent.begin(), ::tolower);
+        int32_t sw = CustomHexCharConfig(aicoreEvent, ",");
+        if (sw == PROFILING_FAILED) {
+            MSPROF_LOGE("The aic_metrics[%s] of input config is invalid", aicoreMetrics.c_str());
+            return false;
+        }
+        return true;
+    }
     auto featureMetrics = Platform::instance()->PmuToFeature(aicoreMetrics);
     if (Platform::instance()->CheckIfSupport(featureMetrics)) {
         return true;

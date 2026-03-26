@@ -227,7 +227,7 @@ public:
     virtual std::string GetDeviceOscDefaultFreq();
     virtual std::string GetAicDefaultFreq();
     virtual std::string GetAivDefaultFreq();
-    virtual int32_t GetAiPmuMetrics(const std::string &key, std::string &vaule);
+    virtual int32_t GetAiPmuMetrics(const std::string &key, std::string &value);
     virtual bool FeatureIsSupport(const PlatformFeature feature) const;
     virtual std::string GetSmmuEventStr();
     virtual std::string GetL2CacheEvents();
