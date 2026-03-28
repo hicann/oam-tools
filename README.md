@@ -170,7 +170,12 @@ bash build.sh --cann_3rd_lib_path={your_3rd_party_path}
 编译完成后，用户可以进行开发测试（DT：Development Testing），验证项目功能是否正常。
 > 说明：执行UT用例依赖[pytest-cov](https://pypi.org/project/pytest-cov/), [coverage](https://pypi.org/project/coverage/), [pytest](https://docs.pytest.org/en/stable/), [googletest](https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests)，生成代码覆盖率报告需要独立安装lcov软件, UT不支持在虚拟机和conda环境下运行。
 
-> 要求：pytest-cov >=7.0.0, coverage >=7.10.0
+> 要求：pytest-cov >=7.0.0, coverage >=7.10.0, pytest-mock >=3.15.1
+
+可以执行以下命令安装python库(推荐在python虚拟环境中执行，避免污染原有python环境)
+```bash
+pip3 install -r requirements.txt
+```
 
 - 编译执行`UT`测试用例：
 
