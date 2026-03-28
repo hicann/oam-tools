@@ -117,8 +117,8 @@ endif()
 #拷贝闭源包到制定目录
 set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
 foreach(subdir IN ITEMS "aml" "built-in" "include" "profiler" "operator_cmp")
-    if (EXISTS "${BUNDLE_PKG}/${subbdir}")
-      file(COPY "${BUNDLE_PKG}/${subbdir}" DESTINATION ${INSTALL_LIBRARY_DIR}/.)
+    if (EXISTS "${BUNDLE_PKG}/${subdir}")
+      file(COPY "${BUNDLE_PKG}/${subdir}" DESTINATION ${INSTALL_LIBRARY_DIR}/.)
     endif()
 endforeach()
 
