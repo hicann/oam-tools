@@ -171,8 +171,8 @@ protected:
     int free_send_recv_buff_and_disable_local_buffer();
     int hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle);
     int hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle);
-    int register_symmetric_memory(CommSymWindow &sym_win);
-    int deregister_symmetric_memory(CommSymWindow &sym_win);
+    int register_symmetric_memory(HcclCommSymWindow &sym_win);
+    int deregister_symmetric_memory(HcclCommSymWindow &sym_win);
 
 private:
     int set_device_sat_mode();
