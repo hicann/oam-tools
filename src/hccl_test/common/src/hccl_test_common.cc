@@ -939,7 +939,7 @@ int HcclTest::init_hcclComm()
 int HcclTest::opbase_test_by_data_size()
 {
     int ret = 0;
-    CommSymWindow sym_win;
+    HcclCommSymWindow sym_win;
     HCCLCHECK(static_cast<HcclResult>(register_symmetric_memory(sym_win)));
     for (data->data_size = data->min_bytes; data->data_size <= data->max_bytes;
          (data->step_factor <= 1.0 ? data->data_size += data->step_bytes : data->data_size *= data->step_factor)) {
@@ -1158,7 +1158,7 @@ int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
     return HCCL_SUCCESS;
 }
 
-int HcclTest::register_symmetric_memory(CommSymWindow &sym_win)
+int HcclTest::register_symmetric_memory(HcclCommSymWindow &sym_win)
 {
     if (!enable_symmetric_memory) {
         return HCCL_SUCCESS;
@@ -1176,11 +1176,11 @@ int HcclTest::register_symmetric_memory(CommSymWindow &sym_win)
     get_buff_size(send_bytes, recv_bytes);
     size_t reserve_size = send_bytes + recv_bytes;
     HCCLCHECK(static_cast<HcclResult>(hccl_mem_alloc(reserve_size, &vir_ptr, &symmetric_handle)));
-    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_size, &sym_win, HCCL_WIN_COLL_SYMMETRIC));
+    HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_size, &sym_win, 1));
     return 0;
 }
 
-int HcclTest::deregister_symmetric_memory(CommSymWindow &sym_win)
+int HcclTest::deregister_symmetric_memory(HcclCommSymWindow &sym_win)
 {
     if (enable_symmetric_memory) {
         HCCLCHECK(HcclCommSymWinDeregister(sym_win));
