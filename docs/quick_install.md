@@ -85,9 +85,12 @@ curl -fsSL https://gitcode.com/oam-tools/init_env.sh | bash
     - protobuf >= 25.1
     - abseil >= 20230802.1
     - json >= 3.11.3
-    - googletest（仅执行UT时依赖，建议版本 release-1.11.0）
+    - patch >= 2.7.6
+    - coverage (仅执行UT时依赖，建议版本 7.13.2)
+    - googletest（仅执行UT时依赖，建议版本 1.14.0）
     - mockcpp（仅执行UT时依赖，建议版本 2.7）
     - pytest（仅执行UT时依赖，建议版本 9.0.1）
+    - pytest-mock (仅执行UT时依赖，建议版本 3.15.1)
     
 	其中：
     - \$\{chip\_type\}：表示昇腾AI处理器型号，如910_93、910b等。
@@ -163,19 +166,3 @@ source /usr/local/Ascend/cann/set_env.sh
 # 指定路径安装
 # source ${install_path}/cann/set_env.sh
 ```
-
-## 源码下载
-
-源码下载命令如下，请将\$\{tag\_version\}替换为目标分支标签名，源码分支标签与CANN版本配套关系参见[release仓库](https://gitcode.com/cann/release-management)。
-
-```bash
-# 下载项目对应分支源码
-git clone -b ${tag_version} https://gitcode.com/cann/otm-tools.git
-```
-
-对于WebIDE或Docker环境，已默认提供最新商发版本的项目源码，如需获取其他版本的源码，也需通过上述命令下载源码。
-
-> [!NOTE] 注意
->
-> - gitcode平台在使用HTTPS协议的时候要配置并使用个人访问令牌代替登录密码进行克隆，推送等操作。
-> - 若您的编译环境无法访问网络，无法通过git指令下载代码，请先在联网环境中下载源码，再手动上传至目标环境。
