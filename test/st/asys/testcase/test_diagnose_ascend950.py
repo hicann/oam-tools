@@ -95,13 +95,13 @@ class TestDiagnose(AssertTest):
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
-    @pytest.mark.parametrize(["chip_type"], [("Ascend 910_95 V1",)])
+    @pytest.mark.parametrize(["chip_type"], [("Ascend 950 V1",)])
     def test_diagnose_supported_soc(self, mocker, capsys, chip_type):
         sys.argv = [CONF_SRC_PATH, "diagnose", "-r=hbm_detect", "--timeout=10"]
         mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch("os.getuid", return_value=0)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=-1)
         mocker.patch.object(DeviceInfo, "clear_ecc_isolated", return_value=-1)

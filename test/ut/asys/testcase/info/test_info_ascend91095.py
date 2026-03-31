@@ -188,7 +188,6 @@ class TestInfo(AssertTest):
         captured = capsys.readouterr()
         self.assertTrue(captured.out.count("Bus Information") == 1)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_info_software_cann_version(self, capsys, mocker):
         """
         @描述: 使用-r参数, 执行info功能
@@ -198,6 +197,7 @@ class TestInfo(AssertTest):
         @预期结果: 获取打屏关键词
         """
         mocker.patch("info.asys_info.run_command", return_value="7.6.T7.0.B052")
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=0)
         ParamDict().set_env_type("EP")
         AsysInfo().get_software_info()
         captured = capsys.readouterr()
@@ -212,14 +212,19 @@ class TestInfo(AssertTest):
  | firmware               | 7.6.T7.0.B052      | 
  | driver                 | 7.6.T7.0.B052      | 
  | runtime                | 7.6.T7.0.B052      | 
- | compiler               | 7.6.T7.0.B052      | 
- | fwkplugin              | 7.6.T7.0.B052      | 
- | opp                    | 7.6.T7.0.B052      | 
- | toolkit                | 7.6.T7.0.B052      | 
+ | ge-compiler            | 7.6.T7.0.B052      | 
+ | bisheng-compiler       | 7.6.T7.0.B052      | 
+ | oam_tools              | 7.6.T7.0.B052      | 
+ | dvpp                   | 7.6.T7.0.B052      | 
  | aoe                    | 7.6.T7.0.B052      | 
  | hccl                   | 7.6.T7.0.B052      | 
  | ncs                    | 7.6.T7.0.B052      | 
- | opp_kernel             | 7.6.T7.0.B052      | 
+ | opbase                 | 7.6.T7.0.B052      | 
+ | ops_cv                 | 7.6.T7.0.B052      | 
+ | ops_legacy             | 7.6.T7.0.B052      | 
+ | ops_math               | 7.6.T7.0.B052      | 
+ | ops_nn                 | 7.6.T7.0.B052      | 
+ | ops_transformer        | 7.6.T7.0.B052      | 
  +------------------------+--------------------+ 
 """
         self.assertTrue(except_msg == captured.out)

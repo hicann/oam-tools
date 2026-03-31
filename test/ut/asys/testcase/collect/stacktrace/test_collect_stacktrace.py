@@ -87,11 +87,10 @@ class TestCollectStackAtrace(AssertTest):
         ret = obj.send_signal_to_pid(True, 12345)
         self.assertTrue(ret is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_collect_stacktrace_parse_bin_attr_error(self, caplog):
         obj = AscendTraceDll()
         obj.parse_stackcore_bin_to_txt("./test.bin")
-        self.assertTrue("Parse stackcore bin file failed, error msg: 'RetCode' object has no attribute 'AtraceStackcoreParse'." in caplog.text)
+        self.assertTrue("Parse stackcore bin file failed, check trace logs in the plog." in caplog.text)
 
     def test_collect_stacktrace_parse_bin_error(self, mocker):
         mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceError())

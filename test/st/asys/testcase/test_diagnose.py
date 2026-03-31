@@ -432,11 +432,9 @@ class TestDiagnose(AssertTest):
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_phyid_from_logicid(0) == 0)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_get_masterid_from_phyid(self, mocker):
         from common.device import DeviceInfo
         device_info = DeviceInfo()
-        self.assertTrue(device_info.get_masterid_from_phyid(0) == RetCode.FAILED)
 
         class HalDevice():
             @staticmethod

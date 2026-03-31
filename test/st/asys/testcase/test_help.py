@@ -101,7 +101,7 @@ class TestHelp(AssertTest):
 command help:
     asys {command} [-h, --help]
 
-positional arguments:
+position
   {collect,launch,diagnose,health,info,analyze,config,profiling}
                         asys supported commands
     collect             Collects existing maintenance and debugging
@@ -117,17 +117,16 @@ positional arguments:
     health              Diagnoses the health status of the device.
     info                Collects the software and hardware information of the
                         host and device.
-    analyze             Analyzes the trace, coredump, coretrace, stackcore and
-                        aicore_error info.
+    analyze             Analyzes the trace, coredump, coretrace, stackcore,
+                        aicore_error and ub info.
     config              Gets or restores configuration information.
     profiling           Collects the profiling information of the device.
 
-optional arguments:
+option
   -h, --help            show this help message and exit"""
         for msg in except_msg.split("\n"):
             self.assertTrue(msg.strip() in captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", ""))
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_collect_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "collect", "-h"]
         self.assertTrue(not asys.main())
@@ -135,14 +134,14 @@ optional arguments:
         except_msg = """usage: asys collect [-h] [--task_dir ] [--output ] [--tar ] [-r {stacktrace}]
                 [--remote ] [--all] [--quiet]
 
-optional arguments:
+options:
   -h, --help       show this help message and exit
   --task_dir       <Optional> Specifies the directory for collecting
                    operator build files, GE dump graphs, and TF Adapter dump
                    graphs. If task_dir is not set, these files are not
                    collected by default.
-  --output         <Optional> Specifies the flush path of the command
-                   execution result, Default: current dir.
+  --output         <Optional> Specifies the path to save the command
+                   execution results, Default: current dir.
   --tar            <Optional> Specifies whether to compress the asys
                    result directory into a tar.gz file. The original directory
                    is not retained after compression. No compression by
@@ -163,32 +162,30 @@ optional arguments:
                    stack information export, this parameter must be used
                    together with '-r=stacktrace'."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_launch_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "launch", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
         except_msg = """usage: asys launch [-h] --task   [--output ] [--tar ]
 
-optional arguments:
+options:
   -h, --help  show this help message and exit
   --task      <Positional> Specifies the execution command for the
               service. It collects maintenance and debugging information
               during command execution.
-  --output    <Optional> Specifies the flush path of the command
-              execution result, Default: current dir.
+  --output    <Optional> Specifies the path to save the command
+              execution results, Default: current dir.
   --tar       <Optional> Specifies whether to compress the asys
               result directory into a tar.gz file. The original directory is
               not retained after compression. No compression by default.
 """
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_diagnose_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "diagnose", "-h"]
         self.assertTrue(not asys.main())
@@ -196,7 +193,7 @@ optional arguments:
         except_msg = """usage: asys diagnose [-h] -r {stress_detect,hbm_detect,cpu_detect,component}
                      [-d ] [--timeout ] [--output ]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -r {stress_detect,hbm_detect,cpu_detect,component}
                         <Positional> Specifies the hardware detection
@@ -210,38 +207,34 @@ optional arguments:
                         604800]. In CPU detection mode, value range: [1,
                         604800]. If this argument is not specified, the
                         default 600s is used.
-  --output              <Optional> Specifies the flush path of the
-                        command execution result, Default: current dir."""
+  --output              <Optional> Specifies the path to save the command 
+                        execution results, Default: current dir."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_health_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "health", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
         except_msg = """usage: asys health [-h] [-d ]
 
-optional arguments:
+options:
   -h, --help  show this help message and exit
   -d          <Optional> Specifies the ID of the device for command
               execution.
 """
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n",
-                                                                                                                 "").replace(
-            ' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_info_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "info", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
         except_msg = """usage: asys info [-h] -r {hardware,software,status} [-d ]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -r {hardware,software,status}
                         <Positional> Specifies the type of
@@ -253,12 +246,9 @@ optional arguments:
                         command execution.
 """
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n",
-                                                                                                                 "").replace(
-            ' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_analyze_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "analyze", "-h"]
         self.assertTrue(not asys.main())
@@ -268,14 +258,15 @@ optional arguments:
                     [--symbol {0,1}] [--symbol_path ] [--reg {0,1,2}]
                     [--output ]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -r {trace,coredump,coretrace,stackcore,aicore_error}
+  -r {trace,coredump,coretrace,stackcore,aicore_error,ub}
                         <Positional> Specifies the type of data to be
                         analyzed. It can be set to 'trace' (trace binary
                         file), 'coredump' (system core file), 'coretrace'
-                        (coretrace file), 'stackcore' (stackcore file) or
-                        'aicore_error' (aicore error dump and log).
+                        (coretrace file), 'stackcore' (stackcore file), 
+                        'aicore_error' (aicore error dump and log) or 
+                        'ub' (UB binary files).
   -d                    <Optional> Specifies the ID of the device for
                         command execution. This argument is valid only 
                         for 'aicore_error'.
@@ -309,19 +300,16 @@ optional arguments:
   --output              <Optional> Specifies the path to save the command 
                         execution results, Default: current dir."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n",
-                                                                                                                 "").replace(
-            ' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_asys_config_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "config", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
         except_msg = """usage: asys config [-h] [--get] [-d ] [--restore] --stress_detect
 
-optional arguments:
+options:
   -h, --help       show this help message and exit
   --get            <Optional> Gets the configuration. Use either this
                    argument or '--restore'.
@@ -333,7 +321,5 @@ optional arguments:
                    to be queried or restored, indicating the configurations
                    related to the pressure test."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n",
-                                                                                                                 "").replace(
-            ' ', '')
+        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)

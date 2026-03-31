@@ -688,9 +688,6 @@ class TestAnalyze(AssertTest):
         self.assertTrue("./" in symbol_path_arg)
 
     def test_asys_analyze_coredump_dev_massage(self, mocker):
-        """
-        DTS2024061203723
-        """
         coredump_file = os.path.join(st_root_path, "data/coredump/stackcore_tracer_atrace_test_40945_1716517732910.txt")
         sys.argv = [CONF_SRC_PATH, "analyze", "-r=coredump", "--exe_file=python3", "--core_file=%s" % coredump_file]
         ParamDict().set_env_type("EP")

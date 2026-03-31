@@ -248,14 +248,14 @@ class TestAsysAnalyze(AssertTest):
         self.assertTrue(True)
         parse = ParseStackCore(os.path.join(ut_root_path))
         mocker.patch("subprocess.check_output", return_value=" main\n120 ".encode())
-        self.assertTrue(not parse.parse_line(0, "#0 0x7ffff7a17926 0x7ffff79d8000 /home/h30044213/libatrace_test.so", [0]))
+        self.assertTrue(not parse.parse_line(0, "#0 0x7ffff7a17926 0x7ffff79d8000 /home/test/libatrace_test.so", [0]))
 
     def test_asys_analyze_parse_line_symbol_path(self, mocker):
         self.assertTrue(True)
         parse = ParseStackCore(os.path.join(ut_root_path))
         parse.symbol_path = "./"
         mocker.patch("subprocess.check_output", return_value=" main\n120 ".encode())
-        self.assertTrue(not parse.parse_line(0, "#0 0x7ffff7a17926 0x7ffff79d8000 /home/h30044213/libatrace_test.so", [0]))
+        self.assertTrue(not parse.parse_line(0, "#0 0x7ffff7a17926 0x7ffff79d8000 /home/test/libatrace_test.so", [0]))
 
     def test_asys_analyze_get_source_location_with_error(self, mocker):
         parse = ParseStackCore("", os.path.join(ut_root_path, "data/coredump/stackcore_tracer_atrace_test_40945_1716517732910.txt"))
@@ -283,7 +283,7 @@ class TestAsysAnalyze(AssertTest):
         with open(stackcore_file, "r") as f:
             file_lines = f.readlines()
         parse.set_maps_addr_binary_path(file_lines)
-        self.assertTrue(parse.maps_addr_binary_path[94218685685760] == '/home/gwb/stackcore_unwind/atrace_test')
+        self.assertTrue(parse.maps_addr_binary_path[94218685685760] == '/home/test/stackcore_unwind/atrace_test')
         self.assertTrue(parse.maps_addr_binary_path[139658125152256] == '/usr/lib/x86_64-linux-gnu/libnss_files-2.31.so')
         self.assertTrue(parse.maps_addr_binary_path[139658125234176] == '/usr/lib/x86_64-linux-gnu/librt-2.31.so')
         self.assertTrue(parse.maps_addr_binary_path[139658134937600] == '/usr/lib/x86_64-linux-gnu/libc-2.31.so')

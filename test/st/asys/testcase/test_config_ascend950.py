@@ -51,12 +51,12 @@ class TestAsysConfig(AssertTest):
         ParamDict.clear()
         g_device_map.clear()
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
-    @pytest.mark.parametrize(["chip_type"], [("Ascend 910_9591 V1",)])
+    @pytest.mark.parametrize(["chip_type"], [("Ascend 950 V1",)])
     def test_asys_config_supported_chip(self, mocker, chip_type):
         sys.argv = [CONF_SRC_PATH, "config", "-d=1", "--restore", "--stress_detect"]
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysConfig0())
         mocker.patch("os.getuid", return_value=0)
+        mocker.patch("config_cmd.asys_config.run_linux_cmd", return_value=True)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_type)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         ParamDict().set_env_type("EP")

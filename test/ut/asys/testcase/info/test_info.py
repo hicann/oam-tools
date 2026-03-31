@@ -188,7 +188,6 @@ class TestInfo(AssertTest):
         captured = capsys.readouterr()
         self.assertTrue(captured.out.count("Bus Information") == 1)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_info_software_cann_version(self, capsys, mocker):
         """
         @描述: 使用-r参数, 执行info功能
@@ -198,6 +197,7 @@ class TestInfo(AssertTest):
         @预期结果: 获取打屏关键词
         """
         mocker.patch("info.asys_info.run_command", return_value="7.6.T7.0.B052")
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=0)
         ParamDict().set_env_type("EP")
         AsysInfo().get_software_info()
         captured = capsys.readouterr()
