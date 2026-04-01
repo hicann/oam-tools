@@ -158,14 +158,14 @@ class Interval(NamedTuple):
         elif input_str[0] == '(':
             low_type = 1
         else:
-            assert False, 'should not go here.'
+            raise ValueError('should not go here.')
 
         if input_str[-1] == ']':
             high_type = 0
         elif input_str[-1] == ')':
             high_type = 1
         else:
-            assert False, 'should not go here.'
+            raise ValueError('should not go here.')
 
         input_str = input_str[1:-1]
         input_list = input_str.split(',')

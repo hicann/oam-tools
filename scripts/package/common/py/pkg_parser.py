@@ -1098,7 +1098,7 @@ def parse_xml_config(filepath: str,
         xml_root = tree.getroot()
     except ET.ParseError as ex:
         CommLog.cilog_error("xml parse %s failed: %s!", filepath, ex)
-        sys.exit(FAIL)
+        raise SyntaxError(f"xml parse {filepath} failed: {ex}") from ex
 
     default_config = xml_root.attrib.copy()
 
