@@ -201,7 +201,7 @@ INT32 mmGetDiskFreeSpace(const char* path, mmDiskSize *diskSize)
         return EN_INVALID_PARAM;
     }
     struct statvfs buf;// 把文件系统信息读入 struct statvfs buf 中
-    (void)memset(&buf,0,sizeof(buf)); /* unsafe_function_ignore: memset */
+    (void)memset_s(&buf, sizeof(buf), 0, sizeof(buf));
 
     INT32 ret = statvfs(path,&buf);
     if (ret == 0) {

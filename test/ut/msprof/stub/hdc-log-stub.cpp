@@ -20,6 +20,7 @@
 #include <syslog.h>
 #include <map>
 #include <string>
+#include "securec.h"
 
 const std::map<int, std::string> LOG_LEVEL_INFO = {
     {DLOG_DEBUG, "DEBUG"},
@@ -34,7 +35,11 @@ void DlogErrorInner(int moduleId, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogErrorInner.");
+        return;
+    }
     printf("[ERROR]%s\n", buffer);
     va_end(args);
 }
@@ -45,7 +50,11 @@ void DlogInfoInner(int moduleId, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogInfoInner.");
+        return;
+    }
     printf("[INFO]%s\n", buffer);
     va_end(args);
 }
@@ -56,7 +65,11 @@ void DlogWarnInner(int moduleId, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogWarnInner.");
+        return;
+    }
     printf("[WARN]%s\n", buffer);
     va_end(args);
 }
@@ -67,7 +80,11 @@ void DlogEventInner(int moduleId, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogEventInner.");
+        return;
+    }
     printf("[EVENT]%s\n", buffer);
     va_end(args);
 }
@@ -78,7 +95,11 @@ void DlogDebugInner(int moduleId, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogDebugInner.");
+        return;
+    }
     printf("[DEBUG]%s\n", buffer);
     va_end(args);
 }
@@ -94,7 +115,11 @@ void DlogRecord(int module_id, int level, const char *fmt, ...){
     va_list args;
     char buffer[4096] = {0};
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), fmt, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for DlogRecord.");
+        return;
+    }
     printf("[%s][pid:%d]%s", levelStr.c_str(), getpid(), buffer);
     va_end(args);
 }
@@ -109,7 +134,11 @@ void ide_log(int priority, const char *format, ...) {
     char buffer[4096] = {0};
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
+    if (ret == -1) {
+        printf("[ERROR]Failed to execute vsnprintf_s for ide_log.");
+        return;
+    }
     printf("[IDE]%s\n", buffer);
     va_end(args);
 }
