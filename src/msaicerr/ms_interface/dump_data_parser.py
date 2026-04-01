@@ -173,7 +173,8 @@ class DumpDataParser:
         }
         if not os.path.exists(self.info.json_file):
             return json_dtypes
-        json_data = json.load(open(self.info.json_file))
+        with open(self.info.json_file) as json_file:
+            json_data = json.load(json_file)
         inputs_data = json_data.get('supportInfo', {}).get('inputs', [])
         outputs_data = json_data.get('supportInfo', {}).get('outputs', [])
         if inputs_data:
