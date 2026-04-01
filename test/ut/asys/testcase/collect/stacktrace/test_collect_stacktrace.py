@@ -239,7 +239,7 @@ class TestCollectStackAtrace(AssertTest):
         ParamDict().set_args(args)
         ret = AsysStackTrace().run()
         self.assertTrue(not ret)
-        self.assertTrue("Generating the stackcore bin file timeout. For details, see the related description in the document." in caplog.text)
+        self.assertTrue("get the stackcore bin file in path" in caplog.text and "timeout" in caplog.text)
 
     def test_collect_stacktrace_asys_parse_error(self, mocker, caplog):
         mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTrace())

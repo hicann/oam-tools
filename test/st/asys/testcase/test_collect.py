@@ -630,7 +630,7 @@ class TestCollect(AssertTest):
         sys.argv = [CONF_SRC_PATH, "collect", "-r=stacktrace", "--remote=12345", "--all"]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
-        self.assertTrue("Generating the stackcore bin file timeout. For details, see the related description in the document." in caplog.text)
+        self.assertTrue("get the stackcore bin file in path" in caplog.text and "timeout" in caplog.text)
 
     def test_collect_stacktrace_parse_attr_error(self, mocker, caplog):
         class AsysTraceError:
