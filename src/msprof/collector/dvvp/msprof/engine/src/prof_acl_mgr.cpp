@@ -1464,7 +1464,7 @@ int32_t ProfAclMgr::MsprofAclJsonParamConstruct(NanoJson::Json &acljsonCfg)
         params_->taskBlockShink = MSVP_PROF_OFF;
     } else {
         params_->taskBlock = GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF);
-        params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) ? MSVP_PROF_ON : MSVP_PROF_OFF;
+        params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
     }
     params_->taskTsfw = GetJsonStringParam(acljsonCfg, "task_tsfw", MSVP_PROF_OFF);
     params_->aicpuTrace = GetJsonStringParam(acljsonCfg, "aicpu", MSVP_PROF_OFF);
@@ -1610,7 +1610,7 @@ void ProfAclMgr::MsprofInitGeOptionsParamAdaper(SHARED_PTR_ALIA<analysis::dvvp::
         params->taskBlockShink = MSVP_PROF_OFF;
     } else {
         params->taskBlock = GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF);
-        params->taskBlockShink = params->taskBlock.compare(MSVP_PROF_ON) ? MSVP_PROF_ON : MSVP_PROF_OFF;
+        params->taskBlockShink = params->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
     }
     params->taskTsfw = GetJsonStringParam(geoptionCfg, "task_tsfw", MSVP_PROF_OFF);
     params->aicpuTrace = GetJsonStringParam(geoptionCfg, "aicpu", MSVP_PROF_OFF);

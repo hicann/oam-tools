@@ -118,6 +118,7 @@ set(profimplCpp
     profimpl/platform/mini_platform.cpp
     profimpl/platform/mdc_platform.cpp
     profimpl/platform/tiny_v1_platform.cpp
+    profimpl/platform/mdc_v2_platform.cpp
     task_handle/src/device.cpp
     task_handle/src/info_json.cpp
     task_handle/src/prof_manager.cpp

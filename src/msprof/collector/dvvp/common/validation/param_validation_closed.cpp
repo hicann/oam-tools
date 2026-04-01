@@ -65,7 +65,8 @@ bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &e
         maxEvent = LITE_MAX_PMU_EVENT;
     }
     if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-        Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4) {
+        Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
+        Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
         minEvent = 0;
         maxEvent = ACC_MAX_PMU_EVENT;
     }
@@ -114,20 +115,22 @@ bool ParamValidation::CheckTaskBlockValid(const std::string &switchName, const s
     FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
     if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ALL) != 0 && 
         config.compare(MSVP_PROF_ON) != 0) {
-        std::string task_block_ranges;
+        std::string taskBlockRanges;
         if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4) {
-            task_block_ranges = "'all', 'on', 'off'.";
+            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
+            Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
+            taskBlockRanges = "'all', 'on', 'off'.";
         } else {
-            task_block_ranges = "'all', 'off'.";
+            taskBlockRanges = "'all', 'off'.";
         }
         MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
-            switchName.c_str(), config.c_str(), task_block_ranges.c_str());
+            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
         return false;
     }
     if (config.compare(MSVP_PROF_ON) == 0 && 
         Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4) {
+        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
+        Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
         MSPROF_LOGE("The on option is not supported on this platform, please use all to collect block data.");
         return false;
     }  

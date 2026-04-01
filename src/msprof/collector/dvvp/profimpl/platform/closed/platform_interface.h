@@ -60,6 +60,7 @@ enum PlatformTypeEnum {
     CHIP_MDC_LITE    = 12,
     CHIP_CLOUD_V3    = 15,
     CHIP_CLOUD_V4    = 16,
+    CHIP_MDC_V2      = 17,
     CHIP_END
 };
 
@@ -155,6 +156,7 @@ enum PlatformFeature {
     PLATFORM_SYS_MEM_SERVICEFLOW,
     PLATFORM_MC2,
     PLATFORM_AICPU_HCCL,
+    PLATFORM_ACLAPI_SETDEVICE_ENABLE,
     // Feature analysis
     PLATFORM_EXPORT_TYPE,
     // MAX

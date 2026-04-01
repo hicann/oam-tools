@@ -152,6 +152,7 @@ set(msprofbinCpp
     ../../profimpl/platform/mdc_mini_v3_platform.cpp
     ../../profimpl/platform/mdc_platform.cpp
     ../../profimpl/platform/mini_v3_platform.cpp
+    ../../profimpl/platform/mdc_v2_platform.cpp
     ../../message/codec.cpp
     ../../transport/file_transport.cpp
     ../../transport/pipe_transport.cpp

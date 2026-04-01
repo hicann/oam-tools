@@ -81,6 +81,7 @@ DavidPlatform::DavidPlatform()
         PLATFORM_AICSCALE_ACP,
         PLATFORM_STARS_QOS,
         PLATFORM_SYS_MEM_SERVICEFLOW,
+        PLATFORM_ACLAPI_SETDEVICE_ENABLE
     };
     InsertSysFeature();
 }
