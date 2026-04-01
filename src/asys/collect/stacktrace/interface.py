@@ -60,6 +60,7 @@ class AscendTraceDll:
         """
         use the stackcore function to parse the bin file.
         """
+        log_info("start parse bin file")
         try:
             ret_code = self.trace_dll.AtraceStackcoreParse(bin_file_path.encode(), ctypes.c_int32(len(bin_file_path)))
         except Exception as e:

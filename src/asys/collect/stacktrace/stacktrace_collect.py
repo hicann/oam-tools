@@ -21,13 +21,14 @@ import re
 import time
 
 from common import get_cann_log_path
-from common import log_error, popen_run_cmd, log_warning
+from common import log_error, popen_run_cmd, log_warning, log_info
 from common.const import ATRACE_LOG_NAME, RetCode
 from params import ParamDict
 from collect.stacktrace import AscendTraceDll
+from drv import EnvVarName
 
 EVERY_ROUND_TIME = 0.5
-CHECK_BIN_TIMEOUT = 60
+CHECK_BIN_TIMEOUT = 10
 
 
 class AsysStackTrace(AscendTraceDll):
@@ -40,10 +41,48 @@ class AsysStackTrace(AscendTraceDll):
         self.remote_id = ParamDict().get_arg("remote")
         self.is_all_task = ParamDict().get_arg("all")
         self.quiet = ParamDict().get_arg("quiet")
+        self.trace_work_path = ""
+
+    def _get_target_work_path(self):
+        target_env_file = os.path.join("/proc", str(self.remote_id), "environ")
+        try:
+            with open(target_env_file, "r") as target_env:
+                env_content = target_env.read()
+            env_list = env_content.split('\0')
+            env_name = "ASCEND_WORK_PATH"
+            for env in env_list:
+                if not env:
+                    continue
+                
+                env_info = env.split("=", 1)
+                if len(env_info) >= 2 and env_info[0] == env_name:
+                    return env_info[1]
+            return None
+        except PermissionError:
+            log_warning(f"permission denied: cannot read env of process {self.remote_id}.")
+            return None
+        except FileNotFoundError:
+            log_warning(f"process {self.remote_id} does not exist: {target_env_file}.")
+            return None
+        except Exception as e:
+            log_warning(f"failed to get env for process {self.remote_id}：{str(e)}.")
+            return None
+
+    def _set_trace_work_path(self):
+        asys_env_var = EnvVarName()
+        target_work_path = self._get_target_work_path()
+        if target_work_path:
+            self.trace_work_path = os.path.join(target_work_path, ATRACE_LOG_NAME)
+            log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
+                    f"get from environment variables ASCEND_WORK_PATH of process {self.remote_id}.")
+        else:
+            self.trace_work_path = os.path.join(asys_env_var.home_path, "ascend", ATRACE_LOG_NAME)
+            log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
+                    f"get from default path.")
+        return
 
     def _get_bin_file_path(self, all_exists_bin):
-        trace_path, _ = get_cann_log_path(ATRACE_LOG_NAME)
-        for path, _, files in os.walk(os.path.abspath(trace_path)):
+        for path, _, files in os.walk(os.path.abspath(self.trace_work_path)):
             for file in files:
                 if not (file.startswith(f"stackcore_tracer_35_{self.remote_id}_") and file.endswith(".bin")):
                     continue
@@ -53,8 +92,7 @@ class AsysStackTrace(AscendTraceDll):
                 return bin_file_path
 
     def _get_exists_bin_file_num(self):
-        trace_path, _ = get_cann_log_path(ATRACE_LOG_NAME)
-        cmd = f"ls -lt {os.path.abspath(trace_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
+        cmd = f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
               f"stackcore_tracer_35_{self.remote_id}_*.bin | wc -l"
         ret = popen_run_cmd(cmd).replace("\n", "")
         if not ret.isdigit():
@@ -62,8 +100,7 @@ class AsysStackTrace(AscendTraceDll):
         return int(ret)
 
     def _get_last_bin_file_name(self):
-        trace_path, _ = get_cann_log_path(ATRACE_LOG_NAME)
-        cmd = f"ls -lt {os.path.abspath(trace_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
+        cmd = f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
               f"stackcore_tracer_35_{self.remote_id}_*.bin | head -n 1 | awk \'{{print $9}}\'"
         return popen_run_cmd(cmd).replace("\n", "")
 
@@ -77,14 +114,14 @@ class AsysStackTrace(AscendTraceDll):
                     continue
                 if current_bin_file_num > exists_bin_file_num:
                     bin_file_name = self._get_last_bin_file_name()
+                    log_info("bin file generated, awaiting stack trace completion.")
                     continue
 
             if popen_run_cmd(f"lsof {bin_file_name}"):
                 time.sleep(EVERY_ROUND_TIME)
                 continue
             return bin_file_name
-        log_error("Generating the stackcore bin file timeout. "
-                  "For details, see the related description in the document.")
+        log_error(f"get the stackcore bin file in path {os.path.abspath(self.trace_work_path)} timeout.")
         return None
 
     @staticmethod
@@ -193,6 +230,8 @@ class AsysStackTrace(AscendTraceDll):
             log_warning("Are you sure that signal reception is not disabled? (Y/N)")
             if input().upper() != "Y":
                 return True
+
+        self._set_trace_work_path()
 
         if not self._check_collect_stacktrace_parallel():
             log_error('Collect stacktrace not support Parallelism.')
