@@ -1144,9 +1144,18 @@ bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, co
 bool ParamValidation::CheckDynaPidIsValid(const int32_t pid) const
 {
     std::string dynaSocketFilePath = Utils::IdeGetHomedir() + "/dynamic_profiling_socket_" + std::to_string(pid);
-    FUNRET_CHECK_EXPR_ACTION(!Utils::IsFileExist(dynaSocketFilePath), return false,
-                            "dynamic socket file for pid %d does not exist", pid);
-    return true;
+    std::string pidFilePath = "/proc/" + std::to_string(pid) + "/status";
+    if (!Utils::IsFileExist(dynaSocketFilePath)) {
+        MSPROF_LOGW("dynamic socket file for pid %d not exist", pid);
+        return false;
+    } else {
+        if (!Utils::IsFileExist(pidFilePath)) {
+            MSPROF_LOGE("dynamic socket file for pid %d not exist, but pid does not exist", pid);
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 }
 }

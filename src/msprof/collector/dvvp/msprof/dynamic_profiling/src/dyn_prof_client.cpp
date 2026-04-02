@@ -127,7 +127,7 @@ void DynProfClient::CheckServerPidsIfValid()
             ++iter;
             continue;
         }
-        CmdLog::CmdLogNoLevel("server for pid %d does not exist, Perhaps this process has already exited", pid);
+        CmdLog::CmdLogNoLevel("server process %d did not create socket, or process has already exited", pid);
         LocalSocket::Close(cliSockFd);
         iter = cliSockFds_.erase(iter);
         cliSockFdMap_.erase(cliSockFd);
