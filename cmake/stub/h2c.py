@@ -27,6 +27,9 @@ import os
 import sys
 import argparse
 import re
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 PATTERN_FUNCTION = re.compile(r'.+\w+\([^;]*\);')
 PATTERN_FUNCTION_WEAK = re.compile(r'.+\w+\([^;]*\) ASCEND_HAL_WEAK;')
@@ -127,7 +130,7 @@ def generate_stub_file(input_header):
     返  回 值 : 解析后的参数值
     """
     content = generate_function(input_header)
-    print("content has been generate")
+    logging.info("content has been generate")
     return content
 
 
@@ -144,7 +147,7 @@ def generate_function(header_files):
         include_str = '#include "{}"\n'.format(os.path.basename(header_file))
 
         content.append(include_str)
-        print("include concent build success")
+        logging.info("include concent build success")
         content.append('\n')
         # generate implement
         if header_file.find("git") >= 0:
@@ -154,7 +157,7 @@ def generate_function(header_files):
         content.append("// stub for " + os.path.basename(header_file) + "\n")
         functions = collect_functions(header_file)
 
-        print("inc file:{}, functions numbers:{}".format(header_file, len(functions)))
+        logging.info("inc file:{}, functions numbers:{}".format(header_file, len(functions)))
         for func in functions:
             if PATTERN_FUNCTION.match(func):
                 content.append(implement_function(func) + "\n")
@@ -165,7 +168,7 @@ def generate_function(header_files):
                 content.append(func)
                 content.append("\n")
 
-    print("implement concent build success")
+    logging.info("implement concent build success")
     return content
 
 def main(input_header, output_cfile):
@@ -176,7 +179,7 @@ def main(input_header, output_cfile):
     """
     content = generate_stub_file(input_header)
     if content:
-        print("stub content have been generated")
+        logging.info("stub content have been generated")
         if not output_cfile:
             output_cfile = os.path.basename(input_header).replace(".h", ".c")
         with open(output_cfile, mode='w') as output_cnt:
