@@ -298,7 +298,7 @@ void HcclTest::print_help()
            "[-f,--stepfactor <increment factor>] \n\t"
            "[-n,--iters <iteration count>] \n\t"
            "[-o,--op <sum/prod/min/max>] \n\t"
-           "[-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0/mxfp8>] \n\t"
+           "[-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] \n\t"
            "[-r,--root <root>] \n\t"
            "[-w,--warmup_iters <warmup iteration count>] \n\t"
            "[-c,--check <result verification> 0:disabled 1:enabled.] \n\t"
