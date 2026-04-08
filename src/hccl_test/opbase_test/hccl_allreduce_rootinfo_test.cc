@@ -98,7 +98,7 @@ int HcclOpBaseAllreduceTest::check_buf_result()
             break;
         default:
             ret++;
-            printf("no match datatype\n");
+            printf_s("no match datatype\n");
             break;
     }
     if(ret != 0)

@@ -124,7 +124,7 @@ void HcclOpBaseAlltoallvcTest::cal_execution_time(float time)
 int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
 {
     if (op_flag != 0 && rank_id == root_rank) {
-        printf("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
+        printf_s("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
     }
 
     is_initdata_overflow();

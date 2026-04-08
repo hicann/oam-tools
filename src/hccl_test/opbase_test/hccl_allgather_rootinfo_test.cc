@@ -108,7 +108,7 @@ int HcclOpBaseAllgatherTest::check_buf_result()
             break;
         default:
             ret++;
-            printf("no match datatype\n");
+            printf_s("no match datatype\n");
             break;
     }
     if(ret != 0)
@@ -141,7 +141,7 @@ void HcclOpBaseAllgatherTest::init_send_recv_size_by_data(size_t &send_bytes, si
 int HcclOpBaseAllgatherTest::hccl_op_base_test()  // 主函数
 {
     if (op_flag != 0 && rank_id == root_rank) {
-        printf("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
+        printf_s("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
     }
 
     is_initdata_overflow();

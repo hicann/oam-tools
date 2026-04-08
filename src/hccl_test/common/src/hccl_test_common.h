@@ -31,6 +31,7 @@
 #include <chrono>
 #include "acl/acl.h"
 #include "acl/acl_prof.h"
+#include "securec.h"
 
 using namespace std::chrono;
 
@@ -69,9 +70,9 @@ constexpr int NSLBDP_PORT_OFFSET = 32;
     do {                                                                                                    \
         aclError ret = cmd;                                                                                 \
         if (ret != ACL_SUCCESS) {                                                                           \
-            printf("acl interface return err %s:%d, retcode: %d.\n", __FILE__, __LINE__, ret);              \
+            printf_s("acl interface return err %s:%d, retcode: %d.\n", __FILE__, __LINE__, ret);              \
             if (ret == ACL_ERROR_RT_MEMORY_ALLOCATION) {                                                    \
-                printf("memory allocation error, check whether the current memory space is sufficient.\n"); \
+                printf_s("memory allocation error, check whether the current memory space is sufficient.\n"); \
             }                                                                                               \
             return ret;                                                                                     \
         }                                                                                                   \
@@ -81,7 +82,7 @@ constexpr int NSLBDP_PORT_OFFSET = 32;
     do {                                                                                                  \
         HcclResult ret = cmd;                                                                             \
         if (ret != HCCL_SUCCESS) {                                                                        \
-            printf("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
+            printf_s("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
             return ret;                                                                                   \
         }                                                                                                 \
     } while (0)
@@ -90,7 +91,7 @@ constexpr int NSLBDP_PORT_OFFSET = 32;
     do {                                                                                                  \
         HcclResult ret = cmd;                                                                             \
         if (ret != HCCL_SUCCESS && ret != HCCL_E_PARA) {                                                  \
-            printf("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
+            printf_s("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
             return ret;                                                                                   \
         }                                                                                                 \
     } while (0)
@@ -104,7 +105,7 @@ constexpr int NSLBDP_PORT_OFFSET = 32;
         std::time_t now_time = std::chrono::system_clock::to_time_t(now);           \
         std::tm* local_time = std::localtime(&now_time);                            \
         std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", local_time);     \
-        printf("[%s:%d] [%s]: " format, __FILE__, __LINE__, buffer, __VA_ARGS__);   \
+        printf_s("[%s:%d] [%s]: " format, __FILE__, __LINE__, buffer, __VA_ARGS__);   \
     } while (0)
 
 #else
