@@ -688,8 +688,7 @@ std::map<int,HostBufInitFunc> functionMap = {
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_HIF8, host_buf_init_int8),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP8E4M3, host_buf_init_int8),
     std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP8E5M2, host_buf_init_int8),
-    std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP8E8M0, host_buf_init_int8),
-    std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_MXFP8, host_buf_init_int8)
+    std::pair<int,HostBufInitFunc>(HCCL_DATA_TYPE_FP8E8M0, host_buf_init_int8)
 };
 
 std::map<int, ReduceCheckBufInitFunc> functionReduceMap = {
@@ -720,5 +719,4 @@ std::map<int, AllToAllCheckResult> functionAllToAllMap = {
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_HIF8, alltoall_check_result_uint8),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E4M3, alltoall_check_result_uint8),
     std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E5M2, alltoall_check_result_uint8),
-    std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E8M0, alltoall_check_result_uint8),
-    std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_MXFP8, alltoall_check_result_uint8)};
+    std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E8M0, alltoall_check_result_uint8)};

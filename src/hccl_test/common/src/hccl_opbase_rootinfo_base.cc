@@ -79,7 +79,6 @@ void HcclOpBaseTest::init_data_count()
         case HCCL_DATA_TYPE_FP8E4M3:
         case HCCL_DATA_TYPE_FP8E5M2:
         case HCCL_DATA_TYPE_FP8E8M0:
-        case HCCL_DATA_TYPE_MXFP8:
             data->count = (data->data_size + sizeof(unsigned char) - 1)/sizeof(unsigned char);
             data->type_size = sizeof(unsigned char);
             break;
@@ -122,7 +121,7 @@ void HcclOpBaseTest::no_verification()
 void HcclOpBaseTest::is_initdata_overflow()
 {
     if((dtype == HCCL_DATA_TYPE_INT8 || dtype == HCCL_DATA_TYPE_UINT8 || dtype == HCCL_DATA_TYPE_HIF8
-        || dtype == HCCL_DATA_TYPE_FP8E4M3 || dtype == HCCL_DATA_TYPE_FP8E5M2 || dtype == HCCL_DATA_TYPE_FP8E8M0 || dtype == HCCL_DATA_TYPE_MXFP8)
+        || dtype == HCCL_DATA_TYPE_FP8E4M3 || dtype == HCCL_DATA_TYPE_FP8E5M2 || dtype == HCCL_DATA_TYPE_FP8E8M0)
         && rank_size >= RANKSIZE_TH_FP32) {
         check = 0; //不进行校验
         if (rank_id == root_rank && print_dump) {
