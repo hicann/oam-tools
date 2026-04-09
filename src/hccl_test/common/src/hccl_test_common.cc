@@ -155,14 +155,14 @@ int is_all_digit(const char *strNum)
 {
     // 参数有效性检查
     if (strNum == NULL) {
-        printf_s("Error: ptr [%s] is NULL\n", strNum);
+        printf("Error: ptr [%s] is NULL\n", strNum);
         return -1;
     }
 
     u32 nLength = sal_str_len(strNum);
     for (u32 index = 0; index < nLength; index++) {
         if (!isdigit(strNum[index])) {
-            printf_s("Error:In judge all digit, Check whether the value of [-i -n -r -w -c -p] is a positive integer.\n");
+            printf("Error:In judge all digit, Check whether the value of [-i -n -r -w -c -p] is a positive integer.\n");
             return -1;
         }
     }
@@ -240,11 +240,11 @@ int check_alloc_memory_size(size_t &alloc_size)
     size_t reservedMem;
     aclError ret = aclrtGetMemInfo(use_ddr_mem(), &freeMem, &totalMem);
     if (ret != ACL_ERROR_NONE) {
-        printf_s("Get ddr memory info failed.");
+        printf("Get ddr memory info failed.");
         return HCCL_E_MEMORY;
     }
     if (alloc_size > freeMem) {
-        printf_s("Alloc memory size is larger than free memory, allocSize: %zu, freeMem: %zu, totalMem: %zu\n",
+        printf("Alloc memory size is larger than free memory, allocSize: %zu, freeMem: %zu, totalMem: %zu\n",
             alloc_size,
             freeMem,
             totalMem);
@@ -288,11 +288,11 @@ struct option HcclTest::longopts[] = {{"op", required_argument, 0, 'o'},
 
 void HcclTest::print_help()
 {
-    printf_s("USAGE: ./test \n\t");
+    printf("USAGE: ./test \n\t");
     if (IsSupport910_95()) {
-        printf_s("[-a --accelerator <default/host_ts/aicpu_ts/aiv/aiv_only/ccu_ms/ccu_sched>] \n\t");
+        printf("[-a --accelerator <default/host_ts/aicpu_ts/aiv/aiv_only/ccu_ms/ccu_sched>] \n\t");
     }
-    printf_s("[-b,--minbytes <min size in bytes>] \n\t"
+    printf("[-b,--minbytes <min size in bytes>] \n\t"
            "[-e,--maxbytes <max size in bytes>] \n\t"
            "[-i,--stepbytes <increment size>] \n\t"
            "[-f,--stepfactor <increment factor>] \n\t"
@@ -314,20 +314,20 @@ void HcclTest::print_help()
 int HcclTest::check_data_count()
 {
     if (data_parsed_begin <= 0 || data_parsed_end <= 0) {
-        printf_s("invalid size specified for [-b,--minbytes] or [-e,--maxbytes]\n");
+        printf("invalid size specified for [-b,--minbytes] or [-e,--maxbytes]\n");
         return -1;
     }
     data->min_bytes = (u64)data_parsed_begin;
     data->max_bytes = (u64)data_parsed_end;
 
     if (stepbytes_flag != 0 && temp_step_bytes < 0) {
-        printf_s("Error: [-i,--stepbytes] must be greater than or equal to 0.\n");
+        printf("Error: [-i,--stepbytes] must be greater than or equal to 0.\n");
         return -1;
     }
 
     u32 defaultStepFactor = 10;
     if (data->max_bytes < data->min_bytes) {
-        printf_s("invalid option: maxbytes < minbytes, Check the [-b,--minbytes] and [-e,--maxbytes] options.\n");
+        printf("invalid option: maxbytes < minbytes, Check the [-b,--minbytes] and [-e,--maxbytes] options.\n");
         return -1;
     } else {
         if (stepbytes_flag != 0) {  // 用户配置了增量步长
@@ -372,12 +372,12 @@ int HcclTest::check_data_count()
     }
 
     if (stepfactor_flag != 0 && data->step_factor <= 1.0) {
-        printf_s("Error: [-f,--stepfactor] Must be greater than 1.0f, Start step mod.\n");
+        printf("Error: [-f,--stepfactor] Must be greater than 1.0f, Start step mod.\n");
         return -1;
     }
 
     if (stepfactor_flag != 0 && stepbytes_flag != 0) {
-        printf_s("Warning: [-f,--stepfactor] and [-i,--stepbytes] are set, [-f,--stepfactor] is enabled by default.\n");
+        printf("Warning: [-f,--stepfactor] and [-i,--stepbytes] are set, [-f,--stepfactor] is enabled by default.\n");
     }
 
     return 0;
@@ -386,24 +386,24 @@ int HcclTest::check_data_count()
 int HcclTest::check_only_device_exec_time()
 {
     if (only_device_exec_time != 1 && only_device_exec_time != 0) {
-        printf_s("Error: [-t,--onlydevicetime] is invalid, onlydevicetime should be 0 or 1\n");
+        printf("Error: [-t,--onlydevicetime] is invalid, onlydevicetime should be 0 or 1\n");
         return -1;
     }
 
     if (only_device_exec_time == 1 && warmup_iters > 100) {
-        printf_s("Error: [-w,--warmup_iters] is invalid, onlydevicetime is 1, but warmup_iters > 100, "
+        printf("Error: [-w,--warmup_iters] is invalid, onlydevicetime is 1, but warmup_iters > 100, "
             "warmup_iters must be less than or equal to 100, now warmup_iters is %d\n", warmup_iters);
         return -1;
     }
 
     if (only_device_exec_time == 1 && iters > 100) {
-        printf_s("Error: [-n,--iters] is invalid, onlydevicetime is 1, but iters > 100, "
+        printf("Error: [-n,--iters] is invalid, onlydevicetime is 1, but iters > 100, "
             "iters must be less than or equal to 100, now iters is %d\n", iters);
         return -1;
     }
 
     if (only_device_exec_time == 1 && accelerator_config == 2) {
-        printf_s("Error: [-a,--accelerator_config] is invalid, onlydevicetime is 1, but accelerator_config is aicpu_ts\n");
+        printf("Error: [-a,--accelerator_config] is invalid, onlydevicetime is 1, but accelerator_config is aicpu_ts\n");
         return -1;
     }
     return 0;
@@ -418,50 +418,50 @@ int HcclTest::check_cmd_line()
     }
 
     if (dtype == -1) {
-        printf_s("Error: [-d,--datatype] is invalid, Use [-h,--help] to check the correct input parameter.\n");
+        printf("Error: [-d,--datatype] is invalid, Use [-h,--help] to check the correct input parameter.\n");
         return -1;
     }
 
     if (op_type == -1) {
-        printf_s("Error: [-o,--op] is invalid, Use [-h,--help] to check the correct input parameter.\n");
+        printf("Error: [-o,--op] is invalid, Use [-h,--help] to check the correct input parameter.\n");
         return -1;
     }
 
     if (accelerator_config == -1) {
-        printf_s("Error: [-a,--accelerator_config] is invalid, Use [-h,--help] to check the correct input parameter.\n");
+        printf("Error: [-a,--accelerator_config] is invalid, Use [-h,--help] to check the correct input parameter.\n");
         return -1;
     }
 
     if (warmup_iters < 0) {
-        printf_s("Error: [-w,--warmup_iters] is invalid, warmup_iters must be greater than or equal to 0.\n");
+        printf("Error: [-w,--warmup_iters] is invalid, warmup_iters must be greater than or equal to 0.\n");
         return -1;
     }
 
     if (iters < 0) {
-        printf_s("Error: [-n,--iters] is invalid, iters must be greater than or equal to 0.\n");
+        printf("Error: [-n,--iters] is invalid, iters must be greater than or equal to 0.\n");
         return -1;
     }
 
     if (root_rank >= rank_size || root_rank < 0)  // 如果指定的root rank大于等于rank_size
     {
-        printf_s("Error: [-r,--root <root>] is invalid, root rank must be greater than or equal to 0 and less than or "
+        printf("Error: [-r,--root <root>] is invalid, root rank must be greater than or equal to 0 and less than or "
                "equal to %d.\n",
             rank_size - 1);
         return -1;
     }
 
     if (check != 1 && check != 0) {
-        printf_s("Error: [-c,--check] is invalid, check should be 0 or 1\n");
+        printf("Error: [-c,--check] is invalid, check should be 0 or 1\n");
         return -1;
     }
 
     if (dev_count == 0) {
-        printf_s("Error: The number of device is 0.Check whether the package is correct.\n");
+        printf("Error: The number of device is 0.Check whether the package is correct.\n");
         return -1;
     }
 
     if (npus < 1 || npus > dev_count) {
-        printf_s("Error: [-p,--npus <npus used for one node>] is invalid, npus must be greater than or equal to 1 and "
+        printf("Error: [-p,--npus <npus used for one node>] is invalid, npus must be greater than or equal to 1 and "
                "less than or equal to %d.\n",
             dev_count);
         return -1;
@@ -472,7 +472,7 @@ int HcclTest::check_cmd_line()
     }
 
     if (enable_zero_copy && enable_symmetric_memory) {
-        printf_s("Error: Zero-copy and symmetric memory cannot be enabled simultaneously.\n");
+        printf("Error: Zero-copy and symmetric memory cannot be enabled simultaneously.\n");
         return -1;
     }
 
@@ -489,13 +489,13 @@ int HcclTest::get_env_resource()
         // 校验：入参为字符
         for (u32 index = 0; index < nLength; index++) {
             if (!isdigit(profiling_env[index])) {
-                printf_s("Check whether HCCL_TEST_PROFILING is 0 or 1.\n");
+                printf("Check whether HCCL_TEST_PROFILING is 0 or 1.\n");
                 return -1;
             }
         }
         // 校验：入参非0非1
         if (profiling_flag != 0 && profiling_flag != 1) {
-            printf_s("Check whether HCCL_TEST_PROFILING is 0 or 1.\n");
+            printf("Check whether HCCL_TEST_PROFILING is 0 or 1.\n");
             return -1;
         }
     }
@@ -508,19 +508,19 @@ int HcclTest::get_env_resource()
         // 校验：入参为字符
         for (u32 index = 0; index < nLength; index++) {
             if (!isdigit(cclBuffSize_env[index])) {
-                printf_s("Check whether HCCL_BUFFSIZE is all digit.\n");
+                printf("Check whether HCCL_BUFFSIZE is all digit.\n");
                 return -1;
             }
         }
 
         // 校验：入参非0
         if (hccl_buffsize == 0) {
-            printf_s("Check whether HCCL_BUFFSIZE is 0 or too big.\n");
+            printf("Check whether HCCL_BUFFSIZE is 0 or too big.\n");
             return -1;
         }
 
         if (only_device_exec_time == 1 && hccl_buffsize <= 100) {
-            printf_s("Warning: -t is 1 but HCCL_BUFFSIZE <= 100MB , -t auto reset to 0!\n");
+            printf("Warning: -t is 1 but HCCL_BUFFSIZE <= 100MB , -t auto reset to 0!\n");
             only_device_exec_time = 0;
         }
     } else {
@@ -554,7 +554,7 @@ int HcclTest::set_env_resource()
         // 重执行开关
         int overwrite = 1; // 强制覆盖已存在的变量
         if(setenv("HCCL_OP_RETRY_ENABLE", "L0:0, L1:0, L2:0", overwrite) == -1) {
-            printf_s("setenv HCCL_OP_RETRY_ENABLE failed\n");
+            printf("setenv HCCL_OP_RETRY_ENABLE failed\n");
             return -1;
         }
     }
@@ -631,8 +631,8 @@ int HcclTest::parse_opt(int opt)
             print_help();
             return 1;
         default:
-            printf_s("invalid option \n");
-            printf_s("Try [-h --help] for more information.\n");
+            printf("invalid option \n");
+            printf("Try [-h --help] for more information.\n");
             return -1;
     }
     return 0;
@@ -652,11 +652,11 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     }
 
     if (optind < argc) {
-        printf_s("non-option ARGV-elements: ");
+        printf("non-option ARGV-elements: ");
         while (optind < argc) {
-            printf_s("%s ", argv[optind++]);
+            printf("%s ", argv[optind++]);
         }
-        printf_s("\n");
+        printf("\n");
         return -1;
     }
 
@@ -743,7 +743,7 @@ int HcclTest::set_device_sat_mode()
 {
     const char *soc_name_ptr = aclrtGetSocName();
     if (soc_name_ptr == nullptr) {
-        printf_s("aclrtGetSocName failed");
+        printf("aclrtGetSocName failed");
         return -1;
     }
 
@@ -796,7 +796,7 @@ int HcclTest::start_test()
         HCCLCHECK(static_cast<HcclResult>(check_alloc_memory_size(reserve_mem)));
         status = aclrtReserveMemAddress(&vir_ptr, reserve_mem, 0, NULL, 1);
         if (status != ACL_SUCCESS) {
-            printf_s("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
+            printf("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
             goto error_device_init;
         }
     }
@@ -813,7 +813,7 @@ int HcclTest::start_test()
     if (enable_zero_copy) {
         auto status = HcclCommSetMemoryRange(hccl_comm, vir_ptr, reserve_mem, 0, 0);
         if (status != HCCL_SUCCESS) {
-            printf_s("[%s][%d] HcclCommSetMemoryRange failed.\n", __FUNCTION__, __LINE__);
+            printf("[%s][%d] HcclCommSetMemoryRange failed.\n", __FUNCTION__, __LINE__);
             goto error_reserve_lpcMemory;
         }
     }
@@ -843,7 +843,7 @@ int HcclTest::device_init()
     // 关闭溢出检测
     int ret = set_device_sat_mode();
     if (ret != 0) {
-        printf_s("set_device_sat_mode execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
+        printf("set_device_sat_mode execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
         return ret;
     }
     ACLCHECK(aclrtCreateEvent(&start_event));
@@ -880,7 +880,7 @@ int HcclTest::init_hcclComm()
     MPI_Status status;
     // 在root_rank获取root_info
     if (rank_id == root_rank) {
-        printf_s("the minbytes is %llu, maxbytes is %llu, iters is %d, warmup_iters is %d\n",
+        printf("the minbytes is %llu, maxbytes is %llu, iters is %d, warmup_iters is %d\n",
             data->min_bytes,
             data->max_bytes,
             iters,
@@ -896,7 +896,7 @@ int HcclTest::init_hcclComm()
         }
         MPI_Wait(&request, &status);
         if (getRootInfo != HCCL_SUCCESS) {
-            printf_s("Process %d HcclGetRootInfo failed, notify other process to exit\n", root_rank);
+            printf("Process %d HcclGetRootInfo failed, notify other process to exit\n", root_rank);
             return getRootInfo;
         }
     } else {
@@ -905,7 +905,7 @@ int HcclTest::init_hcclComm()
         MPI_Wait(&request, &status);
         if (strcmp(reinterpret_cast<const char *>(&comm_id), "invalid") == 0) {
             // 检测到无效数据
-            printf_s("Process %d received invalid data from root process %d\n", rank_id, root_rank);
+            printf("Process %d received invalid data from root process %d\n", rank_id, root_rank);
             return -1;
         }
     }
@@ -913,7 +913,7 @@ int HcclTest::init_hcclComm()
     if (nslb_flag == 1) {
         // HCCL_COMM_CONFIG_RESERVED 字段小于7，代表当前版本未适配DP场景
         if (HcclGetCommConfigCapability() < NSLBDP_SUPPORT_VERSION) {
-            printf_s("The current version of hccl_test does not support the nslb-dp capability.\n");
+            printf("The current version of hccl_test does not support the nslb-dp capability.\n");
             HCCLCHECK(HcclCommInitRootInfo(rank_size, &comm_id, rank_id, &hccl_comm));
             return 0;
         }
@@ -950,7 +950,7 @@ int HcclTest::opbase_test_by_data_size()
         ret = hccl_op_base_test();
         HCCLCHECK(static_cast<HcclResult>(free_send_recv_buff_and_disable_local_buffer()));
         if (ret != 0) {
-            printf_s("hccl_op_base execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
+            printf("hccl_op_base execute failed, Detailed logs are stored at the default path: /root/ascend/log/\n");
             break;
         }
     }
@@ -1003,7 +1003,7 @@ int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_byt
     aclrtDrvMemHandle mem_handle;
     status = aclrtMallocPhysical(&mem_handle, malloc_mem - current_alloc_phy_mem_byte, &prop, 0);
     if (status != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
     status = aclrtMapMem(reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte),
@@ -1012,7 +1012,7 @@ int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_byt
         mem_handle,
         0);
     if (status != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
     status = HcclCommActivateCommMemory(hccl_comm,
@@ -1022,7 +1022,7 @@ int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_byt
         mem_handle,
         0);
     if (status != 0) {
-        printf_s("[%s][%d] HcclCommValidMemory failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] HcclCommValidMemory failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
     phy_alloc_mem_handle.push_back(std::make_pair(
@@ -1078,7 +1078,7 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
 
     int ret = destory_alloc_buf();
     if (ret != 0) {
-        printf_s("hccl_op_base destory_alloc_buf failed, ret[%d]", ret);
+        printf("hccl_op_base destory_alloc_buf failed, ret[%d]", ret);
         return HCCL_E_MEMORY;
     }
     return HCCL_SUCCESS;
@@ -1087,7 +1087,7 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
 int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
 {
     if (ptr == nullptr || size == 0 || handle == nullptr) {
-        printf_s("[%s][%d] Invalid parameter: ptr[%p], size[%zu].\n", __FUNCTION__, __LINE__, ptr, size);
+        printf("[%s][%d] Invalid parameter: ptr[%p], size[%zu].\n", __FUNCTION__, __LINE__, ptr, size);
         return HCCL_E_PARA;
     }
 
@@ -1105,26 +1105,26 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
     size_t granularity = 0;
     aclError ret = aclrtMemGetAllocationGranularity(&prop, ACL_RT_MEM_ALLOC_GRANULARITY_RECOMMENDED, &granularity);
     if (ret != ACL_SUCCESS || granularity == 0) {
-        printf_s("[%s][%d] GetAllocationGranularity failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] GetAllocationGranularity failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
     allocSize = (allocSize + granularity - 1) / granularity * granularity;
 
     ret = aclrtReserveMemAddress(ptr, allocSize, 0, nullptr, 1);
     if (ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
     void *virPtr = *ptr;
     ret = aclrtMallocPhysical(handle, allocSize, &prop, 0);
     if(ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
         aclrtReleaseMemAddress(virPtr);
         return HCCL_E_RUNTIME;
     }
     ret = aclrtMapMem(virPtr, allocSize, 0, *handle, 0);
     if(ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
         aclrtFreePhysical(*handle);
         aclrtReleaseMemAddress(virPtr);
         return HCCL_E_RUNTIME;
@@ -1141,17 +1141,17 @@ int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
     aclError ret = ACL_SUCCESS;
     ret = aclrtUnmapMem(ptr);
     if (ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtUnmapMem failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtUnmapMem failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
     ret = aclrtFreePhysical(handle);
     if (ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtFreePhysical failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtFreePhysical failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
     ret = aclrtReleaseMemAddress(ptr);
     if (ret != ACL_SUCCESS) {
-        printf_s("[%s][%d] aclrtReleaseMemAddress failed.\n", __FUNCTION__, __LINE__);
+        printf("[%s][%d] aclrtReleaseMemAddress failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
     return HCCL_SUCCESS;

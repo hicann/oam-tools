@@ -112,7 +112,7 @@ void HcclOpBaseTest::no_verification()
 {
     check = 0; //不进行校验
     if (rank_id == root_rank && print_dump) {
-        printf_s("Warning: The calculation result overflows, No verification is performed.\n");
+        printf("Warning: The calculation result overflows, No verification is performed.\n");
         print_dump = false;
     }
     return;
@@ -125,7 +125,7 @@ void HcclOpBaseTest::is_initdata_overflow()
         && rank_size >= RANKSIZE_TH_FP32) {
         check = 0; //不进行校验
         if (rank_id == root_rank && print_dump) {
-            printf_s("Warning: The initdata overflows, No verification is performed.\n");
+            printf("Warning: The initdata overflows, No verification is performed.\n");
             print_dump = false;
         }
     }
@@ -171,10 +171,10 @@ void HcclOpBaseTest::print_execution_time(double average_time_us, double algorit
         if (rank_id == root_rank) {
             if (print_header)
             {
-                printf_s("%-15s | %-12s | %-18s | %s\n", data_size, aveg_time, alg_bandwidth, verification_result);
+                printf("%-15s | %-12s | %-18s | %s\n", data_size, aveg_time, alg_bandwidth, verification_result);
                 print_header = false;
             }
-            printf_s("%-17llu | %-14.2f | %-20.5f | NULL\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
+            printf("%-17llu | %-14.2f | %-20.5f | NULL\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
         }
         return;
     }
@@ -184,7 +184,7 @@ void HcclOpBaseTest::print_execution_time(double average_time_us, double algorit
     if (check_err != 0)
     {
         check_result[rank_id] = false; // 结果校验失败
-        printf_s("local rank_id %d, check result failed, %-17llu | %-14.2f | %-20.5f | failed\n", rank_id, data->data_size, 
+        printf("local rank_id %d, check result failed, %-17llu | %-14.2f | %-20.5f | failed\n", rank_id, data->data_size, 
             average_time_us, algorithm_bandwith_GBytes_s);
     } else {
         check_result[rank_id] = true; // 结果校验成功
@@ -194,15 +194,15 @@ void HcclOpBaseTest::print_execution_time(double average_time_us, double algorit
     {
         if (print_header)
         {
-            printf_s("%-15s | %-12s | %-18s | %s\n", data_size, aveg_time, alg_bandwidth, verification_result);
+            printf("%-15s | %-12s | %-18s | %s\n", data_size, aveg_time, alg_bandwidth, verification_result);
             print_header = false;
         }
 
         if (!check_result[root_rank])
         {
-            printf_s("%-17llu | %-14.2f | %-20.5f | failed\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
+            printf("%-17llu | %-14.2f | %-20.5f | failed\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
         } else {
-            printf_s("%-17llu | %-14.2f | %-20.5f | success\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
+            printf("%-17llu | %-14.2f | %-20.5f | success\n", data->data_size, average_time_us, algorithm_bandwith_GBytes_s);
         }
     }
     return;

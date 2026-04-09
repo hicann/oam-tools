@@ -126,7 +126,7 @@ void HcclOpBaseAlltoallTest::init_send_recv_size_by_data(size_t &send_bytes, siz
 int HcclOpBaseAlltoallTest::hccl_op_base_test() //主函数
 {
     if (op_flag != 0 && rank_id == root_rank) {
-        printf_s("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
+        printf("Warning: The -o,--op <sum/prod/min/max> option does not take effect. Check the cmd parameter.\n");
     }
 
     is_initdata_overflow();
