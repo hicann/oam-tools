@@ -900,6 +900,7 @@ void SystemMode::SetSysDefaultParams() const
         params_->aiv_profiling_mode = PROFILING_MODE_SAMPLE_BASED;
     }
     params_->profMode = MSVP_PROF_SYSTEM_MODE;
+    params_->appMemProfiling = MSVP_PROF_OFF;
 }
 
 int32_t SystemMode::CreateJobDir(std::string device, std::string &resultDir) const
