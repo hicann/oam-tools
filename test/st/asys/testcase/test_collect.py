@@ -21,6 +21,7 @@ import sys
 
 import pytest
 import shutil
+from common.const import RetCode, ATRACE_LOG_NAME
 from .conftest import CONF_SRC_PATH, ASYS_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env, great_error_bin
 from .conftest import check_output_structure, create_dir, create_file, remove_dir, great_bin, check_atrace_file, find_dir, check_output_file
 from .conftest import AssertTest
@@ -30,7 +31,6 @@ sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
-from common.const import RetCode
 from common import FileOperate
 from collect.asys_collect import AsysCollect
 from common import timeout_decorator
@@ -632,6 +632,65 @@ class TestCollect(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
         self.assertTrue("get the stackcore bin file in path" in caplog.text and "timeout" in caplog.text)
+
+    def test_get_target_work_path_success(self, mocker):
+        from collect.stacktrace.stacktrace_collect import AsysStackTrace
+        mock_remote_id = 12345
+        mock_ascend_work_path = "/tmp/test_ascend_work_path"
+        mock_env_content = f"PATH=/usr/bin\0ASCEND_WORK_PATH={mock_ascend_work_path}\0USER=root"
+        mocker.patch.object(AsysStackTrace, "__init__", return_value=None)
+        asys_stack = AsysStackTrace()
+        asys_stack.remote_id = mock_remote_id
+        mock_open = mocker.patch("builtins.open", mocker.mock_open(read_data=mock_env_content))
+        mocker.patch("os.path.join", return_value=f"/proc/{mock_remote_id}/environ")
+        result = asys_stack._get_target_work_path()
+
+        self.assertTrue(result == mock_ascend_work_path)
+        mock_open.assert_called_once_with(f"/proc/{mock_remote_id}/environ", "r")
+
+    def test_get_target_work_path_permission_denied(self, mocker, caplog):
+        from collect.stacktrace.stacktrace_collect import AsysStackTrace
+        mock_remote_id = 67890
+        mocker.patch.object(AsysStackTrace, "__init__", return_value=None)
+        asys_stack = AsysStackTrace()
+        asys_stack.remote_id = mock_remote_id
+        mocker.patch("builtins.open", side_effect=PermissionError)
+        mocker.patch("os.path.join", return_value=f"/proc/{mock_remote_id}/environ")
+        result = asys_stack._get_target_work_path()
+
+        self.assertTrue(result is None)
+
+    def test_set_trace_work_path_from_process_env(self, mocker):
+        from collect.stacktrace.stacktrace_collect import AsysStackTrace
+        mock_remote_id = 12345
+        mock_ascend_work_path = "/tmp/test_ascend_work_path"
+        expected_trace_path = os.path.join(mock_ascend_work_path, ATRACE_LOG_NAME)
+        mocker.patch.object(AsysStackTrace, "__init__", return_value=None)
+        asys_stack = AsysStackTrace()
+        asys_stack.remote_id = mock_remote_id
+        mocker.patch.object(asys_stack, "_get_target_work_path", return_value=mock_ascend_work_path)
+        mock_env_var = mocker.Mock()
+        mock_env_var.home_path = "/home/test"
+        mocker.patch("collect.stacktrace.stacktrace_collect.EnvVarName", return_value=mock_env_var)
+        asys_stack._set_trace_work_path()
+
+        self.assertTrue(os.path.abspath(asys_stack.trace_work_path) == os.path.abspath(expected_trace_path))
+
+    def test_set_trace_work_path_default(self, mocker, caplog):
+        from collect.stacktrace.stacktrace_collect import AsysStackTrace
+        mock_remote_id = 67890
+        mock_home_path = "/home/test_user"
+        expected_default_path = os.path.join(mock_home_path, "ascend", ATRACE_LOG_NAME)
+        mocker.patch.object(AsysStackTrace, "__init__", return_value=None)
+        asys_stack = AsysStackTrace()
+        asys_stack.remote_id = mock_remote_id
+        mocker.patch.object(asys_stack, "_get_target_work_path", return_value=None)
+        mock_env_var = mocker.Mock()
+        mock_env_var.home_path = mock_home_path
+        mocker.patch("collect.stacktrace.stacktrace_collect.EnvVarName", return_value=mock_env_var)
+        asys_stack._set_trace_work_path()
+
+        self.assertTrue(os.path.abspath(asys_stack.trace_work_path) == os.path.abspath(expected_default_path))
 
     def test_collect_stacktrace_parse_attr_error(self, mocker, caplog):
         class AsysTraceError:
