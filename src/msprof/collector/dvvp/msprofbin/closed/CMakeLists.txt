@@ -46,7 +46,7 @@ set(msprofBinHeader
     ../../common/platform
     ../../common/json
     ../../common/config/closed
-    ${PROF_BASIC_DIR}/osal
+    ../../../basic/osal
     ../../common/errno
     ../../depend/include/stub
     ../../msprof/common/include/
@@ -87,7 +87,7 @@ set(msprofbinCpp
     ../../common/cmd_log/cmd_log.cpp
     ../../common/utils/utils.cpp
     ../../common/json/json.cpp
-    ${PROF_BASIC_DIR}/osal/osal.c
+    ../../../basic/osal/osal.c
     ../../common/config/closed/config_manager.cpp
     ../../common/memory/chunk_pool.cpp
     ../../common/thread/thread.cpp
@@ -199,7 +199,7 @@ target_compile_options(msprofbin PRIVATE
     -fno-strict-aliasing
     -fno-common
     -Wall
-    -D_GLIBCXX_USE_CXX11_ABI=0
+    $<$<STREQUAL:${PRODUCT_SIDE},host>:-D_GLIBCXX_USE_CXX11_ABI=0>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wfloat-equal>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wextra>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-unused-parameter>
@@ -237,6 +237,10 @@ set_target_properties(msprofbin
 
 install(TARGETS msprofbin OPTIONAL
     RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
+)
+
+install(TARGETS msprofbin OPTIONAL
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
 )
 
 ### onetrack target interface
