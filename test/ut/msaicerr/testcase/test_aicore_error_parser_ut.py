@@ -727,7 +727,6 @@ class TestUtilsMethods(CommonAssert):
         parser.get_op_info()
         self.assertIn(self.debug_info.read_text(), log_res)
 
-
     def test_collect_driver_aicore_number_filed(self, mocker):
         self.assertEqual(True, True)
         parser = AicoreErrorParser('')
@@ -744,3 +743,13 @@ class TestUtilsMethods(CommonAssert):
             self.assertEqual(str(e), '10')
         else:
             self.assertEqual(False, True)
+
+    def test_outstanding_complex_scenario(self, mocker):
+        parser = AicoreErrorParser('')
+        task_info = [('3800', '5', '62', '7', '62', '0'), ('3800', '2', '62', '7', '62', '0'), ('3800', '5', '62', '2', '62', '1')]
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("ms_interface.utils.execute_command", return_value=(0, ''))
+        mocker.patch("re.findall", return_value=task_info)
+        result = parser.get_is_concurrentexe_value('')
+        self.assertIn(self.debug_info.read_text(), "3 tasks detected")
+        self.assertEqual(result, {})

@@ -1515,6 +1515,15 @@ exit()"""
             utils.print_warn_log(f"Log info does not match:{regex_str} in command result.")
             return result
         
+        task_set = set()
+        for _, ftsk_id, ftsk_stream_id, stsk_id, stsk_stream_id, _ in match_result:
+            task_set.add((ftsk_id, ftsk_stream_id))
+            task_set.add((stsk_id, stsk_stream_id))
+        task_num = len(task_set)
+        if task_num > 2:
+            task_info = ", ".join([f"[task id: {tsk_id}, stream id: {stream_id}]" for tsk_id, stream_id in task_set])
+            utils.print_warn_log(f"{task_num} tasks detected, manual analysis required. Task info: {task_info}.")
+            return result
         for tid, ftsk_id, ftsk_stream_id, stsk_id, stsk_stream_id, is_concurrentexe in match_result:
             if tid not in result.keys():
                 result = {
