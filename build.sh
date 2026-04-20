@@ -34,7 +34,7 @@ usage() {
     echo "    -j<N>          Set the number of threads used for building oam_tools, default is 8"
     echo "    -O<N>          Compile optimization options, support [O0 O1 O2 O3], default is O2"
     echo "    --make_clean "
-    echo "                   Make clean and delete related file"
+    echo "                   Make clean and delete build directory, bundle directory, and version file"
     echo "    --build-type=<TYPE>"
     echo "                   Specify build type (TYPE options: Release/Debug), default is Release"
     echo "    --pkg          Build run package"
@@ -183,17 +183,17 @@ build_msprof_analysis() {
         cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
     elif [ -d "${CANN_3RD_LIB_PATH}/msprof" ]; then
         echo "msprof using thrid_party"
-        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
         [ ! -d "msprof" ] && cp -r "${CANN_3RD_LIB_PATH}/msprof" .
-        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule/msprof"
+        BUILD_PATH="${BASEPATH}/submodule/msprof"
         cd ${BUILD_PATH}
         python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
         cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
     else
         echo "msprof download"
-        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
         [ ! -d "msprof" ] && git clone https://gitcode.com/Ascend/msprof.git
-        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule/msprof"
+        BUILD_PATH="${BASEPATH}/submodule/msprof"
         cd ${BUILD_PATH}
         python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
         cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
@@ -210,20 +210,20 @@ build_adump_analysis() {
         cp -r ${SOURCE_PATH}/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
     elif [ -d "${CANN_3RD_LIB_PATH}/msprobe" ]; then
         echo "msprobe using thrid_party"
-        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
-        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        BUILD_PATH="${BASEPATH}/submodule"
+        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
         [ ! -d "msprobe" ] && cp -r "${CANN_3RD_LIB_PATH}/msprobe" .
         cd ${BASEPATH}/src/operator_cmp
         [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
-        cp -r ${BUILD_PATH}/submodule/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+        cp -r ${BUILD_PATH}/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
     else
         echo "msprobe download"
-        BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
-        mkdir -p "${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule" && cd ${BASEPATH}/${BUILD_RELATIVE_PATH}/submodule
+        BUILD_PATH="${BASEPATH}/submodule"
+        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
         [ ! -d "msprobe" ] && git clone https://gitcode.com/Ascend/msprobe.git
         cd ${BASEPATH}/src/operator_cmp
         [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
-        cp -r ${BUILD_PATH}/submodule/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+        cp -r ${BUILD_PATH}/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
     fi
 }
 
@@ -256,11 +256,33 @@ build_oam_tools() {
     echo "ARCH: $(arch)"
     ARCH_LOWER=$(uname -m | tr '[:upper:]' '[:lower:]')
     BUILD_TYPE_LOWER=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
-    bash install_bundle.sh $BUILD_TYPE_LOWER $ARCH_LOWER
-    if [ 0 -ne $? ]; then
-        echo "cannot find cann-oam-tools's tar.gz, exit."
-        exit 1
+    # === 新增判断逻辑 ===
+    # 1. 先处理 --make_clean：清理 bundle 目录
+    if [[ "${MAKE_CLEAN_ALL}" == "on" ]]; then
+        echo "--make_clean: clearing bundle directory"
+        [ -d "bundle" ] && rm -rf "bundle"
+        [ -f ".bundle_version" ] && rm -f ".bundle_version"
     fi
+
+    # 2. 处理 --make_clean：清理 submodule 目录（msprof, msprobe）
+    if [[ "${MAKE_CLEAN_ALL}" == "on" ]]; then
+        echo "--make_clean: clearing submodule directory (msprof, msprobe)"
+        [ -d "submodule" ] && rm -rf "submodule"
+    fi
+
+    # 3. 判断是否需要执行 install_bundle.sh
+    BUNDLE_DIR="bundle"
+    if [ -d "$BUNDLE_DIR" ]; then
+        echo "Bundle directory exists, skipping install_bundle.sh"
+    else
+        echo "Bundle directory not found, executing install_bundle.sh"
+        bash install_bundle.sh $BUILD_TYPE_LOWER $ARCH_LOWER
+        if [ 0 -ne $? ]; then
+            echo "install_bundle.sh failed, exit."
+            exit 1
+        fi
+    fi
+    # === 判断逻辑结束 ===
     build_msprof_analysis
     build_adump_analysis
     echo "create build directory and build oam_tools"

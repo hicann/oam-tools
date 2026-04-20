@@ -68,8 +68,31 @@ elif [ -f "./$THIRD_PARTY_PATH/$OUTPUT_FILE" ]; then
         exit 1 
     fi
 else
-    # Get date str, work for different os and bash env
-    CURRENT_DATE_STR=$(date +%Y%m%d)
+    get_wednesday_date() {
+        local day_of_week=$(date +%u)
+        local offset=$((3 - day_of_week))
+        
+        # 如果本周三还未到（周一、周二），则取上周三
+        if [ $offset -gt 0 ]; then
+            offset=$((offset - 7))
+        fi
+        
+        if date --version &>/dev/null; then
+            # GNU date (Linux)
+            date -d "$offset days" +%Y%m%d
+        else
+            # BSD date (macOS)
+            if [ $offset -ge 0 ]; then
+                date -v+${offset}d +%Y%m%d
+            else
+                date -v${offset}d +%Y%m%d
+            fi
+        fi
+    }
+
+    # Get date str (most recent Wednesday)
+    CURRENT_DATE_STR=$(get_wednesday_date)
+    echo "Using date: $CURRENT_DATE_STR"
     
     # Define newest tar.gz url
     URL_TODAY="${OBS_BASE_URL}/${CURRENT_DATE_STR}_newest/cann-oam-tools-release-${ARCH}.tar.gz"
@@ -91,16 +114,16 @@ else
         return $?
     }
 
-    if try_download "$URL_TODAY" "TODAY'S PACKAGE"; then
-        echo "Success: Downloaded today's package."
+    if try_download "$URL_TODAY" "PACKAGE ($CURRENT_DATE_STR)"; then
+        echo "Success: Downloaded package from $CURRENT_DATE_STR."
         download_success=true
     else
-        echo "Notice: Today's package not found or download failed."
+        echo "Notice: Package from $CURRENT_DATE_STR not found or download failed."
         if try_download "$STABLE_URL" "STABLE PACKAGE"; then
             echo "Success: Downloaded stable package."
             download_success=true
         else
-            echo "Error: Both today's package and stable package failed to download."
+            echo "Error: Both package $CURRENT_DATE_STR and stable package failed to download."
         fi
     fi
 
