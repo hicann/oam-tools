@@ -172,59 +172,55 @@ print_success() {
   echo
 }
 
+# 将名为 ${name} 的子仓填充到 ${BASEPATH}/submodule/${name}：
+# 优先从 ${CANN_3RD_LIB_PATH}/${name} 复制，否则从 ${git_url} 克隆。
+# 已存在则不重复填充。回显 submodule 内的目标路径。
+populate_submodule() {
+    local name="$1"
+    local git_url="$2"
+    local dest="${BASEPATH}/submodule/${name}"
+    mkdir -p "${BASEPATH}/submodule"
+    if [ ! -d "${dest}" ]; then
+        if [ -d "${CANN_3RD_LIB_PATH}/${name}" ]; then
+            echo "${name} using third_party"
+            cp -r "${CANN_3RD_LIB_PATH}/${name}" "${BASEPATH}/submodule/"
+        else
+            echo "${name} download"
+            (cd "${BASEPATH}/submodule" && git clone "${git_url}")
+        fi
+    fi
+    echo "${dest}"
+}
+
 # build msprof analysis
 build_msprof_analysis() {
+    local build_path
     if [ -d "${BASEPATH}/../../mindstudio/msprof" ]; then
         echo "msprof using mindstudio"
-        ROOT_PATH="${BASEPATH}/../.."
-        BUILD_PATH="${ROOT_PATH}/mindstudio/msprof"
-        cd ${BUILD_PATH}
-        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
-        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
-    elif [ -d "${CANN_3RD_LIB_PATH}/msprof" ]; then
-        echo "msprof using thrid_party"
-        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
-        [ ! -d "msprof" ] && cp -r "${CANN_3RD_LIB_PATH}/msprof" .
-        BUILD_PATH="${BASEPATH}/submodule/msprof"
-        cd ${BUILD_PATH}
-        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
-        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+        build_path="${BASEPATH}/../../mindstudio/msprof"
     else
-        echo "msprof download"
-        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
-        [ ! -d "msprof" ] && git clone https://gitcode.com/Ascend/msprof.git
-        BUILD_PATH="${BASEPATH}/submodule/msprof"
-        cd ${BUILD_PATH}
-        python3  ${BUILD_PATH}/build/setup.py bdist_wheel --python-tag=py3 --py-limited-api=cp37
-        cp ${BUILD_PATH}/dist/msprof-0.0.1-py3-none-any.whl ${BASEPATH}/src/msprof/collector/dvvp/msprofbin
+        build_path="$(populate_submodule "msprof" "https://gitcode.com/Ascend/msprof.git" | tail -n1)"
     fi
+    cd "${build_path}"
+    python3 "${build_path}/build/setup.py" bdist_wheel --python-tag=py3 --py-limited-api=cp37
+    cp "${build_path}/dist/msprof-0.0.1-py3-none-any.whl" "${BASEPATH}/src/msprof/collector/dvvp/msprofbin"
 }
 
 # build adump analysis
 build_adump_analysis() {
+    local src_dir
     if [ -d "${BASEPATH}/../../mindstudio/msaccucmp" ]; then
         echo "msprobe using mindstudio"
-        SOURCE_PATH="${BASEPATH}/../../mindstudio/msaccucmp"
-        cd ${BASEPATH}/src/operator_cmp
-        [ ! -d "msaccucmp" ] && mkdir -p ${BASEPATH}/src/operator_cmp/msaccucmp
-        cp -r ${SOURCE_PATH}/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
-    elif [ -d "${CANN_3RD_LIB_PATH}/msprobe" ]; then
-        echo "msprobe using thrid_party"
-        BUILD_PATH="${BASEPATH}/submodule"
-        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
-        [ ! -d "msprobe" ] && cp -r "${CANN_3RD_LIB_PATH}/msprobe" .
-        cd ${BASEPATH}/src/operator_cmp
-        [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
-        cp -r ${BUILD_PATH}/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+        src_dir="${BASEPATH}/../../mindstudio/msaccucmp/python/msprobe/msaccucmp"
     else
-        echo "msprobe download"
-        BUILD_PATH="${BASEPATH}/submodule"
-        mkdir -p "${BASEPATH}/submodule" && cd ${BASEPATH}/submodule
-        [ ! -d "msprobe" ] && git clone https://gitcode.com/Ascend/msprobe.git
-        cd ${BASEPATH}/src/operator_cmp
-        [ ! -d "msaccucmp" ] && mkdir ${BASEPATH}/src/operator_cmp/msaccucmp
-        cp -r ${BUILD_PATH}/msprobe/python/msprobe/msaccucmp ${BASEPATH}/src/operator_cmp/msaccucmp/compare
+        local probe_dir
+        probe_dir="$(populate_submodule "msprobe" "https://gitcode.com/Ascend/msprobe.git" | tail -n1)"
+        src_dir="${probe_dir}/python/msprobe/msaccucmp"
     fi
+    local compare_dst="${BASEPATH}/src/operator_cmp/msaccucmp/compare"
+    mkdir -p "${BASEPATH}/src/operator_cmp/msaccucmp"
+    rm -rf "${compare_dst}" && mkdir "${compare_dst}"
+    cp -r "${src_dir}"/* "${compare_dst}/."
 }
 
 # oam_tools build start

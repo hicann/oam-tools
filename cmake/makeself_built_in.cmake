@@ -27,6 +27,12 @@ endif()
 set(STAGING_DIR "${CPACK_CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging")
 file(MAKE_DIRECTORY "${STAGING_DIR}")
 
+# 上一次 cpack 末尾会把 staging 目录权限收紧到 550 等，这里先恢复 owner 写权限，
+# 否则二次构建时 cmake --install 写入会因目录无写位而 Permission denied。
+if(EXISTS "${STAGING_DIR}")
+    execute_process(COMMAND chmod -R u+w "${STAGING_DIR}")
+endif()
+
 # 执行安装到临时目录
 execute_process(
     COMMAND "${CMAKE_COMMAND}" --install "${CPACK_CMAKE_BINARY_DIR}" --prefix "${STAGING_DIR}"
@@ -76,9 +82,109 @@ configure_file(
 )
 configure_file(
     ${OAM_VERSION_OUT_PUT}
-    ${STAGING_DIR}/oam_tools/
+    ${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/version/oam_tools_version.h
     COPYONLY
 )
+
+ # 统一设置安装的文件权限为550
+execute_process(
+    COMMAND find ${STAGING_DIR} -type f -exec chmod 550 {} \;
+    RESULT_VARIABLE CHMOD_RESULT
+)
+
+# 统一设置安装的目录权限为550（避免构建环境 umask 透传，--extract 后目录权限不规范）
+execute_process(
+    COMMAND find ${STAGING_DIR} -type d -exec chmod 550 {} \;
+    RESULT_VARIABLE CHMOD_DIR_RESULT
+)
+
+# 文件权限特殊处理
+if(EXISTS "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/config")
+    execute_process(
+        COMMAND chmod -R 555 "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/config";
+    )
+endif()
+
+if (EXISTS "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/kernel") 
+    execute_process(
+        COMMAND chmod -R 555 "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/kernel";
+    )
+endif()
+
+if (EXISTS "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/impl/ops_oam") 
+    execute_process(
+        COMMAND chmod -R 555 "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/impl/ops_oam";
+    )
+endif()
+
+if (EXISTS "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/${CMAKE_SYSTEM_PROCESSOR}/libophost_oam.so") 
+    execute_process(
+        COMMAND chmod 555 "${STAGING_DIR}/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/${CMAKE_SYSTEM_PROCESSOR}/libophost_oam.so";
+    )
+endif()
+
+if (EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64/libopapi_oam.so") 
+    execute_process(
+        COMMAND chmod 555 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64/libopapi_oam.so";
+    )
+endif()
+
+if (EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/aclnnop") 
+    execute_process(
+        COMMAND chmod -R 555 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/aclnnop";
+    )
+endif()
+
+# 设置tools/aml/lib64文件权限为440
+execute_process(
+    COMMAND find ${STAGING_DIR}/tools/aml/lib64 -type f -exec chmod 440 {} \;
+    RESULT_VARIABLE CHMOD_RESULT
+)
+
+foreach(aml_so
+    "libascend_dump_parser.so"
+    "libascend_ml_detect.so"
+    "libascend_ml.so"
+)
+    if(EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64/${aml_so}")
+        execute_process(COMMAND chmod 440 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64/${aml_so}")
+    endif()
+endforeach()
+
+if(EXISTS "${STAGING_DIR}/tools/profiler/profiler_tool")
+    execute_process(COMMAND chmod -R 555 "${STAGING_DIR}/tools/profiler/profiler_tool")
+endif()
+
+if(EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/version/oam_tools_version.h")
+    execute_process(COMMAND chmod 440 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/version/oam_tools_version.h")
+endif()
+
+if(EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/conf/path.cfg")
+    execute_process(COMMAND chmod 440 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/conf/path.cfg")
+endif()
+
+# share/ 和 share/info install 给 750（owner 可写）；上面 find -type d 一刀切到 550 需改回。
+# 注意：share/info/oam_tools 在 install 时实际为 550（filelist 标 750 但被后续 chmod 改回），保持 550。
+foreach(_d "share" "share/info")
+    if(EXISTS "${STAGING_DIR}/${_d}")
+        execute_process(COMMAND chmod 750 "${STAGING_DIR}/${_d}")
+    endif()
+endforeach()
+
+# scene.info / version.info install 给 440；上面 find -type f 一刀切到 550 需改回。
+foreach(_f "share/info/oam_tools/scene.info" "share/info/oam_tools/version.info")
+    if(EXISTS "${STAGING_DIR}/${_f}")
+        execute_process(COMMAND chmod 440 "${STAGING_DIR}/${_f}")
+    endif()
+endforeach()
+
+# end 文件权限特殊处理
+
+# SDK 头文件目录 install 给 555。
+if(EXISTS "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/aclnnop/level2")
+    execute_process(COMMAND chmod 555 "${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/aclnnop/level2")
+endif()
+
 # makeself打包
 file(STRINGS ${CPACK_CMAKE_BINARY_DIR}/makeself.txt script_output)
 string(REPLACE " " ";" makeself_param_string "${script_output}")
@@ -91,6 +197,10 @@ list(INSERT makeself_param_string ${INSERT_INDEX} "${STAGING_DIR}")
 message(STATUS "script output: ${script_output}")
 message(STATUS "makeself: ${makeself_param_string}")
 message(STATUS "package: ${package_name}")
+
+# 上面 find -type d 把 STAGING_DIR 本身也置为 550，这里临时恢复其 owner 写位，
+# 否则 makeself 无法在该目录中创建 .run 输出文件（STAGING_DIR 自身不进归档）。
+execute_process(COMMAND chmod u+w "${STAGING_DIR}")
 
 execute_process(COMMAND bash ${MAKESELF_EXE}
         --header ${MAKESELF_HEADER_EXE}

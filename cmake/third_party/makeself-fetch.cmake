@@ -44,3 +44,44 @@ if (NOT EXISTS "${MAKESELF_PATH}/makeself-header.sh" OR NOT EXISTS "${MAKESELF_P
         ERROR_VARIABLE CHMOD_ERROR
     )
 endif()
+
+if (EXISTS "${MAKESELF_PATH}/makeself.sh")
+    file(READ "${MAKESELF_PATH}/makeself.sh" _makeself_contents)
+    set(_makeself_orig_block [==[    find . \
+        \( \
+        ! -type d \
+        -o \
+        \( -links 2 -exec sh -c '
+            is_empty () (
+                cd "$1"
+                set -- .[!.]* ; test -f "$1" && return 1
+                set -- ..?* ; test -f "$1" && return 1
+                set -- * ; test -f "$1" && return 1
+                return 0
+            )
+            is_empty "$0"' {} \; \
+        \) \
+        \) -print \]==])
+    set(_makeself_new_block [==[    find . -print \]==])
+    string(REPLACE "${_makeself_orig_block}" "${_makeself_new_block}"
+        _makeself_patched "${_makeself_contents}")
+    if (NOT _makeself_patched STREQUAL _makeself_contents)
+        file(WRITE "${MAKESELF_PATH}/makeself.sh" "${_makeself_patched}")
+        message(STATUS "Patched makeself.sh to archive all directories")
+    endif()
+endif()
+
+if (EXISTS "${MAKESELF_PATH}/makeself-header.sh")
+    file(READ "${MAKESELF_PATH}/makeself-header.sh" _header_contents)
+    if (NOT _header_contents MATCHES "perm-fix")
+        set(_header_orig [==[    rm -rf "\$tmpdir"]==])
+        set(_header_new [==[    chmod -R u+w "\$tmpdir" 2>/dev/null  # perm-fix
+    rm -rf "\$tmpdir"]==])
+        string(REPLACE "${_header_orig}" "${_header_new}"
+            _header_patched "${_header_contents}")
+        if (NOT _header_patched STREQUAL _header_contents)
+            file(WRITE "${MAKESELF_PATH}/makeself-header.sh" "${_header_patched}")
+            message(STATUS "Patched makeself-header.sh: chmod u+w before cleanup rm")
+        endif()
+    endif()
+endif()

@@ -22,7 +22,7 @@ set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
 
 # install 参数
-set(INSTALL_LIBRARY_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging/oam_tools)
+set(INSTALL_LIBRARY_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging)
 
 # Ascend mode
 if(DEFINED ENV{ASCEND_HOME_PATH})
@@ -116,13 +116,57 @@ if (ENABLE_COV OR ENABLE_UT)
     add_subdirectory(test)
 endif()
 
-#拷贝闭源包到制定目录
+# 拷贝闭源包到指定目录
 set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
-foreach(subdir IN ITEMS "aml" "built-in" "include" "profiler" "operator_cmp")
-    if (EXISTS "${BUNDLE_PKG}/${subdir}")
-      file(COPY "${BUNDLE_PKG}/${subdir}" DESTINATION ${INSTALL_LIBRARY_DIR}/.)
+
+# 拷贝 aml 目录内容
+if(EXISTS "${BUNDLE_PKG}/aml")
+    file(COPY "${BUNDLE_PKG}/aml/lib64/libascend_ml_detect.so" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
+    file(COPY "${BUNDLE_PKG}/aml/lib64/libascend_ml.so" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
+    file(COPY "${BUNDLE_PKG}/aml/lib64/plugin" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
+    file(COPY "${BUNDLE_PKG}/aml/lib64/plugin_v2" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
+
+    # 如果 plugin/bin 存在，将其内容移动到 plugin 下并删除 bin
+    set(_aml_plugin_bin "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/bin")
+    if(EXISTS "${_aml_plugin_bin}" AND IS_DIRECTORY "${_aml_plugin_bin}")
+        # 防御性检查：仅删除位于本次构建目录下的 bin，避免 INSTALL_LIBRARY_DIR
+        # 为空或被异常修改时，rm -rf 落到用户文件系统的真实路径上造成数据丢失
+        get_filename_component(_aml_plugin_bin_abs "${_aml_plugin_bin}" REALPATH)
+        get_filename_component(_build_dir_abs "${CMAKE_BINARY_DIR}" REALPATH)
+        string(FIND "${_aml_plugin_bin_abs}" "${_build_dir_abs}/" _aml_under_build)
+        if(NOT INSTALL_LIBRARY_DIR OR NOT _aml_under_build EQUAL 0)
+            message(FATAL_ERROR
+                "Refusing to remove '${_aml_plugin_bin_abs}': path is not under build "
+                "directory '${_build_dir_abs}'. Check INSTALL_LIBRARY_DIR="
+                "'${INSTALL_LIBRARY_DIR}'.")
+        endif()
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${_aml_plugin_bin}"
+                "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin"
+        )
+        execute_process(
+            COMMAND ${CMAKE_COMMAND} -E rm -rf "${_aml_plugin_bin}"
+        )
     endif()
-endforeach()
+    unset(_aml_plugin_bin)
+endif()
+
+# 拷贝 include 目录
+if(EXISTS "${BUNDLE_PKG}/include")
+    file(COPY "${BUNDLE_PKG}/include" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux)
+endif()
+
+# 拷贝 built-in 目录
+if(EXISTS "${BUNDLE_PKG}/built-in")
+    file(COPY "${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe" DESTINATION ${INSTALL_LIBRARY_DIR}/opp/built-in/op_impl/ai_core)
+    file(COPY "${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe/op_api/lib/linux/${CMAKE_SYSTEM_PROCESSOR}/libopapi_oam.so"
+        DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
+endif()
+
+# 创建 bin pkg_inc 目录
+file(MAKE_DIRECTORY ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/bin)
+file(MAKE_DIRECTORY ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc)
 
 # 打run包
 include(cmake/package.cmake)

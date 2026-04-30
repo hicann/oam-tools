@@ -8,5 +8,5 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/asys.cmake)
  
 install(DIRECTORY
     ${ASYS_DIR}
-    DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
+    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/ascend_system_advisor OPTIONAL
 )
