@@ -214,7 +214,7 @@ int32_t ProfDiagnostic::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     if (!(cfg->comParams->params->hostProfiling) ||
         cfg->comParams->params->pureCpu.compare(MSVP_PROF_ON) == 0 ||
         !Platform::instance()->CheckIfSupport(PLATFORM_DIAGNOSTIC_COLLECTION)) {
-        MSPROF_LOGI("Current thread is not support diagnostic collection.");
+        MSPROF_LOGI("Current thread does not support diagnostic collection.");
         return PROFILING_NOTSUPPORT;
     }
     if (MsprofDiagnostic::IsTriggered()) {

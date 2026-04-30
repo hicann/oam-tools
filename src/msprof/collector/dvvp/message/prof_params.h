@@ -278,8 +278,16 @@ struct ProfileParams : public BaseInfo {
                 } else {
                     ss << (iter->second());
                 }
-                if (iter->first.find("interval") != std::string::npos &&
-                    iter->first.find("hardware_mem_sampling_interval") == std::string::npos) {
+                if ((iter->first.find("interval") != std::string::npos &&
+                    iter->first.find("hardware_mem_sampling_interval") == std::string::npos) ||
+                    iter->first.find("memInterval") != std::string::npos ||
+                    iter->first.find("ubInterval") != std::string::npos ||
+                    iter->first.find("hccsInterval") != std::string::npos ||
+                    iter->first.find("nicInterval") != std::string::npos ||
+                    iter->first.find("pcieInterval") != std::string::npos ||
+                    iter->first.find("roceInterval") != std::string::npos ||
+                    iter->first.find("hbmInterval") != std::string::npos ||
+                    iter->first.find("hostProfilingSamplingInterval") != std::string::npos) {
                     ss << "ms";
                 }
                 if (iter->first.find("hardware_mem_sampling_interval") != std::string::npos) {
