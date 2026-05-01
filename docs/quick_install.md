@@ -43,29 +43,29 @@
 
     ```bash
     # 示例：拉取ARM架构的CANN开发镜像
-    docker pull --platform=arm64 swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10-ops
+    docker pull --platform=arm64 swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10
     # 示例：拉取X86架构的CANN开发镜像
-    docker pull --platform=amd64 swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10-ops
+    docker pull --platform=amd64 swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10
     ```
 
 2.**运行Docker**
-拉取镜像后，需要以特定参数启动容器，以便容器内能访问宿主的昇腾设备。
+拉取镜像后，需要以特定参数启动容器。
 
 ```bash
-docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10-ops bash
+docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10 bash
 ```
 | 参数 | 说明 | 注意事项 |
 | :--- | :--- | :--- |
 | `--name oam-tools` | 为容器指定名称，便于管理。 | 可自定义。 |
 | `-it` | `-i`（交互式）和 `-t`（分配伪终端）的组合参数。 | - |
-| `swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10-ops` | 指定要运行的Docker镜像。 |请确保此镜像名和标签（tag）与你通过`docker pull`拉取的镜像完全一致。 |
+| `swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10` | 指定要运行的Docker镜像。 |请确保此镜像名和标签（tag）与你通过`docker pull`拉取的镜像完全一致。 |
 | `bash` | 容器启动后立即执行的命令。 | - |
 
 3.**初始化环境**
 进入容器后，执行以下命令初始化环境：
 
 ```bash
-curl -fsSL https://gitcode.com/oam-tools/init_env.sh | bash
+curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 ```
 
 ### 方式3：手动安装
