@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "ascend_hal.h"
+#include "securec.h"
 #include "cstring"
 
 hdcError_t drvHdcAllocMsg(HDC_SESSION session, struct drvHdcMsg **ppMsg, int count)
@@ -69,7 +70,7 @@ hdcError_t drvHdcServerDestroy(HDC_SERVER server)
 hdcError_t drvHdcGetTrustedBasePath(int peer_node, int peer_devid,
     char *base_path, unsigned int path_len){
     if (path_len > strlen("/tmp")) {
-        memcpy(base_path, "/tmp", strlen("/tmp"));
+        memcpy_s(base_path, strlen("/tmp"), "/tmp", strlen("/tmp"));
     }
     return DRV_ERROR_NONE;
 }
