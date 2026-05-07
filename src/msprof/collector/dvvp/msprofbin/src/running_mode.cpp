@@ -202,6 +202,8 @@ void RunningMode::StopRunningTasks() const
     std::string cmd = "kill";
     ExecCmdParams execCmdParams(cmd, true, "");
     std::vector<std::string> argsV;
+    argsV.push_back("-s");
+    argsV.push_back("SIGINT");
     argsV.push_back(std::to_string(static_cast<int32_t>(taskPid_)));
     int32_t exitCode = INVALID_EXIT_CODE;
     OsalProcess killProces = MSVP_PROCESS;
