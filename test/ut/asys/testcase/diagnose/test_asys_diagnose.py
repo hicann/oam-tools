@@ -371,7 +371,7 @@ class TestAsysDiagnose(AssertTest):
 
     @pytest.mark.skip(reason="temporarily skipped due to test failure")
     @pytest.mark.parametrize("ascend_ml, res", [
-        # (AsysDiagnose1, True),
+        (AsysDiagnose1, True),
         (AsysDiagnose2, False)
     ])
     def test_diagnose_run_stress_detect(self, ascend_ml, res, mocker,caplog):
@@ -634,7 +634,6 @@ class TestAsysDiagnose(AssertTest):
             def get_phyid_from_logicid(device_id):
                 return RetCode.FAILED
 
-        # mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
         self.assertTrue(get_devices_master_id(HalDevice(), [0]) == {0: 0})
         self.assertTrue(get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
 

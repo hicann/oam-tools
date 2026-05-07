@@ -514,7 +514,6 @@ class TestUtilsMethods(CommonAssert):
     @pytest.mark.parametrize(
         "test_single_mock, dump_result, expect_log_level",
         [
-            # ([(RetCode.SUCCESS, '', '')], False, 'warn'),
             ([(RetCode.SUCCESS, '', ''), (RetCode.FAILED, '', '')], True, 'info'),
             ([(RetCode.SUCCESS, '', ''), (RetCode.SUCCESS, '', ''),
              (RetCode.SUCCESS, '', '')], True, 'debug'),

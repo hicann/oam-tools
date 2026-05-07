@@ -217,7 +217,7 @@ install_python_deps() {
     
     log_info "Python: $($python --version 2>&1)"
 
-    local required=("pytest>=9.0.1" "coverage>=7.10.0" "pytest-cov>=7.0.0")
+    local required=("pytest>=9.0.1" "coverage>=7.10.0" "pytest-cov>=7.0.0" "pytest-mock>=3.14.0")
     local to_install=()
 
     for pkg in "${required[@]}"; do

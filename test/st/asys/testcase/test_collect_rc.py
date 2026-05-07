@@ -22,7 +22,7 @@ import pytest
 import shutil
 
 from .conftest import ASYS_SRC_PATH, CONF_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env
-from .conftest import AssertTest
+from .conftest import check_output_structure, AssertTest
 
 sys.argv.insert(0, CONF_SRC_PATH)
 sys.path.insert(0, ASYS_SRC_PATH)
@@ -63,13 +63,13 @@ class TestCollectRC(AssertTest):
         @类型: FUNCTION
         @输入: asys collect
         @步骤: 校验main函数返回值是否为True; 校验生成目录结构
-        @预期结果: main函数返回值为True; 生成目录中存在software, log, stackcore, bbox类型文件
+        @预期结果: main函数返回值为True; 生成目录中存在software, data-dump, graph, ops类型文件
         """
         mocker.patch("collect.log.rc_log_collect.get_log_conf_path", return_value="")
         sys.argv = [CONF_SRC_PATH, "collect"]
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main())
-        # self.assertTrue(check_output_structure(["software", "log", "stackcore", "bbox"]))
+        self.assertTrue(check_output_structure(["software", "data-dump", "graph", "ops"]))
 
     @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task_dir", st_root_path + "/data/asys_test_dir")])
     def test_collect_dir_rc(self, capsys, arg_name, arg_val, mocker):

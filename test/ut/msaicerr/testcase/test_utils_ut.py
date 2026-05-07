@@ -68,27 +68,26 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(error.value.args[0],
                          Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
-    # def test_check_path_special_character_is_space(self):
-    #     with pytest.raises(utils.AicErrException) as error:
-    #         utils.check_path_special_character(os.path.join(cur_abspath,
-    #                                                         '../res/ori_data/complie_path'))
-    #     self.assertEqual(error.value.args[0],
-    #                      Constant.MS_AICERR_INVALID_PARAM_ERROR)
+    def test_check_path_special_character_is_space(self):
+        with pytest.raises(utils.AicErrException) as error:
+            utils.check_path_special_character('/path with space')
+        self.assertEqual(error.value.args[0],
+                         Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
-    # def test_check_path_valid(self):
-    #     with pytest.raises(utils.AicErrException) as error:
-    #         utils.check_path_valid(";*")
-    #     self.assertEqual(error.value.args[0],
-    #                      Constant.MS_AICERR_INVALID_PARAM_ERROR)
+    def test_check_path_valid(self):
+        with pytest.raises(utils.AicErrException) as error:
+            utils.check_path_valid(";*")
+        self.assertEqual(error.value.args[0],
+                         Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
-    # def test_check_path_valid_accessible(self):
-    #     with pytest.raises(utils.AicErrException) as error:
-    #         with mock.patch('os.path.exists', return_value=False):
-    #             with mock.patch('os.makedirs', side_effect=OSError):
-    #                 utils.check_path_valid(
-    #                     os.path.join(cur_abspath,'../res/ori_data/complie_path'), True, True)
-    #     self.assertEqual(error.value.args[0],
-    #                      Constant.MS_AICERR_INVALID_PATH_ERROR)
+    def test_check_path_valid_accessible(self):
+        with pytest.raises(utils.AicErrException) as error:
+            with mock.patch('os.path.exists', return_value=False):
+                with mock.patch('os.makedirs', side_effect=OSError):
+                    utils.check_path_valid(
+                        os.path.join(cur_abspath, '../res/ori_data/complie_path'), True, True)
+        self.assertEqual(error.value.args[0],
+                         Constant.MS_AICERR_INVALID_PATH_ERROR)
 
     def test_get_str_value_empty(self):
         hexstr_value = utils.get_str_value("")
