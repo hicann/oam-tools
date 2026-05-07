@@ -235,19 +235,13 @@ set_target_properties(msprofbin
     LIBRARY_OUTPUT_DIRECTORY ${INSTALL_LIBRARY_DIR}/msprof
 )
 
-if (DEFINED PKG_NAME AND PKG_NAME STREQUAL "oam")
-    install(TARGETS msprofbin OPTIONAL
-        RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/bin
-    )
-else()
-    install(TARGETS msprofbin OPTIONAL
-        RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
-    )
+install(TARGETS msprofbin OPTIONAL
+    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
+)
 
-    install(TARGETS msprofbin OPTIONAL
-        LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
-    )
-endif()
+install(TARGETS msprofbin OPTIONAL
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
+)
 
 ### onetrack target interface
 
@@ -270,5 +264,5 @@ set(msprof_whl
     ${CMAKE_CURRENT_SOURCE_DIR}/../msprof-0.0.1-py3-none-any.whl
 )
 install(PROGRAMS ${msprof_whl}
-    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool OPTIONAL
+    DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/profiler_tool OPTIONAL
 )

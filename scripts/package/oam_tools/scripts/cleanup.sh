@@ -17,7 +17,4 @@
 
 set -e
 
-# 解压临时目录中的子目录权限可能为 550（与正式安装路径对齐），需要先恢复 owner
-# 写位，否则 rm 无法删除目录中的文件条目，会输出大量 "Permission denied"。
-chmod -R u+w "$(pwd)" 2>/dev/null || true
-rm -rf "$(pwd)"
+rm -rf $(pwd)
