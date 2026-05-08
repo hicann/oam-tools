@@ -257,5 +257,5 @@ set(msprof_whl
     ${CMAKE_CURRENT_SOURCE_DIR}/../msprof-0.0.1-py3-none-any.whl
 )
 install(PROGRAMS ${msprof_whl}
-    DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/profiler_tool OPTIONAL
+    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool OPTIONAL
 )

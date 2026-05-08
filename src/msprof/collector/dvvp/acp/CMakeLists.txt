@@ -190,7 +190,7 @@ set_target_properties(acp
 )
 
 install(TARGETS acp OPTIONAL
-    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/bin
+    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/bin
 )
 
 ####################### acp end #######################
@@ -335,7 +335,7 @@ target_link_libraries(profinj PRIVATE
 )
 
 install(TARGETS profinj OPTIONAL
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/profiler/lib64
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/lib64
 )
 
 add_dependencies(profinj profiler_proto)

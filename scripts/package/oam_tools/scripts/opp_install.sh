@@ -417,7 +417,20 @@ fi
 
 updateinstallinfos "${_TARGET_USERNAME}" "${_TARGET_USERGROUP}" "${install_type}" "${relative_path_val}" "${in_feature_new}" "${chip_type_new}"
 logwitherrorlevel "$?" "error" "[ERROR]: ERR_NO:${INSTALL_FAILED};ERR_DES:Update oam-tools install info failed."
-sh "${_COMMON_PARSER_FILE}" --package="${ops_base_platform_dir}" --install --username="${_TARGET_USERNAME}" --usergroup="${_TARGET_USERGROUP}" --set-cann-uninstall \
+
+# Pre-chmod: restore write access on directories that a prior install may have locked (e.g. 555).
+# Required because --copy_all uses "cp -af *" and cannot write into non-writable directories.
+_arch_dir=$(uname -m)
+if [ -n "${pkg_version_dir}" ]; then
+    _copy_root="${_TARGET_INSTALL_PATH}/${pkg_version_dir}"
+else
+    _copy_root="${_TARGET_INSTALL_PATH}"
+fi
+if [ -d "${_copy_root}/${_arch_dir}-linux" ]; then
+    find "${_copy_root}/${_arch_dir}-linux" -type d ! -perm -u+w -exec chmod u+w {} + 2>/dev/null || true
+fi
+
+sh "${_COMMON_PARSER_FILE}" --copy_all --package="${ops_base_platform_dir}" --install --username="${_TARGET_USERNAME}" --usergroup="${_TARGET_USERGROUP}" --set-cann-uninstall \
     --version=$pkg_version --version-dir=$pkg_version_dir $install_option  --use-share-info ${in_install_for_all} ${in_feature_1} ${chip_type_1}  "${install_type}" "${_TARGET_INSTALL_PATH}" "${_FILELIST_FILE}"
 logwitherrorlevel "$?" "error" "[ERROR]: ERR_NO:${INSTALL_FAILED};ERR_DES:Install oam-tools module files failed."
 

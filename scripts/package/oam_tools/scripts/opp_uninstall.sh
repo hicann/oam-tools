@@ -331,10 +331,101 @@ do
 done
 chmod u-w "${atvoss_op_kernel_dst_dir}" 2> /dev/null
 
+# clean up oam-tools-owned paths under opp/ that filelist.csv either tracks as a directory
+# `copy` (skipped by remove_install_files) or doesn't track at all. Without this, an
+# uninstall via cann_uninstall.sh leaves libopapi_oam.so plus a tree of empty subdirs
+# behind, which in turn prevents the version dir from being removed.
+if [ "${uninstall_mode}" != "upgrade" ]; then
+    if [ -n "${pkg_version_dir}" ]; then
+        oam_install_root="${FINAL_INSTALL_PATH}/${pkg_version_dir}"
+    else
+        oam_install_root="${FINAL_INSTALL_PATH}"
+    fi
+    opp_tbe_dir="${oam_install_root}/opp/built-in/op_impl/ai_core/tbe"
+
+    # op_api subtree is created by createOpapiSoftlink during install but is not in
+    # filelist.csv; opp_custom_uninstall.sh's softlinksRemove function is undefined
+    # in this package, so nothing else cleans it up.
+    op_api_dir="${opp_tbe_dir}/op_api"
+    if [ -d "${op_api_dir}" ]; then
+        logandprint "[INFO]: Delete the op_api directory (${op_api_dir})."
+        chmod u+w "${opp_tbe_dir}" 2> /dev/null || true
+        chmod -R u+w "${op_api_dir}" 2> /dev/null || true
+        rm -rf "${op_api_dir}"
+        logwitherrorlevel "$?" "warn" "[WARNING]Delete op_api directory failed, please remove it manually."
+    fi
+
+    # config/ and kernel/ are dir-level `copy` entries: remove_install_files skips them,
+    # so their chip subdirs (now empty after the `del` entries ran) survive. Use
+    # deleteemptyfolders to recursively sweep empty subdirs without touching files
+    # owned by other packages.
+    for tbe_subdir in "${opp_tbe_dir}/config" "${opp_tbe_dir}/kernel"; do
+        if [ -d "${tbe_subdir}" ]; then
+            chmod -R u+w "${tbe_subdir}" 2> /dev/null || true
+            deleteemptyfolders "${tbe_subdir}"
+            if [ "$(ls -A "${tbe_subdir}" 2> /dev/null)" = "" ]; then
+                chmod u+w "$(dirname "${tbe_subdir}")" 2> /dev/null || true
+                rmdir "${tbe_subdir}" 2> /dev/null || true
+            fi
+        fi
+    done
+
+    # aclnnop/ is another dir-level `copy` entry (filelist line for aclnn_inc). Its
+    # contained .h files are tracked as `del` and its `level2/` subdir is mkdir-tracked,
+    # so by this point both are gone — but aclnnop/ itself is not mkdir-tracked and
+    # survives as an empty directory.
+    arch_dir=$(uname -m)
+    aclnnop_dir="${oam_install_root}/${arch_dir}-linux/include/aclnnop"
+    if [ -d "${aclnnop_dir}" ]; then
+        chmod u+w "${aclnnop_dir}" 2> /dev/null || true
+        if [ "$(ls -A "${aclnnop_dir}" 2> /dev/null)" = "" ]; then
+            chmod u+w "$(dirname "${aclnnop_dir}")" 2> /dev/null || true
+            rmdir "${aclnnop_dir}" 2> /dev/null || true
+        fi
+    fi
+
+    # walk up two parent chains that the parser couldn't fully unwind:
+    #   1) opp/built-in/op_impl/ai_core/tbe (held up by op_api/config/kernel above)
+    #   2) <arch>-linux/include (held up by aclnnop/ above)
+    for chain_leaf in "${opp_tbe_dir}" "${oam_install_root}/${arch_dir}-linux/include"; do
+        cleanup_parent="${chain_leaf}"
+        while [ "${cleanup_parent}" != "${oam_install_root}" ] && [ "${cleanup_parent}" != "/" ]; do
+            if [ -d "${cleanup_parent}" ] && [ "$(ls -A "${cleanup_parent}" 2> /dev/null)" = "" ]; then
+                chmod u+w "$(dirname "${cleanup_parent}")" 2> /dev/null || true
+                rmdir "${cleanup_parent}" 2> /dev/null || true
+            fi
+            cleanup_parent="$(dirname "${cleanup_parent}")"
+        done
+    done
+fi
+
 # delete the upper folder when it is empty
 dir_existed=$(ls "${_ABS_INSTALL_PATH}" 2> /dev/null)
 if [ "${dir_existed}" = "" ] && [ "${uninstall_mode}" != "upgrade" ]; then
     rm -rf -d "${_ABS_INSTALL_PATH}" >> /dev/null 2>&1
+fi
+
+# walk up share/info -> share -> <version_dir> (e.g. cann/), removing each parent
+# that is now empty. cann_uninstall.sh deletes itself via del_cann_uninstall_package
+# at the start of do_remove, so once the package payload is gone the version dir
+# itself is just an empty shell that should also be removed.
+if [ "${uninstall_mode}" != "upgrade" ]; then
+    if [ -n "${pkg_version_dir}" ]; then
+        version_root="${FINAL_INSTALL_PATH}/${pkg_version_dir}"
+    else
+        version_root="${FINAL_INSTALL_PATH}"
+    fi
+    cleanup_parent="$(dirname "${_ABS_INSTALL_PATH}")"
+    while [ -n "${cleanup_parent}" ] && [ "${cleanup_parent}" != "/" ]; do
+        if [ -d "${cleanup_parent}" ] && [ "$(ls -A "${cleanup_parent}" 2> /dev/null)" = "" ]; then
+            chmod u+w "$(dirname "${cleanup_parent}")" 2> /dev/null || true
+            rmdir "${cleanup_parent}" 2> /dev/null || true
+        fi
+        if [ "${cleanup_parent}" = "${version_root}" ]; then
+            break
+        fi
+        cleanup_parent="$(dirname "${cleanup_parent}")"
+    done
 fi
 
 subdirs_param_install=$(ls "${installed_path}" 2> /dev/null)

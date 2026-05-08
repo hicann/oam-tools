@@ -62,5 +62,5 @@ target_link_options(ascend_dump_parser PRIVATE
 )
 
 install(TARGETS ascend_dump_parser OPTIONAL
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/msaicerr/lib
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64
 )

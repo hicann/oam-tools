@@ -76,9 +76,10 @@ configure_file(
 )
 configure_file(
     ${OAM_VERSION_OUT_PUT}
-    ${STAGING_DIR}/oam_tools/
+    ${STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/version/oam_tools_version.h
     COPYONLY
 )
+
 # makeself打包
 file(STRINGS ${CPACK_CMAKE_BINARY_DIR}/makeself.txt script_output)
 string(REPLACE " " ";" makeself_param_string "${script_output}")

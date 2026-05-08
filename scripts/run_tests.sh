@@ -27,15 +27,19 @@ declare -A TEST_CASES=(
     ["msaicerr_st"]="pytest"
     ["msaicerr_ut"]="pytest"
     ["msprof_ut"]="gtest"
+    ["install_st"]="pytest"
+    ["upgrade_st"]="pytest"
+    ["uninstall_st"]="pytest"
 )
 
-VALID_COMPONENTS=("asys" "msaicerr" "msprof" "all")
+VALID_COMPONENTS=("asys" "msaicerr" "msprof" "install" "upgrade" "uninstall" "all")
 
 print_usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --component <name>  Specify component to test: asys, msaicerr, msprof, all (default: all)"
+    echo "  --component <name>  Specify component to test:"
+    echo "                        asys, msaicerr, msprof, install, upgrade, uninstall, all (default: all)"
     echo "  --ut               Run UT tests only"
     echo "  --st               Run ST tests only"
     echo "  -h, --help         Show this help message"
@@ -46,6 +50,9 @@ print_usage() {
     echo "  $0 --component msaicerr --ut         # Run msaicerr UT only"
     echo "  $0 --st                              # Run all ST tests"
     echo "  $0 --component msprof --ut           # Run msprof UT only"
+    echo "  $0 --component install               # Run install ST"
+    echo "  $0 --component upgrade               # Run upgrade ST"
+    echo "  $0 --component uninstall             # Run uninstall ST"
 }
 
 parse_args() {
@@ -113,7 +120,7 @@ get_test_cases() {
 
     local components=()
     if [[ "$COMPONENT" == "all" ]]; then
-        components=("asys" "msaicerr" "msprof")
+        components=("asys" "msaicerr" "msprof" "install" "upgrade" "uninstall")
     else
         components=("$COMPONENT")
     fi
@@ -130,6 +137,7 @@ get_test_cases() {
                 msprof)
                     result+=("msprof_ut")
                     ;;
+                # install/upgrade/uninstall have no UT counterpart
             esac
         fi
 
@@ -142,6 +150,15 @@ get_test_cases() {
                     result+=("msaicerr_st")
                     ;;
                 msprof)
+                    ;;
+                install)
+                    result+=("install_st")
+                    ;;
+                upgrade)
+                    result+=("upgrade_st")
+                    ;;
+                uninstall)
+                    result+=("uninstall_st")
                     ;;
             esac
         fi
@@ -248,7 +265,8 @@ validate_pytest_result() {
     fi
 
     local summary_line
-    summary_line=$(grep -E "^=+ .* in [0-9.]+s =+$" "$output_file")
+    # pytest appends "(HH:MM:SS)" after the seconds when total time exceeds 1 minute.
+    summary_line=$(grep -E "^=+ .* in [0-9.]+s( \([0-9:]+\))? =+$" "$output_file")
 
     failed_count=$(echo "$summary_line" | grep -oE '[0-9]+ failed' | awk '{print $1}')
     passed_count=$(echo "$summary_line" | grep -oE '[0-9]+ passed' | awk '{print $1}')
@@ -347,6 +365,18 @@ run_test_case() {
                 echo "1" > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
                 return 1
             fi
+            ;;
+        install_st)
+            python3 -m pytest ./test/st/install/testcase > "${output_file}" 2>&1
+            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            ;;
+        upgrade_st)
+            python3 -m pytest ./test/st/upgrade/testcase > "${output_file}" 2>&1
+            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            ;;
+        uninstall_st)
+            python3 -m pytest ./test/st/uninstall/testcase > "${output_file}" 2>&1
+            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
             ;;
         *)
             echo "ERROR: Unknown test case: $case_name"

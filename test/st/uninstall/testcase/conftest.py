@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 #
@@ -14,10 +15,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
+# run_package and install_dir fixtures are inherited from test/st/conftest.py.
 
-set -e
+import shutil
+import subprocess
 
-# 解压临时目录中的子目录权限可能为 550（与正式安装路径对齐），需要先恢复 owner
-# 写位，否则 rm 无法删除目录中的文件条目，会输出大量 "Permission denied"。
-chmod -R u+w "$(pwd)" 2>/dev/null || true
-rm -rf "$(pwd)"
+import pytest
+
+_BASH = shutil.which("bash") or "/bin/bash"
+
+
+@pytest.fixture
+def installed_dir(run_package, install_dir):
+    """Install oam-tools into install_dir, yield the install root for the test."""
+    result = subprocess.run(
+        [_BASH, run_package, "--full", "--quiet", f"--install-path={install_dir}"],
+        capture_output=True, text=True, timeout=180,
+    )
+    if result.returncode != 0:
+        pytest.fail(
+            f"Pre-test install failed (rc={result.returncode}):\n"
+            f"{result.stdout}{result.stderr}"
+        )
+    yield install_dir

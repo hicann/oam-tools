@@ -8,6 +8,6 @@ src/asys/common/chip_handler.py
 .sisyphus/
 .arts
 submodule
-third_party
 TODO.md
+/third_party/
 *.whl

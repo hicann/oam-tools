@@ -22,7 +22,7 @@ message(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(proto_parse)
 
 set(MS_AIC_ERR_NAME msaicerr_py.tgz)
-set(MSAICERR_DIR ${CMAKE_CURRENT_BINARY_DIR}/msaicerr)
+set(MSAICERR_DIR ${CMAKE_CURRENT_BINARY_DIR}/msaicerr_for_tgz)
 set(PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/proto_parse/dump_data.proto)
 
 protobuf_generate_py(toolchain_msaicerr PROTO_SRCS ${PROTO_FILE})
@@ -41,5 +41,5 @@ add_custom_command(OUTPUT  ${MS_AIC_ERR_NAME}
 )
 
 install(DIRECTORY
-    ${MSAICERR_DIR}
-    DESTINATION ${INSTALL_LIBRARY_DIR}/msaicerr OPTIONAL)
+    ${MSAICERR_DIR}/
+    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/msaicerr OPTIONAL)
