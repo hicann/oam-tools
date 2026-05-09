@@ -29,6 +29,19 @@
 
    <img src="./figures/webIDE.png" alt="云平台"  width="1000px" height="150px">
 
+环境部署完成后，请继续以下步骤：
+
+1. **安装 Python 依赖**
+
+   WebIDE 环境已预装核心依赖，如运行 UT 时缺少其他库，可执行以下命令补充：
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+2. **验证环境**
+
+   请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
+
 
 ### 方式2：Docker部署
 
@@ -67,6 +80,20 @@ docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:
 ```bash
 curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 ```
+
+环境部署完成后，请继续以下步骤：
+
+1. **安装 Python 依赖**
+
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+   > 说明：init_env.sh 已安装 pytest、coverage 等核心依赖，此命令可确保所有依赖完整。
+
+2. **验证环境**
+
+   请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
 
 ### 方式3：手动安装
 
@@ -138,6 +165,79 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 
         请访问[CANN官网下载中心](https://www.hiascend.com/cann/download)，选择发布版本（仅支持CANN 8.5.0及后续版本），并根据产品型号和环境架构下载对应包，最后参考网页提供的命令完成安装。
 
+环境部署完成后，请继续以下步骤：
+
+1. **安装 Python 依赖**
+
+   手动安装环境需要自行配置 Python 依赖，请执行以下命令安装 UT 所需的核心包：
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+2. **验证环境**
+
+   请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
+
+## 源码下载
+
+源码下载命令如下，请将`${branch}`替换为目标分支标签名，源码分支标签与CANN版本配套关系参见[release仓库](https://gitcode.com/cann/release-management)。
+
+```bash
+# 下载项目对应分支源码
+git clone -b ${branch} https://gitcode.com/cann/oam-tools.git
+```
+
+对于WebIDE或Docker环境，已默认提供最新商发版本的项目源码，如需获取其他版本的源码，也需通过上述命令下载源码。
+
+> 注意
+> - gitcode平台在使用HTTPS协议的时候要配置并使用个人访问令牌代替登录密码进行克隆，推送等操作。
+> - 若您的编译环境无法访问网络，无法通过git指令下载代码，请先在联网环境中下载源码，再手动上传至目标环境。
+
+## 离线编译环境准备
+
+若您的编译环境无法访问网络，需要在联网环境中手动下载第三方库、闭源二进制包、子仓，并手动上传至您的编译环境中。
+
+### 下载依赖包
+
+在联网环境中运行下载脚本，该脚本会在执行命令的路径下，直接下载并保存上述第三方库、闭源二进制包和子仓（下载子仓需要在有git的环境且[配置gitcode的个人访问令牌](https://gitcode.com/setting/token-classic), 确保能够正确执行git clone）
+
+```bash
+# 在当前执行路径下保存文件，可以在不同的路径下执行命令(需要修改脚本的相对路径，或者使用绝对路径)来改变保存的位置
+python cmake/download_libs.py
+```
+
+### 上传依赖包
+
+在编译环境中新建一个`third_party_path`目录来存放第三方开源软件和闭源软件
+```bash
+mkdir -p ${third_party_path}
+```
+
+创建好目录后，将下载好的第三方库、闭源二进制包和子仓，上传至目录`third_party_path`。
+
+### 依赖包清单
+
+第三方库、闭源二进制包和子仓包括：
+| 开源软件 | 版本 | 下载地址 |
+|---|---|---|
+|protobuf|v25.1|[protobuf-25.1.tar.gz](https://gitcode.com/cann-src-third-party/protobuf/releases/download/v25.1/protobuf-25.1.tar.gz)|
+|makeself|2.5.0|[makeself-release-2.5.0-patch1.tar.gz](https://gitcode.com/cann-src-third-party/makeself/releases/download/release-2.5.0-patch1.0/makeself-release-2.5.0-patch1.tar.gz)|
+|abseil-cpp|20230802.1|[abseil-cpp-20230802.1.tar.gz](https://gitcode.com/cann-src-third-party/abseil-cpp/releases/download/20230802.1/abseil-cpp-20230802.1.tar.gz)|
+|boost|v1.87.0|[boost_1_87_0.tar.gz](https://gitcode.com/cann-src-third-party/boost/releases/download/v1.87.0/boost_1_87_0.tar.gz)|
+|gtest|1.14.0|[googletest-1.14.0.tar.gz](https://gitcode.com/cann-src-third-party/googletest/releases/download/v1.14.0/googletest-1.14.0.tar.gz)|
+|mockcpp-patch|2.7-h2|[mockcpp-2.7_py3.patch](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7_py3.patch)|
+|mockcpp|2.7-h2|[mockcpp-2.7.tar.gz](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7.tar.gz)|
+
+| 闭源二进制 | 版本 | 下载地址 |
+|---|---|---|
+|cann-oam-tools-release-x86_64.tar.gz|20260213(Stable)|[Download](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260213_newest/cann-oam-tools-release-x86_64.tar.gz)|
+|cann-oam-tools-release-aarch64.tar.gz|20260213(Stable)|[Download](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260213_newest/cann-oam-tools-release-aarch64.tar.gz)|
+
+| 子仓 | 版本 | 下载地址 |
+|---|---|---|
+|msprobe|master|https://gitcode.com/Ascend/msprobe|
+|msprof|master|https://gitcode.com/Ascend/msprof|
+
 ## 环境验证
 
 安装完CANN包后，需验证环境和驱动是否正常。
@@ -156,6 +256,17 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     # 查看CANN ops包版本信息（默认路径安装），WebIDE场景下将/usr/local替换为/home/developer
     cat /usr/local/Ascend/cann/${arch}-linux/ascend_ops_install.info
     ```
+
+-   **检查 Python 依赖**
+
+    ```bash
+    # 检查 pytest 版本
+    pytest --version
+    # 检查 coverage 版本
+    coverage --version
+    ```
+    
+    > 如果命令执行失败，请执行 `pip3 install -r requirements.txt` 安装依赖。
 
 ## 环境变量配置
 
