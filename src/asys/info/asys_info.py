@@ -77,7 +77,7 @@ class AsysInfo:
     @staticmethod
     def __get_host_info(table_data):
         host_info_query_cmds = {
-            "Cpu Info": "lscpu | grep -m 1  -oP 'Model name:\s+\K.*'",
+            "Cpu Info": "lscpu | grep -oP '^\\s*(BIOS Model name|Model name):\\s+\\K.*' | grep -v '^-$' | head -n1",
             "Cpu Physical Count": "lscpu | grep 'Socket(s):' | cut -f2 -d: | uniq",  # arm cpuinfo no 'physical id'
             "Cpu Logical Count": "cat /proc/cpuinfo| grep 'processor' | wc -l",
             "Memory Total Size": "cat /proc/meminfo | sed -n '1p' | awk 'NR=2{print $2, $3}'",
