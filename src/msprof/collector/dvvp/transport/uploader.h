@@ -22,6 +22,7 @@
 #include "queue/bound_queue.h"
 #include "thread/thread.h"
 #include "transport/transport.h"
+#include "prof_common.h"
 
 namespace analysis {
 namespace dvvp {
