@@ -8,10 +8,10 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # -----------------------------------------------------------------------------------------------------------
 
-set_package(oam-tools VERSION "9.0.0")
+set_cann_package(oam-tools VERSION "9.0.0")
 
-set_build_dependencies(metadef "9.0")
-set_build_dependencies(runtime "9.0")
+set_cann_build_dependencies(metadef "9.0")
+set_cann_build_dependencies(runtime "9.0")
 
-set_run_dependencies(metadef "9.0")
-set_run_dependencies(runtime "9.0")
+set_cann_run_dependencies(metadef "9.0")
+set_cann_run_dependencies(runtime "9.0")

@@ -212,7 +212,7 @@ target_link_libraries(msprofiler_fwk_lite_share
         msprof_headers
 )
 
-install(TARGETS msprofiler_fwk_lite_share OPTIONAL
+install(TARGETS msprofiler_fwk_lite_share ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/lib
 )
 ####################### libmsprofiler_lite.so #########################
@@ -286,7 +286,7 @@ target_link_libraries(msprofiler PRIVATE
     -Wl,--as-needed
 )
 
-install(TARGETS msprofiler OPTIONAL
+install(TARGETS msprofiler ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
 )
 endif()
@@ -357,7 +357,7 @@ target_link_libraries(stub_msprofiler PRIVATE
     $<BUILD_INTERFACE:runtime_headers>
 )
 
-install(TARGETS stub_msprofiler OPTIONAL
+install(TARGETS stub_msprofiler ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}/stub
 )
 ###################### stub/libmsprofiler.so #######################

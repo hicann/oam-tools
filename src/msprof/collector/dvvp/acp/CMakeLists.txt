@@ -189,8 +189,9 @@ set_target_properties(acp
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/
 )
 
-install(TARGETS acp OPTIONAL
+install(TARGETS acp ${INSTALL_OPTIONAL}
     RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/bin
+    COMPONENT oam-tools
 )
 
 ####################### acp end #######################
@@ -334,8 +335,9 @@ target_link_libraries(profinj PRIVATE
     ascend_hal
 )
 
-install(TARGETS profinj OPTIONAL
+install(TARGETS profinj ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/lib64
+    COMPONENT oam-tools
 )
 
 add_dependencies(profinj profiler_proto)

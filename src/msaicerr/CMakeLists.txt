@@ -42,4 +42,6 @@ add_custom_command(OUTPUT  ${MS_AIC_ERR_NAME}
 
 install(DIRECTORY
     ${MSAICERR_DIR}/
-    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/msaicerr OPTIONAL)
+    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/msaicerr
+    COMPONENT oam-tools
+)

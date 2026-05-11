@@ -61,15 +61,15 @@ set_target_properties(ascend_hal_stub
 set(PKG_NAME ascend_hal)
 install(TARGETS ascend_hal_stub ascend_hal_headers
     EXPORT ${PKG_NAME}-targets
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/stub OPTIONAL COMPONENT opensdk
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/stub
 )
 message("INSTALL_LIBRARY_DIR : ${INSTALL_LIBRARY_DIR}")
 install(TARGETS ascend_hal_stub ascend_hal_headers
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}/stub OPTIONAL COMPONENT opensdk
+    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}/stub
 )
 install(FILES   ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_define.h
                 ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_error.h
                 ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal.h
                 ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_external.h
-    DESTINATION ${INSTALL_INCLUDE_DIR}/ascend_hal/driver COMPONENT opensdk EXCLUDE_FROM_ALL
+    DESTINATION ${INSTALL_INCLUDE_DIR}/ascend_hal/driver EXCLUDE_FROM_ALL
 )

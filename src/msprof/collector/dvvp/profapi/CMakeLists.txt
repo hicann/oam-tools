@@ -101,7 +101,7 @@ target_link_libraries(profapi_stub PRIVATE
     -Wl,--as-needed
 )
 
-install(TARGETS profapi_stub OPTIONAL
+install(TARGETS profapi_stub ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
 )
 ####################### libprofapi static lib for windows  end ###########################
@@ -213,7 +213,7 @@ target_link_libraries(profapi_lite_share
         msprof_headers
 )
 
-install(TARGETS profapi_lite_share OPTIONAL
+install(TARGETS profapi_lite_share ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/lib
 )
 

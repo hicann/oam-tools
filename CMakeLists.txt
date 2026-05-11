@@ -15,9 +15,11 @@
 # ----------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.15)
+include(cmake/fetch_cann_cmake.cmake)
 set(PKG_NAME oam)
 project(Oam-Tools)
 
+init_cann_project()
 set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
 
@@ -46,8 +48,8 @@ set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_DIR})
 
 include(cmake/func.cmake)
 include(version.cmake)
-check_pkg_build_deps("oam-tools")
-add_version_info_targets()
+check_cann_pkg_build_deps("oam-tools")
+add_cann_version_info_targets()
 
 set(ASCEND_COMPUTE_UNIT
     "ascend910b"

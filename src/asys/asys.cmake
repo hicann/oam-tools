@@ -50,10 +50,3 @@ configure_file(
     ${CMAKE_CURRENT_LIST_DIR}/common/chip_handler.py     # 输出文件路径
     @ONLY                                    # 只替换 @变量@ 格式的占位符
 )
- 
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/chip_handler.py
-    COMMAND cp -f ${CMAKE_CURRENT_LIST_DIR}/common/chip_handler.py ${CMAKE_CURRENT_BINARY_DIR}/chip_handler.py
-)
-add_custom_target(chip_handler DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/chip_handler.py)
- 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/chip_handler.py DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL)

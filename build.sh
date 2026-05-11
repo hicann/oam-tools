@@ -38,6 +38,8 @@ usage() {
     echo "    --build-type=<TYPE>"
     echo "                   Specify build type (TYPE options: Release/Debug), default is Release"
     echo "    --pkg          Build run package"
+    echo "    --ascend_install_path=<PATH>"
+    echo "                   Set ascend package install path, default /usr/local/Ascend/cann"
     echo "    --cann_3rd_lib_path=<PATH>"
     echo "                   Set ascend third_party package install path, default ./third_party"
     echo "Test Options:"
@@ -66,6 +68,7 @@ checkopts() {
     TEST_COMPONENT="all"
     RUN_UT_ONLY="off"
     RUN_ST_ONLY="off"
+
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
     elif [ $UID -eq 0 ]; then
@@ -73,10 +76,11 @@ checkopts() {
     else
         export ASCEND_HOME_PATH=~/Ascend/latest
     fi
+    ASCEND_INSTALL_PATH="${ASCEND_HOME_PATH}"
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,noexec,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
     usage
     exit 1
     }
@@ -121,6 +125,10 @@ checkopts() {
         --noexec)
         EXEC_TEST="off"
         shift
+        ;;
+        --ascend_install_path)
+        ASCEND_HOME_PATH="$(realpath $2)"
+        shift 2
         ;;
         --cann_3rd_lib_path)
         CANN_3RD_LIB_PATH="$(realpath $2)"
@@ -230,7 +238,12 @@ cmake_generate_make() {
     local cmake_args="$2"
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]];then
         echo "clear all files in build directory"
-        [ -d "${build_path}" ] && rm -rf "${build_path}"
+        # makeself_built_in.cmake 末尾会把 _CPack_Packages/makeself_staging 目录树
+        # chmod 到 0550，rm -rf 进不去这些目录，先恢复 owner 写位再删
+        if [ -d "${build_path}" ]; then
+            chmod -R u+w "${build_path}" 2>/dev/null
+            rm -rf "${build_path}"
+        fi
     fi
     mk_dir "${build_path}"
     cd "${build_path}"
@@ -291,6 +304,7 @@ build_oam_tools() {
     -DCMAKE_INSTALL_PREFIX=${BUILD_PATH} \
     -DENABLE_UT=${ENABLE_UT} \
     -DBUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG=ON \
+    -DASCEND_INSTALL_PATH=${ASCEND_INSTALL_PATH} \
     -DCANN_3RD_LIB_PATH=${CANN_3RD_LIB_PATH} \
     -DPRODUCT_SIDE=device \
     -DDCMAKE_WGET_FLAGS='--no-check-certificate' \

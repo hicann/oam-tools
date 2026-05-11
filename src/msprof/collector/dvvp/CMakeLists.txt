@@ -273,7 +273,7 @@ target_link_libraries(profimpl_fwk_share PRIVATE
     -Wl,--as-needed
 )
 
-install(TARGETS profimpl_fwk_share OPTIONAL
+install(TARGETS profimpl_fwk_share ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
 )
 ####################### libprofimpl.so ###########################

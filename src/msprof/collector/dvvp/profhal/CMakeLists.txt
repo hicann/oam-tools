@@ -138,7 +138,7 @@ target_link_libraries(ascendprof_fwk_share PRIVATE
     -Wl,--as-needed
 )
 
-install(TARGETS ascendprof_fwk_share OPTIONAL
+install(TARGETS ascendprof_fwk_share ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
 )
 

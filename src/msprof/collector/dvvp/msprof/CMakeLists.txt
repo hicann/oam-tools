@@ -195,8 +195,9 @@ target_link_libraries(ascend_devprof PRIVATE
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Android>:log>
 )
 
-install(TARGETS ascend_devprof OPTIONAL
+install(TARGETS ascend_devprof ${INSTALL_OPTIONAL}
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
+    COMPONENT oam-tools
 )
 
 add_dependencies(ascend_devprof profiler_proto)
