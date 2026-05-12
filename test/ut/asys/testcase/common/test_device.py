@@ -443,3 +443,15 @@ class TestDevice(AssertTest):
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
         deviceinfo = DeviceInfo()
         self.assertTrue(deviceinfo.get_device_power(0) == 0)
+
+    def test_get_npu_arch(self, mocker):
+        self.assertTrue(True)
+        class Ascendcl():
+            @staticmethod
+            def aclrtGetDeviceInfo(device_id, type, p):
+                return 0
+        mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
+        mocker.patch("drv.LoadSoType.get_ascend_cl", return_value=Ascendcl)
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
+        deviceinfo = DeviceInfo()
+        self.assertTrue(deviceinfo.get_npu_arch(0) == 0)

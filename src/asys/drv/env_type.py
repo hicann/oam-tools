@@ -29,6 +29,7 @@ class LoadSoType(metaclass=Singleton):
         self.drvhal = None
         self.asendml = None
         self.ascend_trace = None
+        self.ascendcl = None
         self.env_type = ""
 
     @staticmethod
@@ -39,6 +40,14 @@ class LoadSoType(metaclass=Singleton):
             log_error(f"OSError: {err}")
             return RetCode.FAILED
         return dll
+
+    @ staticmethod
+    def ctypes_close_library(lib):
+        if lib and lib != RetCode.FAILED:
+            dlclose_func = ctypes.CDLL(None).dlclose
+            dlclose_func.argtypes = [ctypes.c_void_p]
+            dlclose_func.restype = ctypes.c_int
+            dlclose_func(lib._handle)
 
     def get_drvdsmi_env_type(self):
         if self.drvdsmi is None:
@@ -68,6 +77,12 @@ class LoadSoType(metaclass=Singleton):
             self.ascend_trace = self.load_dll(so_name)
         return self.ascend_trace
 
+    def get_ascend_cl(self):
+        if self.ascendcl is None:
+            so_name = "libascendcl.so"
+            self.ascendcl = self.load_dll(so_name)
+        return self.ascendcl
+
     def get_env_type(self):
         if self.env_type:
             return self.env_type
@@ -83,20 +98,14 @@ class LoadSoType(metaclass=Singleton):
                     self.env_type = "EP"
         return self.env_type
 
-    @ staticmethod
-    def ctypes_close_library(lib):
-        if lib and lib != RetCode.FAILED:
-            dlclose_func = ctypes.CDLL(None).dlclose
-            dlclose_func.argtypes = [ctypes.c_void_p]
-            dlclose_func.restype = ctypes.c_int
-            dlclose_func(lib._handle)
-
     def dll_close(self):
         self.ctypes_close_library(self.drvdsmi)
         self.ctypes_close_library(self.drvhal)
         self.ctypes_close_library(self.asendml)
         self.ctypes_close_library(self.ascend_trace)
+        self.ctypes_close_library(self.ascendcl)
         self.drvdsmi = None
         self.drvhal = None
         self.asendml = None
         self.ascend_trace = None
+        self.ascendcl = None

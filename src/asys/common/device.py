@@ -41,6 +41,8 @@ DSMI_TAG_SENSOR_TEMP_LEN = 2
 DSMI_TAG_SENSOR_NTC_TEMP_LEN = 4
 SENSOR_DATA_MAX_LEN = 16
 
+ACL_DEV_ATTR_NPU_ARCH = 601
+
 MODULE_TYPE_SYSTEM = 0
 INFO_TYPE_MASTERID = 2
 
@@ -188,6 +190,7 @@ class DeviceInfo:
         self.dsmi_handle = LoadSoType().get_drvdsmi_env_type()
         self.hal_handle = LoadSoType().get_drvhal_env_type()
         self.ascend_ml = LoadSoType().get_ascend_ml()
+        self.ascend_cl = LoadSoType().get_ascend_cl()
 
     @staticmethod
     def check_status(ret, msg="Failed to query data"):
@@ -403,6 +406,17 @@ class DeviceInfo:
             return NOT_SUPPORT
 
         return p_veccore_count.contents.value
+
+    def get_npu_arch(self, device_id):
+        npu_arch = ctypes.c_int64()
+        try:
+            ret = self.ascend_cl.aclrtGetDeviceInfo(device_id, ACL_DEV_ATTR_NPU_ARCH, ctypes.byref(npu_arch))
+        except AttributeError:
+            return NOT_SUPPORT
+
+        if not self.check_status(ret, "Get npu arch info failed"):
+            return NOT_SUPPORT
+        return npu_arch.value
 
     def get_device_power(self, device_id):
         p_power_info = ctypes.pointer(DsmiPowerInfoStru())

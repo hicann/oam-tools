@@ -107,6 +107,9 @@ class AsysInfo:
             "Chip Info": self.device_info.get_device_info_loop(
                 self.device_num, self.device_info.get_chip_info, UNKNOWN
             ),
+            "Arch Info": self.device_info.get_device_info_loop(
+                self.device_num, self.device_info.get_npu_arch, UNKNOWN
+            ),
             "Control CPU Count": str(ccpu_count * self.device_num) + f" ({ccpu_count} * {self.device_num})",
             "AI CPU Count": str(aicpu_count * self.device_num) + f" ({aicpu_count} * {self.device_num})",
             "AI Core Count": str(aicore_count * self.device_num) + f" ({aicore_count} * {self.device_num})",

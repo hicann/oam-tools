@@ -126,10 +126,16 @@ class TestDevice(AssertTest):
             def halGetChipInfo(device_id, p):
                 return 1
 
+        class Ascendcl():
+            @staticmethod
+            def aclrtGetDeviceInfo(device_id, type, p):
+                return 1
+
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi)
         mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=DrvHal)
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
+        mocker.patch("drv.LoadSoType.get_ascend_cl", return_value=Ascendcl)
         deviceinfo = DeviceInfo()
         self.assertTrue(deviceinfo.get_chip_info(0) == 'Unknown')
         self.assertTrue(deviceinfo.get_device_power(0) == '-')
@@ -138,3 +144,4 @@ class TestDevice(AssertTest):
         self.assertTrue('Clear ecc isolated failed' in caplog.text)
         device_info_95 = ChipHandler().get_handler("950")
         self.assertTrue(device_info_95.get_encode_component_one_id(65536) == 0)
+        self.assertTrue(deviceinfo.get_npu_arch(0) == '-')

@@ -452,6 +452,7 @@ class TestInfo(AssertTest):
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_aicore_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_device_aicore_frequency", return_value=2)
+        mocker.patch.object(DeviceInfo, "get_npu_arch", return_value=2201)
         mocker.patch("ctypes.c_uint", return_value=ctypes.c_uint(35))
         sys.argv = [CONF_SRC_PATH, "info", "=".join([arg_name, arg_val])]
         ParamDict().set_env_type("EP")
