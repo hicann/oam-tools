@@ -15,6 +15,7 @@
  */
 #include "mockcpp/mockcpp.hpp"
 #include "gtest/gtest.h"
+#include <cstdlib>
 #include <iostream>
 #include "errno/error_code.h"
 #include "input_parser.h"
@@ -343,6 +344,16 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheck) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
     EXPECT_EQ(parser.params_->app_dir, parser.params_->result_dir);
 
+    parser.params_->app_dir="";
+    parser.params_->application.clear();
+    parser.params_->result_dir="";
+    MOCKER(analysis::dvvp::common::utils::Utils::CanonicalizePath)
+        .stubs()
+        .will(returnValue(std::string("/tmp/test_default_output")));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
+    EXPECT_EQ("/tmp/test_default_output", parser.params_->result_dir);
+    GlobalMockObject::verify();
+
     parser.params_->result_dir="";
     std::string work_path = "/tmp/ascend_work_path/";
     std::string profiling_path = "profiling_data";
@@ -378,6 +389,37 @@ TEST_F(INPUT_PARSER_UTEST, ASCEND_WORK_PATH)
     auto params = parser.MsprofGetOpts(4, (const char**)argv);
     EXPECT_EQ(true, params->result_dir == (resultDir + "/profiling_data"));
     unsetenv("ASCEND_WORK_PATH");
+}
+
+TEST_F(INPUT_PARSER_UTEST, OutputPriorityOverAscendWorkPath)
+{
+    const char *oldAscendWorkPath = getenv("ASCEND_WORK_PATH");
+    const bool hasOldAscendWorkPath = (oldAscendWorkPath != nullptr);
+    const std::string oldAscendWorkPathValue = hasOldAscendWorkPath ? oldAscendWorkPath : "";
+
+    const std::string ascendWorkPath = "/tmp/msprof_output_priority_work";
+    const std::string outputPath = "/tmp/msprof_output_priority_output";
+    const std::string outputArg = "--output=" + outputPath;
+    setenv("ASCEND_WORK_PATH", ascendWorkPath.c_str(), 1);
+
+    const char *argv[] = {"msprof", outputArg.c_str(), "--aicpu=on", "python3", "test.py", nullptr};
+    optind = 1;
+    InputParser parser = InputParser();
+    auto params = parser.MsprofGetOpts(5, argv);
+
+    EXPECT_NE(nullptr, params);
+    if (params != nullptr) {
+        std::string expectedOutput = analysis::dvvp::common::utils::Utils::CanonicalizePath(outputPath);
+        EXPECT_EQ(expectedOutput, params->result_dir);
+        EXPECT_NE(ascendWorkPath + "/profiling_data", params->result_dir);
+    }
+
+    if (hasOldAscendWorkPath) {
+        setenv("ASCEND_WORK_PATH", oldAscendWorkPathValue.c_str(), 1);
+    } else {
+        unsetenv("ASCEND_WORK_PATH");
+    }
+    Utils::RemoveDir(outputPath);
 }
 
 TEST_F(INPUT_PARSER_UTEST, DefaultOutput)

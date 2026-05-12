@@ -765,6 +765,8 @@ TEST_F(RUNNING_MODE_UTEST, SystemModeModeParamsCheck){
     //EXPECT_EQ(PROFILING_SUCCESS, rMode.ModeParamsCheck());
     params->usedParams ={ARGS_OUTPUT, ARGS_SYS_PERIOD, ARGS_EXPORT};
     EXPECT_EQ(PROFILING_SUCCESS, rMode.ModeParamsCheck());
+    params->usedParams ={ARGS_SYS_PERIOD, ARGS_EXPORT};
+    EXPECT_EQ(PROFILING_SUCCESS, rMode.ModeParamsCheck());
 }
 
 TEST_F(RUNNING_MODE_UTEST, SystemModeRunModeTasks){

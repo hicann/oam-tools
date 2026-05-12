@@ -249,6 +249,8 @@ int32_t InputParser::ParamsCheck() const
         }
         if (!params_->app_dir.empty()) {
             params_->result_dir = params_->app_dir;
+        } else {
+            params_->result_dir = Utils::CanonicalizePath("./");
         }
     }
 

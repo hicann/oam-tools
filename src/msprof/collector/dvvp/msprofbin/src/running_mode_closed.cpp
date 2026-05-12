@@ -146,7 +146,7 @@ SystemMode::SystemMode(std::string preCheckParams, SHARED_PTR_ALIA<ProfileParams
         ARGS_HOST_SYS_PID, ARGS_HOST_SYS_USAGE, ARGS_HOST_SYS_USAGE_FREQ, ARGS_PYTHON_PATH,
         ARGS_MEM_SERVICEFLOW
     };
-    neccessarySet_ = { ARGS_OUTPUT, ARGS_SYS_PERIOD };
+    neccessarySet_ = { ARGS_SYS_PERIOD };
 }
 
 bool SystemMode::IsDeviceJob() const
