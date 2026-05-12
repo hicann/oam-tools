@@ -103,7 +103,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 
     本项目源码编译用到的依赖如下，请注意版本要求。
 
-    - python >= 3.9.0
+    - python >= 3.10.0
     - gcc >= 7.3.0
     - cmake >= 3.16.0
     - ccache
@@ -116,7 +116,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     - coverage (仅执行UT时依赖，建议版本 7.13.2)
     - googletest（仅执行UT时依赖，建议版本 1.14.0）
     - mockcpp（仅执行UT时依赖，建议版本 2.7）
-    - pytest（仅执行UT时依赖，建议版本 9.0.1）
+    - pytest（仅执行UT时依赖，建议版本 9.0.2）
     - pytest-mock (仅执行UT时依赖，建议版本 3.15.1)
     
 	其中：
