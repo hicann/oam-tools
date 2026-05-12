@@ -49,8 +49,6 @@ def create_out_timestamp_dir():
 
     if ParamDict().get_command() not in [consts.collect_cmd, consts.launch_cmd, consts.analyze_cmd]:
         return RetCode.SUCCESS
-    if ParamDict().get_command() == consts.collect_cmd and ParamDict().get_arg("run_mode") == STACKTRACE:
-        return RetCode.SUCCESS
 
     output_dir = init_output_dir_parent()
     if not os.access(output_dir, os.W_OK):

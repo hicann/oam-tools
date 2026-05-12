@@ -84,7 +84,7 @@ class TestAsysCollect(AssertTest):
 
     def test_collect_other_para_error(self, mocker, caplog):
         args = Namespace(subparser_name="collect", task_dir=None, output=None, tar=None, r=None, remote=12345, all=None,
-                         quiet=None)
+                         quiet=None, timeout=None)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(args)
 

@@ -446,8 +446,7 @@ class TestCollect(AssertTest):
         msg = capsys.readouterr()
         self.assertTrue("asys collect: error: argument -r: invalid choice: 'stackcore' (choose from 'stacktrace')" in msg.err)
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--output", "./"),
-                                                       ("--tar", False),
+    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--tar", False),
                                                        ("--task_dir", "./")])
     def test_collect_stacktrace_with_other_error(self, caplog, arg_name, arg_val):
 
@@ -456,7 +455,7 @@ class TestCollect(AssertTest):
         sys.argv = [CONF_SRC_PATH, "collect", "-r=stacktrace", f"{arg_name}={arg_val}"]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
-        self.assertTrue("'--output', '--task_dir', and '--tar' can be used only when '-r' is not used." in caplog.text)
+        self.assertTrue("'--task_dir', and '--tar' can be used only when '-r' is not used." in caplog.text)
 
     def test_collect_stacktrace_remote_type_error(self, capsys):
 

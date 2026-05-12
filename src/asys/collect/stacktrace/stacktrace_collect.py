@@ -22,13 +22,14 @@ import time
 
 from common import get_cann_log_path
 from common import log_error, popen_run_cmd, log_warning, log_info
-from common.const import ATRACE_LOG_NAME, RetCode
+from common import FileOperate as f
+from common.file_operate import COPY_MODE
+from common.const import ATRACE_LOG_NAME, RetCode, CHECK_BIN_MAX_TIMEOUT, CHECK_BIN_DEFAULT_TIMEOUT
 from params import ParamDict
 from collect.stacktrace import AscendTraceDll
 from drv import EnvVarName
 
 EVERY_ROUND_TIME = 0.5
-CHECK_BIN_TIMEOUT = 10
 
 
 class AsysStackTrace(AscendTraceDll):
@@ -41,6 +42,8 @@ class AsysStackTrace(AscendTraceDll):
         self.remote_id = ParamDict().get_arg("remote")
         self.is_all_task = ParamDict().get_arg("all")
         self.quiet = ParamDict().get_arg("quiet")
+        self.timeout = ParamDict().get_arg("timeout")
+        self.output = ParamDict().asys_output_timestamp_dir
         self.trace_work_path = ""
 
     def _get_target_work_path(self):
@@ -106,7 +109,7 @@ class AsysStackTrace(AscendTraceDll):
 
     def _wait_bin_file_generate(self, exists_bin_file_num):
         bin_file_name = None
-        for _ in range(int(CHECK_BIN_TIMEOUT // EVERY_ROUND_TIME)):  # 20 * 0.5 = 10s
+        for _ in range(int(self.timeout // EVERY_ROUND_TIME)):  # 20 * 0.5 = 10s
             if not bin_file_name:
                 current_bin_file_num = self._get_exists_bin_file_num()
                 if current_bin_file_num == exists_bin_file_num:
@@ -124,16 +127,18 @@ class AsysStackTrace(AscendTraceDll):
         log_error(f"get the stackcore bin file in path {os.path.abspath(self.trace_work_path)} timeout.")
         return None
 
-    @staticmethod
-    def _check_other_param():
-        output = ParamDict().get_arg("output")
+    def _check_other_param(self):
         task_dir = ParamDict().get_arg("task_dir")
         tar = ParamDict().get_arg("tar")
-        if output or task_dir or tar:
-            log_error(
-                "'--output', '--task_dir', and '--tar' can be used only when '-r' is not used."
-            )
+        if task_dir or tar:
+            log_error("'--task_dir', and '--tar' can be used only when '-r' is not used.")
             return False
+        if self.timeout:
+            if self.timeout <= 0 or self.timeout > CHECK_BIN_MAX_TIMEOUT:
+                log_error("The value of timeout must in the range [1,60]")
+                return False
+        else:
+            self.timeout = CHECK_BIN_DEFAULT_TIMEOUT
         return True
 
     def _check_remote_id_validity(self):
@@ -210,6 +215,7 @@ class AsysStackTrace(AscendTraceDll):
         """
         send signals to export stackcore files.
         """
+        f.remove_dir(self.output)
         param_ret = self._check_other_param()
         if not param_ret:
             return False
@@ -249,5 +255,9 @@ class AsysStackTrace(AscendTraceDll):
         parse_ret = self.parse_stackcore_bin_to_txt(bin_file_path)
         if not parse_ret:
             return False
+
+        ret = f.collect_dir(bin_file_path, self.output, COPY_MODE)
+        if not ret:
+            log_warning(f"Copy output file from {bin_file_path} to {self.output} failed.")
 
         return True

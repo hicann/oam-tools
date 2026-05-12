@@ -113,14 +113,11 @@ class ParamDict(metaclass=Singleton):
 
     def set_args(self, args):
         self.__command = args.subparser_name
-        _output = "output"
 
         if self.__command == consts.diagnose_cmd:
             self._set_arg_d(args)
             self._set_arg_r(args)
-            self._set_arg_common(args, _output)
             self._set_arg_common(args, "timeout")
-            return
 
         if self.__command == consts.health_cmd:
             self._set_arg_d(args)
@@ -140,9 +137,7 @@ class ParamDict(metaclass=Singleton):
             self._set_arg_common(args, "exe_file")
             self._set_arg_common(args, "symbol")
             self._set_arg_symbol_path(args)
-            self._set_arg_common(args, _output)
             self._set_arg_common(args, "reg")
-            return
 
         if self.__command == consts.config_cmd:
             self._set_arg_d(args)
@@ -157,20 +152,20 @@ class ParamDict(metaclass=Singleton):
             self._set_arg_common(args, "remote")
             self._set_arg_common(args, "all")
             self._set_arg_common(args, "quiet")
+            self._set_arg_common(args, "timeout")
+            self._set_arg_tar(args)
 
         if self.__command == consts.launch_cmd:
             self._set_arg_common(args, "task")
+            self._set_arg_tar(args)
 
         if self.__command == consts.profiling_cmd:
             self._set_arg_d(args)
             self._set_arg_r(args)
             self._set_arg_p(args)
             self._set_arg_common(args, "aic_metrics")
-            self._set_arg_common(args, _output)
-            return
 
-        self._set_arg_common(args, _output)
-        self._set_arg_tar(args)
+        self._set_arg_common(args, "output")
 
     def set_deps(self, deps):
         for item in deps:

@@ -132,7 +132,7 @@ option
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
         except_msg = """usage: asys collect [-h] [--task_dir ] [--output ] [--tar ] [-r {stacktrace}]
-                [--remote ] [--all] [--quiet]
+                [--remote ] [--all] [--quiet] [--timeout]
 
 options:
   -h, --help       show this help message and exit
@@ -160,7 +160,10 @@ options:
                    '-r=stacktrace'.
   --quiet          <Optional> Disable the interaction function during
                    stack information export, this parameter must be used
-                   together with '-r=stacktrace'."""
+                   together with '-r=stacktrace'.
+  --timeout        <Optional> Specifies the stacktrace collect duration, in 
+                   seconds, value range: [1, 60]. If this argument is not 
+                   specified, the default 10s is used."""
         except_msg_str = except_msg.replace("\n", "").replace(' ', '')
         output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
         self.assertTrue(except_msg_str == output_str)

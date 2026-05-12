@@ -81,6 +81,7 @@ class TestAsysMain(AssertTest):
         mocker.patch("params.param_dict.ParamDict.get_command", return_value="collect")
         mocker.patch("params.param_dict.ParamDict.get_arg", return_value="stacktrace")
         mocker.patch("collect.stacktrace.stacktrace_collect.AsysStackTrace.run", return_value=True)
+        mocker.patch("os.access", return_value=True)
         self.assertTrue(asys.main())
 
     def test_main_confparse_failed(self, mocker):

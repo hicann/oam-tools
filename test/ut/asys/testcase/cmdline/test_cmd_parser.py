@@ -49,7 +49,7 @@ class TestCmdParser(AssertTest):
         ParamDict.clear()
 
     def test_parse_collect_default(self, mocker):
-        fake_namespace = Namespace(subparser_name="collect", task_dir=None, output=None, tar=None, r=None, remote=None, all=None, quiet=None)
+        fake_namespace = Namespace(subparser_name="collect", task_dir=None, output=None, tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
         mocker.patch("argparse.ArgumentParser.parse_args", return_value=fake_namespace)
         self.parser.parse()
         self.assertTrue(ParamDict().get_command() == "collect")

@@ -81,6 +81,11 @@ class Arg(enum.Enum):
         KEY_HELP: f"{OPTIONAL_Y} Disable the interaction function during stack information export, "
                   "this parameter must be used together with '-r=stacktrace'."
     }
+    STACKTRACE_TIMEOUT = {
+        KEY_NAME: "timeout", KEY_TYPE: int, KEY_CHECKER: None, KEY_REQUIRED: False, KEY_METAVAR: " ",
+        KEY_HELP: f"{OPTIONAL_Y} Specifies the stacktrace collect duration, in seconds, value range: [1, 60]. "
+                  "If this argument is not specified, the default 10s is used."
+    }
 
     DEVICE = {
         KEY_NAME: "d", KEY_TYPE: int, KEY_CHECKER: ArgChecker.DEVICE_ID, KEY_REQUIRED: False, KEY_METAVAR: " ",
@@ -205,7 +210,8 @@ class Command(enum.Enum):
     """The support command."""
     COLLECT = {
         KEY_NAME: "collect",
-        KEY_ARGS: [Arg.TASK_DIR, Arg.OUTPUT, Arg.TAR, Arg.COLLECT_RUN, Arg.REMOTE, Arg.ALL, Arg.QUIET],
+        KEY_ARGS: [Arg.TASK_DIR, Arg.OUTPUT, Arg.TAR, Arg.COLLECT_RUN, Arg.REMOTE, Arg.ALL, Arg.QUIET,
+                   Arg.STACKTRACE_TIMEOUT],
         KEY_HELP: "Collects existing maintenance and debugging information in the environment, "
                   "or export stacktrace information in real time."
     }
