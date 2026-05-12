@@ -24,53 +24,10 @@ protobuf_generate(profiler_proto
 add_dependencies(profiler_proto host_protoc protobuf_host_build ascend_protobuf_static)
 
 ####################### acp #######################
-
-set(msprofBinHeader
-    ${SOURCE_DIR}/src
+set(acpBinHeader
     ${runtime_INCLUDE_DIR}
     ${third_party_INCLUDE_DIR}
     ${MSPROF_DIR}/inc/toolchain
-    ${PROTOBUF_HOST_STATIC_INCLUDE}
-    ../include
-    ../../
-    ../../app
-    ../../common/utils
-    ../../msprof/engine/include
-    ../../host/include/
-    ../../message/
-    ../../common
-    ../../common/json
-    ../../common/logger
-    ../../common/queue
-    ../../common/statistics
-    ../../common/validation
-    ../../common/platform
-    ../../common/json
-    ../../common/config/closed
-    ${PROF_BASIC_DIR}/osal
-    ../../common/errno
-    ../../depend/include/stub
-    ../../msprof/common/include/
-    ../../msprof/dynamic_profiling/include/
-    ../../profimpl/adapter/inc
-    ../../profimpl/platform
-    ../../profimpl/platform/closed
-    ../../profimpl/collect/job_wrapper/include
-    ../../profimpl/inc
-    ../../msprof/msproftx/mstx/inc
-    ../../profhal/adx/inc
-    ../../profhal/halinc
-    ../../driver/inc
-    ../../task_handle/include
-    ../../transport
-    ../../profhal/adx/inc
-)
-
-set(acpBinHeader
-    ${msprofBinHeader}
-    ../../../inc/toolchain
-    ${TOP_DIR}/src/third_party/metadef
-    ${PROF_BASIC_DIR}/osal
     include
     ../
     ../app
@@ -95,6 +52,7 @@ set(acpBinHeader
     ../driver/inc
     ../transport
     ../task_handle/include
+    ${PROF_BASIC_DIR}/osal
 )
 
 set(acpBinCpp
@@ -114,8 +72,10 @@ set(acpBinCpp
     ../common/socket/local_socket.cpp
     ../common/json/json.cpp
     ../common/platform/platform.cpp
+    ../common/platform/platform_closed.cpp
     ../common/statistics/perf_count.cpp
     ../driver/devmgmt/ai_drv_dev_api.cpp
+    ../driver/devmgmt/ai_drv_dev_api_closed.cpp
     ../driver/channel/ai_drv_prof_api.cpp
     ../depend/stub/error_manager/msprof_error_manager_stub.cpp
     ../msprof/dynamic_profiling/src/dyn_prof_client.cpp
@@ -151,24 +111,25 @@ target_compile_options(acp PRIVATE
     -fno-strict-aliasing
     -fno-common
     -Wall
-    -D_GLIBCXX_USE_CXX11_ABI=0
+    $<$<CONFIG:Release>:-D_FORTIFY_SOURCE=2 -Os>
+    $<$<CONFIG:Debug>:-D_FORTIFY_SOURCE=2 -Os>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wfloat-equal>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wextra>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-unused-parameter>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-missing-field-initializers>
+    $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Werror>
     $<$<AND:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>,$<STREQUAL:${CMAKE_CONFIGURATION_TYPES},Debug>>:/MTd>
     $<$<AND:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>,$<STREQUAL:${CMAKE_CONFIGURATION_TYPES},Release>>:/MT>
 )
 
 target_compile_definitions(acp PRIVATE
-    SECUREC_USING_STD_SECURE_LIB=0
-    google=ascend_private
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>:NOMINMAX>
 )
 
 target_link_options(acp PRIVATE
     -Wl,-Bsymbolic
     -Wl,--exclude-libs=ALL
+    -Wl,--start-group
     -ldl
 )
 
@@ -228,20 +189,23 @@ set(profinjCpp
     ../profimpl/collect/job_wrapper/src/prof_stars_job.cpp
     ../profimpl/collect/job_wrapper/src/prof_biu_perf_job.cpp
     ../common/platform/platform.cpp
+    ../common/platform/platform_closed.cpp
     ../common/utils/utils.cpp
     ../common/config/closed/config_manager.cpp
     ../common/statistics/perf_count.cpp
     ../common/json/json.cpp
     ../common/cmd_log/cmd_log.cpp
+    ../common/validation/param_validation.cpp
     ../common/validation/param_validation_closed.cpp
     ../common/thread/thread.cpp
     ../common/thread/thread_pool.cpp
     ../common/socket/local_socket.cpp
     ../common/argparse/argparser.cpp
     ../driver/devmgmt/ai_drv_dev_api.cpp
+    ../driver/devmgmt/ai_drv_dev_api_closed.cpp
     ../driver/channel/ai_drv_prof_api.cpp
     ../driver/devmgmt/ai_drv_dsmi_api.cpp
-    ${PROF_BASIC_DIR}/osal/osal.c
+    ../driver/devmgmt/ai_drv_dsmi_api_closed.cpp
     ../app/application.cpp
     ../app/env_manager.cpp
     ../depend/stub/error_manager/msprof_error_manager_stub.cpp
@@ -254,10 +218,11 @@ add_library(profinj SHARED
 )
 
 target_include_directories(profinj PRIVATE
-    ${msprofBinHeader}
+    ${runtime_INCLUDE_DIR}
+    ${third_party_INCLUDE_DIR}
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
-    ${TOP_DIR}/src/third_party/metadef
+    ${MSPROF_DIR}/inc/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}/proto/profiler_proto/
     ${PROF_BASIC_DIR}/osal
@@ -272,6 +237,7 @@ target_include_directories(profinj PRIVATE
     ../common/validation
     ../common/queue
     ../common/json
+    ../common/config
     ../common/config/closed
     ../common/singleton
     ../analyze/inc
@@ -298,40 +264,40 @@ set_target_properties(profinj
 )
 
 target_compile_options(profinj PRIVATE
-    -fPIE
+    -fPIC
+    -fstack-protector-all
     -fno-strict-aliasing
     -fno-common
+    -Wfloat-equal
+    -Wextra
     -Wall
-    -D_GLIBCXX_USE_CXX11_ABI=0
-    $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wfloat-equal>
-    $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wextra>
-    $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-unused-parameter>
-    $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-missing-field-initializers>
+    -Werror
+    $<$<CONFIG:Release>:-D_FORTIFY_SOURCE=2 -Os>
+    $<$<CONFIG:Debug>:-D_FORTIFY_SOURCE=2 -Os>
     $<$<AND:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>,$<STREQUAL:${CMAKE_CONFIGURATION_TYPES},Debug>>:/MTd>
     $<$<AND:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>,$<STREQUAL:${CMAKE_CONFIGURATION_TYPES},Release>>:/MT>
 )
 
-#set (CMAKE_CXX_FLAGS "-std=c++17 -fvisibility-inlines-hidden" ${CMAKE_CXX_FLAGS})
-#set (CMAKE_C_FLAGS "-std=c11" ${CMAKE_C_FLAGS})
+set (CMAKE_CXX_FLAGS "-std=c++17" ${CMAKE_CXX_FLAGS})
+set (CMAKE_C_FLAGS "-std=c11" ${CMAKE_C_FLAGS})
 
 target_compile_definitions(profinj PRIVATE
     MSPROF_LIB
 )
 
 target_link_options(profinj PRIVATE
+    -Wl,-z,relro,-z,now,-z,noexecstack
     -Wl,-Bsymbolic
     -Wl,--exclude-libs=ALL
-    -ldl
 )
 
 target_link_libraries(profinj PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:adump_headers>
-    $<BUILD_INTERFACE:slog_headers>
     c_sec
-    unified_dlog
     mmpa
+    unified_dlog
     ascend_hal
 )
 

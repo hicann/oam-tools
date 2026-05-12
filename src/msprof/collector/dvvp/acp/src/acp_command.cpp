@@ -39,9 +39,22 @@ using namespace analysis::dvvp::common::validation;
 using namespace Analysis::Dvvp::Common::Platform;
 using namespace analysis::dvvp::message;
 
-const std::string LIBASCEND_PROFINJ_LIB = "libascend_profinj.so";
+const std::string LIBASCEND_PROFINJ_LIB_NAME = "libascend_profinj.so";
 constexpr size_t MAX_GROUP_METRICS_LEN = 7;
 constexpr size_t MAX_CUSTOM_METRICS_LEN = 30;
+
+static std::string GetProfinjLibPath()
+{
+    std::string selfPath = Utils::GetSelfPath();
+    if (selfPath.empty()) {
+        return LIBASCEND_PROFINJ_LIB_NAME;
+    }
+    std::string::size_type pos = selfPath.find("/bin/");
+    if (pos == std::string::npos) {
+        return LIBASCEND_PROFINJ_LIB_NAME;
+    }
+    return selfPath.substr(0, pos) + "/lib64/" + LIBASCEND_PROFINJ_LIB_NAME;
+}
 
 /**
  * @brief validation function to check value of option "--output"
@@ -297,7 +310,7 @@ int32_t ProfileCommandRun(Argparser &profCommand)
         MSPROF_LOGE("Failed to write pipe");
         return PROFILING_FAILED;
     }
-    params->app_env += ";LD_PRELOAD=" + LIBASCEND_PROFINJ_LIB;
+    params->app_env += ";LD_PRELOAD=" + GetProfinjLibPath();
     params->app_env += ";ACP_PIPE_FD=" + std::to_string(fdPipe);
     MM_SYS_SET_ENV(MM_ENV_ACP_PIPE_FD, std::to_string(fdPipe).c_str(), 1, ret);
     FUNRET_CHECK_EXPR_ACTION(ret != EOK, return PROFILING_FAILED, "Failed to set environment variable ACP_PIPE_FD.");
