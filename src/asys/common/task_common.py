@@ -127,8 +127,10 @@ def timeout_decorator(timeout):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # 创建进程
-            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            # Use fork context explicitly: forkserver (Python 3.14+ default on Linux)
+            # requires pickling bound methods, which fails when the method is decorated.
+            ctx = multiprocessing.get_context('fork')
+            p = ctx.Process(target=func, args=args, kwargs=kwargs)
             p.daemon = True
             p.start()
             p.join(timeout)

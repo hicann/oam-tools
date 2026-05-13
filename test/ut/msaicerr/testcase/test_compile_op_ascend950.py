@@ -47,6 +47,7 @@ class TestCompileOp():
     def test_get_soc_version_failed(self, monkeypatch, mocker):
         custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
         monkeypatch.setattr(sys, "path", custom_paths)
+        mocker.patch("ms_interface.ascend950.compile_op.DSMIInterface", side_effect=OSError("mocked dsmi"))
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 

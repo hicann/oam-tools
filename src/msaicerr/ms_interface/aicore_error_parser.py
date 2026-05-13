@@ -157,7 +157,7 @@ class AicoreErrorParser:
             return self.get_kernel_name_l0(data_name)
 
     def check_plog_info(self: any):
-        find_path_cmd = ['grep', "\[AIC_INFO\] dev_func:", '-inrE', self.collect_path]
+        find_path_cmd = ['grep', r"\[AIC_INFO\] dev_func:", '-inrE', self.collect_path]
         find_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
         plog_path_ret = utils.get_inquire_result(find_path_cmd, find_path_regexp)
 
@@ -312,9 +312,9 @@ class AicoreErrorParser:
         if self.parse_level == 1:
             dump_data_cmd = ['grep', 'dump exception to file', '-inrE', plog_dir]
             adump_dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
-                "tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
+                r"tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
             ge_dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
-                "(\d+) DumpNodeInfo:.*?extra-info\/data-dump\/\d+\/([\w.]+)"
+                r"(\d+) DumpNodeInfo:.*?extra-info\/data-dump\/\d+\/([\w.]+)"
             adump_dump_data_ret = utils.get_inquire_result(dump_data_cmd, adump_dump_data_regexp)
             adump_dump_data_ret = [item[1:] for item in sorted(adump_dump_data_ret)]
             ge_dump_data_ret = utils.get_inquire_result(dump_data_cmd, ge_dump_data_regexp)
@@ -330,7 +330,7 @@ class AicoreErrorParser:
             dump_data_cmd = ['grep', 'dump exception to file', '-inrE', plog_dir]
 
             dump_data_regexp = r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).*?" \
-                "tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
+                r"tid\:(\d+).*?extra-info\/data-dump\/\d+\/([\w.]+)"
             dump_data_ret = utils.get_inquire_result(dump_data_cmd, dump_data_regexp)
             dump_data_ret = [item[1:] for item in sorted(dump_data_ret)]
             if not dump_data_ret:
@@ -484,7 +484,7 @@ class AicoreErrorParser:
         sub_ptr_addrs = []
         dynamic_tensor_count = []
         de_deplicate = []
-        get_io_cmd = ['grep', '\[Dump\]\[Exception\]', '-inrE', plog_path]
+        get_io_cmd = ['grep', r'\[Dump\]\[Exception\]', '-inrE', plog_path]
         get_io_regexp = r"begin to load .*? tensor.*?end to load .*? tensor"
         get_io_ret = utils.get_inquire_result(get_io_cmd, get_io_regexp)
         idx = 0
@@ -607,7 +607,7 @@ class AicoreErrorParser:
 
     def _get_aic_info(self, kernel_name):
         plog_path = os.path.join(self.collect_path, "collection", "plog")
-        aic_info_cmd = ['grep', '-r', '-C', '1024', f"\[AIC_INFO\] dev_func:{kernel_name}", plog_path]
+        aic_info_cmd = ['grep', '-r', '-C', '1024', f"\\[AIC_INFO\\] dev_func:{kernel_name}", plog_path]
         _, aic_info = utils.execute_command(aic_info_cmd)
         return aic_info
 
@@ -1041,8 +1041,8 @@ exit()"""
         except utils.AicErrException as e:
             utils.print_error_log("Failed to dump data!")
         try:
-            data_dump_failed_cmd1 = ['grep', '\[Dump\]\[Exception\] D2H failed', '-nr', self.collect_path]
-            data_dump_failed_cmd2 = ['grep', '\[Exception\] the address maybe invalid', '-nr', self.collect_path]
+            data_dump_failed_cmd1 = ['grep', r'\[Dump\]\[Exception\] D2H failed', '-nr', self.collect_path]
+            data_dump_failed_cmd2 = ['grep', r'\[Exception\] the address maybe invalid', '-nr', self.collect_path]
             data_dump_ret1, _ = utils.execute_command(data_dump_failed_cmd1)
             data_dump_ret2, _ = utils.execute_command(data_dump_failed_cmd2)
             if data_dump_ret1 == 0 or data_dump_ret2 == 0:
@@ -1059,17 +1059,17 @@ exit()"""
         if data_dump_ret == 0:
             utils.print_error_log("Data dump failed in exception dump. Please contact GE to resolve it!")
             return False
-        data_dump_copy_failed_cmd = ['grep', '\[Dump\]\[Exception\] D2H failed', '-nr', self.collect_path]
+        data_dump_copy_failed_cmd = ['grep', r'\[Dump\]\[Exception\] D2H failed', '-nr', self.collect_path]
         data_dump_copy_ret, _ = utils.execute_command(data_dump_copy_failed_cmd)
         if data_dump_copy_ret == 0:
             utils.print_error_log("Data dump failed. Copy data from device to host fail!")
             return False
-        memory_failed_str = "\[Dump\]\[Exception\] the address maybe invalid"
+        memory_failed_str = r"\[Dump\]\[Exception\] the address maybe invalid"
         memory_faided_ret = re.findall(memory_failed_str, dfx_message)
         if memory_faided_ret:
             utils.print_error_log("Data dump failed. Maybe memory is invalid!")
             return False
-        ffts_addr_num_str = "begin to load normal tensor, index:(\d+)"
+        ffts_addr_num_str = r"begin to load normal tensor, index:(\d+)"
         ffts_addr_num_ret = re.findall(ffts_addr_num_str, dfx_message)
         if not ffts_addr_num_ret:
             info.ffts_addrs_num = 0
@@ -1141,11 +1141,11 @@ exit()"""
         return result
 
     def _get_args_after_exc(self: any) -> list:
-        after_key = '\[AIC_INFO\] args.*after execute'
+        after_key = r'\[AIC_INFO\] args.*after execute'
         return self._get_args_from_info(after_key)
 
     def _get_args_before_exc(self: any) -> list:
-        before_key = '\[AIC_INFO\] args before execute'
+        before_key = r'\[AIC_INFO\] args before execute'
         return self._get_args_from_info(before_key)
 
     @staticmethod
@@ -1538,7 +1538,7 @@ exit()"""
     def get_node_and_kernel_name_l1(self: any) -> Optional[tuple]:
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
         # 获取kernel_name
-        kernel_name_cmd = ['grep', '\[AIC_INFO\] dev_func:', '-inrE', plog_dir]
+        kernel_name_cmd = ['grep', r'\[AIC_INFO\] dev_func:', '-inrE', plog_dir]
         kernel_name_regexp = r"dev_func:([a-zA-Z0-9_]{0,})$"
         kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
         if not kernel_name_ret:
@@ -1552,7 +1552,7 @@ exit()"""
             kernel_name = kernel_name_ret[0]
 
         # 获取node_name、stream_id、task_id
-        node_name_cmd = ['grep', '\[AIC_INFO\] node_name:', '-inrE', plog_dir]
+        node_name_cmd = ['grep', r'\[AIC_INFO\] node_name:', '-inrE', plog_dir]
         regexp = r".+?node_name:(.*?),.*stream_id:(\d+)\s*.+?\s*task_id:(\d+)\s*"
         result = utils.get_inquire_result(node_name_cmd, regexp)
         if not result:

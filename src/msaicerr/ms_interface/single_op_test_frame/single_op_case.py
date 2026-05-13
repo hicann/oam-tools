@@ -138,7 +138,7 @@ class SingleOpCase:
 
         with open(cce_file, 'r') as f:
             content = f.read()
-        cce_pattern = "(?<=//\s).+$"
+        cce_pattern = r"(?<=//\s).+$"
         re_result = re.findall(cce_pattern, content)
         if not re_result:
             utils.print_info_log(
