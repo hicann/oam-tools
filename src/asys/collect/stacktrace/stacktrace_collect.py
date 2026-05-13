@@ -256,8 +256,9 @@ class AsysStackTrace(AscendTraceDll):
         if not parse_ret:
             return False
 
-        ret = f.collect_dir(bin_file_path, self.output, COPY_MODE)
+        folder_path = os.path.dirname(bin_file_path)
+        ret = f.collect_dir(folder_path, self.output, COPY_MODE)
         if not ret:
-            log_warning(f"Copy output file from {bin_file_path} to {self.output} failed.")
+            log_warning(f"Copy output file from {folder_path} to {self.output} failed.")
 
         return True
