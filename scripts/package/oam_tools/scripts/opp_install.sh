@@ -429,6 +429,9 @@ fi
 if [ -d "${_copy_root}/${_arch_dir}-linux" ]; then
     find "${_copy_root}/${_arch_dir}-linux" -type d ! -perm -u+w -exec chmod u+w {} + 2>/dev/null || true
 fi
+if [ -d "${_copy_root}/opp" ]; then
+    find "${_copy_root}/opp" -type d ! -perm -u+w -exec chmod u+w {} + 2>/dev/null || true
+fi
 
 sh "${_COMMON_PARSER_FILE}" --copy_all --package="${ops_base_platform_dir}" --install --username="${_TARGET_USERNAME}" --usergroup="${_TARGET_USERGROUP}" --set-cann-uninstall \
     --version=$pkg_version --version-dir=$pkg_version_dir $install_option  --use-share-info ${in_install_for_all} ${in_feature_1} ${chip_type_1}  "${install_type}" "${_TARGET_INSTALL_PATH}" "${_FILELIST_FILE}"

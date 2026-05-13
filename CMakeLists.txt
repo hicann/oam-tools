@@ -123,11 +123,7 @@ set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
 
 # 拷贝 aml 目录内容
 if(EXISTS "${BUNDLE_PKG}/aml")
-    file(COPY "${BUNDLE_PKG}/aml/lib64/libascend_ml_detect.so" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
-    file(COPY "${BUNDLE_PKG}/aml/lib64/libascend_ml.so" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
     file(COPY "${BUNDLE_PKG}/aml/lib64/plugin" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
-    file(COPY "${BUNDLE_PKG}/aml/lib64/plugin_v2" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
-
     # 如果 plugin/bin 存在，将其内容移动到 plugin 下并删除 bin
     set(_aml_plugin_bin "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/bin")
     if(EXISTS "${_aml_plugin_bin}" AND IS_DIRECTORY "${_aml_plugin_bin}")
@@ -152,18 +148,54 @@ if(EXISTS "${BUNDLE_PKG}/aml")
         )
     endif()
     unset(_aml_plugin_bin)
+
+    # install() commands mirror file(COPY) so CPack's cmake --install step also stages these files
+    install(FILES
+        ${BUNDLE_PKG}/aml/lib64/libascend_ml.so
+        ${BUNDLE_PKG}/aml/lib64/libascend_ml_detect.so
+        DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/lib64
+        COMPONENT oam-tools
+    )
+    install(FILES
+        ${BUNDLE_PKG}/aml/lib64/plugin/libascend_mix_test.so
+        DESTINATION tools/aml/lib64/plugin
+        COMPONENT oam-tools
+    )
+    if(EXISTS "${BUNDLE_PKG}/aml/lib64/plugin/bin/matmul_input_0.bin")
+        install(FILES
+            ${BUNDLE_PKG}/aml/lib64/plugin/bin/matmul_input_0.bin
+            ${BUNDLE_PKG}/aml/lib64/plugin/bin/matmul_input_1.bin
+            DESTINATION tools/aml/lib64/plugin
+            COMPONENT oam-tools
+        )
+    endif()
+    install(FILES
+        ${BUNDLE_PKG}/aml/lib64/plugin_v2/libascend_stress_detect.so
+        DESTINATION tools/aml/lib64/plugin_v2
+        COMPONENT oam-tools
+    )
 endif()
 
 # 拷贝 include 目录
 if(EXISTS "${BUNDLE_PKG}/include")
-    file(COPY "${BUNDLE_PKG}/include" DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux)
+    install(DIRECTORY ${BUNDLE_PKG}/include
+        DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux
+        COMPONENT oam-tools
+    )
 endif()
 
 # 拷贝 built-in 目录
 if(EXISTS "${BUNDLE_PKG}/built-in")
-    file(COPY "${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe" DESTINATION ${INSTALL_LIBRARY_DIR}/opp/built-in/op_impl/ai_core)
-    file(COPY "${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe/op_api/lib/linux/${CMAKE_SYSTEM_PROCESSOR}/libopapi_oam.so"
-        DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
+    install(DIRECTORY ${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe
+        DESTINATION opp/built-in/op_impl/ai_core
+        COMPONENT oam-tools
+        PATTERN "op_api" EXCLUDE
+    )
+    install(FILES
+        ${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe/op_api/lib/linux/${CMAKE_SYSTEM_PROCESSOR}/libopapi_oam.so
+        DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/lib64
+        COMPONENT oam-tools
+    )
 endif()
 
 # 创建 bin pkg_inc 目录

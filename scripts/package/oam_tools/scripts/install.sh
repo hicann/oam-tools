@@ -1670,11 +1670,7 @@ if [ "${is_upgrade}" = "y" ];then
     sh "${_UPGRADE_SHELL_FILE}" "${_TARGET_INSTALL_PATH}" "${_DEFAULT_USERNAME}" "${_DEFAULT_USERGROUP}" ${in_feature} "${is_quiet}" "${is_for_all}" "${is_setenv}" "${is_docker_install}" "${docker_root}" "${is_input_path}" "${is_upgrade}" "${in_feature_new}" "${chip_type_new}" "$pkg_version_dir"
     if [ $(id -u) -eq 0 ]; then
         chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-        chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null
-    fi
-#    aicpuinfofile "add"
-    # repairaicpu "${target_dir}"
-    if [ $(id -u) -eq 0 ]; then
+        chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null    
         chmod -R 555 "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
         chmod 444 "${target_dir}/${opp_platform_dir}/script/filelist.csv" 2> /dev/null
     else
