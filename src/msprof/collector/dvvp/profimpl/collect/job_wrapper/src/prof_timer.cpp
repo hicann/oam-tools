@@ -890,7 +890,7 @@ int32_t NetDevStatsHandler::Init()
         return PROFILING_NOTSUPPORT;
     }
     if (isDcmiV2Supported_) {
-        auto ret = dcmiV2Init_();
+        ret = dcmiV2Init_();
  	    if (ret != PROFILING_SUCCESS) {
  	        MSPROF_LOGW("NetDevStatsHandler dcmi init failed, ret=%d", ret);
  	        return PROFILING_FAILED;
