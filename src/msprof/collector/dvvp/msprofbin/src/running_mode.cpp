@@ -810,8 +810,10 @@ bool SystemMode::DataWillBeCollected() const
     if (params_ == nullptr || params_->usedParams.empty()) {
         return false;
     }
+    std::set<int32_t> necessaryParams = neccessarySet_;
+    necessaryParams.insert(ARGS_OUTPUT);
     std::set<int32_t> unneccessaryParams;
-    set_difference(params_->usedParams.begin(), params_->usedParams.end(), neccessarySet_.begin(), neccessarySet_.end(),
+    set_difference(params_->usedParams.begin(), params_->usedParams.end(), necessaryParams.begin(), necessaryParams.end(),
                    inserter(unneccessaryParams, unneccessaryParams.begin()));
     set_intersection(params_->usedParams.begin(), params_->usedParams.end(), unneccessaryParams.begin(),
                      unneccessaryParams.end(), inserter(unneccessaryParams, unneccessaryParams.begin()));

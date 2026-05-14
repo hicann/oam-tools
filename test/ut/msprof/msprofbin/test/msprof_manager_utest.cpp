@@ -175,6 +175,29 @@ TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper) {
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
 }
 
+TEST_F(MSPROF_MANAGER_UTEST, SystemModeDataWillBeCollected) {
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
+    new analysis::dvvp::message::ProfileParams);
+    Collector::Dvvp::Msprofbin::SystemMode rMode("system", params);
+
+    EXPECT_EQ(false, rMode.DataWillBeCollected());
+
+    params->usedParams = {ARGS_OUTPUT, ARGS_SYS_PERIOD, ARGS_SYS_DEVICES};
+    EXPECT_EQ(false, rMode.DataWillBeCollected());
+
+    params->usedParams = {ARGS_SYS_PERIOD, ARGS_SYS_DEVICES};
+    EXPECT_EQ(false, rMode.DataWillBeCollected());
+
+    params->usedParams = {ARGS_SYS_PERIOD, ARGS_SYS_DEVICES, ARGS_SYS_PROFILING};
+    EXPECT_EQ(true, rMode.DataWillBeCollected());
+
+    params->usedParams = {ARGS_OUTPUT, ARGS_SYS_PERIOD, ARGS_SYS_DEVICES, ARGS_SYS_PROFILING};
+    EXPECT_EQ(true, rMode.DataWillBeCollected());
+
+    params->usedParams = {ARGS_OUTPUT, ARGS_SYS_PERIOD, ARGS_SYS_DEVICES, ARGS_HOST_SYS_USAGE};
+    EXPECT_EQ(true, rMode.DataWillBeCollected());
+}
+
 TEST_F(MSPROF_MANAGER_UTEST, ParamsCheck) {
     GlobalMockObject::verify();
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
