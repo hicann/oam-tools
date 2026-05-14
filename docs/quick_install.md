@@ -1,6 +1,6 @@
 # 环境部署
 
-请您先参考下面步骤完成基础环境搭建和源码下载，确保已安装NPU驱动、固件和CANN软件（`Ascend-cann-toolkit`和`Ascend-cann-ops`）等。
+本文是Oam-tools工具的基础环境搭建，主要目的是在运行环境中，完成NPU驱动、固件和CANN软件（`Ascend-cann-toolkit`和`Ascend-cann-ops`）安装以及完成Oam-Tools源码下载， 请您先参考下面步骤完成基础环境搭建和源码下载。
 
 ## 环境准备
 
@@ -15,7 +15,7 @@
 | ----- | ------ | ------ |
 |  WebIDE  | 一站式开发平台，提供在线直接运行的昇腾环境，无需手动安装。<br>当前可提供单机算力，**默认安装最新商发版CANN包**。 | 适用于没有昇腾设备的开发者。|
 |  Docker  | Docker镜像是一种高效部署方式，已预集成CANN包和必备依赖。<br>当前仅适用于Atlas A2系列产品，OS仅支持Ubuntu操作系统。**默认安装最新商发版CANN包**。 |适用有昇腾设备，需要快速搭建环境的开发者。|
-|  手动安装  | - |适用有昇腾设备，想体验手动安装CANN包或体验最新master分支能力的开发者。|
+|  手动安装  | 按照本文中[方式3：手动安装](#section_manual_install)进行环境准备 |适用有昇腾设备，想体验手动安装CANN包或体验最新master分支能力的开发者。|
 
 ### 方式1：WebIDE环境
 
@@ -95,6 +95,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 
    请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
 
+<a id="section_manual_install"></a>
 ### 方式3：手动安装
 
 对于有昇腾设备的开发者，若您想手动搭建昇腾环境，请参考下述步骤。

@@ -65,6 +65,8 @@ python3 cmake/download_libs.py
 ### gitcode pr/issue 操作
 @.claude/skills/default-skills/SKILL.md
 
+SKILL内容可参考[SKILL.md](.claude/skills/default-skills/SKILL.md)
+
 ### 代码风格
 - 使用 .clang-format 格式化代码
 - 遵循项目既有的代码风格
