@@ -228,7 +228,7 @@ void FILETransport::AddHashData(const std::string& input) const{
  * @param [in] data string
  * @return true: header mark matched, false: not matched
  */
-bool removeStr2IdHeaderMark(std::string& str) {
+static bool removeStr2IdHeaderMark(std::string& str) {
     // keep mark the same as ReportStr2IdInfoToHost in devprof_drv_aicpu
     const std::string mark = "###drv_hashdata###";
     if (str.compare(0, mark.length(), mark) == 0) {
