@@ -63,7 +63,8 @@ def create_out_timestamp_dir():
     if not f.create_dir(_asys_output_path):
         return RetCode.ARG_CREATE_DIR_FAILED
     ParamDict().asys_output_timestamp_dir = _asys_output_path
-    log_info("asys output directory: {0}".format(_asys_output_path))
+    if not (ParamDict().get_command() == consts.collect_cmd and ParamDict().get_arg("run_mode") == STACKTRACE): 
+        log_info("asys output directory: {0}".format(_asys_output_path))
     return RetCode.SUCCESS
 
 

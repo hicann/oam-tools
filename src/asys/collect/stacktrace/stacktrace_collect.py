@@ -133,7 +133,7 @@ class AsysStackTrace(AscendTraceDll):
         if task_dir or tar:
             log_error("'--task_dir', and '--tar' can be used only when '-r' is not used.")
             return False
-        if self.timeout:
+        if isinstance(self.timeout, int) and not isinstance(self.timeout, bool):
             if self.timeout <= 0 or self.timeout > CHECK_BIN_MAX_TIMEOUT:
                 log_error("The value of timeout must in the range [1,60]")
                 return False
@@ -261,4 +261,5 @@ class AsysStackTrace(AscendTraceDll):
         if not ret:
             log_warning(f"Copy output file from {folder_path} to {self.output} failed.")
 
+        log_info(f"Stacktrace output directory: {self.output}")
         return True

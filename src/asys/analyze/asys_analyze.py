@@ -380,6 +380,7 @@ class AsysAnalyze:
 
         if self.file:
             f.copy_file_to_dir(self.file, self.output)
+            log_info(f"Copy source file {self.file} into {self.output}")
             return parse_struct.start_parse_file(os.path.join(self.output, os.path.basename(self.file)))
         elif self.path:
             self.path = os.path.abspath(self.path)
