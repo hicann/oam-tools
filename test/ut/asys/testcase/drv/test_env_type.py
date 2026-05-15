@@ -37,15 +37,13 @@ def teardown_module():
 
 
 class TestRCEnvTpye(AssertTest):
-
     def setup_method(self):
-        pass
+        LoadSoType.clear()
 
     def teardown_method(self):
         pass
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
-    @pytest.mark.parametrize('ent, env_type', [[0, 'RC'], [1, 'EP']])
+    @pytest.mark.parametrize("ent, env_type", [[0, "RC"], [1, "EP"]])
     def test_get_env_type(self, ent, env_type, mocker, caplog):
         self.assertTrue(True)
         mock_dev = MagicMock()
@@ -53,11 +51,13 @@ class TestRCEnvTpye(AssertTest):
         mock_dev.drvGetPlatformInfo.argtypes = [ctypes.POINTER(ctypes.c_int)]
         num = ctypes.c_int(0)
         mock_dev.drvGetPlatformInfo(ctypes.pointer(num))
+
         # 使用 side_effect 来模拟 drvGetPlatformInfo 修改 num 的值
         def side_effect(num_ptr):
             num_ptr.contents.value = ent
             return 0
+
         mock_dev.drvGetPlatformInfo.side_effect = side_effect
-        mocker.patch.object(LoadSoType, 'get_drvhal_env_type', return_value=mock_dev)
+        mocker.patch.object(LoadSoType, "get_drvhal_env_type", return_value=mock_dev)
         self.assertTrue(LoadSoType().get_env_type() == env_type)
         LoadSoType.clear()

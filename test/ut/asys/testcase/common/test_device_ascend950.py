@@ -32,6 +32,7 @@ from common.const import RetCode
 from drv import LoadSoType
 from ..conftest import AssertTest
 
+
 class TestDevice(AssertTest):
     test_file_path = os.path.join(ut_root_path, "test_file")
 
@@ -47,12 +48,12 @@ class TestDevice(AssertTest):
     def test_get_device_aic_info_with_910D(self, mocker):
         self.assertTrue(True)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetAicoreInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = ChipHandler().get_handler("950")
         self.assertTrue(device_info.get_device_aic_info(0) == [0, "0, 0", "0, 0"])
@@ -60,25 +61,25 @@ class TestDevice(AssertTest):
     def test_get_device_bus_info_with_910D(self, mocker):
         self.assertTrue(True)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetBusInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = ChipHandler().get_handler("950")
-        self.assertTrue(device_info.get_device_bus_info(0) == ["0, 0", "0, 0", 0, "0, 0", "0, 0"])
+        self.assertTrue(
+            device_info.get_device_bus_info(0) == ["0, 0", "0, 0", 0, "0, 0", "0, 0"]
+        )
 
     @pytest.mark.parametrize(
-        ["device_return", "expect"],
-        [(0, [0, 0, '-', 0]), (1, ['-', '-', '-', '-'])]
+        ["device_return", "expect"], [(0, [0, 0, "-", 0]), (1, ["-", "-", "-", "-"])]
     )
     def test_get_device_hbm_info_with_910D(self, mocker, device_return, expect):
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_device_info(device_id, main_cmd, sub_cmd, p_memory_info, size):
                 return device_return
@@ -87,15 +88,16 @@ class TestDevice(AssertTest):
             def dsmi_get_device_utilization_rate(device_id, device_type, p_utilization):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         deviceinfo = ChipHandler().get_handler("950")
         self.assertTrue(deviceinfo.get_device_hbm_info(0) == expect)
 
-    @pytest.mark.parametrize(["value", "expect"], [(0, 0), (1, '-')])
+    @pytest.mark.parametrize(["value", "expect"], [(0, 0), (1, "-")])
     def test_get_950_device_temperature(self, value, expect, mocker):
         self.assertTrue(True)
-        class DrvDsmi():
+
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_soc_sensor_info(device_id, soc_temp, p_memory_info):
                 return value
@@ -108,7 +110,8 @@ class TestDevice(AssertTest):
 
     def test_check_get_device_info(self, mocker, caplog):
         self.assertTrue(True)
-        class DrvDsmi():
+
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_device_power_info(device_id, p):
                 return 1
@@ -121,12 +124,12 @@ class TestDevice(AssertTest):
             def dsmi_clear_ecc_isolated_statistics_info(device_id):
                 return 1
 
-        class DrvHal():
+        class DrvHal:
             @staticmethod
             def halGetChipInfo(device_id, p):
                 return 1
 
-        class Ascendcl():
+        class Ascendcl:
             @staticmethod
             def aclrtGetDeviceInfo(device_id, type, p):
                 return 1
@@ -137,11 +140,11 @@ class TestDevice(AssertTest):
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
         mocker.patch("drv.LoadSoType.get_ascend_cl", return_value=Ascendcl)
         deviceinfo = DeviceInfo()
-        self.assertTrue(deviceinfo.get_chip_info(0) == 'Unknown')
-        self.assertTrue(deviceinfo.get_device_power(0) == '-')
-        self.assertTrue(deviceinfo.get_device_frequency(0, 1) == '-')
+        self.assertTrue(deviceinfo.get_chip_info(0) == "Unknown")
+        self.assertTrue(deviceinfo.get_device_power(0) == "-")
+        self.assertTrue(deviceinfo.get_device_frequency(0, 1) == "-")
         deviceinfo.clear_ecc_isolated(0)
-        self.assertTrue('Clear ecc isolated failed' in caplog.text)
+        self.assertTrue("Clear ecc isolated failed" in caplog.text)
         device_info_95 = ChipHandler().get_handler("950")
         self.assertTrue(device_info_95.get_encode_component_one_id(65536) == 0)
-        self.assertTrue(deviceinfo.get_npu_arch(0) == '-')
+        self.assertTrue(deviceinfo.get_npu_arch(0) == "-")

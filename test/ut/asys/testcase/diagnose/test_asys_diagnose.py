@@ -36,7 +36,6 @@ from common import FileOperate
 
 
 class AsysDiagnose0:
-
     def AmlStressDetect(self, a, b):
         return 0
 
@@ -57,7 +56,6 @@ class AsysDiagnose0:
 
 
 class AsysDiagnose1:
-
     def AmlStressDetect(self, a, b):
         return 1
 
@@ -90,7 +88,6 @@ class Dsmi_handle:
 
 
 class TestAsysDiagnose(AssertTest):
-
     def setup_method(self):
         if not os.getenv("ASCEND_OPP_PATH"):
             os.environ["ASCEND_OPP_PATH"] = "/home"
@@ -113,7 +110,7 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=RetCode.FAILED)
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=RetCode.FAILED)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
@@ -132,7 +129,7 @@ class TestAsysDiagnose(AssertTest):
             output = False
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=0)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B2 V1")
@@ -141,7 +138,6 @@ class TestAsysDiagnose(AssertTest):
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is False)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_1p(self, mocker):
         self.assertTrue(True)
 
@@ -152,11 +148,12 @@ class TestAsysDiagnose(AssertTest):
             output = "./"
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B3 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
@@ -164,7 +161,6 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(os.path.isfile(ret_file))
         os.remove(ret_file)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_hbm_1p(self, mocker):
         self.assertTrue(True)
 
@@ -175,13 +171,14 @@ class TestAsysDiagnose(AssertTest):
             output = "./"
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=1)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
@@ -189,7 +186,6 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(os.path.isfile(ret_file))
         os.remove(ret_file)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_cpu_1p(self, mocker):
         self.assertTrue(True)
 
@@ -200,13 +196,14 @@ class TestAsysDiagnose(AssertTest):
             output = "./"
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=1)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
@@ -214,7 +211,6 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(os.path.isfile(ret_file))
         os.remove(ret_file)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_2p(self, mocker):
         self.assertTrue(True)
 
@@ -225,16 +221,18 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4-1 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910B4-1 V1"
+        )
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_hbm_2p(self, mocker):
         self.assertTrue(True)
 
@@ -245,18 +243,18 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=1)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_cpu_2p(self, mocker):
         self.assertTrue(True)
 
@@ -267,18 +265,20 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=1)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910_9393 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910_9393 V1"
+        )
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_hbm_2p_dsmi(self, mocker):
         self.assertTrue(True)
 
@@ -289,18 +289,20 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=Dsmi_handle())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=Dsmi_handle())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910_9382 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910_9382 V1"
+        )
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_hbm_2p_dsmi_lt_zero(self, mocker):
         self.assertTrue(True)
 
@@ -311,19 +313,21 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=Dsmi_handle())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=Dsmi_handle())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=-1)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910_9372 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910_9372 V1"
+        )
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_hbm_2p_ecc_lt_zero(self, mocker):
         self.assertTrue(True)
 
@@ -334,19 +338,21 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 3
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=-64)
         mocker.patch.object(DeviceInfo, "clear_ecc_isolated", return_value=-1)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910_9362 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910_9362 V1"
+        )
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_d_zero(self, mocker):
         self.assertTrue(True)
 
@@ -357,11 +363,12 @@ class TestAsysDiagnose(AssertTest):
             output = "./"
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
@@ -369,12 +376,10 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(os.path.isfile(ret_file))
         os.remove(ret_file)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
-    @pytest.mark.parametrize("ascend_ml, res", [
-        (AsysDiagnose1, True),
-        (AsysDiagnose2, False)
-    ])
-    def test_diagnose_run_stress_detect(self, ascend_ml, res, mocker,caplog):
+    @pytest.mark.parametrize(
+        "ascend_ml, res", [(AsysDiagnose1, True), (AsysDiagnose2, False)]
+    )
+    def test_diagnose_run_stress_detect(self, ascend_ml, res, mocker, caplog):
         self.assertTrue(True)
 
         class Args:
@@ -384,11 +389,12 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=ascend_ml())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=ascend_ml())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B2 V1")
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         if res:
@@ -397,7 +403,9 @@ class TestAsysDiagnose(AssertTest):
             AsysDiagnose().run()
             self.assertTrue("Run stress_detect failed" in caplog.text)
 
-    @pytest.mark.parametrize(["run_mode"], [("stress_detect",), ("hbm_detect",), ("cpu_detect",)])
+    @pytest.mark.parametrize(
+        ["run_mode"], [("stress_detect",), ("hbm_detect",), ("cpu_detect",)]
+    )
     def test_diagnose_uesr_error(self, mocker, run_mode):
         self.assertTrue(True)
 
@@ -408,8 +416,8 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=1000)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B3 V1")
@@ -418,7 +426,9 @@ class TestAsysDiagnose(AssertTest):
         ParamDict().set_args(Args())
         self.assertTrue(not AsysDiagnose().run())
 
-    @pytest.mark.parametrize(["run_mode"], [("stress_detect",), ("hbm_detect",), ("cpu_detect",)])
+    @pytest.mark.parametrize(
+        ["run_mode"], [("stress_detect",), ("hbm_detect",), ("cpu_detect",)]
+    )
     def test_diagnose_soc_error(self, mocker, run_mode):
         self.assertTrue(True)
 
@@ -429,8 +439,8 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 9104 V1")
@@ -449,16 +459,17 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4-1 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910B4-1 V1"
+        )
         mocker.patch("os.path.isfile", return_value=False)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is False)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_hbm_timeout_le_zero(self, mocker, caplog):
         self.assertTrue(True)
 
@@ -469,18 +480,20 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = -1
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is False)
-        self.assertTrue("The value of timeout must be in the range of [0, 604800]." in caplog.text)
+        self.assertTrue(
+            "The value of timeout must be in the range of [0, 604800]." in caplog.text
+        )
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_cpu_timeout_le_one(self, mocker, caplog):
         self.assertTrue(True)
 
@@ -491,18 +504,20 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 0
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is False)
-        self.assertTrue("The value of timeout must be in the range of [1, 604800]." in caplog.text)
+        self.assertTrue(
+            "The value of timeout must be in the range of [1, 604800]." in caplog.text
+        )
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_hbm_timeout_not_int(self, mocker):
         self.assertTrue(True)
 
@@ -513,22 +528,24 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = [-3]
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B2 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         try:
             AsysDiagnose().run()
         except TypeError as e:
-            self.assertTrue("'<' not supported between instances of 'list' and 'int'" in str(e))
+            self.assertTrue(
+                "'<' not supported between instances of 'list' and 'int'" in str(e)
+            )
         else:
             self.assertTrue(False)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_cpu_timeout_not_int(self, mocker):
         self.assertTrue(True)
 
@@ -539,22 +556,24 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = {-3}
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         try:
             AsysDiagnose().run()
         except TypeError as e:
-            self.assertTrue("'<' not supported between instances of 'set' and 'int'" in str(e))
+            self.assertTrue(
+                "'<' not supported between instances of 'set' and 'int'" in str(e)
+            )
         else:
             self.assertTrue(False)
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_hbm_aml_api_error(self, mocker, caplog):
         self.assertTrue(True)
 
@@ -565,20 +584,22 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 5
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose2())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose2())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(DeviceInfo, "get_ecc_isolated_page", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run())
         self.assertTrue(
-            "Run hbm detect failed, error_msg: 'AsysDiagnose2' object has no attribute 'AmlHbmDetectWithType'" in caplog.text)
+            "Run hbm detect failed, error_msg: 'AsysDiagnose2' object has no attribute 'AmlHbmDetectWithType'"
+            in caplog.text
+        )
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     def test_diagnose_run_cpu_aml_api_error(self, mocker, caplog):
         self.assertTrue(True)
 
@@ -589,17 +610,20 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 5
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose2())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose2())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B4 V1")
         mocker.patch("os.path.isfile", return_value=False)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run())
         self.assertTrue(
-            "Run cpu detect failed, error_msg: 'AsysDiagnose2' object has no attribute 'AmlCpuDetect'" in caplog.text)
+            "Run cpu detect failed, error_msg: 'AsysDiagnose2' object has no attribute 'AmlCpuDetect'"
+            in caplog.text
+        )
 
     def test_diagnose_run_hbm_without_timeout(self, caplog):
         self.assertTrue(True)
@@ -609,27 +633,33 @@ class TestAsysDiagnose(AssertTest):
                 return 0
 
         from common.interface import run_hbm
+
         ret = [1, 2]
         device_id = 1
         device_obj = HbmMocker()
         run_hbm(device_id, device_obj, ret)
-        self.assertTrue(ret == [1, ['Warn', '0']])
+        self.assertTrue(ret == [1, ["Warn", "0"]])
         self.assertTrue(
-            "Run hbm detect failed, error_msg: 'HbmMocker' object has no attribute 'ascend_ml'" in caplog.text)
+            "Run hbm detect failed, error_msg: 'HbmMocker' object has no attribute 'ascend_ml'"
+            in caplog.text
+        )
 
     def test_diagnose_run_cpu_master_id_error(self):
         from common.interface import run_cpu
+
         self.assertTrue(run_cpu(-1, 0, {}) == {-1: "Warn"})
 
     def test_diagnose_run_hbm_master_id_error(self):
         from common.interface import run_hbm
+
         self.assertTrue(run_hbm(-1, 0, {}) == {-1: ["Warn", "0"]})
 
     def test_diagnose_get_devices_master_id(self, mocker):
         from common.interface import get_devices_master_id
+
         self.assertTrue(True)
 
-        class HalDevice():
+        class HalDevice:
             @staticmethod
             def get_phyid_from_logicid(device_id):
                 return RetCode.FAILED
@@ -637,7 +667,6 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(get_devices_master_id(HalDevice(), [0]) == {0: 0})
         self.assertTrue(get_devices_master_id(HalDevice(), [0, 1]) == {0: -1, 1: -1})
 
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
     @pytest.mark.parametrize(["device_id"], [(False,), (0,), (1,), (2,), (3,)])
     def test_diagnose_device_error_d(self, device_id, mocker, caplog, capsys):
         self.assertTrue(True)
@@ -650,29 +679,41 @@ class TestAsysDiagnose(AssertTest):
             timeout = 5
 
         chip_info = "Unknown" if int(device_id) in [0, 1] else "Ascend 910B1 V1"
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
         mocker.patch("common.interface.run_hbm", return_value={0: "Pass"})
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_info)
         mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
 
         if device_id is False:
             self.assertTrue(not AsysDiagnose().run())
-            self.assertTrue("The diagnose command does not support on device_0: Unknown." in caplog.text)
-            self.assertTrue("The diagnose command does not support on device_3: Unknown." in caplog.text)
+            self.assertTrue(
+                "The diagnose command does not support on device_0: Unknown."
+                in caplog.text
+            )
+            self.assertTrue(
+                "The diagnose command does not support on device_3: Unknown."
+                in caplog.text
+            )
         elif device_id in [0, 1]:
             self.assertTrue(not AsysDiagnose().run())
-            self.assertTrue("The diagnose command does not support Unknown." in caplog.text)
+            self.assertTrue(
+                "The diagnose command does not support Unknown." in caplog.text
+            )
         else:
             self.assertTrue(AsysDiagnose().run())
             except_msg = "| Stress Detect      | Pass                   | "
             captured = capsys.readouterr()
             self.assertTrue(except_msg in captured.out)
 
-    @pytest.mark.parametrize(["run_mode"], [("stress_detect",), ("cpu_detect",), ("hbm_detect",), ("component",)])
+    @pytest.mark.parametrize(
+        ["run_mode"],
+        [("stress_detect",), ("cpu_detect",), ("hbm_detect",), ("component",)],
+    )
     def test_diagnose_device_without_d(self, run_mode, mocker, caplog, capsys):
         self.assertTrue(True)
 
@@ -683,18 +724,31 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 5
 
-        fake_ret = subprocess.Popen("ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "ls",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.Popen", return_value=fake_ret)
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
-        ret = {2: ["Pass", "0"], 3: ["Pass", "0"]} if run_mode == "hbm_detect" else {2: "Pass", 3: "Pass"}
+        ret = (
+            {2: ["Pass", "0"], 3: ["Pass", "0"]}
+            if run_mode == "hbm_detect"
+            else {2: "Pass", 3: "Pass"}
+        )
         mocker.patch("common.interface.run_diagnose", return_value=ret)
-        mocker.patch("diagnose.asys_diagnose.AsysDiagnose.get_diagnose_devices_chip_info",
-                     return_value=([2, 3], "Ascend 910B1 V1"))
-        mocker.patch("diagnose.asys_diagnose.AsysDiagnose._check_support", return_value=True)
+        mocker.patch(
+            "diagnose.asys_diagnose.AsysDiagnose.get_diagnose_devices_chip_info",
+            return_value=([2, 3], "Ascend 910B1 V1"),
+        )
+        mocker.patch(
+            "diagnose.asys_diagnose.AsysDiagnose._check_support", return_value=True
+        )
         mocker.patch("os.getuid", return_value=0)
-        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch("os.path.exists", return_value=True)
 
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
@@ -742,10 +796,15 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(except_msg in captured.out)
 
     def test_diagnose_env_detect_device_zero(self, mocker, caplog, capsys):
-        fake_ret = subprocess.Popen("ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "ls",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.Popen", return_value=fake_ret)
-        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
         mocker.patch.object(ParamDict, "get_arg", return_value=0)
         diagnose = AsysDiagnose()
@@ -763,33 +822,49 @@ class TestAsysDiagnose(AssertTest):
         mocker.patch.object(ParamDict, "get_arg", return_value=False)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(FileOperate, "check_access", return_value=False)
-        mocker.patch.object(Path, 'exists', return_value=True)
+        mocker.patch.object(Path, "exists", return_value=True)
         diagnose = AsysDiagnose()
         self.assertTrue(not diagnose.env_detect("component"))
-        self.assertTrue("The current directory or debug_info.txt is immutable, Please check" in caplog.text)
+        self.assertTrue(
+            "The current directory or debug_info.txt is immutable, Please check"
+            in caplog.text
+        )
 
     def test_diagnose_env_detect_device_eq_zero(self, mocker, caplog, capsys):
-        fake_ret = subprocess.Popen("ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "ls",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.Popen", return_value=fake_ret)
-        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=0)
         mocker.patch.object(ParamDict, "get_arg", return_value=False)
         diagnose = AsysDiagnose()
         self.assertTrue(not diagnose.env_detect("component"))
 
     def test_diagnose_env_detect(self, mocker):
-        fake_ret = subprocess.Popen("lsas", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "lsas",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.Popen", return_value=fake_ret)
-        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
         mocker.patch.object(ParamDict, "get_arg", return_value=False)
-        mocker.patch.object(Path, 'exists', return_value=False)
+        mocker.patch.object(Path, "exists", return_value=False)
         diagnose = AsysDiagnose()
         self.assertTrue(not diagnose.env_detect("component"))
 
-    @pytest.mark.parametrize(["run_mode"], [("stress_detect",), ("cpu_detect",), ("hbm_detect",), ("component",)])
+    @pytest.mark.parametrize(
+        ["run_mode"],
+        [("stress_detect",), ("cpu_detect",), ("hbm_detect",), ("component",)],
+    )
     def test_diagnose_device_without_a3(self, run_mode, mocker, caplog, capsys):
         self.assertTrue(True)
 
@@ -800,18 +875,31 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 5
 
-        fake_ret = subprocess.Popen("ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "ls",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.Popen", return_value=fake_ret)
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
-        ret = {2: ["Pass", "0"], 3: ["Pass", "0"]} if run_mode == "hbm_detect" else {2: "Pass", 3: "Pass"}
+        ret = (
+            {2: ["Pass", "0"], 3: ["Pass", "0"]}
+            if run_mode == "hbm_detect"
+            else {2: "Pass", 3: "Pass"}
+        )
         mocker.patch("common.interface.run_diagnose", return_value=ret)
-        mocker.patch("diagnose.asys_diagnose.AsysDiagnose.get_diagnose_devices_chip_info",
-                     return_value=([2, 3], "Ascend 910_93"))
-        mocker.patch("diagnose.asys_diagnose.AsysDiagnose._check_support", return_value=True)
+        mocker.patch(
+            "diagnose.asys_diagnose.AsysDiagnose.get_diagnose_devices_chip_info",
+            return_value=([2, 3], "Ascend 910_93"),
+        )
+        mocker.patch(
+            "diagnose.asys_diagnose.AsysDiagnose._check_support", return_value=True
+        )
         mocker.patch("os.getuid", return_value=0)
-        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch("os.path.exists", return_value=True)
 
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())

@@ -65,7 +65,9 @@ class HalHandle:
     def __init__(self, value=0):
         self.value = value
 
-    def halGetDeviceInfo(self, card_num, module_type_aicpu, type_core_num, p_aicpu_count):
+    def halGetDeviceInfo(
+        self, card_num, module_type_aicpu, type_core_num, p_aicpu_count
+    ):
         return self.value
 
 
@@ -83,6 +85,7 @@ class TestDevice(AssertTest):
 
     def test_get_device_count(self, mocker):
         import drv
+
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         deviceinfo = DeviceInfo()
         deviceinfo.get_device_count()
@@ -153,32 +156,30 @@ class TestDevice(AssertTest):
         mocker.patch("ctypes.c_uint", return_value=ctypes.c_int(11000))
         mocker.patch("ctypes.c_char", return_value=ctypes.c_char())
         deviceinfo.get_device_errorcode(0)
-        mocker.patch("ctypes.c_char", return_value=ctypes.c_char(b't'))
+        mocker.patch("ctypes.c_char", return_value=ctypes.c_char(b"t"))
         deviceinfo.get_device_errorcode(0)
         self.assertTrue(True)
 
     def test_get_ccpu_count(self, mocker):
         self.assertTrue(True)
 
-        class DreHal():
-
+        class DreHal:
             @staticmethod
             def halGetDeviceInfo(*args):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=DreHal())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=DreHal())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("ctypes.c_int", return_value=ctypes.c_int(0))
         deviceinfo = DeviceInfo()
         self.assertTrue(deviceinfo.get_ccpu_count(0) == 0)
 
-        class DreHal():
-
+        class DreHal:
             @staticmethod
             def halGetDeviceInfo(*args):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=DreHal())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=DreHal())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("ctypes.c_int", return_value=ctypes.c_int(0))
         deviceinfo = DeviceInfo()
@@ -187,8 +188,7 @@ class TestDevice(AssertTest):
     def test_get_device_hbm_info(self, mocker):
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_hbm_info(device_id, p_memory_info):
                 return 0
@@ -197,7 +197,7 @@ class TestDevice(AssertTest):
             def dsmi_get_memory_info(device_id, p_memory_info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("ctypes.c_int", return_value=ctypes.c_int(0))
         deviceinfo = DeviceInfo()
@@ -206,22 +206,22 @@ class TestDevice(AssertTest):
     def test_get_device_cpu_info(self, mocker):
         device_info = DeviceInfo()
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetCpuInfo(device_id, info):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_cpu_info(0) == ["-"] * 4)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetCpuInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_cpu_info(0) == [0] * 4)
@@ -229,22 +229,22 @@ class TestDevice(AssertTest):
     def test_get_device_aic_info(self, mocker):
         device_info = DeviceInfo()
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetAicoreInfo(device_id, info):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_aic_info(0) == ["-"] * 3)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetAicoreInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_aic_info(0) == [0] * 3)
@@ -252,22 +252,22 @@ class TestDevice(AssertTest):
     def test_get_device_bus_info(self, mocker):
         device_info = DeviceInfo()
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetBusInfo(device_id, info):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_bus_info(0) == ["-"] * 5)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetBusInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_bus_info(0) == [0] * 5)
@@ -275,22 +275,22 @@ class TestDevice(AssertTest):
     def test_get_device_hbm_volt_freq(self, mocker):
         device_info = DeviceInfo()
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetHbmInfo(device_id, info):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_hbm_volt_freq(0) == ["-"] * 2)
 
-        class AmlDevice():
+        class AmlDevice:
             @staticmethod
             def AmlDeviceGetHbmInfo(device_id, info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_hbm_volt_freq(0) == [0] * 2)
@@ -298,22 +298,22 @@ class TestDevice(AssertTest):
     def test_get_phyid_from_logicid(self, mocker):
         device_info = DeviceInfo()
 
-        class HalDevice():
+        class HalDevice:
             @staticmethod
             def drvDeviceGetPhyIdByIndex(device_id, phyid):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_phyid_from_logicid(0) == RetCode.FAILED)
 
-        class HalDevice():
+        class HalDevice:
             @staticmethod
             def drvDeviceGetPhyIdByIndex(device_id, phyid):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_phyid_from_logicid(0) == 0)
@@ -321,22 +321,22 @@ class TestDevice(AssertTest):
     def test_get_masterid_from_phyid(self, mocker):
         device_info = DeviceInfo()
 
-        class HalDevice():
+        class HalDevice:
             @staticmethod
             def halGetDeviceInfo(phyid, a, b, masterid):
                 return 1
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_masterid_from_phyid(0) == RetCode.FAILED)
 
-        class HalDevice():
+        class HalDevice:
             @staticmethod
             def halGetDeviceInfo(phyid, a, b, masterid):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
+        mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=HalDevice())
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_masterid_from_phyid(0) == 0)
@@ -370,22 +370,31 @@ class TestDevice(AssertTest):
                 return ret
 
         device_info = DeviceInfoMock()
-        chip_info = device_info.get_device_info_loop(8, device_info.get_chip_info, "Unknown")
+        chip_info = device_info.get_device_info_loop(
+            8, device_info.get_chip_info, "Unknown"
+        )
         self.assertTrue(chip_info == "Ascend 910B4 V1")
-        ccpu_count = device_info.get_device_info_loop(8, device_info.get_ccpu_count, "-")
+        ccpu_count = device_info.get_device_info_loop(
+            8, device_info.get_ccpu_count, "-"
+        )
         self.assertTrue(ccpu_count == 1)
-        aicpu_count = device_info.get_device_info_loop(8, device_info.get_aicpu_count, "-")
+        aicpu_count = device_info.get_device_info_loop(
+            8, device_info.get_aicpu_count, "-"
+        )
         self.assertTrue(aicpu_count == 7)
-        aicore_count = device_info.get_device_info_loop(8, device_info.get_aicore_count, "-")
+        aicore_count = device_info.get_device_info_loop(
+            8, device_info.get_aicore_count, "-"
+        )
         self.assertTrue(aicore_count == 8)
-        veccore_count = device_info.get_device_info_loop(8, device_info.get_veccore_count, "-")
+        veccore_count = device_info.get_device_info_loop(
+            8, device_info.get_veccore_count, "-"
+        )
         self.assertTrue(veccore_count == 7)
 
     def test_get_device_voltage(self, mocker):
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_device_voltage(device_id, p_memory_info):
                 return 0
@@ -399,7 +408,8 @@ class TestDevice(AssertTest):
 
     def test_get_device_temperature(self, mocker):
         self.assertTrue(True)
-        class DrvDsmi():
+
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_device_temperature(device_id, p_memory_info):
                 return 0
@@ -411,12 +421,15 @@ class TestDevice(AssertTest):
         res = deviceinfo.get_device_temperature(0)
         self.assertTrue(res == 35)
 
-    @pytest.mark.parametrize('func, log_data', [
-        ('get_device_cpu_info', 'Get device cpu info failed'),
-        ('get_device_aic_info', 'Get device aic info failed'),
-        ('get_device_bus_info', 'Get device bus info failed'),
-        ('get_device_hbm_volt_freq', 'Get device hbm volt & freq failed')
-    ])
+    @pytest.mark.parametrize(
+        "func, log_data",
+        [
+            ("get_device_cpu_info", "Get device cpu info failed"),
+            ("get_device_aic_info", "Get device aic info failed"),
+            ("get_device_bus_info", "Get device bus info failed"),
+            ("get_device_hbm_volt_freq", "Get device hbm volt & freq failed"),
+        ],
+    )
     def test_get_device_info_failed(self, func, log_data, mocker, caplog):
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=None)
@@ -424,20 +437,22 @@ class TestDevice(AssertTest):
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
         deviceinfo = DeviceInfo()
         func_dict = {
-            'get_device_cpu_info': deviceinfo.get_device_cpu_info(0),
-            'get_device_aic_info': deviceinfo.get_device_aic_info(0),
-            'get_device_bus_info': deviceinfo.get_device_bus_info(0),
-            'get_device_hbm_volt_freq': deviceinfo.get_device_hbm_volt_freq(0)
+            "get_device_cpu_info": deviceinfo.get_device_cpu_info(0),
+            "get_device_aic_info": deviceinfo.get_device_aic_info(0),
+            "get_device_bus_info": deviceinfo.get_device_bus_info(0),
+            "get_device_hbm_volt_freq": deviceinfo.get_device_hbm_volt_freq(0),
         }
         func_dict.get(func)
         self.assertTrue(log_data in caplog.text)
 
     def test_dsmi_get_device_power_info(self, mocker):
         self.assertTrue(True)
-        class DrvDsmi():
+
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_device_power_info(device_id, p):
                 return 0
+
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi)
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)
@@ -446,10 +461,12 @@ class TestDevice(AssertTest):
 
     def test_get_npu_arch(self, mocker):
         self.assertTrue(True)
-        class Ascendcl():
+
+        class Ascendcl:
             @staticmethod
             def aclrtGetDeviceInfo(device_id, type, p):
                 return 0
+
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         mocker.patch("drv.LoadSoType.get_ascend_cl", return_value=Ascendcl)
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=None)

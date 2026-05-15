@@ -21,23 +21,27 @@ import sys
 import os
 import csv
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from testcase.conftest import ASYS_SRC_PATH, ut_root_path
+
 sys.path.insert(0, ASYS_SRC_PATH)
 
 from common import FileOperate as f
 from common import file_operate
 from ..conftest import AssertTest
 
+
 def setup_module():
     print("TestFileOperate ut test start.")
+
 
 def teardown_module():
     print("TestFileOperate ut test finsh.")
 
-class TestFileOperate(AssertTest):
 
+class TestFileOperate(AssertTest):
     test_file_path = os.path.join(ut_root_path, "test_file")
 
     def setup_method(self):
@@ -79,19 +83,25 @@ class TestFileOperate(AssertTest):
         mocker.patch("shutil.rmtree", return_value=True)
         self.assertTrue(f.remove_dir("./test_dir"))
 
-    @pytest.mark.parametrize("access_set, output", [
-        ([False, False], False),
-        ([True, False], False),
-    ])
+    @pytest.mark.parametrize(
+        "access_set, output",
+        [
+            ([False, False], False),
+            ([True, False], False),
+        ],
+    )
     def test_remove_dir_failed(self, access_set, output, mocker):
         mocker.patch("os.access", side_effect=access_set)
         mocker.patch("shutil.rmtree", return_value=True)
         self.assertTrue(not f.remove_dir("./test_dir"))
 
-    @pytest.mark.parametrize("remove_dir, err_res", [
-        (True, False),
-        (False, True),
-    ])
+    @pytest.mark.parametrize(
+        "remove_dir, err_res",
+        [
+            (True, False),
+            (False, True),
+        ],
+    )
     def test_delete_dirs(self, remove_dir, err_res, mocker, capsys, caplog):
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("common.FileOperate.remove_dir", return_value=remove_dir)
@@ -137,7 +147,7 @@ class TestFileOperate(AssertTest):
         mocker.patch("os.access", return_value=True)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("os.path.isdir", return_value=True)
-        mocker.patch("os.path.relpath", return_value='..')
+        mocker.patch("os.path.relpath", return_value="..")
         self.assertTrue(not f.copy_dir("./test_src", "./test_dst"))
 
     def test_move_dir_success(self, mocker):
@@ -167,7 +177,6 @@ class TestFileOperate(AssertTest):
         mocker.patch("os.path.exists", return_vale=False)
         mocker.patch("os.makedirs")
         self.assertTrue(f.copy_file_to_dir("./test_file", "./test_dst"))
-
 
     def test_copy_file_to_dir_failed(self, mocker):
         mocker.patch("shutil.copy")
@@ -199,25 +208,25 @@ class TestFileOperate(AssertTest):
         self.assertTrue(not f.move_file_to_dir("./test_file", "./test_dst"))
 
     def test_write_file(self, mocker):
-        mocker.patch('builtins.open')
+        mocker.patch("builtins.open")
         f.write_file(self.test_file_path, "test_info")
 
     def test_write_file_no_prepath(self, mocker):
-        mocker.patch('builtins.open')
-        mocker.patch('os.path.exists', return_value=False)
-        mocker.patch('common.FileOperate.create_dir', return_value=False)
+        mocker.patch("builtins.open")
+        mocker.patch("os.path.exists", return_value=False)
+        mocker.patch("common.FileOperate.create_dir", return_value=False)
         f.write_file(self.test_file_path, "test_info")
 
     def test_read_plain_file(self, mocker):
-        mocker.patch('builtins.open')
+        mocker.patch("builtins.open")
         self.assertTrue(f.read_file(self.test_file_path))
 
     def test_read_ini_file(self, mocker):
-        mocker.patch('configparser.ConfigParser')
+        mocker.patch("configparser.ConfigParser")
         self.assertTrue(f.read_file("./test_file.ini"))
 
     def test_read_csv_file(self, mocker):
-        mocker.patch('builtins.open')
+        mocker.patch("builtins.open")
         self.assertTrue(f.read_file("./test_file.csv") == [])
 
     def test_check_valid_dir(self):
@@ -229,51 +238,67 @@ class TestFileOperate(AssertTest):
     def test_check_vaild_error(self):
         self.assertTrue(not f.check_file(None))
         self.assertTrue(not f.check_dir(False))
-        self.assertTrue(f.check_emtpy(''))
+        self.assertTrue(f.check_emtpy(""))
         self.assertTrue(not f.check_access(0))
         f.write_file(None, "test_info")
-        self.assertTrue(not f.remove_file(''))
-    
-    @pytest.mark.skip(reason="temporarily skipped due to test failure")
+        self.assertTrue(not f.remove_file(""))
+
     def test_read_config_exec(self, mocker, caplog):
-        temp_file = '/tmp/test_config_table.csv'
+        temp_file = "/tmp/test_config_table.csv"
         if os.path.exists(temp_file):
             os.remove(temp_file)
-        mocker.patch.object(file_operate, 'CONFIG_TABLE_FILE', temp_file)
+        mocker.patch.object(file_operate, "CONFIG_TABLE_FILE", temp_file)
         result = f().read_config()
         self.assertTrue(result == {})
-        self.assertTrue('does not exist' in caplog.text)
- 
-        with open(temp_file, 'w') as csv_file:
+        self.assertTrue("does not exist" in caplog.text)
+
+        with open(temp_file, "w") as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow(['Key', 'cfg_get', 'cfg_set', 'cfg_restore'])
-            writer.writerow(['Setting1', 'get1,get2', 'set1,set2', 'restore1,restore2'])
-            writer.writerow(['Setting2', 'get3,get4', 'set3'])
-            writer.writerow(['Setting2', 'get3,get4', 'restore3'])
+            writer.writerow(["Key", "cfg_get", "cfg_set", "cfg_restore"])
+            writer.writerow(["Setting1", "get1,get2", "set1,set2", "restore1,restore2"])
+            writer.writerow(["Setting2", "get3,get4", "set3"])
+            writer.writerow(["Setting2", "get3,get4", "restore3"])
+
+        with patch.object(f, "_read_config", side_effect=PermissionError):
+            self.assertTrue(f().read_config() == {})
+            self.assertTrue("Error: Permission denied for file" in caplog.text)
+
+        self.assertTrue(f().read_config() == {})
+        self.assertTrue("format or content is error" in caplog.text)
+        os.remove(temp_file)
+        mocker.patch.object(file_operate, "CONFIG_TABLE_FILE", temp_file)
+        result = f().read_config()
+        self.assertTrue(result == {})
+        self.assertTrue("does not exist" in caplog.text)
+
+        with open(temp_file, "w") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["Key", "cfg_get", "cfg_set", "cfg_restore"])
+            writer.writerow(["Setting1", "get1,get2", "set1,set2", "restore1,restore2"])
+            writer.writerow(["Setting2", "get3,get4", "set3"])
+            writer.writerow(["Setting2", "get3,get4", "restore3"])
         os.chmod(temp_file, 0o111)
         self.assertTrue(f().read_config() == {})
         self.assertTrue("Error: Permission denied for file" in caplog.text)
         os.chmod(temp_file, 0o644)
- 
+
         self.assertTrue(f().read_config() == {})
         self.assertTrue("format or content is error" in caplog.text)
         os.remove(temp_file)
 
     def test_append_write_file_failed(self, mocker, caplog):
-        mocker.patch('os.path.exists', return_value=False)
-        mocker.patch.object(f, 'create_dir', return_value=False)
+        mocker.patch("os.path.exists", return_value=False)
+        mocker.patch.object(f, "create_dir", return_value=False)
         f.append_write_file(self.test_file_path, "test_info")
         self.assertTrue("failed in write file" in caplog.text)
 
-    @pytest.mark.parametrize("mode, res", [
-        ('m', True),
-        ('c', True),
-        ('b', False)
-    ])
+    @pytest.mark.parametrize("mode, res", [("m", True), ("c", True), ("b", False)])
     def test_collect_file_to_dir(self, mode, res, mocker, caplog):
-        mocker.patch.object(f, 'copy_file_to_dir', return_value=True)
-        mocker.patch.object(f, 'move_file_to_dir', return_value=True)
-        mocker.patch.object(f, 'move_dir', return_value=True)
-        mocker.patch.object(f, 'copy_dir', return_value=True)
-        self.assertTrue(f.collect_file_to_dir(self.test_file_path, "./dst", mode) == res)
+        mocker.patch.object(f, "copy_file_to_dir", return_value=True)
+        mocker.patch.object(f, "move_file_to_dir", return_value=True)
+        mocker.patch.object(f, "move_dir", return_value=True)
+        mocker.patch.object(f, "copy_dir", return_value=True)
+        self.assertTrue(
+            f.collect_file_to_dir(self.test_file_path, "./dst", mode) == res
+        )
         self.assertTrue(f.collect_dir(self.test_file_path, "./dst", mode) == res)

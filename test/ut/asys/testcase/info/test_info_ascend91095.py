@@ -21,7 +21,13 @@ import pytest
 import os
 import subprocess
 
-from testcase.conftest import CONF_SRC_PATH , ASYS_SRC_PATH, ut_root_path, set_env, unset_env
+from testcase.conftest import (
+    CONF_SRC_PATH,
+    ASYS_SRC_PATH,
+    ut_root_path,
+    set_env,
+    unset_env,
+)
 
 sys.path.insert(0, ASYS_SRC_PATH)
 import asys
@@ -31,9 +37,12 @@ from common.device import DeviceInfo
 from common.chip_handler import g_device_map
 from info.asys_info import LSPCI_GREP_VERSION, AsysInfo
 
+
 class TestInfo(AssertTest):
     def setup_method(self):
-        ParamDict().asys_output_timestamp_dir = os.path.join(ut_root_path, "asys_output_20230227093645758")
+        ParamDict().asys_output_timestamp_dir = os.path.join(
+            ut_root_path, "asys_output_20230227093645758"
+        )
         g_device_map.clear()
 
     def teardown_method(self):
@@ -41,7 +50,7 @@ class TestInfo(AssertTest):
         g_device_map.clear()
 
     def test_info_pcie(self, capsys):
-        self.assertTrue('d100|d500|d801|d802|d803|d806' in LSPCI_GREP_VERSION)
+        self.assertTrue("d100|d500|d801|d802|d803|d806" in LSPCI_GREP_VERSION)
 
     def test_info_hardware(self, capsys):
         """
@@ -64,7 +73,13 @@ class TestInfo(AssertTest):
         @预期结果: 获取打屏关键词
         """
         mocker.patch.object(ParamDict, "get_arg", return_value="hardware")
-        fake_ret = subprocess.run("cat /proc/cpuinfo | grep notest", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        fake_ret = subprocess.run(
+            "cat /proc/cpuinfo | grep notest",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )
         mocker.patch("subprocess.run", return_value=fake_ret)
         ParamDict().set_env_type("EP")
         AsysInfo().get_hardware_info()
@@ -136,8 +151,7 @@ class TestInfo(AssertTest):
         """
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_hbm_info(device_id, p_memory_info):
                 return 0
@@ -146,7 +160,7 @@ class TestInfo(AssertTest):
             def dsmi_get_memory_info(device_id, p_memory_info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         ParamDict().set_env_type("EP")
         AsysInfo().get_status_info(0)
@@ -162,9 +176,15 @@ class TestInfo(AssertTest):
         @预期结果: 获取打屏关键词
         """
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch.object(DeviceInfo, "get_device_memory_info", return_value=[1024, 0])
-        mocker.patch.object(DeviceInfo, "get_device_hbm_info", return_value=[1024, 0, 0, 0])
-        mocker.patch.object(DeviceInfo, "get_device_hbm_volt_freq", return_value=[1800, 1199])
+        mocker.patch.object(
+            DeviceInfo, "get_device_memory_info", return_value=[1024, 0]
+        )
+        mocker.patch.object(
+            DeviceInfo, "get_device_hbm_info", return_value=[1024, 0, 0, 0]
+        )
+        mocker.patch.object(
+            DeviceInfo, "get_device_hbm_volt_freq", return_value=[1800, 1199]
+        )
 
         ParamDict().set_env_type("EP")
         AsysInfo().get_status_info(0)
@@ -181,7 +201,11 @@ class TestInfo(AssertTest):
         @预期结果: 获取打屏关键词
         """
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch.object(DeviceInfo, "get_device_bus_info", return_value=[930, 2800, 2000, 2000, 2400])
+        mocker.patch.object(
+            DeviceInfo,
+            "get_device_bus_info",
+            return_value=[930, 2800, 2000, 2000, 2400],
+        )
 
         ParamDict().set_env_type("EP")
         AsysInfo().get_status_info(0)
@@ -241,30 +265,43 @@ class TestInfo(AssertTest):
 
         class DeviceInfoMock:
             UNSUPPORTED_KEY_WORDS = ["-"]
+
             def get_chip_info(self, *args):
                 return "Ascend 910B4 V1"
+
             def get_device_power(self, *args):
                 return 875
+
             def get_device_temperature(self, *args):
                 return 56
+
             def get_device_health(self, *args):
                 return "Healthy"
+
             def get_device_cpu_info(self, *args):
                 return 6, 1, 930, 2000
+
             def get_device_aic_info(self, *args):
                 return 20, 900, 800
+
             def get_device_bus_info(self, *args):
                 return 930, 2700, 2000, 2000, 2300
+
             def get_device_memory_info(self, *args):
                 return "-", "-"
+
             def get_device_hbm_info(self, *args):
                 return 32768, 2658, 0, 0
+
             def get_device_utilization_rate(self, *args):
                 return 0
+
             def get_device_hbm_volt_freq(self, *args):
                 return 1200, 1600
+
             def get_device_count(self):
                 return 1
+
         mocker.patch("info.asys_info.get_device", return_value=DeviceInfoMock())
 
         ParamDict().set_env_type("EP")
@@ -316,8 +353,7 @@ class TestInfo(AssertTest):
         """
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_hbm_info(device_id, p_memory_info):
                 return 0
@@ -326,9 +362,11 @@ class TestInfo(AssertTest):
             def dsmi_get_memory_info(device_id, p_memory_info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910_9591 V1")
+        mocker.patch.object(
+            DeviceInfo, "get_chip_info", return_value="Ascend 910_9591 V1"
+        )
 
         ParamDict().set_env_type("EP")
         AsysInfo().get_status_info(0)
@@ -347,36 +385,52 @@ class TestInfo(AssertTest):
 
         class DeviceInfoMock:
             UNSUPPORTED_KEY_WORDS = ["-", "-, -"]
+
             def get_chip_info(self, *args):
                 return "Ascend 910_9591 V1"
+
             def get_aicore_count(self, *args):
                 return 20
+
             def get_device_voltage(self, *args):
                 return "930(Max)"
+
             def get_device_aicore_frequency(self, *args):
                 return "800(Avg)"
+
             def get_device_power(self, *args):
                 return 875
+
             def get_device_temperature(self, *args):
                 return 56
+
             def get_device_health(self, *args):
                 return "Healthy"
+
             def get_device_cpu_info(self, *args):
                 return 6, 1, 930, 2000
+
             def get_device_aic_info(self, *args):
                 return 20, "-, -", "-, -"
+
             def get_device_bus_info(self, *args):
                 return "930, 920", "2700, 2800", 2000, "2700, 2800", "2700, 2800"
+
             def get_device_memory_info(self, *args):
                 return "-", "-"
+
             def get_device_hbm_info(self, *args):
                 return 32768, 2658, 0, 0
+
             def get_device_utilization_rate(self, *args):
                 return 0
+
             def get_device_hbm_volt_freq(self, *args):
                 return 1200, 1600
+
             def get_device_count(self):
                 return 1
+
         mocker.patch("info.asys_info.get_device", return_value=DeviceInfoMock())
         ParamDict().set_env_type("EP")
         AsysInfo().get_status_info(0)
@@ -419,15 +473,18 @@ class TestInfo(AssertTest):
 
     def test_info_run(self, mocker):
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch.object(ParamDict, 'get_arg', return_value="status")
+        mocker.patch.object(ParamDict, "get_arg", return_value="status")
         self.assertTrue(AsysInfo().run())
 
     def test_info_run_timeout(self, mocker, caplog):
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
-        mocker.patch.object(ParamDict, 'get_arg', return_value="0")
-        mocker.patch.object(AsysInfo, 'run_info', side_effect=TimeoutError)
+        mocker.patch.object(ParamDict, "get_arg", return_value="0")
+        mocker.patch.object(AsysInfo, "run_info", side_effect=TimeoutError)
         self.assertTrue(not AsysInfo().run())
-        self.assertTrue("Timeout in retrieving the 0 chip status, Please check for malfunctions" in caplog.text)
+        self.assertTrue(
+            "Timeout in retrieving the 0 chip status, Please check for malfunctions"
+            in caplog.text
+        )
 
     def test_info_status_no_ddr_hbm_timeout(self, capsys, mocker):
         """
@@ -439,11 +496,11 @@ class TestInfo(AssertTest):
         """
         self.assertTrue(True)
 
-        class DrvDsmi():
-
+        class DrvDsmi:
             @staticmethod
             def dsmi_get_hbm_info(device_id, p_memory_info):
                 import time
+
                 time.sleep(11)
                 return 0
 
@@ -451,11 +508,11 @@ class TestInfo(AssertTest):
             def dsmi_get_memory_info(device_id, p_memory_info):
                 return 0
 
-        mocker.patch("common.device.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
+        mocker.patch("drv.LoadSoType.get_drvdsmi_env_type", return_value=DrvDsmi())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         ParamDict().set_env_type("EP")
         try:
-            AsysInfo().run_info('status', 0)
+            AsysInfo().run_info("status", 0)
         except TimeoutError:
             self.assertTrue(True)
         else:
@@ -464,5 +521,13 @@ class TestInfo(AssertTest):
     def test_info_write_info(self, mocker):
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         AsysInfo().write_info()
-        self.assertTrue(os.path.isfile(os.path.join(ParamDict().asys_output_timestamp_dir, "software_info.txt")))
-        self.assertTrue(os.path.isfile(os.path.join(ParamDict().asys_output_timestamp_dir, "hardware_info.txt")))
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(ParamDict().asys_output_timestamp_dir, "software_info.txt")
+            )
+        )
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(ParamDict().asys_output_timestamp_dir, "hardware_info.txt")
+            )
+        )
