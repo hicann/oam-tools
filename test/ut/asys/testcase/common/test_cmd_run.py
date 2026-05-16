@@ -43,8 +43,11 @@ class TestCmdRun(AssertTest):
         self.assertTrue(run_command(cmd) != "NONE")
 
     def test_run_command_failed(self, mocker):
-        cmd = "not supported cmd"
-        fake_ret = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        cmd = "not_exist_cmd"
+        fake_ret = subprocess.CompletedProcess(
+            args=cmd, returncode=127,
+            stdout="", stderr="/bin/sh: 1: not_exist_cmd: not found\n"
+        )
         mocker.patch("subprocess.run", return_value=fake_ret)
         self.assertTrue(run_command(cmd) == "NONE")
 
