@@ -67,6 +67,15 @@ class TestArgChecker(AssertTest):
         self.assertTrue(check_arg_exist_dir(arg_name, arg_val) != RetCode.SUCCESS)
         self.assertTrue(check_arg_create_dir(arg_name, arg_val) != RetCode.SUCCESS)
 
+    @pytest.mark.parametrize("arg_val", ["/test_not_exist_dir"])
+    def test_root_dir_not_exist(self, mocker, arg_val):
+        mocker.patch("os.path.exists", return_value=False)
+        mocker.patch("os.access", return_value=True)
+        mocker.patch("os.access", return_value=True)
+        mocker.patch("cmdline.arg_checker.f.create_dir")
+        arg_name = "test_arg"
+        self.assertTrue(check_arg_create_dir(arg_name, arg_val) == RetCode.SUCCESS)
+
     @pytest.mark.parametrize(["arg_name", "arg_val", "test_res"], [("task", "", RetCode.ARG_EMPTY_STRING),
                                                                    ("task", " ", RetCode.ARG_EMPTY_STRING),
                                                                    ("task", "./test.bash", RetCode.SUCCESS),
