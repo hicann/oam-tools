@@ -33,7 +33,7 @@ from testcase.conftest import (
     great_bin,
 )
 
-sys.argv.insert(0, CONF_SRC_PATH)
+sys.argv[0] = CONF_SRC_PATH
 sys.path.insert(0, ASYS_SRC_PATH)
 
 from analyze import AsysAnalyze

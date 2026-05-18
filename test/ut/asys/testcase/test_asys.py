@@ -23,7 +23,7 @@ import pytest
 from .conftest import ASYS_SRC_PATH, CONF_SRC_PATH, ut_root_path
 from .conftest import AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
+sys.argv[0] = CONF_SRC_PATH
 sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys

@@ -67,13 +67,14 @@ class TestCollectStackAtrace(AssertTest):
         ParamDict.clear()
 
     def test_collect_stacktrace_send_signal_attr_error(self, mocker, caplog):
-        class AsysTraceError:
+        class AsysTraceNoSigqueue:
             def inotify_init(self):
                 return 0
-        mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceError())
+        mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceNoSigqueue())
         obj = AscendTraceDll()
         obj.send_signal_to_pid(True, 12345)
-        self.assertTrue("Send signal failed, error msg: 'AsysTraceError' object has no attribute 'sigqueue'." in caplog.text)
+        expected_msg = "Send signal failed, error msg: 'AsysTraceNoSigqueue' object has no attribute 'sigqueue'."
+        self.assertTrue(expected_msg in caplog.text)
 
     def test_collect_stacktrace_send_signal_error(self, mocker):
         mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceError())
@@ -87,10 +88,14 @@ class TestCollectStackAtrace(AssertTest):
         ret = obj.send_signal_to_pid(True, 12345)
         self.assertTrue(ret is True)
 
-    def test_collect_stacktrace_parse_bin_attr_error(self, caplog):
+    def test_collect_stacktrace_parse_bin_attr_error(self, mocker, caplog):
+        class AsysTraceNoParse:
+            def inotify_init(self):
+                return 0
+        mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceNoParse())
         obj = AscendTraceDll()
         obj.parse_stackcore_bin_to_txt("./test.bin")
-        self.assertTrue("Parse stackcore bin file failed, check trace logs in the plog." in caplog.text)
+        self.assertTrue("Parse stackcore bin file failed, error msg:" in caplog.text)
 
     def test_collect_stacktrace_parse_bin_error(self, mocker):
         mocker.patch("collect.stacktrace.interface.LoadSoType.get_ascend_trace", return_value=AsysTraceError())

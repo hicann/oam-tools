@@ -126,13 +126,15 @@ def check_arg_create_dir(arg_name, arg_val):
         RetCode: return code (SUCCESS:0, FAILED:1)
     """
     def create_dir_reverse_scan(scan_path):
-        while scan_path != "/":
+        while True:
             if os.access(scan_path, os.F_OK):
                 if os.access(scan_path, os.W_OK):
                     f.create_dir(arg_val)
                     return RetCode.SUCCESS
                 else:
                     return RetCode.ARG_CREATE_DIR_FAILED
+            if scan_path == "/":
+                break
             scan_path = os.path.dirname(scan_path)
         return RetCode.ARG_CREATE_DIR_FAILED
 
