@@ -861,11 +861,17 @@ int HcclTest::device_init()
 
 int HcclTest::init_hcclComm_without_nslb()
 {
-    if (accelerator_config > 0) {
+    if (accelerator_config > 0 || enable_symmetric_memory) {
         HcclCommConfig config = {0};
         HcclCommConfigInit(&config);
         config.hcclWorldRankID = rank_id;
         config.hcclOpExpansionMode = accelerator_config;
+        if (enable_symmetric_memory) {
+            size_t reserve_size = get_max_symmetric_memory_size();
+            size_t max_mem_size_per_rank = std::max(SYMMETRIC_MEMORY_STRIDE,
+                (reserve_size + static_cast<size_t>(GIGA) - 1) / static_cast<size_t>(GIGA));
+            config.hcclSymWinMaxMemSizePerRank = max_mem_size_per_rank;
+        }
         HCCLCHECK(HcclCommInitRootInfoConfig(rank_size, &comm_id, rank_id, &config, &hccl_comm));
     } else {
         HCCLCHECK(HcclCommInitRootInfo(rank_size, &comm_id, rank_id, &hccl_comm));
@@ -987,6 +993,27 @@ void HcclTest::get_buff_size(size_t &send_bytes, size_t &recv_bytes)
     malloc_kSize = init_malloc_Ksize_by_data();
     init_send_recv_size_by_data(send_bytes, recv_bytes);
     return;
+}
+
+size_t HcclTest::get_max_symmetric_memory_size()
+{
+    if (symmetric_memory_size != 0) {
+        return symmetric_memory_size;
+    }
+
+    data->data_size = data->min_bytes;
+    if (!(stepbytes_flag && !data->step_bytes)) {
+        for (; data->data_size < data->max_bytes;
+                (data->step_factor <= 1.0 ? data->data_size += data->step_bytes
+                                        : data->data_size *= data->step_factor)) {
+        }
+    }
+
+    size_t send_bytes = 0;
+    size_t recv_bytes = 0;
+    get_buff_size(send_bytes, recv_bytes);
+    symmetric_memory_size = send_bytes + recv_bytes;
+    return symmetric_memory_size;
 }
 
 int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_bytes)
@@ -1162,18 +1189,7 @@ int HcclTest::register_symmetric_memory(HcclCommSymWindow &sym_win)
     if (!enable_symmetric_memory) {
         return HCCL_SUCCESS;
     }
-    // 获取send recv内存大小
-    data->data_size = data->min_bytes;
-    if (!(stepbytes_flag && !data->step_bytes)) {
-        for (; data->data_size < data->max_bytes;
-                (data->step_factor <= 1.0 ? data->data_size += data->step_bytes
-                                        : data->data_size *= data->step_factor)) {
-        }
-    }
-    size_t send_bytes = 0;
-    size_t recv_bytes = 0;
-    get_buff_size(send_bytes, recv_bytes);
-    size_t reserve_size = send_bytes + recv_bytes;
+    size_t reserve_size = get_max_symmetric_memory_size();
     HCCLCHECK(static_cast<HcclResult>(hccl_mem_alloc(reserve_size, &vir_ptr, &symmetric_handle)));
     HCCLCHECK(HcclCommSymWinRegister(hccl_comm, vir_ptr, reserve_size, &sym_win, 1));
     return 0;
