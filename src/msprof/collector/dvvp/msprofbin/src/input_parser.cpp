@@ -217,6 +217,11 @@ int32_t InputParser::ParamsCheck() const
         return MSPROF_DAEMON_ERROR;
     }
 
+    if (params_->taskBlock == "on" && params_->taskBlockShink == "off" && params_->opType.empty()) {
+        CmdLog::CmdErrorLog("Argument --task-block: when set to 'all', --optype must not be empty.");
+        return MSPROF_DAEMON_ERROR;
+    }
+
     if (!params_->result_dir.empty()) {
         return MSPROF_DAEMON_OK;
     }
@@ -973,11 +978,15 @@ int32_t InputParser::CheckAnalyzeRuleSwitch(const struct MsprofCmdInfo &cmdInfo)
     return MSPROF_DAEMON_OK;
 }
 
-int32_t InputParser::CheckCmdScaleIsValid(const struct MsprofCmdInfo &cmdInfo) const
+int32_t InputParser::CheckCmdOpTypeIsValid(const struct MsprofCmdInfo &cmdInfo) const
 {
+    if (cmdInfo.args[ARGS_OP_TYPE] == nullptr) {
+        CmdLog::CmdErrorLog("Argument --optype: expected one argument, please enter a valid value.");
+        return MSPROF_DAEMON_ERROR;
+    }
     std::string errInfo = "";
-    if (!ParamValidation::instance()->CheckScaleIsValid(cmdInfo.args[ARGS_SCALE], params_->scaleType,
-        params_->scaleName, errInfo)) {
+    if (!ParamValidation::instance()->CheckOpTypeIsValid(cmdInfo.args[ARGS_OP_TYPE], params_->opType,
+        errInfo)) {
         CmdLog::CmdErrorLog("%s", errInfo.c_str());
         return MSPROF_DAEMON_ERROR;
     }
@@ -1600,9 +1609,9 @@ void ArgsManager::AddScaleArgs()
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE)) {
         return;
     }
-    Args scale = {"scale", "Customized operator name and operator type with the following format: "
-        "\"opName:*,*;opType:*,*\"."};
-    argsList_.push_back(scale);
+    Args opType = {"optype", "Customized operator type with the following format: "
+        "\"*,*\"."};
+    argsList_.push_back(opType);
 }
 }
 }

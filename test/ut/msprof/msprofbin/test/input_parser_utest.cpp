@@ -536,6 +536,9 @@ TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3));
+    MOCKER_CPP(&Platform::CheckIfSupport, bool (Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
     cmdInfo.args[ARGS_TASK_BLOCK] = "aa";
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
     cmdInfo.args[ARGS_TASK_BLOCK] = "on";
@@ -544,6 +547,17 @@ TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
     cmdInfo.args[ARGS_TASK_BLOCK] = "all";
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
+}
+
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation) {
+    InputParser parser = InputParser();
+    parser.params_->taskBlock = "on";
+    parser.params_->taskBlockShink = "off";
+    parser.params_->opType = "";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.ParamsCheck());
+
+    parser.params_->opType = "MatMul";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.ParamsCheck());
 }
 
 TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid) {
@@ -709,4 +723,43 @@ TEST_F(INPUT_PARSER_UTEST, DISABLED_PreCheckParamOffset) {
     EXPECT_EQ("invalid", LONG_OPTIONS[ARGS_INVALID].name); // 63
     EXPECT_EQ("iteration-id", LONG_OPTIONS[ARGS_EXPORT_ITERATION_ID].name); // 64
     EXPECT_EQ("model-id", LONG_OPTIONS[ARGS_EXPORT_MODEL_ID].name); // 65
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    MOCKER_CPP(&Platform::CheckIfSupport, bool (Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+
+    cmdInfo.args[ARGS_OP_TYPE] = nullptr;
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    cmdInfo.args[ARGS_OP_TYPE] = "";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    std::string longOpType(300, 'a');
+    char* longOpTypePtr = const_cast<char*>(longOpType.c_str());
+    cmdInfo.args[ARGS_OP_TYPE] = longOpTypePtr;
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    cmdInfo.args[ARGS_OP_TYPE] = "MatMul,,Add";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    cmdInfo.args[ARGS_OP_TYPE] = "MatMul,MatMul";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    EXPECT_EQ("MatMul", parser.params_->opType);
+
+    cmdInfo.args[ARGS_OP_TYPE] = "Add,MatMul,Add";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    EXPECT_EQ("Add,MatMul", parser.params_->opType);
+
+    cmdInfo.args[ARGS_OP_TYPE] = "MatMul";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    EXPECT_EQ("MatMul", parser.params_->opType);
+
+    cmdInfo.args[ARGS_OP_TYPE] = "MatMul,Add,Softmax";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    EXPECT_EQ("Add,MatMul,Softmax", parser.params_->opType);
 }

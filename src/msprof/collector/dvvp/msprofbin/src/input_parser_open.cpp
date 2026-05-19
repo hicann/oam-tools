@@ -75,7 +75,7 @@ int32_t InputParser::PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[])
 {    
     std::vector<MsprofArgsType> socBlackSwith = {ARGS_HOST_SYS, ARGS_HOST_SYS_PID, ARGS_HOST_SYS_USAGE,
         ARGS_HOST_SYS_USAGE_FREQ, ARGS_PARSE, ARGS_QUERY, ARGS_EXPORT, ARGS_EXPORT_ITERATION_ID, ARGS_EXPORT_MODEL_ID,
-        ARGS_SUMMARY_FORMAT, ARGS_PYTHON_PATH, ARGS_ANALYZE, ARGS_RULE, ARGS_SCALE};
+        ARGS_SUMMARY_FORMAT, ARGS_PYTHON_PATH, ARGS_ANALYZE, ARGS_RULE, ARGS_OP_TYPE};
     Analysis::Dvvp::Common::Config::PlatformType platformType = ConfigManager::instance()->GetPlatformType();
     if (platformType >= PlatformType::END_TYPE) {
         return PROFILING_FAILED;
@@ -99,15 +99,15 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
     Analysis::Dvvp::Common::Config::PlatformType platformType = ConfigManager::instance()->GetPlatformType();
     std::vector<MsprofArgsType> cloudBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_INSTR_PROFILING, ARGS_INSTR_PROFILING_FREQ,
-        ARGS_SCALE};
+        ARGS_OP_TYPE};
     std::vector<MsprofArgsType> dcBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_IO_PROFILING, ARGS_IO_SAMPLING_FREQ, ARGS_INSTR_PROFILING,
-        ARGS_INSTR_PROFILING_FREQ, ARGS_SCALE};
+        ARGS_INSTR_PROFILING_FREQ, ARGS_OP_TYPE};
     std::vector<MsprofArgsType> cloudBlackSwithV2 = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
-        ARGS_SCALE};
+        ARGS_OP_TYPE};
     std::vector<MsprofArgsType> miniV3BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_INTERCONNECTION_PROFILING, ARGS_INTERCONNECTION_FREQ, ARGS_INSTR_PROFILING, ARGS_INSTR_PROFILING_FREQ,
-        ARGS_SCALE};
+        ARGS_OP_TYPE};
 
     std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> platformArgsType = {
         {PlatformType::CLOUD_TYPE, cloudBlackSwith},
@@ -406,8 +406,8 @@ int32_t InputParser::MsprofCmdCheckValid2(const struct MsprofCmdInfo &cmdInfo, i
         case ARGS_RULE:
             ret = CheckAnalyzeRuleSwitch(cmdInfo);
             break;
-        case ARGS_SCALE:
-            ret = CheckCmdScaleIsValid(cmdInfo);
+        case ARGS_OP_TYPE:
+            ret = CheckCmdOpTypeIsValid(cmdInfo);
             break;
         default:
             break;

@@ -42,18 +42,12 @@ const std::string SOC_PMU_HA = "HA:";
 const std::string SOC_PMU_MATA = "MATA:";
 const std::string SOC_PMU_SMMU = "SMMU:";
 const std::string SOC_PMU_NOC = "NOC:";
-const std::string SCALE_OP_TYPE = "opType:";
-const std::string SCALE_OP_NAME = "opName:";
+
 const std::map<std::string, ProfSocPmuType> SOC_PMU_MAP = {
     {SOC_PMU_HA, ProfSocPmuType::PMU_TYPE_HA},
     {SOC_PMU_MATA, ProfSocPmuType::PMU_TYPE_MATA},
     {SOC_PMU_SMMU, ProfSocPmuType::PMU_TYPE_SMMU},
     {SOC_PMU_NOC, ProfSocPmuType::PMU_TYPE_NOC}
-};
-
-const std::map<std::string, ProfScaleType> SCALE_MAP = {
-    {SCALE_OP_TYPE, ProfScaleType::SCALE_OP_TYPE},
-    {SCALE_OP_NAME, ProfScaleType::SCALE_OP_NAME}
 };
 
 bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &events) const

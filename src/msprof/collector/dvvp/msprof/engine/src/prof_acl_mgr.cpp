@@ -640,8 +640,7 @@ std::string ProfAclMgr::GetParamJsonStr()
     object.RemoveByKey("memServiceflow");
     object.RemoveByKey("ubProfiling");
     object.RemoveByKey("ubInterval");
-    object.RemoveByKey("scaleType");
-    object.RemoveByKey("scaleName");
+    object.RemoveByKey("opType");
     return object.ToString();
 }
 
@@ -1347,18 +1346,38 @@ void ProfAclMgr::ProfDataTypeConfigHandle(SHARED_PTR_ALIA<analysis::dvvp::messag
     }
     dataTypeConfig_ = 0;
     AddAiCpuModelConf(dataTypeConfig_);
+
+    UpdateDataTypeConfigByMetrics(params);
+    UpdateDataTypeConfigByTimelineTrace(params);
+    UpdateDataTypeConfigByProfLevel(params);
+    UpdateDataTypeConfigByGeApi(params);
+    UpdateDataTypeConfigBySwitches(params);
+
+    MSPROF_EVENT("ProfDataTypeConfigHandle dataTypeConfig:0x%llx", dataTypeConfig_);
+}
+
+void ProfAclMgr::UpdateDataTypeConfigByMetrics(const SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+{
     if (!params->ai_core_metrics.empty()) {
         dataTypeConfig_ |= PROF_AICORE_METRICS;
     }
     if (!params->aiv_metrics.empty()) {
         dataTypeConfig_ |= PROF_AIVECTORCORE_METRICS;
     }
+}
+
+void ProfAclMgr::UpdateDataTypeConfigByTimelineTrace(const SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+{
     if (params->ts_timeline == MSVP_PROF_ON) {
         dataTypeConfig_ |= PROF_SCHEDULE_TIMELINE | PROF_TASK_TIME;
     }
-    if (params->ts_task_track == MSVP_PROF_ON) {
+    if (params->ts_task_track == MSVP_PROF_ON || params->ts_task_time == MSVP_PROF_ON) {
         dataTypeConfig_ |= PROF_SCHEDULE_TRACE;
     }
+}
+
+void ProfAclMgr::UpdateDataTypeConfigByProfLevel(const SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+{
     if (params->prof_level == MSVP_LEVEL_L3) {
         dataTypeConfig_ |= PROF_TASK_TIME_L3 | PROF_TASK_TIME_L2 | PROF_TASK_TIME_L1 | PROF_TASK_TIME;
     }
@@ -1371,12 +1390,23 @@ void ProfAclMgr::ProfDataTypeConfigHandle(SHARED_PTR_ALIA<analysis::dvvp::messag
     if (params->prof_level == MSVP_LEVEL_L0) {
         dataTypeConfig_ |= PROF_TASK_TIME;
     }
+}
+
+void ProfAclMgr::UpdateDataTypeConfigByGeApi(const SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+{
     if (params->geApi == MSVP_PROF_L0) {
-        dataTypeConfig_ |= PROF_FWK_SCHEDULE_L0;
+        dataTypeConfig_ |= PROF_GE_API_L0;
     }
     if (params->geApi == MSVP_PROF_L1) {
-        dataTypeConfig_ |= PROF_FWK_SCHEDULE_L0 | PROF_FWK_SCHEDULE_L1;
+        dataTypeConfig_ |= PROF_GE_API_L0 | PROF_GE_API_L1;
     }
+    if (!params->opType.empty()) {
+        dataTypeConfig_ |= PROF_OP_MASK;
+    }
+}
+
+void ProfAclMgr::UpdateDataTypeConfigBySwitches(const SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+{
     UpdateDataTypeConfigBySwitch(params->taskMemory, PROF_TASK_MEMORY);
     UpdateDataTypeConfigBySwitch(params->acl, PROF_ACL_API);
     UpdateDataTypeConfigBySwitch(params->stars_acsq_task, PROF_TASK_TIME);
@@ -1391,8 +1421,6 @@ void ProfAclMgr::ProfDataTypeConfigHandle(SHARED_PTR_ALIA<analysis::dvvp::messag
     UpdateDataTypeConfigBySwitch(params->l2CacheTaskProfiling, PROF_L2CACHE);
     UpdateDataTypeConfigBySwitch(params->instrProfiling, PROF_INSTR);
     UpdateDataTypeConfigBySwitch(params->pureCpu, PROF_PURE_CPU);
-
-    MSPROF_EVENT("ProfDataTypeConfigHandle dataTypeConfig:0x%llx", dataTypeConfig_);
 }
 
 void ProfAclMgr::UpdateDataTypeConfigBySwitch(const std::string &sw, const uint64_t dataTypeConfig)
@@ -1514,9 +1542,9 @@ int32_t ProfAclMgr::MsprofAclJsonParamConstructTwo(NanoJson::Json &acljsonCfg)
         return MSPROF_ERROR_CONFIG_INVALID;
     }
     std::string errInfo = "";
-    std::string scaleInput = GetJsonStringParam(acljsonCfg, "scale", MSVP_PROF_EMPTY_STRING);
-    if (!scaleInput.empty() &&
-        !ParamValidation::instance()->CheckScaleIsValid(scaleInput, params_->scaleType, params_->scaleName, errInfo)) {
+    std::string opTypeInput = GetJsonStringParam(acljsonCfg, "optype", MSVP_PROF_EMPTY_STRING);
+    if (!opTypeInput.empty() &&
+        !ParamValidation::instance()->CheckOpTypeIsValid(opTypeInput, params_->opType, errInfo)) {
         return MSPROF_ERROR_CONFIG_INVALID;
     }
     return MSPROF_ERROR_NONE;
@@ -1538,7 +1566,7 @@ int32_t ProfAclMgr::CheckAclJsonConfigInvalid(const NanoJson::Json &acljsonCfg) 
             aclJsonSwitch = true;
         }
         if (iter->first == "output" || iter->first == "storage_limit" ||
-            iter->first == "instr_profiling_freq" || iter->first == "scale") {
+            iter->first == "instr_profiling_freq" || iter->first == "optype") {
             continue;
         } else {
             if (!ProfParamsAdapter::instance()->CheckJsonConfig(iter->first, iter->second)) {
@@ -1717,9 +1745,9 @@ int32_t ProfAclMgr::MsprofGeOptionsParamConstruct(const std::string &jobInfo,
     }
     AddLowPowerConf(geoptionCfg);
     std::string errInfo = "";
-    std::string scaleInput = GetJsonStringParam(geoptionCfg, "scale", MSVP_PROF_EMPTY_STRING);
-    if (!scaleInput.empty() &&
-        !ParamValidation::instance()->CheckScaleIsValid(scaleInput, params_->scaleType, params_->scaleName, errInfo)) {
+    std::string opTypeInput = GetJsonStringParam(geoptionCfg, "optype", MSVP_PROF_EMPTY_STRING);
+    if (!opTypeInput.empty() &&
+        !ParamValidation::instance()->CheckOpTypeIsValid(opTypeInput, params_->opType, errInfo)) {
         return MSPROF_ERROR_CONFIG_INVALID;
     }
     ret = MsprofGeOptionMetricsConstruct(geoptionCfg);
@@ -1770,7 +1798,7 @@ int32_t ProfAclMgr::CheckGeOptionConfigInvalid(const NanoJson::Json &geoptionCfg
         }
         if (iter->first == "output" || iter->first == "storage_limit" ||
             iter->first == "fp_point" || iter->first == "bp_point" ||
-            iter->first == "instr_profiling_freq" || iter->first == "scale") {
+            iter->first == "instr_profiling_freq" || iter->first == "optype") {
             continue;
         } else {
             if (!ProfParamsAdapter::instance()->CheckJsonConfig(iter->first, iter->second)) {

@@ -58,7 +58,7 @@ enum MsprofArgsType {
     ARGS_EXPORT_TYPE,
     ARGS_REPORTS,
     ARGS_MEM_SERVICEFLOW,
-    ARGS_SCALE,
+    ARGS_OP_TYPE,
     ARGS_RULE,
     // switch
     ARGS_ASCENDCL,
@@ -143,7 +143,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"type", OSAL_OPTIONAL_ARG, nullptr, ARGS_EXPORT_TYPE},
     {"reports", OSAL_OPTIONAL_ARG, nullptr, ARGS_REPORTS},
     {"sys-mem-serviceflow", OSAL_OPTIONAL_ARG, nullptr, ARGS_MEM_SERVICEFLOW},
-    {"scale", OSAL_OPTIONAL_ARG, nullptr, ARGS_SCALE},
+    {"optype", OSAL_OPTIONAL_ARG, nullptr, ARGS_OP_TYPE},
     {"rule", OSAL_OPTIONAL_ARG, nullptr, ARGS_RULE},
     // switch
     {"ascendcl", OSAL_OPTIONAL_ARG, nullptr, ARGS_ASCENDCL},               // the default value is on
@@ -227,7 +227,7 @@ private:
     int32_t CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
     int32_t CheckNpuEventsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckCmdScaleIsValid(const struct MsprofCmdInfo &cmdInfo) const;
+    int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckAiCoreMetricsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     std::string GeneratePrompts() const;
     int32_t CheckArgsIsNumber(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;

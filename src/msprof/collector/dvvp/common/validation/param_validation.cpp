@@ -42,18 +42,12 @@ const std::string SOC_PMU_HA = "HA:";
 const std::string SOC_PMU_MATA = "MATA:";
 const std::string SOC_PMU_SMMU = "SMMU:";
 const std::string SOC_PMU_NOC = "NOC:";
-const std::string SCALE_OP_TYPE = "opType:";
-const std::string SCALE_OP_NAME = "opName:";
+
 const std::map<std::string, ProfSocPmuType> SOC_PMU_MAP = {
     {SOC_PMU_HA, ProfSocPmuType::PMU_TYPE_HA},
     {SOC_PMU_MATA, ProfSocPmuType::PMU_TYPE_MATA},
     {SOC_PMU_SMMU, ProfSocPmuType::PMU_TYPE_SMMU},
     {SOC_PMU_NOC, ProfSocPmuType::PMU_TYPE_NOC}
-};
-
-const std::map<std::string, ProfScaleType> SCALE_MAP = {
-    {SCALE_OP_TYPE, ProfScaleType::SCALE_OP_TYPE},
-    {SCALE_OP_NAME, ProfScaleType::SCALE_OP_NAME}
 };
 
 ParamValidation::ParamValidation()
@@ -224,16 +218,6 @@ bool ParamValidation::CheckDuplicateSocPmu(const std::string &oriStr) const
     return true;
 }
 
-bool ParamValidation::CheckDuplicateScale(const std::string &oriStr) const
-{
-    if (!Utils::CheckDuplicateStrings(oriStr, SCALE_OP_TYPE) ||
-        !Utils::CheckDuplicateStrings(oriStr, SCALE_OP_NAME)) {
-        return false;
-    }
-
-    return true;
-}
-
 ProfSocPmuType ParamValidation::GetSocPmuInfo(std::string &socPmuStr, std::string &eventStr) const
 {
     for (auto iter = SOC_PMU_MAP.begin(); iter != SOC_PMU_MAP.end(); ++iter) {
@@ -245,34 +229,6 @@ ProfSocPmuType ParamValidation::GetSocPmuInfo(std::string &socPmuStr, std::strin
 
     eventStr = socPmuStr;
     return ProfSocPmuType::PMU_TYPE_HA_NO_HEAD;
-}
-
-ProfScaleType ParamValidation::GetScaleInfo(std::string &scaleStr, std::string &scaleInfoStr) const
-{
-    for (auto iter = SCALE_MAP.begin(); iter != SCALE_MAP.end(); ++iter) {
-        if (scaleStr.compare(0, iter->first.size(), iter->first) != 0) {
-            continue;
-        }
-        std::string infoStr = scaleStr.substr(iter->first.size());
-        if (infoStr.empty()) {
-            return iter->second;
-        }
-        // unique scale info 
-        std::vector<std::string> scaleList = Utils::Split(infoStr, false, "", ",");
-        std::set<std::string> scaleSet(scaleList.begin(), scaleList.end());
-        for (const auto& item : scaleSet) {
-            if (item.empty()) {
-                continue;
-            }
-            scaleInfoStr += item;
-            scaleInfoStr += ",";
-        }
-        scaleInfoStr.pop_back();
-        return iter->second;
-    }
-
-    scaleInfoStr = scaleStr;
-    return ProfScaleType::SCALE_TYPE_UNKNOWN;
 }
 
 bool ParamValidation::CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t eventSize, int32_t &maxEvent) const
@@ -334,49 +290,49 @@ bool ParamValidation::CheckSocPmuEventsValid(ProfSocPmuType type, const std::vec
     return true;
 }
 
-bool ParamValidation::CheckScaleIsValid(const std::string &scaleInput, std::string &scaleType,
-    std::string &scaleName, std::string &errInfo) const
+bool ParamValidation::CheckOpTypeIsValid(const std::string &opTypeInput, std::string &opType,
+    std::string &errInfo) const
 {
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE)) {
-        MSPROF_LOGE("Scale not support on this platform.");
+        MSPROF_LOGE("OpType not supported on this platform.");
         return false;
     }
 
-    if (!CheckDuplicateScale(scaleInput)) {
-        MSPROF_LOGE("Failed to check scale, please check if input duplicate type.");
-        errInfo = "Failed to check scale, please check if input duplicate type.";
+    if (opTypeInput.empty()) {
+        MSPROF_LOGE("Failed to check empty opType.");
+        errInfo = "Failed to check empty opType.";
         return false;
     }
 
-    std::vector<std::string> opList = Utils::Split(scaleInput, false, "", ";");
-    for (size_t i = 0; i < opList.size(); ++i) {
-        std::string scaleInfoStr = "";
-        ProfScaleType type = GetScaleInfo(opList[i], scaleInfoStr);
-        if (scaleInfoStr.empty()) {
-            MSPROF_LOGE("Failed to check empty scale: %s.", opList[i].c_str());
-            errInfo = "Failed to check empty scale: " + opList[i] + ".";
-            return false;
-        }
-        static size_t maxScaleLen = 511;
-        static size_t scalePrintLen = 128;
-        if (scaleInfoStr.size() > maxScaleLen) {
-            MSPROF_LOGE("Failed to check overflow scale: %s..., the max input size is %zu.",
-                scaleInfoStr.substr(0, scalePrintLen).c_str(), maxScaleLen);
-            errInfo = "Failed to check overflow scale: " + scaleInfoStr.substr(0, scalePrintLen) +
-                "..., the max input size is 511.";
-            return false;
-        }
-
-        if (type == ProfScaleType::SCALE_OP_TYPE) {
-            scaleType = scaleInfoStr;
-        } else if (type == ProfScaleType::SCALE_OP_NAME) {
-            scaleName = scaleInfoStr;
-        } else {
-            MSPROF_LOGE("Failed to check unkown scale type, please use [opType:|opName:] before scale info.");
-            errInfo = "Failed to check unkown scale type, please use [opType:|opName:] before scale info.";
-            return false;
-        }
+    static size_t maxOpTypeLen = 256;
+    static size_t opTypePrintLen = 128;
+    if (opTypeInput.size() > maxOpTypeLen) {
+        MSPROF_LOGE("Failed to check overflow opType: %s..., the max input size is %zu.",
+            opTypeInput.substr(0, opTypePrintLen).c_str(), maxOpTypeLen);
+        errInfo = "Failed to check overflow opType: " + opTypeInput.substr(0, opTypePrintLen) +
+            "..., the max input size is 256.";
+        return false;
     }
+
+    std::vector<std::string> opTypeList = Utils::Split(opTypeInput, false, "", ",");
+    std::set<std::string> opTypeSet;
+    for (const auto &item : opTypeList) {
+        if (item.empty()) {
+            MSPROF_LOGE("Failed to check empty opType item in input.");
+            errInfo = "Failed to check empty opType item in input.";
+            return false;
+        }
+        opTypeSet.insert(item);
+    }
+
+    std::string deduplicatedOpType;
+    for (const auto &item : opTypeSet) {
+        if (!deduplicatedOpType.empty()) {
+            deduplicatedOpType += ",";
+        }
+        deduplicatedOpType += item;
+    }
+    opType = deduplicatedOpType;
     return true;
 }
 

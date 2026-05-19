@@ -175,8 +175,7 @@ struct ProfileParams : public BaseInfo {
     std::string taskMemory;
     std::string prof_level;
     std::string geApi;
-    std::string scaleType;
-    std::string scaleName;
+    std::string opType;
 
     // host sys
     std::string host_sys;
@@ -245,7 +244,7 @@ struct ProfileParams : public BaseInfo {
           pcSampling("off"), instrProfilingFreq(DEFAULT_PROFILING_INTERVAL_1000MS),
           runtimeApi("off"), msprof("off"), msproftx("off"), mstxDomainInclude(""), mstxDomainExclude(""),
           taskTrace("on"), taskTime("on"), taskMemory("off"),
-          prof_level("off"), geApi("off"), scaleType(""), scaleName(""), host_sys(""),
+          prof_level("off"), geApi("off"), opType(""), host_sys(""),
           host_sys_pid(HOST_PID_DEFAULT), hostSysUsage(""),
           hostProfilingSamplingInterval(DEFAULT_PROFILING_INTERVAL_20MS), host_disk_profiling("off"),
           host_osrt_profiling("off"), host_platform_profiling("off"), pureCpu("off"), hostProfiling(false), host_cpu_profiling("off"),
@@ -402,8 +401,7 @@ struct ProfileParams : public BaseInfo {
         SET_VALUE(object, taskMemory);
         SET_VALUE(object, prof_level);
         SET_VALUE(object, geApi);
-        SET_VALUE(object, scaleType);
-        SET_VALUE(object, scaleName);
+        SET_VALUE(object, opType);
         SET_VALUE(object, job_id);
         SET_VALUE(object, app);
         SET_VALUE(object, ts_task_track);
@@ -569,8 +567,7 @@ struct ProfileParams : public BaseInfo {
         FROM_STRING_VALUE(object, taskMemory);
         FROM_STRING_VALUE(object, prof_level);
         FROM_STRING_VALUE(object, geApi);
-        FROM_STRING_VALUE(object, scaleType);
-        FROM_STRING_VALUE(object, scaleName);
+        FROM_STRING_VALUE(object, opType);
         FROM_STRING_VALUE(object, job_id);
         FROM_STRING_VALUE(object, app);
         FROM_STRING_VALUE(object, ts_task_track);
