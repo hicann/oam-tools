@@ -228,7 +228,8 @@ build_adump_analysis() {
     fi
     local compare_dst="${BASEPATH}/src/operator_cmp/msaccucmp/compare"
     mkdir -p "${BASEPATH}/src/operator_cmp/msaccucmp"
-    rm -rf "${compare_dst}" && mkdir "${compare_dst}"
+    [ -n "${compare_dst}" ] && rm -rf "${compare_dst}"
+    mkdir "${compare_dst}"
     cp -r "${src_dir}"/* "${compare_dst}/."
 }
 
@@ -240,7 +241,7 @@ cmake_generate_make() {
         echo "clear all files in build directory"
         # makeself_built_in.cmake 末尾会把 _CPack_Packages/makeself_staging 目录树
         # chmod 到 0550，rm -rf 进不去这些目录，先恢复 owner 写位再删
-        if [ -d "${build_path}" ]; then
+        if [ -n "${build_path}" ] && [ -d "${build_path}" ]; then
             chmod -R u+w "${build_path}" 2>/dev/null
             rm -rf "${build_path}"
         fi
