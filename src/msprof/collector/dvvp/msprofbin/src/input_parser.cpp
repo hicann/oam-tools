@@ -663,6 +663,24 @@ int32_t InputParser::GetAppParam(const std::string &appParams)
     return MSPROF_DAEMON_OK;
 }
 
+int32_t InputParser::CheckUserCmdValid(const std::string &usrCmdPath)
+{
+    std::string cmdPath = Utils::RelativePathToAbsolutePath(usrCmdPath);
+    std::string cmdDir;
+    std::string cmdName;
+    if (Utils::SplitPath(cmdPath, cmdDir, cmdName) != PROFILING_SUCCESS) {
+        MSPROF_LOGE("Failed to get cmd dir and cmd name");
+        return MSPROF_DAEMON_ERROR;
+    }
+    if (PreCheckApp(cmdDir, cmdName) == MSPROF_DAEMON_OK) {
+        params_->app_dir = cmdDir;
+        params_->app = cmdName;
+        params_->cmdPath = cmdPath;
+        return MSPROF_DAEMON_OK;
+    }
+    return MSPROF_DAEMON_ERROR;
+}
+
 int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
 {
     if (cmdInfo.args[ARGS_APPLICATION] == nullptr) {
@@ -684,39 +702,32 @@ int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
         tmpAppParamers = appParam.substr(index + 1);
     }
     std::string cmdPath = appParam.substr(0, index);
-    if (!Utils::IsAppName(cmdPath) && cmdPath.find("/") == std::string::npos) {
-        params_->cmdPath = cmdPath;
-        return GetAppParam(tmpAppParamers);
-    }
-    cmdPath = Utils::RelativePathToAbsolutePath(cmdPath);
-    if (!Utils::IsAppName(cmdPath)) {
-        if (Utils::CanonicalizePath(cmdPath).empty()) {
-            CmdLog::CmdErrorLog("App path(%s) does not exist or permission denied.", cmdPath.c_str());
-            return MSPROF_DAEMON_ERROR;
-        }
-        if (OsalAccess2(cmdPath.c_str(), OSAL_X_OK) != OSAL_EN_OK) {
-            CmdLog::CmdErrorLog("This app(%s) has no executable permission.", cmdPath.c_str());
-            return MSPROF_DAEMON_ERROR;
-        }
-        params_->cmdPath = cmdPath;
-        return GetAppParam(tmpAppParamers);
-    }
+    cmdPath = Utils::IdeReplaceWaveWithHomedir(cmdPath);
     params_->app_parameters = tmpAppParamers;
-    std::string cmdDir;
-    std::string cmdName;
-    int32_t ret = Utils::SplitPath(cmdPath, cmdDir, cmdName);
-    if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGE("Failed to get cmd dir");
-        return MSPROF_DAEMON_ERROR;
-    }
-    ret = PreCheckApp(cmdDir, cmdName);
-    if (ret == MSPROF_DAEMON_OK) {
-        params_->app_dir = cmdDir;
-        params_->app = cmdName;
+    if (!Utils::IsAppName(cmdPath)) {
+        // e.g: bash xx.sh args or python xx.py args or python -m xx args or /usr/bin/python xx.py args
+        // set app_dir to './' to set result_dir to current dir when --output not set, and set app to cmd to avoid empty app error in HandleApp, and save all app parameters to app_parameters.
+        if (cmdPath.find('/') != std::string::npos) {
+            std::string canPath = Utils::CanonicalizePath(cmdPath);
+            if (canPath.empty()) {
+                CmdLog::CmdErrorLog("Script path(%s) does not exist or permission denied.", cmdPath.c_str());
+                return MSPROF_DAEMON_ERROR;
+            }
+            if (OsalAccess2(canPath.c_str(), OSAL_X_OK) != OSAL_EN_OK) {
+                CmdLog::CmdErrorLog("This app(%s) has no executable permission!", canPath.c_str());
+                return MSPROF_DAEMON_ERROR;
+            }
+            cmdPath = canPath;
+        }
         params_->cmdPath = cmdPath;
+        params_->app_dir = Utils::GetCwdString();
+        params_->app = Utils::BaseName(cmdPath);
         return MSPROF_DAEMON_OK;
+    } else {
+        // e.g: ./main args
+        // set app_dir to cmdPath dir to set result_dir to app dir when --output not set, and set app to cmdPath base name to avoid empty app error in HandleApp, and save all app parameters to app_parameters.
+        return CheckUserCmdValid(cmdPath);
     }
-    return MSPROF_DAEMON_ERROR;
 }
 
 /**
