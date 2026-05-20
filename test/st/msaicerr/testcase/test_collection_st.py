@@ -163,7 +163,7 @@ class TestUtilsMethods(CommonAssert):
         collection = Collection(input_path, output_path)
         collection.collect()
         self.assertIn(self.debug_info.read_text(
-        ), """Failed to get \"Aicore kernel execute failed\" in plog.""")
+        ), """Failed to get \"Aicore kernel execute failed|AI Core kernel execution failed\" in plog.""")
 
     def test_ffts_get_kernel_name_from_l0(self, mocker):
         """
