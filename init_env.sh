@@ -258,7 +258,7 @@ show_help() {
 }
 
 main() {
-    local SKIP_CANN=false
+    local skip_cann=false
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -275,7 +275,7 @@ main() {
                 shift 2
                 ;;
             --skip-cann)
-                SKIP_CANN=true
+                skip_cann=true
                 shift
                 ;;
             --help|-h)
@@ -306,7 +306,7 @@ main() {
 
     install_system_deps
 
-    if [ "$SKIP_CANN" = true ]; then
+    if [ "$skip_cann" = true ]; then
         log_info "Skipping CANN installation (--skip-cann)"
     else
         install_cann
