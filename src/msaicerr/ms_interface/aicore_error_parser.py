@@ -115,7 +115,8 @@ class AicoreErrorParser:
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
         err_stream_id, err_task_id = self.parser_data_name(data_name)
         if not self.ffts_flag:
-            kernel_name_cmd = ['grep', 'Aicore kernel execute failed', '-inrE', plog_dir]
+            error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
+            kernel_name_cmd = ['grep', error_log, '-inrE', plog_dir]
 
             kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?" \
                                  r"fault kernel info ext=(.*?),.*?hash=(\d+)"
@@ -127,7 +128,7 @@ class AicoreErrorParser:
                 kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
                 kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
                 if not kernel_name_ret:
-                    utils.print_error_log(f"Failed to get \"Aicore kernel execute failed\" in plog.")
+                    utils.print_error_log(f"Failed to get \"{error_log}\" in plog.")
                     return None
                 stream_id, task_id, kernel_name, hash_id = \
                     self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
@@ -1268,7 +1269,8 @@ exit()"""
             os.environ["PATH"] = os.path.dirname(cce_dump) + ":" + os.environ["PATH"]
 
     def check_hash_id(self, hash_id, single_op_log_path) -> bool:
-        kernel_name_cmd = ['grep', 'Aicore kernel execute failed', '-inrE', single_op_log_path]
+        error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
+        kernel_name_cmd = ['grep', error_log, '-inrE', single_op_log_path]
         kernel_name_regexp = r".*?hash=(\d+)"
         kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
         if not kernel_name_ret:

@@ -63,7 +63,8 @@ class Collection:
         # 获取kernel_name
         plog_dir = os.path.join(self.output_path, 'collection', 'plog')
         if not self.ffts_flag:
-            kernel_name_cmd = ['grep', 'Aicore kernel execute failed', '-inrE', plog_dir]
+            error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
+            kernel_name_cmd = ['grep', error_log, '-inrE', plog_dir]
             kernel_name_regexp = r".*?fault kernel_name=(.*?),.*?fault kernel info ext=(.*?),"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if kernel_name_ret and kernel_name_ret[0][1] != "none":
@@ -75,7 +76,7 @@ class Collection:
             kernel_name_regexp = r" .*?fault kernel_name=(.*?),"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if not kernel_name_ret:
-                utils.print_error_log(f"Failed to get \"Aicore kernel execute failed\" in plog.")
+                utils.print_error_log(f"Failed to get \"{error_log}\" in plog.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
 
             kernel_name = kernel_name_ret[0]

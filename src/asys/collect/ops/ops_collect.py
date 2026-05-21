@@ -34,7 +34,7 @@ def get_fault_kernel_name(output_root_path):
     """
     Obtains fault_kernel_name from plog.
     """
-    error_msg = ["Aicore kernel execute failed", "fftsplus task execute failed"]
+    error_msg = ["Aicore kernel execute failed|AI Core kernel execution failed", "fftsplus task execute failed"]
     run_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "run", "plog")
     debug_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "debug", "plog")
     plog_files = [run_plog, debug_plog]
