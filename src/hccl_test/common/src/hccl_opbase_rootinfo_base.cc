@@ -165,7 +165,7 @@ void HcclOpBaseTest::is_data_overflow()
 
 void HcclOpBaseTest::print_execution_time(double average_time_us, double algorithm_bandwith_GBytes_s)
 {
-    //不开启结果校验场景
+    // 不开启结果校验场景(check == 0)
     if (check == 0)
     {
         if (rank_id == root_rank) {
@@ -179,7 +179,7 @@ void HcclOpBaseTest::print_execution_time(double average_time_us, double algorit
         return;
     }
 
-    // 开启结果校验，部分rank结果校验失败场景
+    // 开启结果校验(check >= 1)，部分rank结果校验失败场景
     bool check_result[rank_size];
     if (check_err != 0)
     {

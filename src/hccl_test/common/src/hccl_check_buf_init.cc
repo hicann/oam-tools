@@ -371,7 +371,7 @@ void hccl_reduce_check_buf_init(void *dst_buf, u64 count, int dtype, int op, int
 }
 
 
-int alltoall_check_result_uint64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_uint64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     u64 *result = NULL;
@@ -383,8 +383,10 @@ int alltoall_check_result_uint64(const void *check_buf, u64 *recv_counts, u64 *r
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%llu, act:%llu\n",
-                    rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%llu, act:%llu\n",
+                        rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -393,7 +395,7 @@ int alltoall_check_result_uint64(const void *check_buf, u64 *recv_counts, u64 *r
     return ret;
 }
 
-int alltoall_check_result_fp32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_fp32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     float *result = NULL;
@@ -404,7 +406,9 @@ int alltoall_check_result_fp32(const void *check_buf, u64 *recv_counts, u64 *rec
         for(u64 j = 0; j < recv_counts[i]; ++j)
         {
             if(result[j] != check_val) {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%f, act:%f\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%f, act:%f\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -413,7 +417,7 @@ int alltoall_check_result_fp32(const void *check_buf, u64 *recv_counts, u64 *rec
     return ret;
 }
 
-int alltoall_check_result_int8(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_int8(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     char *result = NULL;
@@ -425,7 +429,9 @@ int alltoall_check_result_int8(const void *check_buf, u64 *recv_counts, u64 *rec
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -434,7 +440,7 @@ int alltoall_check_result_int8(const void *check_buf, u64 *recv_counts, u64 *rec
     return ret;
 }
 
-int alltoall_check_result_int32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_int32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     int *result = NULL;
@@ -446,7 +452,9 @@ int alltoall_check_result_int32(const void *check_buf, u64 *recv_counts, u64 *re
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -455,7 +463,7 @@ int alltoall_check_result_int32(const void *check_buf, u64 *recv_counts, u64 *re
     return ret;
 }
 
-int alltoall_check_result_int64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_int64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     long long *result = NULL;
@@ -467,7 +475,9 @@ int alltoall_check_result_int64(const void *check_buf, u64 *recv_counts, u64 *re
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%lld, act:%lld\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%lld, act:%lld\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -476,7 +486,7 @@ int alltoall_check_result_int64(const void *check_buf, u64 *recv_counts, u64 *re
     return ret;
 }
 
-int alltoall_check_result_fp64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_fp64(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     double *result = NULL;
@@ -488,7 +498,9 @@ int alltoall_check_result_fp64(const void *check_buf, u64 *recv_counts, u64 *rec
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%f, act:%f\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%f, act:%f\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -497,7 +509,7 @@ int alltoall_check_result_fp64(const void *check_buf, u64 *recv_counts, u64 *rec
     return ret;
 }
 
-int alltoall_check_result_int16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_int16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     short *result = NULL;
@@ -509,7 +521,9 @@ int alltoall_check_result_int16(const void *check_buf, u64 *recv_counts, u64 *re
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -518,7 +532,7 @@ int alltoall_check_result_int16(const void *check_buf, u64 *recv_counts, u64 *re
     return ret;
 }
 
-int alltoall_check_result_fp16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_fp16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     u16 *result = NULL;
@@ -531,7 +545,9 @@ int alltoall_check_result_fp16(const void *check_buf, u64 *recv_counts, u64 *rec
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -540,7 +556,7 @@ int alltoall_check_result_fp16(const void *check_buf, u64 *recv_counts, u64 *rec
     return ret;
 }
 
-int alltoall_check_result_uint8(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_uint8(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     uint8_t *result = NULL;
@@ -552,7 +568,9 @@ int alltoall_check_result_uint8(const void *check_buf, u64 *recv_counts, u64 *re
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -561,7 +579,7 @@ int alltoall_check_result_uint8(const void *check_buf, u64 *recv_counts, u64 *re
     return ret;
 }
 
-int alltoall_check_result_uint16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_uint16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     uint16_t *result = NULL;
@@ -573,7 +591,9 @@ int alltoall_check_result_uint16(const void *check_buf, u64 *recv_counts, u64 *r
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -582,7 +602,7 @@ int alltoall_check_result_uint16(const void *check_buf, u64 *recv_counts, u64 *r
     return ret;
 }
 
-int alltoall_check_result_uint32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_uint32(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     uint32_t *result = NULL;
@@ -594,7 +614,9 @@ int alltoall_check_result_uint32(const void *check_buf, u64 *recv_counts, u64 *r
         {
             if(result[j] != check_val)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -603,7 +625,7 @@ int alltoall_check_result_uint32(const void *check_buf, u64 *recv_counts, u64 *r
     return ret;
 }
 
-int alltoall_check_result_bfp16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id)
+int alltoall_check_result_bfp16(const void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_size, int dtype, int rank_id, int check_level)
 {
     int ret = 0;
     u16 *result = NULL;
@@ -616,7 +638,9 @@ int alltoall_check_result_bfp16(const void *check_buf, u64 *recv_counts, u64 *re
         {
             if(fabs(result[j] - check_val) / abs(result[j]) > relativeError)
             {
-                printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                if (check_level >= 2) {
+                    printf("local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j, check_val, result[j]);
+                }
                 ret++;
                 break;
             }
@@ -626,7 +650,7 @@ int alltoall_check_result_bfp16(const void *check_buf, u64 *recv_counts, u64 *re
 }
 
 int hccl_alltoallv_check_result(
-    void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_id, int rank_size, int dtype)
+    void *check_buf, u64 *recv_counts, u64 *recv_disp, int rank_id, int rank_size, int dtype, int check_level)
 {
     int ret = 0;
     if (rank_size < 1)  // 接收数据为0则不进行数据校验
@@ -635,7 +659,7 @@ int hccl_alltoallv_check_result(
     }
 
     if (functionAllToAllMap.find(dtype) != functionAllToAllMap.end()) {
-        ret = functionAllToAllMap[dtype](check_buf, recv_counts, recv_disp, rank_size, dtype, rank_id);
+        ret = functionAllToAllMap[dtype](check_buf, recv_counts, recv_disp, rank_size, dtype, rank_id, check_level);
     }
     return ret;
 }

@@ -23,7 +23,7 @@
 #include <sys/syscall.h>
 #include "hccl_check_common.h"
 
-int check_buf_result_float(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_float(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     int err = 0;
@@ -50,7 +50,7 @@ int check_buf_result_float(const void *result_buf, const void *check_buf, u64 co
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("check buf[%llu] error, exp:%f, act:%f \n", first_err_pos, c_buf[first_err_pos], result[first_err_pos]);
     }
     if (err > 0) {
@@ -59,7 +59,7 @@ int check_buf_result_float(const void *result_buf, const void *check_buf, u64 co
     return err;
 }
 
-int check_buf_result_int8(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_int8(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     s8 *c_buf = (s8 *)check_buf;
@@ -75,7 +75,7 @@ int check_buf_result_int8(const void *result_buf, const void *check_buf, u64 cou
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("result buf[%llu] is not right, exp: %d, act:%d \n", first_err_pos, c_buf[first_err_pos],
             result[first_err_pos]);
     }
@@ -85,7 +85,7 @@ int check_buf_result_int8(const void *result_buf, const void *check_buf, u64 cou
     return err;
 }
 
-int check_buf_result_half(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_half(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     u16 *result = (u16 *)result_buf;
@@ -102,7 +102,7 @@ int check_buf_result_half(const void *result_buf, const void *check_buf, u64 cou
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("result buf[%llu] is not right, exp: %u, act:%u \n", first_err_pos, s[first_err_pos],
             result[first_err_pos]);
     }
@@ -112,7 +112,7 @@ int check_buf_result_half(const void *result_buf, const void *check_buf, u64 cou
     return err;
 }
 
-int check_buf_result_int32(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_int32(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     int *c_buf = (int *)check_buf;
@@ -128,7 +128,7 @@ int check_buf_result_int32(const void *result_buf, const void *check_buf, u64 co
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("result buf[%llu] is not right, exp: %d, act:%d \n", first_err_pos, c_buf[first_err_pos],
             result[first_err_pos]);
     }
@@ -138,7 +138,7 @@ int check_buf_result_int32(const void *result_buf, const void *check_buf, u64 co
     return err;
 }
 
-int check_buf_result_int64(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_int64(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     s64 *c_buf = (s64 *)check_buf;
@@ -154,7 +154,7 @@ int check_buf_result_int64(const void *result_buf, const void *check_buf, u64 co
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("result buf[%llu] is not right, exp: %lld, act:%lld \n", first_err_pos, c_buf[first_err_pos],
             result[first_err_pos]);
     }
@@ -165,7 +165,7 @@ int check_buf_result_int64(const void *result_buf, const void *check_buf, u64 co
     return err;
 }
 
-int check_buf_result_u64(const void *result_buf, const void *check_buf, u64 count)
+int check_buf_result_u64(const void *result_buf, const void *check_buf, u64 count, int check_level)
 {
     u64 i = 0;
     u64 *c_buf = (u64 *)check_buf;
@@ -181,7 +181,7 @@ int check_buf_result_u64(const void *result_buf, const void *check_buf, u64 coun
         }
     }
 
-    if (err > 0) {
+    if (err > 0 && check_level >= 2) {
         printf("result buf[%llu] is not right, exp: %llu, act:%llu \n", first_err_pos, c_buf[first_err_pos],
             result[first_err_pos]);
     }

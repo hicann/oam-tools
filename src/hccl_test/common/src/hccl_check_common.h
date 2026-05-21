@@ -30,11 +30,11 @@
 //浮点数计算精度，当前算误差百分比
 #define HCCL_EPSION_FLOAT 0.000001
 
-extern int check_buf_result_float(const void* result_buf, const void* check_buf, unsigned long long count);
-extern int check_buf_result_int8(const void* result_buf, const void* check_buf, unsigned long long count);
-extern int check_buf_result_half(const void* result_buf, const void* check_buf, unsigned long long count);
-extern int check_buf_result_int32(const void* result_buf, const void* check_buf, unsigned long long count);
-extern int check_buf_result_int64(const void* result_buf, const void* check_buf, unsigned long long count);
-extern int check_buf_result_u64(const void* result_buf, const void* check_buf, unsigned long long count);
+extern int check_buf_result_float(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
+extern int check_buf_result_int8(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
+extern int check_buf_result_half(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
+extern int check_buf_result_int32(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
+extern int check_buf_result_int64(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
+extern int check_buf_result_u64(const void* result_buf, const void* check_buf, unsigned long long count, int check_level);
 
 #endif
