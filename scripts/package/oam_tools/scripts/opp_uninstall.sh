@@ -433,6 +433,6 @@ if [ "${subdirs_param_install}" = "" ]; then
     [ -n "${installed_path}" ] && rm -rf "${installed_path}"
 fi
 
-logandprint "[INFO]: Oam-tools package uninstalled successfully! Uninstallation takes effect immediately."
+logandprint "[INFO]: Oam-Tools package uninstalled successfully! Uninstallation takes effect immediately."
 exit 0
 

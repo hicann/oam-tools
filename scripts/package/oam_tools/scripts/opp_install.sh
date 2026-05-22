@@ -475,6 +475,6 @@ logandprint "[INFO]: Install path: (${version_install_dir}/${ops_base_platform_d
 logandprint "[INFO]: Install log file path: (${_INSTALL_LOG_FILE})"
 logandprint "[INFO]: Operation log file path: (${_OPERATE_LOG_FILE})"
 
-logandprint "[INFO]: Oam-tools package installed successfully! The new version takes effect immediately."
+logandprint "[INFO]: Oam-Tools package installed successfully! The new version takes effect immediately."
 exit 0
 

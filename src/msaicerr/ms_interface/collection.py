@@ -35,7 +35,7 @@ class Collection:
     def get_node_and_kernel_name_l1(self: any) -> tuple:
         plog_dir = os.path.join(self.output_path, 'collection', 'plog')
         # 获取kernel_name
-        kernel_name_cmd = ['grep', '\[AIC_INFO\] dev_func:', '-inrE', plog_dir]
+        kernel_name_cmd = ['grep', r'\[AIC_INFO\] dev_func:', '-inrE', plog_dir]
         kernel_name_regexp = r"dev_func:([a-zA-Z0-9_]{0,})$"
         kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
         if not kernel_name_ret:
@@ -49,7 +49,7 @@ class Collection:
             kernel_name = kernel_name_ret[0]
 
         # 获取node_name、stream_id、task_id
-        node_name_cmd = ['grep', '\[AIC_INFO\] node_name:', '-inrE', plog_dir]
+        node_name_cmd = ['grep', r'\[AIC_INFO\] node_name:', '-inrE', plog_dir]
         regexp = r".+?node_name:(.*?),"
         result = utils.get_inquire_result(node_name_cmd, regexp)
         if not result:
@@ -139,7 +139,7 @@ class Collection:
             return err_time, device_id, data_name
 
     def collect_plog_file(self):
-        find_path_cmd = ['grep', '\[Dump\]\[Exception\]', '-inrE', self.report_path]
+        find_path_cmd = ['grep', r'\[Dump\]\[Exception\]', '-inrE', self.report_path]
         find_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
         plog_path_ret = utils.get_inquire_result(find_path_cmd, find_path_regexp)
         if not plog_path_ret:
@@ -158,7 +158,7 @@ class Collection:
         utils.check_path_valid(dest_path, isdir=True, output=True)
         utils.copy_src_to_dest(original_files, os.path.join(dest_path, "aicore_error"))
 
-        find_path_cmd = ['grep', "\[AIC_INFO\] dev_func:", '-inrE', self.report_path]
+        find_path_cmd = ['grep', r"\[AIC_INFO\] dev_func:", '-inrE', self.report_path]
         find_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
         plog_path_ret_1 = utils.get_inquire_result(find_path_cmd, find_path_regexp)
         if plog_path_ret_1:

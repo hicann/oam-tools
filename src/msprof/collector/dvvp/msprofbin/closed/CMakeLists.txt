@@ -277,3 +277,34 @@ install(PROGRAMS ${msprof_whl}
     ${INSTALL_OPTIONAL}
     COMPONENT oam-tools
 )
+# 在打包阶段预解包 msprof whl，使 --noexec --extract 与 --full 安装在
+# tools/profiler/profiler_tool 下产生相同的文件目录树。
+# 解包后清理 __pycache__：构建机 Python 版本编出来的 .pyc 到目标机可能版本不匹配，
+# 留下来反而是死数据；运行期 msprof_install.sh 会用目标机 python3 重新 compileall。
+# 解包末尾把整棵子树（文件 + 目录）chmod 555，与运行期 msprof_install.sh 末尾的
+# change_dir_mode 555 / change_file_mode 555 行为一致；否则 pip 解出来是默认 644/755，
+# 会让 --noexec --extract 与 --full install 在 tools/profiler/profiler_tool
+# 子树下权限不一致，违背本 PR 目标。
+install(CODE "
+    set(_msprof_dir \"${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool\")
+    set(_msprof_whl_path \"\${_msprof_dir}/msprof-0.0.1-py3-none-any.whl\")
+    if(EXISTS \"\${_msprof_whl_path}\")
+        message(STATUS \"Extracting msprof whl to \${_msprof_dir}\")
+        execute_process(
+            COMMAND pip3 install --no-deps --disable-pip-version-check
+                \"\${_msprof_whl_path}\" -t \"\${_msprof_dir}\"
+            OUTPUT_QUIET
+            RESULT_VARIABLE _msprof_rc
+            ERROR_VARIABLE _msprof_err
+        )
+        if(NOT _msprof_rc EQUAL 0)
+            message(FATAL_ERROR \"Failed to extract msprof whl: \${_msprof_err}\")
+        endif()
+        execute_process(
+            COMMAND find \"\${_msprof_dir}\" -type d -name __pycache__ -prune -exec rm -rf {} +
+        )
+        execute_process(
+            COMMAND chmod -R 555 \"\${_msprof_dir}\"
+        )
+    endif()
+" COMPONENT oam-tools)
