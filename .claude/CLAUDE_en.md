@@ -1,0 +1,1 @@
+Important Note: Before starting any work, be sure to carefully read the [AGENTS.md](../AGENTS_en.md) file.
