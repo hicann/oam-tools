@@ -76,24 +76,24 @@ int HcclOpBaseReducescatterTest::check_buf_result()
     switch(dtype)
     {
         case HCCL_DATA_TYPE_FP32:
-            ret = check_buf_result_float((char*)recv_buff_temp, (char*)check_buf, data->count);
+            ret = check_buf_result_float((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         case HCCL_DATA_TYPE_INT8:
         case HCCL_DATA_TYPE_UINT8:
-            ret = check_buf_result_int8((char*)recv_buff_temp, (char*)check_buf, data->count);
+            ret = check_buf_result_int8((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         case HCCL_DATA_TYPE_INT32:
-            ret = check_buf_result_int32((char*)recv_buff_temp, (char*)check_buf, data->count);
+            ret = check_buf_result_int32((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         case HCCL_DATA_TYPE_FP16:
         case HCCL_DATA_TYPE_INT16:
         case HCCL_DATA_TYPE_BFP16:
-            ret = check_buf_result_half((char*)recv_buff_temp, (char*)check_buf, data->count);
+            ret = check_buf_result_half((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         case HCCL_DATA_TYPE_INT64:
         case HCCL_DATA_TYPE_UINT64:
         case HCCL_DATA_TYPE_FP64:
-            ret = check_buf_result_int64((char*)recv_buff_temp, (char*)check_buf, data->count);
+            ret = check_buf_result_int64((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         default:
             ret++;
@@ -145,7 +145,7 @@ int HcclOpBaseReducescatterTest::hccl_op_base_test() //主函数
     ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize * rank_size, (void*)host_buf, malloc_kSize * rank_size, ACL_MEMCPY_HOST_TO_DEVICE));
 
     // 准备校验内存
-    if (check == 1) {
+    if (check >= 1) {
         ACLCHECK(init_buf_val());
     }
     // 输入数据量，根据条件判断是否开启仅计算device执行时间
@@ -168,7 +168,7 @@ int HcclOpBaseReducescatterTest::hccl_op_base_test() //主函数
     float time;
     ACLCHECK(aclrtEventElapsedTime(&time, start_event, end_event));
 
-    if (check == 1) {
+    if (check >= 1) {
         if (iters || warmup_iters) {
             ACLCHECK(aclrtMemcpy((void *)send_buff, malloc_kSize * rank_size, (void *)host_buf, malloc_kSize * rank_size, ACL_MEMCPY_HOST_TO_DEVICE));
             HCCLCHECK(HcclReduceScatter((void *)send_buff, (void *)recv_buff, data->count, (HcclDataType)dtype, (HcclReduceOp)op_type, hccl_comm, stream));

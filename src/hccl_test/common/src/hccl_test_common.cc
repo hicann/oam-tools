@@ -290,24 +290,26 @@ void HcclTest::print_help()
 {
     printf("USAGE: ./test \n\t");
     if (IsSupport910_95()) {
-        printf("[-a --accelerator <default/host_ts/aicpu_ts/aiv/aiv_only/ccu_ms/ccu_sched>] \n\t");
+        printf("[-a --accelerator <default/aicpu_ts/aiv/aiv_only/ccu_ms/ccu_sched>] \n\t");
     }
-    printf("[-b,--minbytes <min size in bytes>] \n\t"
-           "[-e,--maxbytes <max size in bytes>] \n\t"
-           "[-i,--stepbytes <increment size>] \n\t"
-           "[-f,--stepfactor <increment factor>] \n\t"
-           "[-n,--iters <iteration count>] \n\t"
-           "[-o,--op <sum/prod/min/max>] \n\t"
-           "[-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] \n\t"
-           "[-r,--root <root>] \n\t"
-           "[-w,--warmup_iters <warmup iteration count>] \n\t"
-           "[-c,--check <result verification> 0:disabled 1:enabled.] \n\t"
-           "[-p,--npus <npus used for one node>] \n\t"
-           "[-z,--zero_copy  0:disabled 1:enabled.] \n\t"
-           "[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t"
-           "[-s,--nslb  0:disabled 1:enabled.] \n\t"
-           "[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not support aicpu_ts.] \n\t"
-           "[-h,--help]\n");
+    printf("[-b,--minbytes <min size in bytes>] \n\t");
+    printf("[-e,--maxbytes <max size in bytes>] \n\t");
+    printf("[-i,--stepbytes <increment size>] \n\t");
+    printf("[-f,--stepfactor <increment factor>] \n\t");
+    printf("[-n,--iters <iteration count>] \n\t");
+    printf("[-o,--op <sum/prod/min/max>] \n\t");
+    printf("[-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] \n\t");
+    printf("[-r,--root <root>] \n\t");
+    printf("[-w,--warmup_iters <warmup iteration count>] \n\t");
+    printf("[-c,--check <result verification> 0:disabled 1:quiet 2:verbose (default 1)] \n\t");
+    printf("[-p,--npus <npus used for one node>] \n\t");
+    if (!IsSupport910_95()) {
+        printf("[-z,--zero_copy  0:disabled 1:enabled.] \n\t");
+        printf("[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t");
+        printf("[-s,--nslb  0:disabled 1:enabled.] \n\t");
+    }
+    printf("[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not support aicpu_ts.] \n\t");
+    printf("[-h,--help]\n");
     return;
 }
 
@@ -450,8 +452,8 @@ int HcclTest::check_cmd_line()
         return -1;
     }
 
-    if (check != 1 && check != 0) {
-        printf("Error: [-c,--check] is invalid, check should be 0 or 1\n");
+    if (check < 0 || check > 2) {
+        printf("Error: [-c,--check] is invalid, check should be 0 or 1 or 2\n");
         return -1;
     }
 

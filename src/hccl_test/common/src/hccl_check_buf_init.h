@@ -106,14 +106,14 @@ extern std::map<int,HostBufInitFunc> functionMap;
 typedef void(*ReduceCheckBufInitFunc)(void *, u64, int, int, int);
 extern std::map<int,ReduceCheckBufInitFunc> functionReduceMap;
 
-typedef int(*AllToAllCheckResult)(const void*, u64*, u64*, int, int, int);
+typedef int(*AllToAllCheckResult)(const void*, u64*, u64*, int, int, int, int);
 extern std::map<int,AllToAllCheckResult> functionAllToAllMap;
 
 extern void hccl_host_buf_init(void *dst_buf, unsigned long long count, int dtype, int val);
 extern void hccl_reduce_check_buf_init(
     void *dst_buf, unsigned long long count, int dtype, int op, int val, int rank_size);
 extern int hccl_alltoallv_check_result(void *check_buf, unsigned long long *recv_counts, unsigned long long *recv_disp,
-    int rank_id, int rank_size, int dtype);
+    int rank_id, int rank_size, int dtype, int check_level);
 extern bool hccl_alltoall_check_result(const void *recv_buff, const std::size_t count, const int nRanks,
     const int rank, const std::vector<std::uint8_t> &pattern);
 

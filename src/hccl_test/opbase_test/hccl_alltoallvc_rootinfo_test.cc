@@ -88,7 +88,7 @@ int HcclOpBaseAlltoallvcTest::check_buf_result()
     for (int i = 1; i < rank_size; ++i) {
         recv_disp[i] = recv_disp[i - 1] + recv_counts[i - 1];
     }
-    int ret = hccl_alltoallv_check_result(check_buf, recv_counts, recv_disp, rank_id, rank_size, dtype);
+    int ret = hccl_alltoallv_check_result(check_buf, recv_counts, recv_disp, rank_id, rank_size, dtype, check);
     if (ret != 0) {
         check_err++;
     }
@@ -153,7 +153,7 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
     float time;
     ACLCHECK(aclrtEventElapsedTime(&time, start_event, end_event));
 
-    if (check == 1) {
+    if (check >= 1) {
         if (iters || warmup_iters) {
             ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
             HCCLCHECK(HcclAlltoAllVC((void*)send_buff, send_count_matrix, (HcclDataType)dtype,

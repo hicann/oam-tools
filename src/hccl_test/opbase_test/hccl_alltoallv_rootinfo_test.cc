@@ -100,7 +100,7 @@ int HcclOpBaseAlltoallvTest::check_buf_result()
     ACLCHECK(aclrtMemcpy((void*)check_buf, malloc_kSize, (void*)recv_buff, malloc_kSize, ACL_MEMCPY_DEVICE_TO_HOST));
 
     int ret = 0;
-    ret = hccl_alltoallv_check_result(check_buf, recv_counts, recv_disp, rank_id, rank_size, dtype);
+    ret = hccl_alltoallv_check_result(check_buf, recv_counts, recv_disp, rank_id, rank_size, dtype, check);
     if(ret != 0)
     {
         check_err++;
@@ -175,7 +175,7 @@ int HcclOpBaseAlltoallvTest::hccl_op_base_test() //主函数
     float time;
     ACLCHECK(aclrtEventElapsedTime(&time, start_event, end_event));
 
-    if (check == 1) {
+    if (check >= 1) {
         if (iters || warmup_iters) {
             ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
             HCCLCHECK(HcclAlltoAllV((void *)send_buff, send_counts, send_disp, (HcclDataType)dtype,\
