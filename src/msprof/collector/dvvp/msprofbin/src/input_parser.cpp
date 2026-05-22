@@ -681,6 +681,27 @@ int32_t InputParser::CheckUserCmdValid(const std::string &usrCmdPath)
     return MSPROF_DAEMON_ERROR;
 }
 
+int32_t InputParser::CheckAppParamValid(std::string &appParam) const
+{
+    if (appParam.empty()) {
+        CmdLog::CmdErrorLog("Argument --application: expected one argument");
+        return MSPROF_DAEMON_ERROR;
+    }
+    if (appParam.length() > MAX_APP_LEN) {
+        CmdLog::CmdErrorLog("Argument --application: expected param length less than %d", MAX_APP_LEN);
+        return MSPROF_DAEMON_ERROR;
+    }
+    // delete head spaces
+    appParam.erase(0, appParam.find_first_not_of(" \t\n\r"));
+    // delete tail spaces
+    appParam.erase(appParam.find_last_not_of(" \t\n\r") + 1);
+    if (appParam.empty()) {
+        CmdLog::CmdErrorLog("Argument --application: expected one argument");
+        return MSPROF_DAEMON_ERROR;
+    }
+    return MSPROF_DAEMON_OK;
+}
+
 int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
 {
     if (cmdInfo.args[ARGS_APPLICATION] == nullptr) {
@@ -688,12 +709,7 @@ int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
         return MSPROF_DAEMON_ERROR;
     }
     std::string appParam = cmdInfo.args[ARGS_APPLICATION];
-    if (appParam.empty()) {
-        CmdLog::CmdErrorLog("Argument --application: expected one argument");
-        return MSPROF_DAEMON_ERROR;
-    }
-    if (appParam.length() > MAX_APP_LEN) {
-        CmdLog::CmdErrorLog("Argument --application: expected param length less than %d", MAX_APP_LEN);
+    if (CheckAppParamValid(appParam) != MSPROF_DAEMON_OK) {
         return MSPROF_DAEMON_ERROR;
     }
     std::string tmpAppParamers;
@@ -707,6 +723,10 @@ int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
     if (!Utils::IsAppName(cmdPath)) {
         // e.g: bash xx.sh args or python xx.py args or python -m xx args or /usr/bin/python xx.py args
         // set app_dir to './' to set result_dir to current dir when --output not set, and set app to cmd to avoid empty app error in HandleApp, and save all app parameters to app_parameters.
+        if (tmpAppParamers.empty()) {
+            CmdLog::CmdErrorLog("Argument --application: an interpreter (python/bash/sh) requires a script or module argument");
+            return MSPROF_DAEMON_ERROR;
+        }
         if (cmdPath.find('/') != std::string::npos) {
             std::string canPath = Utils::CanonicalizePath(cmdPath);
             if (canPath.empty()) {

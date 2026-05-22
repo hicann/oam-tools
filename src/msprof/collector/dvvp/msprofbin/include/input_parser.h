@@ -262,6 +262,7 @@ private:
     int32_t CheckLlcProfilingIsValid(const std::string &llcProfiling) const;
     int32_t PreCheckApp(const std::string &appDir, const std::string &appName) const;
     int32_t CheckUserCmdValid(const std::string &usrCmdPath);
+    int32_t CheckAppParamValid(std::string &appParam) const;
     int32_t ParamsCheck() const;
     int32_t HostAndDevParamsCheck();
     int32_t ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo);

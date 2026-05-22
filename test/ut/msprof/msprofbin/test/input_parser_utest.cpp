@@ -259,8 +259,10 @@ TEST_F(INPUT_PARSER_UTEST, CheckAppValid) {
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
     cmdInfo.args[ARGS_APPLICATION] = "";
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
+    cmdInfo.args[ARGS_APPLICATION] = "        ";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
     cmdInfo.args[ARGS_APPLICATION] = "bash";
-    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAppValid(cmdInfo));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
     cmdInfo.args[ARGS_APPLICATION] = "./bash";
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
     cmdInfo.args[ARGS_APPLICATION] = "./CheckAppValid a";
