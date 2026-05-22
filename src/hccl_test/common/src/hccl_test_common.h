@@ -64,6 +64,7 @@ constexpr int BUF_ALGIN_SIZE = 512;
 constexpr int BUF_ALGIN_LINE = 16 * 1024 * 1024;
 constexpr int NSLBDP_SUPPORT_VERSION = 7;
 constexpr int NSLBDP_PORT_OFFSET = 32;
+const size_t SYMMETRIC_MEMORY_STRIDE = 16ULL;
 
 #define ACLCHECK(cmd)                                                                                       \
     do {                                                                                                    \
@@ -164,6 +165,7 @@ protected:
         recv_bytes = 0;
     }
     void get_buff_size(size_t &send_bytes, size_t &recv_bytes);
+    size_t get_max_symmetric_memory_size();
     // 如果不需要初始化send or recv，则返回0
     int prepare_zero_copy(const size_t &send_bytes, const size_t &recv_bytes);
     int alloc_hccl_send_recv_buffer(
@@ -221,6 +223,7 @@ public:
     bool need_ranksize_alignment = false;
     bool enable_symmetric_memory{false};
     aclrtDrvMemHandle symmetric_handle{nullptr};    // 注册对称内存用到的物理内存handle
+    size_t symmetric_memory_size{0};                 // 注册对称内存所需的最大内存大小
 
 private:
     // 当前进程在通信域(MPI_COMM_WORLD)内的进程号
