@@ -121,9 +121,22 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     - pytest-mock (仅执行UT时依赖，建议版本 3.15.1)
     
 	其中：
-    - \$\{chip\_type\}：表示昇腾AI处理器型号，如910_93、910b等。
+    - \$\{chip\_type\}：表示昇腾AI处理器型号（与下文`${soc_name}`等价），用于拼接CANN ops包名。可通过`npu-smi info`命令查看`Name`列得到本机芯片型号，再按下表选择对应的ops包。
     - \$\{cann\_version\}：表示CANN包版本号，需要与Toolkit包版本号相同。
     - \$\{arch\}：表示CPU架构，如aarch64、x86_64。
+
+当前支持的芯片型号与CANN ops包对应关系如下：
+
+| `npu-smi info` Name 列 | 适用产品 | `${chip_type}` / `${soc_name}` | CANN ops 包名 |
+| --- | --- | --- | --- |
+| `910B` | Atlas A2 训练系列产品 / Atlas 800I A2 推理产品 | `910b` | `Ascend-cann-910b-ops_${cann_version}_linux-${arch}.run` |
+| `910_93` | Atlas A3 训练系列产品 / Atlas A3 推理系列产品（业内"910C"对应此项） | `910_93` | `Ascend-cann-910_93-ops_${cann_version}_linux-${arch}.run` |
+| `950` | Atlas 950 系列产品 | `950` | `Ascend-cann-950-ops_${cann_version}_linux-${arch}.run` |
+
+> **说明**
+> - 上表 Name 列为本工具识别的型号关键字；`npu-smi info`实际可能显示带子型号的字符串（如`910B`类会显示为`910B1` / `910B2` / `910B3` / `910B4`），按"Name 列包含上述关键字"的规则匹配即可。
+> - "910C"是商用别称，对应包名中的`910_93`，请勿手动拼写为`910c`、`910_c`等下载链接中不存在的型号。
+> - ops 包的实际文件名与可用版本以 [CANN 官方下载页](https://www.hiascend.com/cann/download) 为准，本工具仅识别上表三类芯片，其它芯片暂不支持，欢迎提交 issue 反馈。
 
 #### 软件安装
 
@@ -159,7 +172,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 
         - \$\{cann\_version\}：表示CANN包版本号。
         - \$\{arch\}：表示CPU架构，如aarch64、x86_64。
-        - \$\{soc\_name\}：表示NPU型号名称。
+        - \$\{soc\_name\}：表示NPU型号名称，与上文`${chip_type}`等价，可选值参见[前置依赖](#前置依赖)章节中的"芯片型号与CANN ops包对应关系"表。
         - \$\{install\_path\}：表示指定安装路径，ops包需与toolkit包安装在相同路径，root用户默认安装在`/usr/local/Ascend`目录。
 
     - **场景2：体验已发布版本能力或基于已发布版本进行开发**
@@ -250,6 +263,8 @@ mkdir -p ${third_party_path}
     # 运行npu-smi，若能正常显示设备信息，则驱动正常
     npu-smi info
     ```
+
+    请记录输出中的`Name`列，并对照[前置依赖](#前置依赖)章节中的"芯片型号与CANN ops包对应关系"表，确认本机芯片型号与已安装的CANN ops包匹配；若`Name`列不在表内，说明本工具尚未适配，请在 issue 中反馈。
 -   **检查CANN安装**
 
     ```bash

@@ -121,9 +121,22 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - pytest-mock (only required when running UT, recommended version 3.15.1)
     
 	Where:
-    - $\{chip\_type\}: Indicates the Ascend AI processor model, such as 910_93, 910b, and so on.
+    - $\{chip\_type\}: Indicates the Ascend AI processor model (equivalent to `${soc_name}` below), used to compose the CANN ops package name. Run `npu-smi info` and read the `Name` column to identify the chip on this machine, then pick the matching ops package from the table below.
     - $\{cann\_version\}: Indicates the CANN package version number. Must match the Toolkit package version number.
     - $\{arch\}: Indicates the CPU architecture, such as aarch64, x86_64.
+
+Currently supported chip models and their CANN ops packages:
+
+| `npu-smi info` Name column | Applicable products | `${chip_type}` / `${soc_name}` | CANN ops package |
+| --- | --- | --- | --- |
+| `910B` | Atlas A2 training series / Atlas 800I A2 inference products | `910b` | `Ascend-cann-910b-ops_${cann_version}_linux-${arch}.run` |
+| `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `910_93` | `Ascend-cann-910_93-ops_${cann_version}_linux-${arch}.run` |
+| `950` | Atlas 950 series products | `950` | `Ascend-cann-950-ops_${cann_version}_linux-${arch}.run` |
+
+> **Notes**
+> - The Name column values above are the keywords this tool recognizes. `npu-smi info` may print a string with sub-model suffixes (e.g. `910B1` / `910B2` / `910B3` / `910B4` for the `910B` family); matching is by "Name column contains the keyword".
+> - "910C" is a commercial alias and corresponds to `910_93` in package names. There is no `910c` / `910_c` spelling in the download links.
+> - The actual ops package filename and available versions follow the [CANN download page](https://www.hiascend.com/cann/download). Only the three chip families above are supported; please open an issue for any other chip you'd like added.
 
 #### Software Installation
 
@@ -159,7 +172,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
 
         - $\{cann\_version\}: Indicates the CANN package version number.
         - $\{arch\}: Indicates the CPU architecture, such as aarch64, x86_64.
-        - $\{soc\_name\}: Indicates the NPU model name.
+        - $\{soc\_name\}: Indicates the NPU model name, equivalent to `${chip_type}` above. See the "supported chip models and CANN ops packages" table in the [Prerequisites](#prerequisites) section for valid values.
         - $\{install\_path\}: Indicates the specified installation path. The ops package must be installed in the same path as the toolkit package. For root user, the default installation is in the `/usr/local/Ascend` directory.
 
     - **Scenario 2: Experience released version capabilities or develop based on released version**
@@ -252,6 +265,8 @@ After installing CANN packages, verify whether the environment and driver are no
     # Run npu-smi. If device information displays normally, the driver is normal
     npu-smi info
     ```
+
+    Note the `Name` column in the output and cross-reference it with the "supported chip models and CANN ops packages" table in the [Prerequisites](#prerequisites) section to confirm the chip on this machine matches the installed CANN ops package. If the `Name` column is not in the table, the chip is not yet supported by this tool — please open an issue.
 - **Check CANN Installation**
 
     ```bash

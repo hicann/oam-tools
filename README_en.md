@@ -4,6 +4,23 @@
 
 The oam-tools (Operations, Administration, and Maintenance) project provides fault diagnosis tools and performance testing and tuning tools for developers. The project includes capabilities such as fault information collection, software and hardware information display, AI core error analysis, and AI task performance collection and analysis. These capabilities improve the efficiency of fault diagnosis and AI task performance analysis.
 
+## 🧩 Supported Hardware
+
+Before setting up the environment, confirm that your hardware is within the supported scope of this tool.
+
+- **CPU architecture**: `aarch64`, `x86_64`
+- **Ascend AI processors**:
+
+  | `npu-smi info` Name column | Applicable products | CANN ops package keyword |
+  | --- | --- | --- |
+  | `910B` | Atlas A2 training series / Atlas 800I A2 inference products | `910b` |
+  | `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `910_93` |
+  | `950` | Atlas 950 series products | `950` |
+
+  > - `npu-smi info` may print sub-model suffixes (e.g. `910B1` / `910B2` / `910B3` / `910B4`); matching is by "Name column contains the keyword".
+  > - "910C" is a commercial alias; package names use `910_93`. There is no `910c` / `910_c` spelling.
+  > - Other chips are not yet supported — please open an issue. The full ops package naming convention and download instructions are in [Quick Install](docs/en/quick_install.md#method-3-manual-installation).
+
 ## Directory Structure
 
 The key directory structure is as follows:
