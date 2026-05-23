@@ -21,9 +21,9 @@
 
 对于无昇腾设备的开发者，可直接使用WebIDE开发平台，即“**一站式开发平台**”，该平台为您提供在线可直接运行的昇腾环境，环境中已安装必备的驱动固件、软件包和依赖，无需手动安装。更多关于开发平台的介绍请参考[LINK](https://gitcode.com/org/cann/discussions/54)。
 
-1. 进入开源项目，单击“`云开发`”按钮，使用已认证过的华为云账号登录。若未注册或认证，请根据页面提示进行注册和认证。
+1. 进入开源项目，单击“`CANNLab`”按钮，使用已认证过的华为云账号登录。若未注册或认证，请根据页面提示进行注册和认证。
 
-   <img src="./figures/cloudIDE.png" alt="云平台"  width="750px" height="90px">
+   <img src="./figures/cloudIDE.png" alt="CANNLab"  width="750px" height="90px">
 
 2. 根据页面提示创建并启动云开发环境，单击“`连接 > WebIDE `”进入一站式开发平台，开源项目的源码资源默认在`/mnt/workspace`目录下。
 
