@@ -459,7 +459,7 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         return errinfo
 
     def _analyse_vec_errinfo(self: any) -> str:
-        regexp = f"{Constant.VEC_KEY}=(\S+)"
+        regexp = rf"{Constant.VEC_KEY}=(\S+)"
         ret = re.findall(regexp, self.extra_info, re.M)
         if not ret:
             return "No VEC_ERR_INFO found"

@@ -239,8 +239,8 @@ cmake_generate_make() {
     local cmake_args="$2"
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]];then
         echo "clear all files in build directory"
-        # makeself_built_in.cmake 末尾会把 _CPack_Packages/makeself_staging 目录树
-        # chmod 到 0550，rm -rf 进不去这些目录，先恢复 owner 写位再删
+        # cpack 打包脚本会把 _CPack_Packages/makeself_staging 目录树 chmod 到 0550，
+        # rm -rf 进不去这些目录，先恢复 owner 写位再删
         if [ -n "${build_path}" ] && [ -d "${build_path}" ]; then
             chmod -R u+w "${build_path}" 2>/dev/null
             rm -rf "${build_path}"

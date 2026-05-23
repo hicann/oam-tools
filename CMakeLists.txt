@@ -185,10 +185,17 @@ if(EXISTS "${BUNDLE_PKG}/include")
 endif()
 
 # 拷贝 built-in 目录
+# 显式指定 440 文件权限 / 555 目录权限，与主线 CANN 包对 opp/built-in/op_impl 子树的
+# 权限模型对齐。否则 cmake install(DIRECTORY) 默认会把文件重写成 644、目录 755。
+# 注：文件 440（owner/group r）+ 目录 555（world rx）这个不对称组合是有意为之 ——
+# 主线 CANN 包对该子树就是此模型（other 可遍历目录但读不到文件内容），
+# 切勿轻易改成对称形式（如全 550 / 全 444），会破坏与主线的兼容性。
 if(EXISTS "${BUNDLE_PKG}/built-in")
     install(DIRECTORY ${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe
         DESTINATION opp/built-in/op_impl/ai_core
         COMPONENT oam-tools
+        FILE_PERMISSIONS OWNER_READ GROUP_READ
+        DIRECTORY_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         PATTERN "op_api" EXCLUDE
     )
     install(FILES

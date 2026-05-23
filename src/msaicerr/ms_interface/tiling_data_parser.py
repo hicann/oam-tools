@@ -61,7 +61,7 @@ class TilingDataParser:
         if not get_io_ptr_ret:
             get_io_ptr_ret = []
 
-        get_io_cmd = ['grep', '\[Dump\]\[Exception\]', '-inrE', path]
+        get_io_cmd = ['grep', r'\[Dump\]\[Exception\]', '-inrE', path]
         get_io_regexp = r"begin to load .*? pointer tensor.*?end to load .*? pointer tensor"
         get_io_ret = utils.get_inquire_result(get_io_cmd, get_io_regexp)
 

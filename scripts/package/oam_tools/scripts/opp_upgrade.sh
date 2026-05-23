@@ -411,7 +411,7 @@ _TARGET_USERGROUP=$(getinstalledinfo "${KEY_INSTALLED_UGROUP}")
 # check install conditons by specific install path
 install_type=$(getinstalledinfo "${KEY_INSTALLED_TYPE}")
 if [ "${install_type}" = "" ]; then
-    logwitherrorlevel "1" "error" "[ERROR]: ERR_NO:${UPGRADE_FAILED};ERR_DES:Oam-tools module\
+    logwitherrorlevel "1" "error" "[ERROR]: ERR_NO:${UPGRADE_FAILED};ERR_DES:Oam-Tools module\
  is not installed or directory is wrong."
 fi
 checkinstallusergroupconditon "${_TARGET_USERNAME}" "${_TARGET_USERGROUP}"
@@ -579,6 +579,6 @@ logandprint "[INFO]: Installation information listed below:"
 logandprint "[INFO]: Install path: (${install_version_dir}/${ops_base_platform_dir})"
 logandprint "[INFO]: Install log file path: (${_INSTALL_LOG_FILE})"
 logandprint "[INFO]: Operation log file path: (${_OPERATE_LOG_FILE})"
-logandprint "[INFO]: Oam-tools package upgraded successfully! The new version takes effect immediately."
+logandprint "[INFO]: Oam-Tools package upgraded successfully! The new version takes effect immediately."
 exit 0
 

@@ -80,18 +80,18 @@ FILE_REMOVE_FAILED_DES="Failed to remove file."
 UNAME_NOT_EXIST="0x0091"
 UNAME_NOT_EXIST_DES="Username not exists."
 OPP_COMPATIBILITY_CEHCK_ERR="0x0092"
-OPP_COMPATIBILITY_CEHCK_ERR_DES="Oam-tools compatibility check error."
+OPP_COMPATIBILITY_CEHCK_ERR_DES="Oam-Tools compatibility check error."
 PERM_DENIED="0x0093"
 PERM_DENIED_DES="Permission denied."
 
 # log functions
 # start info before shell executing
 startlog() {
-    echo "[Oam-tools] [$(getdate)] [INFO]: Start Time: $(getdate)"
+    echo "[Oam-Tools] [$(getdate)] [INFO]: Start Time: $(getdate)"
 }
 
 exitlog() {
-    echo "[Oam-tools] [$(getdate)] [INFO]: End Time: $(getdate)"
+    echo "[Oam-Tools] [$(getdate)] [INFO]: End Time: $(getdate)"
 }
 
 checkgroupvalidwithuser(){
@@ -166,7 +166,7 @@ logoperationretstatus() {
 
     _curr_user="${_CURR_OPERATE_USER}"
     _curr_ip="127.0.0.1"
-    _pkg_name="Oam-tools"
+    _pkg_name="Oam-Tools"
     _cur_date_res=$(getdate)
     if [ -f "${_OPERATE_LOG_FILE}" ]; then
         echo "Install ${_event_level} ${_curr_user} ${_cur_date_res} ${_curr_ip} \
@@ -324,7 +324,7 @@ module, are you sure to keep installing oam-tools module in it? y"
             if [ ! -f  "${_opp_sub_dir}""/ascend_install.info" ]; then
                 logandprint "[INFO]: Directory has file existed, do you want to continue? [y/n]"
             else
-                logandprint "[INFO]: Oam-tools package has been installed on the path $(getinstalledinfo "${KEY_INSTALLED_PATH}"), \
+                logandprint "[INFO]: Oam-Tools package has been installed on the path $(getinstalledinfo "${KEY_INSTALLED_PATH}"), \
 the version is $(getinstalledinfo "${KEY_INSTALLED_VERSION}"), \
 and the version of this package is $(getrunpkginfo "${KEY_RUNPKG_VERSION}"), do you want to continue? [y/n]"
             fi
@@ -772,13 +772,13 @@ path_version_check(){
 check_docker_path(){
     docker_path="$1"
     if [ "${docker_path}" != "/"* ]; then
-        echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --docker-root \
+        echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --docker-root \
 must with absolute path that which is start with root directory /. Such as --docker-root=/${docker_path}"
         exitlog
         exit 1
     fi
     if [ ! -d "${docker_path}" ]; then
-        echo "[Oam-tools] [ERROR]: ERR_NO:${FILE_NOT_EXIST}; The directory:${docker_path} not exist, please create this directory."
+        echo "[Oam-Tools] [ERROR]: ERR_NO:${FILE_NOT_EXIST}; The directory:${docker_path} not exist, please create this directory."
         exitlog
         exit 1
     fi
@@ -788,7 +788,7 @@ judgment_path() {
     . "${_COMMON_INC_FILE}"
     check_install_path_valid "${1}"
     if [ $? -ne 0 ]; then
-        echo "[Oam-tools][ERROR]: The oam-tools install path ${1} is invalid, only characters in [a-z,A-Z,0-9,-,_] are supported!"
+        echo "[Oam-Tools][ERROR]: The oam-tools install path ${1} is invalid, only characters in [a-z,A-Z,0-9,-,_] are supported!"
         exitlog
         exit 1
     fi
@@ -799,14 +799,14 @@ check_install_path(){
     param_name="$2"
     # empty patch check
     if [ "x${in_install_path_param}" = "x" ]; then
-        echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter ${param_name} \
+        echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter ${param_name} \
 not support that the install path is empty."
         exitlog
         exit 1
     fi
     # space check
     if echo "x${in_install_path_param}" | grep -q " "; then
-        echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter ${param_name} \
+        echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter ${param_name} \
 not support that the install path contains space character."
         exitlog
         exit 1
@@ -826,7 +826,7 @@ not support that the install path contains space character."
         if [ x"${prefix}" = "x" ]; then
             in_install_path_param="${run_path}/${temp_path}"
         else
-            echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES: Run package path is invalid: $run_path"
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES: Run package path is invalid: $run_path"
             exitlog
             exit 1
         fi
@@ -907,7 +907,7 @@ switchchip(){
         chip_type="Ascend"
         chip_type_new="${tmp_chip_type},Ascend"
     else
-       echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --chip \
+       echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --chip \
 not support that $tmp_chip_type"
         exitlog
         exit 1
@@ -1153,12 +1153,12 @@ do
     --chip=*)
         tmp_chip_type=$(echo $1 | cut -d"=" -f2 )
         if test -z "$tmp_chip_type"; then
-            echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip cannot be null."
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip cannot be null."
             exitlog
             exit 1
         fi
         if [ "${is_uninstall}" = "y" ]; then
-            echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip is not supported to used by this way. please use with \
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip is not supported to used by this way. please use with \
 '--full', '--devel', '--run', '--upgrade'."
             exitlog
             exit 1
@@ -1169,13 +1169,13 @@ do
     --feature=*)
         feature_choice=$(echo $1 | cut -d"=" -f2 )
         if test -z "$feature_choice"; then
-            echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --feature cannot be null."
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --feature cannot be null."
             exitlog
             exit 1
         fi
         contain_feature "ret" "$feature_choice" "${_FILELIST_FILE}"
         if [ "$ret" = "false" ]; then
-            log "WARNING" "Oam-tools package doesn't contain features $feature_choice, skip installation."
+            log "WARNING" "Oam-Tools package doesn't contain features $feature_choice, skip installation."
             exit 0
         fi
         is_feature=y
@@ -1214,7 +1214,7 @@ do
         shift
         ;;
     -*)
-        echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Unsupported parameters [$1], \
+        echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Unsupported parameters [$1], \
 operation execute failed. Please use [--help] to see the useage."
         exitlog
         exit 1
@@ -1248,7 +1248,7 @@ fi
 
 
 if [ "${iter_i}" != 1 ]; then
-    echo "[Oam-tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:only support one type: full/run/devel/upgrade/uninstall/check, operation execute failed! \
+    echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:only support one type: full/run/devel/upgrade/uninstall/check, operation execute failed! \
 Please use [--help] to see the usage."
     exitlog
     exit 1
@@ -1288,9 +1288,9 @@ fi
 
 uninstall_none_multi_version "$_TARGET_INSTALL_PATH/${opp_platform_dir}"
 if [ "$?" = "0" ]; then
-    echo "[Oam-tools] [$(getdate)] [INFO]: Uninstall the version before multi version of oam-tools successfully!"
+    echo "[Oam-Tools] [$(getdate)] [INFO]: Uninstall the version before multi version of oam-tools successfully!"
 else
-    echo "[Oam-tools] [$(getdate)] [ERROR]: Uninstall the version before multi version of oam-tools failed!"
+    echo "[Oam-Tools] [$(getdate)] [ERROR]: Uninstall the version before multi version of oam-tools failed!"
     exit 1
 fi
 if [ "${is_input_path}" = y ]; then
