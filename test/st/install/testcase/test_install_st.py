@@ -27,8 +27,14 @@ Tested command forms:
 Checks:
   - Exit code is 0
   - No [ERROR] in combined stdout + stderr
-  - No [WARNING] in combined stdout + stderr
   - Key installed artefacts exist on disk after successful install
+
+[WARNING] lines are deliberately not asserted on: the installer treats them as
+non-fatal advisories (parent-dir owner/mode != root/755, install dir already
+populated, ver_check soft failures, etc.) and emits them on environments that
+are perfectly fine for a successful install. Failing the suite on any WARNING
+elevates these advisories to errors, which contradicts the installer contract
+and makes the suite environment-fragile.
 """
 
 import os
@@ -41,7 +47,6 @@ import pytest
 _BASH = shutil.which("bash") or "/bin/bash"
 
 _ERROR_KW = "[ERROR]"
-_WARNING_KW = "[WARNING]"
 
 
 def _run(run_package, install_dir, install_type, extra_args=None):
@@ -68,9 +73,6 @@ class TestInstall:
         )
         assert _ERROR_KW not in out, (
             f"'{install_type}' install output contains {_ERROR_KW!r}:\n{out}"
-        )
-        assert _WARNING_KW not in out, (
-            f"'{install_type}' install output contains {_WARNING_KW!r}:\n{out}"
         )
 
 
@@ -111,9 +113,6 @@ class TestExtract:
         )
         assert _ERROR_KW not in out, (
             f"--noexec --extract output contains {_ERROR_KW!r}:\n{out}"
-        )
-        assert _WARNING_KW not in out, (
-            f"--noexec --extract output contains {_WARNING_KW!r}:\n{out}"
         )
         assert os.path.isdir(extract_dir), (
             f"Extract target directory was not created: {extract_dir}"
