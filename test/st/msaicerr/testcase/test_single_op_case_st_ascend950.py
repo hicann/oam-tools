@@ -17,7 +17,6 @@
 # ----------------------------------------------------------------------------
 import os
 import sys
-from unittest.mock import Mock
 from pathlib import Path
 import subprocess
 import shutil
@@ -27,14 +26,6 @@ from argparse import Namespace
 import pytest
 
 from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath, CommonAssert
-
-dump_data_pb2 = Mock(name="dump_data_pb2")
-dump_data_pb2.__name__ = 'ms_interface.dump_data_pb2'
-sys.modules['ms_interface.dump_data_pb2'] = dump_data_pb2
-
-protobuf_message = Mock(name="google.protobuf.message")
-protobuf_message.__name__ = 'google.protobuf.message'
-sys.modules['google.protobuf.message'] = protobuf_message
 
 sys.path.append(MSAICERR_PATH)
 sys.path.append(f'{cur_abspath}/../res/package')

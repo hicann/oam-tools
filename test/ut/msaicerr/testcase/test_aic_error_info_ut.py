@@ -20,16 +20,8 @@ from ms_interface.utils import ExceptionRootCause
 from ms_interface.aic_error_info import AicErrorInfo
 from conftest import MSAICERR_PATH, CommonAssert
 import sys
-from unittest.mock import Mock
 import struct
 
-dump_data_pb2 = Mock(name="dump_data_pb2")
-dump_data_pb2.__name__ = 'ms_interface.dump_data_pb2'
-sys.modules['ms_interface.dump_data_pb2'] = dump_data_pb2
-
-protobuf_message = Mock(name="google.protobuf.message")
-protobuf_message.__name__ = 'google.protobuf.message'
-sys.modules['google.protobuf.message'] = protobuf_message
 sys.path.append(MSAICERR_PATH)
 
 IFU_ERROR = '0x13b023938000\nifu_err_type bit[50:48]=000' \

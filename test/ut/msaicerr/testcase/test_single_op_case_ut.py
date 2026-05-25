@@ -30,14 +30,6 @@ from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.run_dirty_ub import run_dirty_ub
 
-dump_data_pb2 = Mock(name="dump_data_pb2")
-dump_data_pb2.__name__ = 'ms_interface.dump_data_pb2'
-sys.modules['ms_interface.dump_data_pb2'] = dump_data_pb2
-
-protobuf_message = Mock(name="google.protobuf.message")
-protobuf_message.__name__ = 'google.protobuf.message'
-sys.modules['google.protobuf.message'] = protobuf_message
-
 sys.path.append(MSAICERR_PATH)
 
 

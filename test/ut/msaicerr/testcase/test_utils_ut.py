@@ -34,14 +34,6 @@ from unittest import mock
 from unittest.mock import Mock
 from pathlib import Path
 import subprocess
-dump_data_pb2 = Mock(name="dump_data_pb2")
-dump_data_pb2.__name__ = 'ms_interface.dump_data_pb2'
-sys.modules['ms_interface.dump_data_pb2'] = dump_data_pb2
-
-protobuf_message = Mock(name="google.protobuf.message")
-protobuf_message.__name__ = 'google.protobuf.message'
-sys.modules['google.protobuf.message'] = protobuf_message
-
 te = Mock(name="te")
 te.__name__ = "te"
 sys.modules['te'] = te

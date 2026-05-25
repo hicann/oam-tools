@@ -21,7 +21,6 @@ from conftest import MSAICERR_PATH, cur_abspath, ori_data_path
 import os
 import sys
 import pytest
-from unittest.mock import Mock
 
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
 from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner, AscendOpKernel
@@ -30,14 +29,6 @@ from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.ascend950.compile_op import CompileOP
 from ms_interface.ascend950.ascend950_handler import Ascend950Handler
 from ms_interface.run_dirty_ub import run_dirty_ub
-
-dump_data_pb2 = Mock(name="dump_data_pb2")
-dump_data_pb2.__name__ = 'ms_interface.dump_data_pb2'
-sys.modules['ms_interface.dump_data_pb2'] = dump_data_pb2
-
-protobuf_message = Mock(name="google.protobuf.message")
-protobuf_message.__name__ = 'google.protobuf.message'
-sys.modules['google.protobuf.message'] = protobuf_message
 
 sys.path.append(MSAICERR_PATH)
 

@@ -23,16 +23,11 @@ add_subdirectory(proto_parse)
 
 set(MS_AIC_ERR_NAME msaicerr_py.tgz)
 set(MSAICERR_DIR ${CMAKE_CURRENT_BINARY_DIR}/msaicerr_for_tgz)
-set(PROTO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/proto_parse/dump_data.proto)
-
-protobuf_generate_py(toolchain_msaicerr PROTO_SRCS ${PROTO_FILE})
 
 add_custom_target(MsaicerrFiles ALL DEPENDS ascend_dump_parser ${MS_AIC_ERR_NAME})
 add_custom_command(OUTPUT  ${MS_AIC_ERR_NAME}
-    DEPENDS ${PROTO_SRCS}
     COMMAND rm -rf ${MSAICERR_DIR}
     COMMAND mkdir ${MSAICERR_DIR}
-    COMMAND cp -r ${PROTO_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/ms_interface
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/ && rm -rf ${MS_AIC_ERR_NAME}
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/ && find ./ -name '*.py' |xargs tar czf ${MS_AIC_ERR_NAME}
     COMMAND echo ${MSAICERR_DIR}/$(MS_AIC_ERR_NAME)
