@@ -110,7 +110,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - ccache
     - CANN toolkit package: `Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`
     - CANN ops package: `Ascend-cann-${chip_type}-ops_${cann_version}_linux-${arch}.run`
-    - protobuf >= 25.1
+    - protobuf >= 25.1 (C++ build dependency fetched/linked by cmake, used to generate .pb.cc)
     - abseil >= 20230802.1
     - json >= 3.11.3
     - patch >= 2.7.6
@@ -119,6 +119,8 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - mockcpp (only required when running UT, recommended version 2.7)
     - pytest (only required when running UT, recommended version 9.0.2)
     - pytest-mock (only required when running UT, recommended version 3.15.1)
+
+    Python runtime dependencies (required by tools such as asys / msaicerr at runtime, installed via `pip install -r requirements.txt`) are listed in `requirements.txt` at the repository root. Note that `protobuf>=6.33.4` there refers to the Python package `protobuf` on PyPI, which uses a versioning scheme independent from the C++ protobuf 25.1 above; the two version numbers do not conflict.
     
 	Where:
     - $\{chip\_type\}: Indicates the Ascend AI processor model (equivalent to `${soc_name}` below), used to compose the CANN ops package name. Run `npu-smi info` and read the `Name` column to identify the chip on this machine, then pick the matching ops package from the table below.

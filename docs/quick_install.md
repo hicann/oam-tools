@@ -110,7 +110,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     - ccache
     - CANN toolkit组合包：`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`
     - CANN ops组合包：`Ascend-cann-${chip_type}-ops_${cann_version}_linux-${arch}.run`
-    - protobuf >= 25.1
+    - protobuf >= 25.1（C++ 编译依赖，由 cmake 拉取/链接，用于生成 .pb.cc）
     - abseil >= 20230802.1
     - json >= 3.11.3
     - patch >= 2.7.6
@@ -119,6 +119,8 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     - mockcpp（仅执行UT时依赖，建议版本 2.7）
     - pytest（仅执行UT时依赖，建议版本 9.0.2）
     - pytest-mock (仅执行UT时依赖，建议版本 3.15.1)
+
+    Python 运行时依赖（asys / msaicerr 等工具运行所需，由 `pip install -r requirements.txt` 安装）的版本要求见仓库根目录的 `requirements.txt`。其中 `protobuf>=6.33.4` 指 Python 包 `protobuf`（PyPI 上独立发版，与上文 C++ 编译用的 protobuf 25.1 是不同的版本号体系），二者不冲突。
     
 	其中：
     - \$\{chip\_type\}：表示昇腾AI处理器型号（与下文`${soc_name}`等价），用于拼接CANN ops包名。可通过`npu-smi info`命令查看`Name`列得到本机芯片型号，再按下表选择对应的ops包。
