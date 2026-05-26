@@ -102,6 +102,74 @@ UT测试用例编译输出目录为`build`，如果想清除历史编译记录�
 rm -rf build_out/ build/
 ```
 
+### 功能运行示例
+
+完成[安装](#-安装)后，工具会被释放到 CANN 安装目录下的 `tools/` 子目录（root 用户默认在 `/usr/local/Ascend/cann/${arch}-linux/tools/`，`${arch}` 取值见 [docs/quick_install.md](docs/quick_install.md)）。运行示例前请先加载环境变量：
+
+```bash
+source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+```
+
+下文示例中尖括号 `<...>` 内为**用户需要替换的占位**（输入路径、输出路径、device id 等），其余部分原样照抄即可。
+
+#### asys（故障信息收集 / 诊断）
+
+`src/asys/` 目录下同时存在 `asys.py` 和指向它的软链接 `asys`（`src/asys/asys -> ./asys.py`），CMake 通过 `install(DIRECTORY ${ASYS_DIR} ...)` 将整个目录原样拷贝，软链接也会保留。因此安装后两种调用都能直接用：
+
+```bash
+# 形式一：显式 python3 调用 .py
+python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys.py -h
+
+# 形式二：直接调用软链接 asys（asys.py 自带 #!/usr/bin/env python3 shebang）
+${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys -h
+```
+
+asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。下面以软链接形式给出常用调用，把命令前缀简记为 `<asys_bin>`（即 `${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys`）：
+
+```bash
+# 采集主机与 device 的软硬件信息（不依赖待诊断任务，通常作为环境自检）
+<asys_bin> info
+
+# 体检 device 健康状态
+<asys_bin> health
+
+# 采集环境中已存在的运维信息并打包到指定输出目录
+<asys_bin> collect --output <output_dir>
+```
+
+将 `<asys_bin>` 加入 `PATH` 后即可直接 `asys info` / `asys health` 等。完整参数以 `<asys_bin> -h` 输出为准。
+
+#### msaicerr（AI Core Error 分析）
+
+msaicerr 入口为 `src/msaicerr/msaicerr.py`，安装后位于 `${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py`。
+
+```bash
+# 1) 解析一个已有的 AI Core Error 报告路径，结果输出到 <output_dir>
+python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
+
+# 2) 解析单个 dump 文件（dtype 取值参见 -h 输出）
+python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
+
+# 3) 检测当前环境是否具备运行 msaicerr 所需的条件（仅依赖 device 编号）
+python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -e -dev 0
+
+# 完整参数说明
+python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -h
+```
+
+#### msprof（性能调优）
+
+msprof 由 C++ 侧 collector（`basic`、`dvvp`）和 `msprof_analyze` Python wheel 组成。`bash build.sh` 完成后，wheel 会出现在 `build_out/`（具体文件名形如 `msprof_analyze-<version>-<py_tag>-<arch>.whl`）。
+
+```bash
+# 安装 wheel 后即可在 PATH 中使用 msprof_analyze 命令
+pip3 install build_out/msprof_analyze-*.whl
+
+msprof_analyze -h
+```
+
+C++ 侧 collector 一般作为 CANN profiler 流水线的内置组件被调用，开发者无需直接执行；回归通过 `bash build.sh -u --component msprof` 运行 gtest 用例（产物 `build/test/ut/msprof/msprofbin/msprof_bin_utest`）。
+
 ## 🅿️ Pre-commit
 pre-commit 是一个用于管理和维护 Git 预提交钩子（hooks）的框架，通过在代码提交前自动化执行代码检查、格式化和安全扫描，确保代码质量并统一团队规范，显著减少 CI/CD 流水线失败并提升协作效率。
 本仓已配置pre-commit，用户可以参考CANN社区的[pre-commit配置指导书中第3章节](https://gitcode.com/cann/infrastructure/blob/main/docs/SC/pre-commit/pre-commit%E9%85%8D%E7%BD%AE%E6%8C%87%E5%AF%BC%E4%B9%A6.md#3-%E7%A4%BE%E5%8C%BA%E8%B4%A1%E7%8C%AE%E8%80%85%E4%BD%BF%E7%94%A8pre-commit%E8%83%BD%E5%8A%9B)安装pre-commit, 首次由于需要配置java，maven环境以及构建jar包，需要的时间比较长。
