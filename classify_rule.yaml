@@ -1,0 +1,55 @@
+oam-tools:
+  commiter:
+    "xxx"
+  team: "oam-tools"
+  src:
+    release:
+      - src
+    unrelease:
+  llt:
+    ut_check: true
+    st_check: false
+asys:
+  commiter:
+    "xxx"
+  team: "asys"
+  src:
+    release:
+      - src/asys
+    unrelease:
+  llt:
+    ut_check: true
+    st_check: false
+msaicerr:
+  commiter:
+    "xxx"
+  team: "msaicerr"
+  src:
+    release:
+      - src/msaicerr
+    unrelease:
+  llt:
+    ut_check: true
+    st_check: false
+msprof:
+  commiter:
+    "xxx"
+  team: "msprof"
+  src:
+    release:
+      - src/msprof
+    unrelease:
+  llt:
+    ut_check: true
+    st_check: false
+hccl_test:
+  commiter:
+    "xxx"
+  team: "hccl_test"
+  src:
+    release:
+      - src/hccl_test
+    unrelease:
+  llt:
+    ut_check: true
+    st_check: false
