@@ -21,7 +21,7 @@ protobuf_generate(dump_data_protos
     TARGET
 )
 
-add_dependencies(dump_data_protos protobuf_host_build ascend_protobuf_static)
+add_dependencies(dump_data_protos host_protoc ascend_protobuf_static)
 
 add_library(ascend_dump_parser SHARED
     ${CppPath}

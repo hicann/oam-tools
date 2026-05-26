@@ -20,7 +20,7 @@ protobuf_generate(msprofbin_proto
     TARGET
 )
 
-add_dependencies(msprofbin_proto host_protoc protobuf_host_build ascend_protobuf_static)
+add_dependencies(msprofbin_proto host_protoc ascend_protobuf_static)
 
 set(msprofBinHeader
     ${SOURCE_DIR}/src

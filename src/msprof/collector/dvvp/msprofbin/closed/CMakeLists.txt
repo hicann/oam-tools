@@ -21,7 +21,7 @@ protobuf_generate(msprofbin_proto
 )
 
 if(BUILD_OPEN_PROJECT)
-    add_dependencies(msprofbin_proto host_protoc protobuf_host_build ascend_protobuf_static)
+    add_dependencies(msprofbin_proto host_protoc ascend_protobuf_static)
 endif()
 
 set(msprofBinHeader
@@ -199,7 +199,10 @@ target_compile_options(msprofbin PRIVATE
     -fno-strict-aliasing
     -fno-common
     -Wall
-    $<$<STREQUAL:${PRODUCT_SIDE},host>:-D_GLIBCXX_USE_CXX11_ABI=0>
+    # PRODUCT_SIDE 已从 build.sh 中移除（仓内仅此处引用，业务上无 host/device
+    # 双侧需求），原本传 device 时本行 generator expression 永远求值为空，
+    # 即"死代码"；保留本行以备后续如需启用旧 ABI 时取消注释。
+    # $<$<STREQUAL:${PRODUCT_SIDE},host>:-D_GLIBCXX_USE_CXX11_ABI=0>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wfloat-equal>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wextra>
     $<$<NOT:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>>:-Wno-unused-parameter>

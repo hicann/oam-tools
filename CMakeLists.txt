@@ -79,12 +79,15 @@ else()
   option(BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG "Build oam-tools with cann source" OFF)
 endif()
 set(OAM_TOOLS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-# protobuf
-include(cmake/third_party/protobuf.cmake)
-include(cmake/third_party/protobuf_fun.cmake)
-set(PROTOC_PROGRAM ${PROTOBUF_HOST_DIR}/bin/protoc)
-set(PROTOBUF_HOST_INCLUDE ${PROTOBUF_HOST_DIR}/include)
+# protobuf — 通过 cann-cmake 的 add_cann_third_party 引入
+add_cann_third_party(protobuf)
+
+set(PROTOC_PROGRAM "")
+get_target_property(PROTOC_PROGRAM host_protoc IMPORTED_LOCATION)
+set(PROTOBUF_HOST_INCLUDE ${PROTOBUF_LIB_CACHE_DIR}/include)
 message("PROTOC_PROGRAM: ${PROTOC_PROGRAM}")
+
+include(cmake/third_party/protobuf_fun.cmake)
 
 # 外部依赖库及编译选项
 include(cmake/third_party/third_party_header_libs.cmake)
@@ -105,16 +108,12 @@ add_subdirectory(src/msprof/collector/dvvp/msprofbin)
 add_subdirectory(src/msprof/collector/dvvp/acp)
 
 if (ENABLE_COV OR ENABLE_UT)
-    set(ASCEND_3RD_LIB_PATH ${CANN_3RD_LIB_PATH})
     set(OAM_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    set(MOCKCPP_INCLUDE_DIR ${ASCEND_3RD_LIB_PATH}/mockcpp/include)
-    set(MOCKCPP_LIB_DIR ${ASCEND_3RD_LIB_PATH}/mockcpp/lib)
-    set(BOOST_INCLUDE_PATH ${ASCEND_3RD_LIB_PATH}/boost)
     include(CMakePrintHelpers)
-    include(cmake/third_party/boost.cmake)
-    include(cmake/third_party/mockcpp.cmake)
-    include(cmake/third_party/gtest_shared.cmake)
-    add_dependencies(GTest::gtest mockcpp)
+    add_cann_third_party(boost)
+    add_cann_third_party(mockcpp)
+    add_cann_third_party(gtest_shared)
+    add_dependencies(GTestShared::gtest mockcpp)
     add_subdirectory(test)
 endif()
 

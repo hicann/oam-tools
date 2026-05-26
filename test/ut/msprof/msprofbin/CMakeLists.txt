@@ -16,7 +16,7 @@ protobuf_generate(msprof_bin_utest_proto
     TARGET
 )
 
-add_dependencies(msprof_bin_utest_proto host_protoc protobuf_host_build ascend_protobuf_static)
+add_dependencies(msprof_bin_utest_proto host_protoc ascend_protobuf_static)
 
 set(common_file
     ${MSPROF_SOURCE_DIR}/dvvp/app/application.cpp

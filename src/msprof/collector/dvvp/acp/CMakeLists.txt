@@ -21,7 +21,7 @@ protobuf_generate(profiler_proto
     TARGET
 )
 
-add_dependencies(profiler_proto host_protoc protobuf_host_build ascend_protobuf_static)
+add_dependencies(profiler_proto host_protoc ascend_protobuf_static)
 
 ####################### acp #######################
 set(acpBinHeader
