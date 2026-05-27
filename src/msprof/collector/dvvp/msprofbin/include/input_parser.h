@@ -43,7 +43,7 @@ enum MsprofArgsType {
     ARGS_APPLICATION,
     ARGS_ENVIRONMENT,
     ARGS_DYNAMIC_PROF,
-    ARGS_DYNAMIC_PROF_PID,  // 1-2147483647
+    ARGS_DYNAMIC_PROF_PID, // 1-2147483647
     ARGS_DELAY_PROF,
     ARGS_DURATION_PROF,
     ARGS_AIC_MODE,
@@ -102,7 +102,7 @@ enum MsprofArgsType {
     ARGS_IO_SAMPLING_FREQ,           // 100 1-100 hz
     ARGS_DVPP_FREQ,                  // 50 1-100 hz
     ARGS_CPU_SAMPLING_FREQ,          // 50 1-50 hz
-    ARGS_INVALID = 63,              // OsalGetOptLong will return opt = 63 for invalid argument
+    ARGS_INVALID = 63,               // OsalGetOptLong will return opt = 63 for invalid argument
     ARGS_INTERCONNECTION_FREQ,       // 50 1-50 hz
     ARGS_HOST_SYS_USAGE_FREQ,        // 50 1-50 hz
     ARGS_SYS_LOW_POWER_FREQ,         // 10000 1-10000hz
@@ -112,6 +112,7 @@ enum MsprofArgsType {
     ARGS_HOST_SYS,
     ARGS_HOST_SYS_PID,
     ARGS_HOST_SYS_USAGE,
+    ARGS_NTS_METRICS,
     // end
     NR_ARGS
 };
@@ -168,7 +169,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"dvpp-profiling", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_PROFILING},
     {"task-block", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_BLOCK},
     {"sys-lp", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_LOW_POWER},
-    {"hccl", OSAL_OPTIONAL_ARG, nullptr, ARGS_HCCL},  // the default value is off
+    {"hccl", OSAL_OPTIONAL_ARG, nullptr, ARGS_HCCL},                       // the default value is off
     {"instr-profiling", OSAL_OPTIONAL_ARG, nullptr, ARGS_INSTR_PROFILING},
     {"l2", OSAL_OPTIONAL_ARG, nullptr, ARGS_L2_PROFILING},
     {"parse", OSAL_OPTIONAL_ARG, nullptr, ARGS_PARSE},
@@ -197,6 +198,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"host-sys", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS},
     {"host-sys-pid", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_PID},
     {"host-sys-usage", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE},
+    {"nts-metrics", OSAL_REQUIRED_ARG, nullptr, ARGS_NTS_METRICS},
     // end
     {nullptr, OSAL_NO_ARG, nullptr, ARGS_HELP}
 };
@@ -209,6 +211,7 @@ public:
     void MsprofCmdUsage(const std::string msg);
     bool HasHelpParamOnly() const;
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> MsprofGetOpts(int32_t argc, MsprofString argv[]);
+
 private:
     void SplitApplicationArgv(int32_t argc, CONST_CHAR_PTR argv[], int32_t &argCount);
     void HandleApp();
@@ -227,6 +230,7 @@ private:
     int32_t CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
     int32_t CheckNpuEventsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
+    int32_t CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckAiCoreMetricsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     std::string GeneratePrompts() const;
@@ -240,6 +244,7 @@ private:
     int32_t CheckSysPeriodValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckHostSysValid(const struct MsprofCmdInfo &cmdInfo);
+    int32_t CheckHostSysToolsValid() const;
     int32_t CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckHostSysUsageValid(const struct MsprofCmdInfo &cmdInfo);
     void SetHostSysUsageParam(const std::string &hostSysUsageParam);
@@ -253,6 +258,7 @@ private:
     int32_t MsprofSwitchCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
     int32_t MsprofDynamicCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
     void MsprofDynamicUpdateParams(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
+    bool SetBasicSwitchParam(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
     int32_t CheckSysCpu();
     int32_t CheckMstxValid();
     void ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
@@ -269,12 +275,13 @@ private:
     void SetTaskTimeSwitch(const std::string timeSwitch);
     int32_t CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd) const;
     void SetHostSysParam(const std::string hostSysParam);
-    int32_t CheckHostSysCmdOutIsExist(const std::string tmpDir, const std::string toolName,
-        const OsalProcess tmpProcess) const;
+    int32_t CheckHostSysCmdOutIsExist(
+        const std::string tmpDir, const std::string toolName, const OsalProcess tmpProcess) const;
     int32_t CheckHostOutString(const std::string tmpStr, const std::string toolName) const;
     int32_t UninitCheckHostSysCmd(const OsalProcess checkProcess) const;
     int32_t PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[]);
     std::vector<MsprofArgsType> GeneratePlatSwithList() const;
+
 private:
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params_;
 };
@@ -285,6 +292,7 @@ public:
     Args(const std::string &name, const std::string &detail, const std::string &defaultValue);
     Args(const std::string &name, const std::string &detail, const std::string &defaultValue, int32_t optional);
     virtual ~Args();
+
 public:
     void PrintHelp();
     void SetDetail(const std::string &detail);
@@ -301,6 +309,7 @@ class ArgsManager : public analysis::dvvp::common::singleton::Singleton<ArgsMana
 public:
     ArgsManager();
     ~ArgsManager() override;
+
 public:
     void AddArgs(const Args &args);
     void PrintHelp();
@@ -320,6 +329,7 @@ private:
     void AddInstrArgs();
     void AddAivArgs();
     void AddAicpuArgs();
+    void AddNtsMetricsArgs();
     void AddHostArgs();
     void AddStarsArgs();
     void AddLowPowerArgs();
@@ -328,10 +338,11 @@ private:
     void AddDelayDurationArgs();
     void AddScaleArgs();
     void PrintMsopprofHelp() const;
+
 private:
     std::vector<Args> argsList_;
 };
-}
-}
-}
+} // namespace Msprof
+} // namespace Dvvp
+} // namespace Analysis
 #endif

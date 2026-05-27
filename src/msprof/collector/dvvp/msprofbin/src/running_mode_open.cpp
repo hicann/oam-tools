@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include "running_mode.h"
-#include <chrono>
 #include "errno/error_code.h"
 #include "input_parser_open.h"
 #include "cmd_log/cmd_log.h"
@@ -83,7 +82,7 @@ int32_t RunningMode::HandleProfilingParams() const
     ConfigManager::instance()->GetVersionSpecificMetrics(aiCoreMetrics);
     int32_t ret = Platform::instance()->GetAicoreEvents(aiCoreMetrics, params_->ai_core_profiling_events);
     if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGE("The intput of ai_core_metrics is invalid");
+        MSPROF_LOGE("Failed to get AI Core PMU events for metrics [%s] on current platform.", aiCoreMetrics.c_str());
         return PROFILING_FAILED;
     }
     params_->ai_core_metrics = aiCoreMetrics;

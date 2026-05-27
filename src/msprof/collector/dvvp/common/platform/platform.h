@@ -95,6 +95,7 @@ public:
     std::string PlatformGetDeviceOscFreq(uint32_t deviceId, const std::string &freq) const;
     bool PlatformHostFreqIsEnable() const;
     int32_t GetAicoreEvents(const std::string &aicoreMetricsType, std::string &aicoreEvents) const;
+    int32_t GetNtsEvents(const std::string &ntsMetricsType, std::string &ntsEvents) const;
     int32_t GetDataTypeConfig(uint64_t &supportSwitch);
     bool CheckIfSupport(const PlatformFeature feature) const;
     bool CheckIfSupport(const std::string feature) const;
@@ -137,4 +138,3 @@ private:
 }
 }
 #endif
-

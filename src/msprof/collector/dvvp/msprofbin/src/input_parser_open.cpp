@@ -18,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <cstring>
+#include <cerrno>
 #include <iostream>
 #include <iomanip>
 #include <sys/stat.h>
@@ -256,39 +257,11 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t
     if (opt >= NR_ARGS) {
         return;
     }
+    if (SetBasicSwitchParam(cmdInfo, opt)) {
+        return;
+    }
 
     switch (opt) {
-        case ARGS_ASCENDCL:
-            params_->acl = cmdInfo.args[opt];
-            break;
-        case ARGS_RUNTIME_API:
-            params_->runtimeApi = cmdInfo.args[opt];
-            break;
-        case ARGS_TASK_TIME:
-            params_->taskTime = cmdInfo.args[opt];
-            SetTaskTimeSwitch(cmdInfo.args[opt]);
-            break;
-        case ARGS_TASK_MEMORY:
-            params_->taskMemory = cmdInfo.args[opt];
-            break;
-        case ARGS_GE_API:
-            params_->geApi = cmdInfo.args[opt];
-            break;
-        case ARGS_AI_CORE:
-            params_->ai_core_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_AIV:
-            params_->aiv_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_CPU_PROFILING:
-            params_->cpu_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_SYS_PROFILING:
-            params_->sys_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_PID_PROFILING:
-            params_->pid_profiling = cmdInfo.args[opt];
-            break;
         case ARGS_IO_PROFILING:
             params_->io_profiling = cmdInfo.args[opt];
             break;

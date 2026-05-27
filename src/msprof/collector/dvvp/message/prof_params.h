@@ -72,6 +72,8 @@ struct ProfileParams : public BaseInfo {
     std::string aiv_metrics;
     std::string aiv_profiling_mode;
     std::string npuEvents;
+    std::string ntsMetrics;
+    std::string ntsPmuEvents;
 
     // rts
     std::string ai_core_status;
@@ -223,7 +225,8 @@ struct ProfileParams : public BaseInfo {
         : msprofBinPid(MSVP_PROCESS), isCancel(false), profiling_period(-1),
           profiling_options(""), profMode(""),
           aicore_sampling_interval(DEFAULT_PROFILING_INTERVAL_10MS), ai_core_lpm("off"),
-          aiv_sampling_interval(DEFAULT_PROFILING_INTERVAL_10MS), npuEvents(""), taskTsfw("off"), sysLp("on"),
+          aiv_sampling_interval(DEFAULT_PROFILING_INTERVAL_10MS), npuEvents(""), ntsMetrics(""),
+          ntsPmuEvents(""), taskTsfw("off"), sysLp("on"),
           sysLpFreq(DEFAULT_PROFILING_INTERVAL_10000US), aicScale("all"), ccuInstr("off"), cpu_profiling("off"),
           cpu_sampling_interval(DEFAULT_PROFILING_INTERVAL_20MS),
           hscb("off"), aiCtrlCpuProfiling("off"), tsCpuProfiling("off"),
@@ -323,7 +326,7 @@ struct ProfileParams : public BaseInfo {
         return msproftx == "on";
     }
 
-    void ToObjectPartOne(NanoJson::Json &object)
+    void ToObjectCoreOptions(NanoJson::Json &object)
     {
         SET_VALUE(object, result_dir);
         SET_VALUE(object, storageLimit);
@@ -352,6 +355,12 @@ struct ProfileParams : public BaseInfo {
         SET_VALUE(object, profiling_options);
         SET_VALUE(object, jobInfo);
         SET_VALUE(object, npuEvents);
+        SET_VALUE(object, ntsMetrics);
+        SET_VALUE(object, ntsPmuEvents);
+    }
+
+    void ToObjectSystemOptions(NanoJson::Json &object)
+    {
         // system trace
         SET_VALUE(object, cpu_profiling);
         SET_VALUE(object, hscb);
@@ -381,6 +390,12 @@ struct ProfileParams : public BaseInfo {
         SET_VALUE(object, host_mem_profiling);
         SET_VALUE(object, host_network_profiling);
         SET_VALUE(object, pureCpu);
+    }
+
+    void ToObjectPartOne(NanoJson::Json &object)
+    {
+        ToObjectCoreOptions(object);
+        ToObjectSystemOptions(object);
     }
 
     void ToObjectPartTwo(NanoJson::Json &object)
@@ -488,7 +503,7 @@ struct ProfileParams : public BaseInfo {
         ToObjectPartThree(object);
     }
 
-    void FromObjectPartOne(NanoJson::Json &object)
+    void FromObjectCoreOptions(NanoJson::Json &object)
     {
         FROM_STRING_VALUE(object, result_dir);
         FROM_STRING_VALUE(object, storageLimit);
@@ -517,6 +532,12 @@ struct ProfileParams : public BaseInfo {
         FROM_STRING_VALUE(object, profiling_options);
         FROM_STRING_VALUE(object, jobInfo);
         FROM_STRING_VALUE(object, npuEvents);
+        FROM_STRING_VALUE(object, ntsMetrics);
+        FROM_STRING_VALUE(object, ntsPmuEvents);
+    }
+
+    void FromObjectSystemOptions(NanoJson::Json &object)
+    {
         // system trace
         FROM_STRING_VALUE(object, cpu_profiling);
         FROM_STRING_VALUE(object, hscb);
@@ -548,6 +569,12 @@ struct ProfileParams : public BaseInfo {
         FROM_BOOL_VALUE(object, hostProfiling);
         FROM_STRING_VALUE(object, host_cpu_profiling);
         FROM_STRING_VALUE(object, pureCpu);
+    }
+
+    void FromObjectPartOne(NanoJson::Json &object)
+    {
+        FromObjectCoreOptions(object);
+        FromObjectSystemOptions(object);
     }
 
     void FromObjectPartTwo(NanoJson::Json &object)

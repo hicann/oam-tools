@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mockcpp/mockcpp.hpp"
-#include "gtest/gtest.h"
 #include <iostream>
+#include "gtest/gtest.h"
+#include "mockcpp/mockcpp.hpp"
 #include "errno/error_code.h"
 #include "msprof_params_adapter.h"
 #include "message/codec.h"
@@ -26,10 +26,11 @@ using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::config;
 using namespace Analysis::Dvvp::Msprof;
 
+namespace {
 class PROF_PARAM_ADAPTER_UTEST : public testing::Test {
 protected:
-  virtual void SetUp() {}
-  virtual void TearDown() {}
+  void SetUp() override {}
+  void TearDown() override {}
 };
 
 TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents) {
@@ -39,9 +40,8 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents) {
     std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(
             new analysis::dvvp::message::ProfileParams);
 
-    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
-            .stubs()
-            .will(returnValue(0));
+    Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
+        std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
     srcParams->llc_profiling = "";
     srcParams->hardware_mem = "on";
     paramsAdapter->GenerateLlcEvents(nullptr);
@@ -51,14 +51,13 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents) {
     paramsAdapter->GenerateLlcEvents(srcParams);
     srcParams->llc_profiling = "bandwidth";
     paramsAdapter->GenerateLlcEvents(srcParams);
-    srcParams->llc_profiling = "read";                                                      
+    srcParams->llc_profiling = "read";
     paramsAdapter->GenerateLlcEvents(srcParams);
     srcParams->llc_profiling = "write";
     paramsAdapter->GenerateLlcEvents(srcParams);
     GlobalMockObject::verify();
-    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
-            .stubs()
-            .will(returnValue(1));
+    Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
+        std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::CLOUD_TYPE));
     paramsAdapter->GenerateLlcEvents(srcParams);
     EXPECT_EQ(srcParams->llc_profiling_events, "write");
 }
@@ -78,4 +77,21 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParams) {
     EXPECT_EQ(PROFILING_FAILED, paramsAdapter->UpdateParams(nullptr));
     EXPECT_EQ(PROFILING_SUCCESS, paramsAdapter->UpdateParams(srcParams));
 
+}
+
+TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParamsKeepsAiCoreEventsWhenNtsPmuEventsExist)
+{
+    std::shared_ptr<Analysis::Dvvp::Msprof::MsprofParamsAdapter> paramsAdapter(
+        new Analysis::Dvvp::Msprof::MsprofParamsAdapter);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(
+            new analysis::dvvp::message::ProfileParams);
+
+    srcParams->ai_core_profiling_events = "0x1,0x2";
+    srcParams->ntsMetrics = "Custom:0x301,0x312";
+    srcParams->ntsPmuEvents = "0x301,0x312";
+
+    EXPECT_EQ(PROFILING_SUCCESS, paramsAdapter->UpdateParams(srcParams));
+    EXPECT_EQ("0x1,0x2", srcParams->ai_core_profiling_events);
+    EXPECT_EQ("0x301,0x312", srcParams->ntsPmuEvents);
+}
 }

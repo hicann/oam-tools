@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "input_parser.h"
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <memory>
-#include <cstring>
-#include <iostream>
-#include <iomanip>
-#include "cmd_log/cmd_log.h"
-#include "errno/error_code.h"
-#include "param_validation.h"
-#include "utils/utils.h"
-#include "config_manager.h"
+
 #include "ai_drv_dev_api.h"
-#include "platform/platform.h"
+#include "cmd_log/cmd_log.h"
 #include "config/config.h"
+#include "config_manager.h"
+#include "dyn_prof_client.h"
+#include "errno/error_code.h"
+#include "input_parser.h"
 #include "msprof_dlog.h"
 #include "osal.h"
-#include "dyn_prof_client.h"
+#include "param_validation.h"
+#include "platform/platform.h"
+#include "utils/utils.h"
 
 namespace Analysis {
 namespace Dvvp {
@@ -46,6 +48,42 @@ using namespace Analysis::Dvvp::Common::Platform;
 using namespace analysis::dvvp::common::config;
 using namespace Collector::Dvvp::Msprofbin;
 using namespace Collector::Dvvp::DynProf;
+
+namespace {
+using ProfileParamsPtr = SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams>;
+
+void ParamsSwitchValid4(const struct MsprofCmdInfo &cmdInfo, int32_t opt, const ProfileParamsPtr &params)
+{
+    if (params == nullptr) {
+        return;
+    }
+    switch (opt) {
+        case ARGS_PARSE:
+            params->parseSwitch = cmdInfo.args[opt];
+            break;
+        case ARGS_QUERY:
+            params->querySwitch = cmdInfo.args[opt];
+            break;
+        case ARGS_EXPORT:
+            params->exportSwitch = cmdInfo.args[opt];
+            break;
+        case ARGS_CLEAR:
+            params->clearSwitch = cmdInfo.args[opt];
+            break;
+        case ARGS_MSPROFTX:
+            params->msproftx = cmdInfo.args[opt];
+            break;
+        case ARGS_MSTX_DOMAIN_INCLUDE:
+            params->mstxDomainInclude = cmdInfo.args[opt];
+            break;
+        case ARGS_MSTX_DOMAIN_EXCLUDE:
+            params->mstxDomainExclude = cmdInfo.args[opt];
+            break;
+        default:
+            break;
+    }
+}
+}
 
 constexpr int32_t MSPROF_DAEMON_ERROR       = -1;
 constexpr int32_t MSPROF_DAEMON_OK          = 0;
@@ -67,7 +105,6 @@ const std::string TOOL_NAME_LTRACE  = "ltrace";
 const std::string TOOL_NAME_IOTOP   = "iotop";
 const std::string CSV_FORMAT        = "csv";
 const std::string JSON_FORMAT       = "json";
-
 
 int32_t InputParser::PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[])
 {
@@ -307,40 +344,13 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t
     if (opt >= NR_ARGS) {
         return;
     }
+    if (SetBasicSwitchParam(cmdInfo, opt)) {
+        return;
+    }
+
     switch (opt) {
-        case ARGS_ASCENDCL:
-            params_->acl = cmdInfo.args[opt];
-            break;
-        case ARGS_RUNTIME_API:
-            params_->runtimeApi = cmdInfo.args[opt];
-            break;
         case ARGS_TASK_TSFW:
             params_->taskTsfw = cmdInfo.args[opt];
-            break;
-        case ARGS_TASK_TIME:
-            params_->taskTime = cmdInfo.args[opt];
-            SetTaskTimeSwitch(cmdInfo.args[opt]);
-            break;
-        case ARGS_TASK_MEMORY:
-            params_->taskMemory = cmdInfo.args[opt];
-            break;
-        case ARGS_GE_API:
-            params_->geApi = cmdInfo.args[opt];
-            break;
-        case ARGS_AI_CORE:
-            params_->ai_core_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_AIV:
-            params_->aiv_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_CPU_PROFILING:
-            params_->cpu_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_SYS_PROFILING:
-            params_->sys_profiling = cmdInfo.args[opt];
-            break;
-        case ARGS_PID_PROFILING:
-            params_->pid_profiling = cmdInfo.args[opt];
             break;
         default:
             ParamsSwitchValid2(cmdInfo, opt);
@@ -424,6 +434,9 @@ int32_t InputParser::MsprofCmdCheckValid(const struct MsprofCmdInfo &cmdInfo, in
         case ARGS_SYS_DEVICES:
             ret = CheckSysDevicesValid(cmdInfo);
             break;
+        case ARGS_NTS_METRICS:
+            ret = CheckNtsMetricsValid(cmdInfo);
+            break;
         default:
             ret = MsprofCmdCheckValid2(cmdInfo, opt);
             break;
@@ -469,28 +482,8 @@ void InputParser::ParamsSwitchValid2(const struct MsprofCmdInfo &cmdInfo, int32_
         case ARGS_ANALYZE:
             params_->analyzeSwitch = cmdInfo.args[opt];
             break;
-        case ARGS_PARSE:
-            params_->parseSwitch = cmdInfo.args[opt];
-            break;
-        case ARGS_QUERY:
-            params_->querySwitch = cmdInfo.args[opt];
-            break;
-        case ARGS_EXPORT:
-            params_->exportSwitch = cmdInfo.args[opt];
-            break;
-        case ARGS_CLEAR:
-            params_->clearSwitch = cmdInfo.args[opt];
-            break;
-        case ARGS_MSPROFTX:
-            params_->msproftx = cmdInfo.args[opt];
-            break;
-        case ARGS_MSTX_DOMAIN_INCLUDE:
-            params_->mstxDomainInclude = cmdInfo.args[opt];
-            break;
-        case ARGS_MSTX_DOMAIN_EXCLUDE:
-            params_->mstxDomainExclude = cmdInfo.args[opt];
-            break;
         default:
+            ParamsSwitchValid4(cmdInfo, opt, params_);
             ParamsSwitchValid3(cmdInfo, opt);
             break;
     }
@@ -641,6 +634,7 @@ void ArgsManager::AddArgs()
     AddAnalysisArgs();
     AddAicpuArgs();
     AddAivArgs();
+    AddNtsMetricsArgs();
     AddHardWareMemArgs();
     AddCpuArgs();
     AddSysArgs();
@@ -804,6 +798,18 @@ void ArgsManager::AddAivArgs()
     argsList_.push_back(aivMode);
     argsList_.push_back(aivFreq);
     argsList_.push_back(aivMetrics);
+}
+
+void ArgsManager::AddNtsMetricsArgs()
+{
+    if (ConfigManager::instance()->GetPlatformType() != PlatformType::CHIP_MDC_V2) {
+        return;
+    }
+    Args ntsMetrics = {"nts-metrics", "The NTS metrics groups, include PipeUtilization or "
+        "Custom:<event-list>.\n"
+        "\t\t\t\t\t\t   Custom event list supports hexadecimal or decimal integers in the range "
+        "[0x0, 0x71b], separated by comma, up to 10 events."};
+    argsList_.push_back(ntsMetrics);
 }
 
 void ArgsManager::AddIoArgs()

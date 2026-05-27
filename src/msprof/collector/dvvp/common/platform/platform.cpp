@@ -195,6 +195,28 @@ int32_t Platform::GetAicoreEvents(const std::string &aicoreMetricsType, std::str
     return PROFILING_FAILED;
 }
 
+int32_t Platform::GetNtsEvents(const std::string &ntsMetricsType, std::string &ntsEvents) const
+{
+    if (ConfigManager::instance()->GetPlatformType() != PlatformType::CHIP_MDC_V2) {
+        MSPROF_LOGE("NTS PMU events are not supported on current platform.");
+        return PROFILING_FAILED;
+    }
+    if (platform_ == nullptr) {
+        MSPROF_LOGE("Get platform instances info failed.");
+        return PROFILING_FAILED;
+    }
+
+    std::string metricsType = ntsMetricsType;
+    if (metricsType == PIPE_UTILIZATION) {
+        metricsType = PIPE_UTILIZATION_EXCT;
+    }
+    if (metricsType != PIPE_UTILIZATION_EXCT) {
+        MSPROF_LOGE("Unsupported NTS metrics type: %s.", ntsMetricsType.c_str());
+        return PROFILING_FAILED;
+    }
+    return platform_->GetAiPmuMetrics(metricsType, ntsEvents);
+}
+
 /**
 * @brief Check whether feature/switch are supported. Currently other platform will return true.
 * @param PlatformFeature or string , representing feature to be checked.

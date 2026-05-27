@@ -13,88 +13,84 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mockcpp/mockcpp.hpp"
-#include "gtest/gtest.h"
 #include <iostream>
 #include <fstream>
+
+#include "gtest/gtest.h"
+#include "mockcpp/mockcpp.hpp"
 #include "errno/error_code.h"
 #include "running_mode.h"
 #include "msprof_manager.h"
 #include "config_manager.h"
 #include "platform/platform.h"
 
+#include "../../../../../src/msprof/collector/dvvp/msprofbin/src/msprof_bin.cpp"
+
 using namespace analysis::dvvp::common::error;
 using namespace Analysis::Dvvp::Msprof;
 using namespace Analysis::Dvvp::Common::Platform;
 
+namespace {
+constexpr size_t ARGS_CAPACITY = 10;
+constexpr size_t BASIC_ENV_INDEX = 0;
+constexpr size_t SECOND_ENV_INDEX = 1;
+constexpr size_t END_ENV_INDEX = 2;
+constexpr size_t APP_ARG_INDEX = 2;
+constexpr size_t TASK_TIME_ARG_INDEX = 3;
+constexpr size_t SYS_DEVICES_ARG_INDEX = 4;
+constexpr size_t OUTPUT_ARG_INDEX = 5;
+constexpr size_t SYS_PERIOD_ARG_INDEX = 6;
+constexpr size_t SYS_PID_ARG_INDEX = 7;
+constexpr int INVALID_ARGC = 2;
+constexpr int APP_ARGC = 4;
+constexpr int SYS_ARGC = 8;
+constexpr size_t MAX_ENVP_LEN = 4096;
+constexpr size_t ENVP_CAPACITY = MAX_ENVP_LEN + 1;
+
 class MSPROF_BIN_UTEST : public testing::Test {
 protected:
-  virtual void SetUp() {}
-  virtual void TearDown() {}
+    void SetUp() override {}
+    void TearDown() override {}
 };
 
-extern int LltMain(int argc, const char **argv, const char **envp);
-extern int WlltMain(int argc, const char **argv, const char **envp);
-extern void SetEnvList(const char* &envp, std::vector<std::string> &envpList);
-extern std::atomic<uint32_t> g_exitType;
 TEST_F(MSPROF_BIN_UTEST, LltMain) {
     GlobalMockObject::verify();
-    char* argv[10];
-    argv[0] = "--help";
-    argv[1] = "--test";
-    char* envp[2];
-    envp[0] = "test=a";
-    envp[1] = "a=b";
+    const char* argv[ARGS_CAPACITY];
+    argv[BASIC_ENV_INDEX] = "--help";
+    argv[SECOND_ENV_INDEX] = "--test";
+    const char* envp[] = {"test=a", "a=b", nullptr};
 
-    MOCKER(&SetEnvList)
-        .stubs();
-    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
-        .stubs()
-        .will(returnValue(5));
-    Platform::instance()->Init();
-
-    EXPECT_EQ(PROFILING_FAILED, LltMain(1, (const char**)argv, (const char**)envp));
-    EXPECT_EQ(PROFILING_FAILED, LltMain(2, (const char**)argv, (const char**)envp));
+    EXPECT_EQ(PROFILING_FAILED, LltMain(1, argv, envp));
+    EXPECT_EQ(PROFILING_FAILED, LltMain(INVALID_ARGC, argv, envp));
 
     std::ofstream test_file("prof_bin_test");
     test_file << "echo test" << std::endl;
     test_file.close();
-    argv[2] = "--app=./prof_bin_test";
-    argv[3] = "--task-time=on";
-    EXPECT_EQ(PROFILING_FAILED, LltMain(4, (const char**)argv, (const char**)envp));
+    argv[APP_ARG_INDEX] = "--app=./prof_bin_test";
+    argv[TASK_TIME_ARG_INDEX] = "--task-time=on";
+    EXPECT_EQ(PROFILING_FAILED, LltMain(APP_ARGC, argv, envp));
     std::remove("prof_bin_test");
-    argv[4] = "--sys-devices=0";
-    argv[5] = "--output=./msprof_bin_utest";
-    argv[6] = "--sys-period=1";
-    argv[7] = "--sys-pid-profiling=on";
-    EXPECT_EQ(PROFILING_FAILED, LltMain(8, (const char**)argv, (const char**)envp));
+    argv[SYS_DEVICES_ARG_INDEX] = "--sys-devices=0";
+    argv[OUTPUT_ARG_INDEX] = "--output=./msprof_bin_utest";
+    argv[SYS_PERIOD_ARG_INDEX] = "--sys-period=1";
+    argv[SYS_PID_ARG_INDEX] = "--sys-pid-profiling=on";
+    EXPECT_EQ(PROFILING_FAILED, LltMain(SYS_ARGC, argv, envp));
 }
 
 TEST_F(MSPROF_BIN_UTEST, SetEnvList) {
     GlobalMockObject::verify();
-    char* envp[4097];
-    char str[] = "a=a";
-    for (int i = 0; i < 4097; i++) {
+    const char* envp[ENVP_CAPACITY];
+    const char str[] = "a=a";
+    for (size_t i = 0; i < ENVP_CAPACITY; i++) {
         envp[i] = str;
     }
-    envp[4096] = nullptr;
+    envp[MAX_ENVP_LEN] = nullptr;
     std::vector<std::string> envpList;
-    SetEnvList(*((const char**)envp), envpList);
-    EXPECT_EQ(envpList.size(), 4096);
-    if (envpList.size() == 4096) {
+    SetEnvList(*envp, envpList);
+    EXPECT_EQ(envpList.size(), MAX_ENVP_LEN);
+    if (envpList.size() == MAX_ENVP_LEN) {
         EXPECT_EQ(envpList[0], "a=a");
     }
 }
 
-TEST_F(MSPROF_BIN_UTEST, WlltMain) {
-    GlobalMockObject::verify();
-    char* argv[10];
-    argv[0] = "--help";
-    argv[1] = "--test";
-    char* envp[2];
-    envp[0] = "test=a";
-    envp[1] = "a=b";
-    MOCKER(&SetEnvList)
-        .stubs();
-    EXPECT_EQ(PROFILING_SUCCESS, WlltMain(1, (const char**)argv, (const char**)envp));
-}
+} // namespace

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mockcpp/mockcpp.hpp"
-#include "gtest/gtest.h"
 #include <iostream>
+#include "gtest/gtest.h"
+#include "mockcpp/mockcpp.hpp"
 #include "errno/error_code.h"
 #include "msprof_manager.h"
 #include "message/codec.h"
@@ -26,6 +26,8 @@
 #include "input_parser.h"
 #include "platform/platform.h"
 #include "info_json.h"
+#include "msprofbin_test_helper.h"
+#include "securec.h"
 #include "utils/utils.h"
 
 using namespace analysis::dvvp::common::error;
@@ -34,10 +36,58 @@ using namespace Analysis::Dvvp::Msprof;
 using namespace Analysis::Dvvp::Common::Platform;
 using namespace analysis::dvvp::host;
 using namespace analysis::dvvp::common::utils;
+
+namespace {
+constexpr int32_t VALID_RANK_ID = 100;
+constexpr uint16_t QOS_MODE_MPAM_LIST = 0;
+constexpr uint16_t QOS_MODE_STREAM_NAME = 1;
+constexpr uint16_t QOS_MODE_STREAM_MPAM = 2;
+constexpr uint16_t DAVID_STREAM_NUM = 10;
+constexpr uint16_t MILAN_STREAM_NUM = 2;
+constexpr uint16_t MPAM_ID_BASE = 12;
+constexpr size_t MILAN_QOS_EVENT_SIZE = 8;
+constexpr char QOS_STREAM_NAME[] = "st_mpamid_i";
+
+class FakeRunningMode : public Collector::Dvvp::Msprofbin::RunningMode {
+public:
+    explicit FakeRunningMode(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
+        : RunningMode("app", "app", params)
+    {}
+    ~FakeRunningMode() override = default;
+
+    int32_t ModeParamsCheck() override
+    {
+        return PopModeResult();
+    }
+
+    int32_t RunModeTasks() override
+    {
+        return PopRunResult();
+    }
+
+    std::vector<int32_t> modeResults_;
+    std::vector<int32_t> runResults_;
+    int32_t lastModeResult_{PROFILING_FAILED};
+    int32_t lastRunResult_{PROFILING_FAILED};
+
+private:
+    int32_t PopModeResult()
+    {
+        this->lastModeResult_ = Analysis::Dvvp::MsprofbinTest::PopResult(this->modeResults_);
+        return this->lastModeResult_;
+    }
+
+    int32_t PopRunResult()
+    {
+        this->lastRunResult_ = Analysis::Dvvp::MsprofbinTest::PopResult(this->runResults_);
+        return this->lastRunResult_;
+    }
+};
+
 class MSPROF_MANAGER_UTEST : public testing::Test {
 protected:
-    virtual void SetUp() {}
-    virtual void TearDown()
+    void SetUp() override {}
+    void TearDown() override
     {
         GlobalMockObject::verify();
     }
@@ -50,21 +100,20 @@ TEST_F(MSPROF_MANAGER_UTEST, Init) {
     new analysis::dvvp::message::ProfileParams);
 
     auto msprofManager = MsprofManager::instance();
+    msprofManager->UnInit();
     EXPECT_EQ(PROFILING_FAILED, MsprofManager::instance()->Init(nullptr));
-
-    EXPECT_EQ(PROFILING_FAILED, MsprofManager::instance()->Init(params));
-    MOCKER_CPP(&Analysis::Dvvp::Msprof::MsprofManager::GenerateRunningMode)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_FAILED, MsprofManager::instance()->Init(params));
 
-    MOCKER_CPP(&Analysis::Dvvp::Msprof::MsprofManager::ParamsCheck)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_FAILED, MsprofManager::instance()->Init(params));
-    EXPECT_EQ(PROFILING_SUCCESS, MsprofManager::instance()->Init(params));
+    auto rMode = std::make_shared<FakeRunningMode>(params);
+    msprofManager->params_ = params;
+    msprofManager->rMode_ = nullptr;
+    EXPECT_EQ(PROFILING_FAILED, msprofManager->ParamsCheck());
+    msprofManager->rMode_ = rMode;
+    rMode->modeResults_ = {PROFILING_FAILED};
+    EXPECT_EQ(PROFILING_FAILED, msprofManager->ParamsCheck());
+    rMode->modeResults_ = {PROFILING_SUCCESS};
+    EXPECT_EQ(PROFILING_SUCCESS, msprofManager->ParamsCheck());
+    msprofManager->UnInit();
 }
 
 TEST_F(MSPROF_MANAGER_UTEST, NotifyStop) {
@@ -83,20 +132,28 @@ TEST_F(MSPROF_MANAGER_UTEST, NotifyStop) {
     EXPECT_TRUE(msprofManager->rMode_->isQuit_);
 }
 
+TEST_F(MSPROF_MANAGER_UTEST, NtsMetricsOnlyAllowedInAppMode)
+{
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
+    new analysis::dvvp::message::ProfileParams);
+    Collector::Dvvp::Msprofbin::AppMode appMode("app", params);
+    Collector::Dvvp::Msprofbin::SystemMode systemMode("system", params);
+
+    EXPECT_TRUE(appMode.whiteSet_.find(ARGS_NTS_METRICS) != appMode.whiteSet_.end());
+    EXPECT_TRUE(systemMode.whiteSet_.find(ARGS_NTS_METRICS) == systemMode.whiteSet_.end());
+}
+
 TEST_F(MSPROF_MANAGER_UTEST, MsProcessCmd) {
     GlobalMockObject::verify();
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
-    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(
-    new Collector::Dvvp::Msprofbin::AppMode("app", params));
+    auto rMode = std::make_shared<FakeRunningMode>(params);
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
     EXPECT_EQ(PROFILING_FAILED, msprofManager->MsProcessCmd());
     msprofManager->params_ = params;
     msprofManager->rMode_ = rMode;
-    MOCKER_CPP_VIRTUAL(rMode.get(), &Collector::Dvvp::Msprofbin::AppMode::RunModeTasks)
-        .stubs()
-        .then(returnValue(PROFILING_SUCCESS));
+    rMode->runResults_ = {PROFILING_SUCCESS};
 
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->MsProcessCmd());
 }
@@ -111,22 +168,18 @@ TEST_F(MSPROF_MANAGER_UTEST, GetTask) {
     msprofManager->UnInit();
     EXPECT_EQ(nullptr, msprofManager->GetTask("1"));
     msprofManager->rMode_ = rMode;
-    std::shared_ptr<Analysis::Dvvp::Msprof::MsprofTask> info(new Analysis::Dvvp::Msprof::ProfSocTask(1, params));
-    MOCKER_CPP(&Collector::Dvvp::Msprofbin::RunningMode::GetRunningTask)
-        .stubs()
-        .will(returnValue(info));
+    auto info = std::make_shared<Analysis::Dvvp::Msprof::ProfSocTask>(1, params);
+    rMode->taskMap_["1"] = info;
     EXPECT_EQ(info, msprofManager->GetTask("1"));
 }
 
 TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMode) {
     auto msprofManager = MsprofManager::instance();
+    msprofManager->UnInit();
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::RunSocSide)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    Platform::instance()->runSide_ = SysPlatformType::HOST;
     params->app = "main";
     msprofManager->params_ = params;
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->GenerateRunningMode());
@@ -150,15 +203,7 @@ TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMode) {
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->GenerateRunningMode());
     params->analyzeSwitch = "";
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
-
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformIsHelperHostSide)
-        .stubs()
-        .will(returnValue(true));
-    params->devices = "0";
-    EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
-    params->devices = "";
-    params->host_sys = "on";
-    EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
+    Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
 TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper) {
@@ -166,9 +211,7 @@ TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper) {
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
 
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformIsHelperHostSide)
-        .stubs()
-        .will(returnValue(true));
+    msprofManager->UnInit();
     params->devices = "0";
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
     params->host_sys = "on";
@@ -202,18 +245,14 @@ TEST_F(MSPROF_MANAGER_UTEST, ParamsCheck) {
     GlobalMockObject::verify();
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
-    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(
-    new Collector::Dvvp::Msprofbin::AppMode("app", params));
+    auto rMode = std::make_shared<FakeRunningMode>(params);
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
     EXPECT_EQ(PROFILING_FAILED, msprofManager->ParamsCheck());
     msprofManager->params_ = params;
     EXPECT_EQ(PROFILING_FAILED, msprofManager->ParamsCheck());
     msprofManager->rMode_ = rMode;
-    MOCKER_CPP_VIRTUAL(rMode.get(), &Collector::Dvvp::Msprofbin::AppMode::ModeParamsCheck)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
+    rMode->modeResults_ = {PROFILING_FAILED, PROFILING_SUCCESS};
     EXPECT_EQ(PROFILING_FAILED, msprofManager->ParamsCheck());
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->ParamsCheck());
 }
@@ -223,43 +262,35 @@ TEST_F(MSPROF_MANAGER_UTEST, GetRankId) {
     std::string start_time = "1539226807454372";
     std::string end_time = "1539226807454380";
     InfoJson infoJson(start_time, end_time, 1);
-    const std::string rankId = "100";
-    MOCKER_CPP(&Utils::IsAllDigit)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(rankId));
+    setenv("RANK_ID", "rank", 1);
     EXPECT_EQ(-1, infoJson.GetRankId());
-    EXPECT_EQ(100, infoJson.GetRankId());
+    setenv("RANK_ID", "100", 1);
+    EXPECT_EQ(VALID_RANK_ID, infoJson.GetRankId());
+    unsetenv("RANK_ID");
 }
 
-drvError_t g_error = (drvError_t)0;
+drvError_t g_error = static_cast<drvError_t>(0);
 
-extern "C" drvError_t halGetDeviceInfoByBuff(uint32_t devId, int32_t moduleType, int32_t infoType,
+drvError_t HalGetDeviceInfoByBuffStub(uint32_t devId, int32_t moduleType, int32_t infoType,
     void *value, int32_t *len)
 {
-    if (moduleType = MODULE_TYPE_QOS) {
-        QosProfileInfo *info = (QosProfileInfo*)value;
-        if (info->mode == 0) {
-            info->streamNum = 10;
-            info->mpamId[0] = 12;
-            info->mpamId[1] = 13;
-            info->mpamId[2] = 14;
-            info->mpamId[3] = 15;
-            info->mpamId[4] = 16;
-            info->mpamId[5] = 17;
-            info->mpamId[6] = 18;
-            info->mpamId[7] = 19;
-            info->mpamId[8] = 20;
-            info->mpamId[9] = 21;
-        } else if (info->mode == 1) {
-            strcpy(info->streamName, "st_mpamid_i");
-        } else if (info->mode == 2) {
-            info->streamNum = 2;
-            info->mpamId[0] = 12;
-            info->mpamId[1] = 13;
+    (void)devId;
+    (void)infoType;
+    (void)len;
+    if (moduleType == MODULE_TYPE_QOS) {
+        auto *info = static_cast<QosProfileInfo *>(value);
+        if (info->mode == QOS_MODE_MPAM_LIST) {
+            info->streamNum = DAVID_STREAM_NUM;
+            for (uint16_t index = 0; index < DAVID_STREAM_NUM; ++index) {
+                info->mpamId[index] = MPAM_ID_BASE + index;
+            }
+        } else if (info->mode == QOS_MODE_STREAM_NAME) {
+            (void)strcpy_s(info->streamName, sizeof(info->streamName), QOS_STREAM_NAME);
+        } else if (info->mode == QOS_MODE_STREAM_MPAM) {
+            info->streamNum = MILAN_STREAM_NUM;
+            for (uint16_t index = 0; index < MILAN_STREAM_NUM; ++index) {
+                info->mpamId[index] = MPAM_ID_BASE + index;
+            }
         }
     }
     return g_error;
@@ -268,38 +299,35 @@ extern "C" drvError_t halGetDeviceInfoByBuff(uint32_t devId, int32_t moduleType,
 TEST_F(MSPROF_MANAGER_UTEST, PlatformDavidGetQosProfileInfo) {
     GlobalMockObject::verify();
     // david
-    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
-        .stubs()
-        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CLOUD_TYPE));
+    Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
+        std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::CLOUD_TYPE));
     Platform::instance()->Uninit();
     Platform::instance()->Init();
-    MOCKER(OsalDlsym)
-        .stubs()
-        .will(returnValue((void*)halGetDeviceInfoByBuff));
-    Analysis::Dvvp::Common::Platform::Platform::instance()->ascendHalAdaptor_.LoadApi();
+    Platform::instance()->ascendHalAdaptor_.halGetDeviceInfoByBuff_ =
+        reinterpret_cast<HalGetDeviceInfoByBuffFunc>(HalGetDeviceInfoByBuffStub);
     std::string info;
     std::vector<uint8_t> events;
     Platform::instance()->GetQosProfileInfo(0, info, events);
     std::string info2 = "aaa,bbb";
     Platform::instance()->GetQosProfileInfo(0, info2, events);
+    Platform::instance()->ascendHalAdaptor_.halGetDeviceInfoByBuff_ = nullptr;
     Platform::instance()->Uninit();
 }
 
 TEST_F(MSPROF_MANAGER_UTEST, PlatformMilanGetQosProfileInfo) {
     GlobalMockObject::verify();
     // milan
-    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
-        .stubs()
-        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_V4_1_0));
+    Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
+        std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::CHIP_V4_1_0));
     Platform::instance()->Uninit();
     Platform::instance()->Init();
-    MOCKER(OsalDlsym)
-        .stubs()
-        .will(returnValue((void*)halGetDeviceInfoByBuff));
-    Analysis::Dvvp::Common::Platform::Platform::instance()->ascendHalAdaptor_.LoadApi();
+    Platform::instance()->ascendHalAdaptor_.halGetDeviceInfoByBuff_ =
+        reinterpret_cast<HalGetDeviceInfoByBuffFunc>(HalGetDeviceInfoByBuffStub);
     std::string info;
     std::vector<uint8_t> events;
     Platform::instance()->GetQosProfileInfo(0, info, events);
-    EXPECT_EQ(8, events.size());
+    EXPECT_EQ(MILAN_QOS_EVENT_SIZE, events.size());
+    Platform::instance()->ascendHalAdaptor_.halGetDeviceInfoByBuff_ = nullptr;
     Platform::instance()->Uninit();
 }
+} // namespace

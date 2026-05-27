@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 #include "running_mode.h"
-#include <chrono>
 #include "errno/error_code.h"
 #include "input_parser.h"
 #include "cmd_log/cmd_log.h"
@@ -59,7 +58,7 @@ AppMode::AppMode(std::string preCheckParams, SHARED_PTR_ALIA<ProfileParams> para
         ARGS_SYS_SAMPLING_FREQ, ARGS_PID_SAMPLING_FREQ, ARGS_HARDWARE_MEM_SAMPLING_FREQ, ARGS_MEM_SERVICEFLOW,
         ARGS_IO_SAMPLING_FREQ, ARGS_DVPP_FREQ,  ARGS_CPU_SAMPLING_FREQ, ARGS_INTERCONNECTION_FREQ,
         ARGS_HOST_SYS, ARGS_PYTHON_PATH, ARGS_MSPROFTX, ARGS_DELAY_PROF, ARGS_DURATION_PROF, ARGS_OP_TYPE,
-        ARGS_EXPORT_TYPE, ARGS_MSTX_DOMAIN_INCLUDE, ARGS_MSTX_DOMAIN_EXCLUDE
+        ARGS_EXPORT_TYPE, ARGS_MSTX_DOMAIN_INCLUDE, ARGS_MSTX_DOMAIN_EXCLUDE, ARGS_NTS_METRICS
     };
 }
 
@@ -90,8 +89,16 @@ int32_t RunningMode::HandleProfilingParams() const
     ConfigManager::instance()->GetVersionSpecificMetrics(aiCoreMetrics);
     int32_t ret = Platform::instance()->GetAicoreEvents(aiCoreMetrics, params_->ai_core_profiling_events);
     if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGE("The intput of ai_core_metrics is invalid");
+        MSPROF_LOGE("Failed to get AI Core PMU events for metrics [%s] on current platform.", aiCoreMetrics.c_str());
         return PROFILING_FAILED;
+    }
+    if (params_->ntsMetrics == PIPE_UTILIZATION) {
+        ret = Platform::instance()->GetAicoreEvents(PIPE_UTILIZATION_EXCT, params_->ntsPmuEvents);
+        if (ret != PROFILING_SUCCESS) {
+            MSPROF_LOGE("Failed to get NTS PMU events for metrics [%s] on current platform.",
+                params_->ntsMetrics.c_str());
+            return PROFILING_FAILED;
+        }
     }
     params_->ai_core_metrics = aiCoreMetrics;
     ret = Platform::instance()->GetAicoreEvents(aiVectMetrics, params_->aiv_profiling_events);

@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <cstring>
 #include <iostream>
 #include <iomanip>
@@ -73,7 +74,67 @@ const std::string CSV_FORMAT        = "csv";
 const std::string JSON_FORMAT       = "json";
 const std::string TEXT_EXPORT_TYPE  = "text";
 const std::string DB_EXPORT_TYPE    = "db";
+const std::string NTS_PIPE_UTILIZATION  = "PipeUtilization";
+const std::string NTS_CUSTOM_PREFIX     = "Custom:";
+constexpr uint64_t NTS_EVENT_MIN        = 0x0;
+constexpr uint64_t NTS_EVENT_MAX        = 0x71b;
+constexpr size_t NTS_EVENT_MAX_NUM      = 10;
+constexpr int32_t DECIMAL_BASE          = 10;
+constexpr int32_t HEX_BASE              = 16;
+constexpr size_t HEX_PREFIX_LEN         = 2;
 
+namespace {
+bool ParseNtsEvent(const std::string &rawEvent, uint64_t &eventValue)
+{
+    std::string event = Utils::Trim(rawEvent);
+    if (event.empty()) {
+        return false;
+    }
+    int32_t base = DECIMAL_BASE;
+    size_t start = 0;
+    if (event.size() > HEX_PREFIX_LEN && event[0] == '0' && (event[1] == 'x' || event[1] == 'X')) {
+        base = HEX_BASE;
+        start = HEX_PREFIX_LEN;
+        if (event.size() == start) {
+            return false;
+        }
+    }
+    for (size_t i = start; i < event.size(); ++i) {
+        const auto ch = static_cast<unsigned char>(event[i]);
+        if ((base == HEX_BASE && std::isxdigit(ch) == 0) || (base == DECIMAL_BASE && std::isdigit(ch) == 0)) {
+            return false;
+        }
+    }
+    size_t pos = 0;
+    try {
+        eventValue = std::stoull(event, &pos, base);
+    } catch (const std::invalid_argument &) {
+        return false;
+    } catch (const std::out_of_range &) {
+        return false;
+    }
+    return pos == event.size();
+}
+
+std::string FormatNtsEvent(uint64_t eventValue)
+{
+    std::stringstream eventStream;
+    eventStream << "0x" << std::hex << std::nouppercase << eventValue;
+    return eventStream.str();
+}
+
+std::string JoinNtsEvents(const std::vector<std::string> &events)
+{
+    std::stringstream eventStream;
+    for (size_t i = 0; i < events.size(); ++i) {
+        if (i != 0) {
+            eventStream << ",";
+        }
+        eventStream << events[i];
+    }
+    return eventStream.str();
+}
+}
 
 InputParser::InputParser()
 {
@@ -159,6 +220,8 @@ void InputParser::SplitApplicationArgv(int32_t argc, CONST_CHAR_PTR argv[], int3
         if (argv[i][0] == '-' && argv[i][1] == '-') {
             if (std::strchr(argv[i], '=') != nullptr) {
                 argCount++;
+            } else if (i + 1 >= argc || argv[i + 1][0] == '-') {
+                argCount++;
             } else {
                 argCount += argWithSpaceNum;
                 i++;
@@ -197,7 +260,7 @@ int32_t InputParser::ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo)
     cmdInfo.args[opt] = OsalGetOptArg();
     params_->usedParams.insert(opt);
 
-    if (opt >= ARGS_OUTPUT && opt <= ARGS_RULE) {
+    if ((opt >= ARGS_OUTPUT && opt <= ARGS_RULE) || opt == ARGS_NTS_METRICS) {
         ret = MsprofCmdCheckValid(cmdInfo, opt);
     } else if (opt >= ARGS_ASCENDCL && opt <= ARGS_ANALYZE) {
         ret = MsprofSwitchCheckValid(cmdInfo, opt);
@@ -209,6 +272,61 @@ int32_t InputParser::ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo)
         MsprofCmdUsage("");
     }
     return ret;
+}
+
+int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
+{
+    if (ConfigManager::instance()->GetPlatformType() != PlatformType::CHIP_MDC_V2) {
+        CmdLog::CmdErrorLog("Argument [nts-metrics] is not supported on current platform.");
+        return MSPROF_DAEMON_ERROR;
+    }
+
+    const std::string ntsMetrics = cmdInfo.args[ARGS_NTS_METRICS] == nullptr ? "" : cmdInfo.args[ARGS_NTS_METRICS];
+    if (ntsMetrics == NTS_PIPE_UTILIZATION) {
+        params_->ntsMetrics = ntsMetrics;
+        // PipeUtilization is expanded to platform-specific PMU events in RunningMode.
+        params_->ntsPmuEvents.clear();
+        return MSPROF_DAEMON_OK;
+    }
+    if (ntsMetrics.compare(0, NTS_CUSTOM_PREFIX.size(), NTS_CUSTOM_PREFIX) != 0) {
+        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. The nts-metrics only supports PipeUtilization or "
+            "Custom:<event-list>.");
+        return MSPROF_DAEMON_ERROR;
+    }
+
+    const std::string eventList = ntsMetrics.substr(NTS_CUSTOM_PREFIX.size());
+    if (eventList.empty()) {
+        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Custom event list is empty.");
+        return MSPROF_DAEMON_ERROR;
+    }
+    std::vector<std::string> events = Utils::Split(eventList, false, "", ",");
+    if (events.size() > NTS_EVENT_MAX_NUM) {
+        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. The number of Custom events exceeds 10.");
+        return MSPROF_DAEMON_ERROR;
+    }
+
+    std::vector<std::string> normalizedEvents;
+    for (const auto &event : events) {
+        uint64_t eventValue = 0;
+        const std::string trimmedEvent = Utils::Trim(event);
+        if (!ParseNtsEvent(trimmedEvent, eventValue)) {
+            CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Event [%s] is not a hexadecimal or decimal "
+                "integer.",
+                trimmedEvent.c_str());
+            return MSPROF_DAEMON_ERROR;
+        }
+        if (eventValue < NTS_EVENT_MIN || eventValue > NTS_EVENT_MAX) {
+            CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Event [%s] is out of range [0x0, 0x71b].",
+                trimmedEvent.c_str());
+            return MSPROF_DAEMON_ERROR;
+        }
+        normalizedEvents.emplace_back(FormatNtsEvent(eventValue));
+    }
+
+    params_->ntsMetrics = ntsMetrics;
+    // Custom events are validated and normalized during command parsing.
+    params_->ntsPmuEvents = JoinNtsEvents(normalizedEvents);
+    return MSPROF_DAEMON_OK;
 }
 
 int32_t InputParser::ParamsCheck() const
@@ -231,8 +349,7 @@ int32_t InputParser::ParamsCheck() const
         std::string path = Utils::RelativePathToAbsolutePath(ascendWorkPath) + MSVP_SLASH + PROFILING_RESULT_PATH;
         if (Utils::CreateDir(path) != PROFILING_SUCCESS) {
             char errBuf[MAX_ERR_STRING_LEN + 1] = {0};
-            CmdLog::CmdErrorLog("Create output dir failed.ErrorCode: %d, ErrorInfo: %s.",
-                OsalGetErrorCode(),
+            CmdLog::CmdErrorLog("Create output dir failed.ErrorCode: %d, ErrorInfo: %s.", OsalGetErrorCode(),
                 OsalGetErrorFormatMessage(OsalGetErrorCode(), errBuf, MAX_ERR_STRING_LEN));
             return MSPROF_DAEMON_ERROR;
         }
@@ -262,6 +379,45 @@ int32_t InputParser::ParamsCheck() const
     return MSPROF_DAEMON_OK;
 }
 
+bool InputParser::SetBasicSwitchParam(const struct MsprofCmdInfo &cmdInfo, int32_t opt)
+{
+    switch (opt) {
+        case ARGS_ASCENDCL:
+            params_->acl = cmdInfo.args[opt];
+            return true;
+        case ARGS_RUNTIME_API:
+            params_->runtimeApi = cmdInfo.args[opt];
+            return true;
+        case ARGS_TASK_TIME:
+            params_->taskTime = cmdInfo.args[opt];
+            SetTaskTimeSwitch(cmdInfo.args[opt]);
+            return true;
+        case ARGS_TASK_MEMORY:
+            params_->taskMemory = cmdInfo.args[opt];
+            return true;
+        case ARGS_GE_API:
+            params_->geApi = cmdInfo.args[opt];
+            return true;
+        case ARGS_AI_CORE:
+            params_->ai_core_profiling = cmdInfo.args[opt];
+            return true;
+        case ARGS_AIV:
+            params_->aiv_profiling = cmdInfo.args[opt];
+            return true;
+        case ARGS_CPU_PROFILING:
+            params_->cpu_profiling = cmdInfo.args[opt];
+            return true;
+        case ARGS_SYS_PROFILING:
+            params_->sys_profiling = cmdInfo.args[opt];
+            return true;
+        case ARGS_PID_PROFILING:
+            params_->pid_profiling = cmdInfo.args[opt];
+            return true;
+        default:
+            return false;
+    }
+}
+
 int32_t InputParser::CheckHostSysUsageValid(const struct MsprofCmdInfo &cmdInfo)
 {
 #if (defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER))
@@ -273,16 +429,18 @@ int32_t InputParser::CheckHostSysUsageValid(const struct MsprofCmdInfo &cmdInfo)
     }
     if (cmdInfo.args[ARGS_HOST_SYS_USAGE] == nullptr) {
         CmdLog::CmdErrorLog("Argument --host-sys-usage is empty. Please input in the range of "
-            "'cpu|mem'.");
+                            "'cpu|mem'.");
         return MSPROF_DAEMON_ERROR;
     }
     std::vector<std::string> hostSysUsageArray = Utils::Split(cmdInfo.args[ARGS_HOST_SYS_USAGE], false, "", ",");
     for (size_t i = 0; i < hostSysUsageArray.size(); ++i) {
         if (!ParamValidation::instance()->CheckHostSysUsageOptionsIsValid(hostSysUsageArray[i])) {
             MSPROF_LOGE("Argument --host-sys-usage: invalid value:%s. Please input in the range of "
-                "'cpu|mem'.", hostSysUsageArray[i].c_str());
+                        "'cpu|mem'.",
+                hostSysUsageArray[i].c_str());
             CmdLog::CmdErrorLog("Argument --host-sys-usage=%s is invalid. Please input in the range of "
-                "'cpu|mem'.", cmdInfo.args[ARGS_HOST_SYS_USAGE]);
+                                "'cpu|mem'.",
+                cmdInfo.args[ARGS_HOST_SYS_USAGE]);
             return MSPROF_DAEMON_ERROR;
         }
         SetHostSysUsageParam(hostSysUsageArray[i]);
@@ -323,40 +481,49 @@ int32_t InputParser::CheckHostSysValid(const struct MsprofCmdInfo &cmdInfo)
     std::string hostSys = std::string(cmdInfo.args[ARGS_HOST_SYS]);
     if (hostSys.empty()) {
         CmdLog::CmdErrorLog("Argument --host-sys is empty. Please input in the range of "
-            "'cpu|mem|disk|network|osrt|platform'");
+                            "'cpu|mem|disk|network|osrt|platform'");
         return MSPROF_DAEMON_ERROR;
     }
     std::vector<std::string> hostSysArray = Utils::Split(cmdInfo.args[ARGS_HOST_SYS], false, "", ",");
     for (size_t i = 0; i < hostSysArray.size(); ++i) {
         if (!(ParamValidation::instance()->CheckHostSysOptionsIsValid(hostSysArray[i]))) {
             CmdLog::CmdErrorLog("Argument --host-sys: invalid value:%s. Please input in the range of "
-                "'cpu|mem|disk|network|osrt|platform'", hostSysArray[i].c_str());
+                                "'cpu|mem|disk|network|osrt|platform'",
+                hostSysArray[i].c_str());
             return MSPROF_DAEMON_ERROR;
         }
         SetHostSysParam(hostSysArray[i]);
     }
+    if (CheckHostSysToolsValid() != MSPROF_DAEMON_OK) {
+        return MSPROF_DAEMON_ERROR;
+    }
+    params_->host_sys = cmdInfo.args[ARGS_HOST_SYS];
+    params_->host_disk_freq = 50; // host_disk_freq the default value is 50 Hz.
+    return MSPROF_DAEMON_OK;
+}
+
+int32_t InputParser::CheckHostSysToolsValid() const
+{
     if (params_->host_osrt_profiling.compare(ON) == 0) {
         MSPROF_LOGI("Start the detection tool.");
         if (CheckHostSysToolsIsExist(TOOL_NAME_PERF, PROF_SCRIPT_FILE_PATH) != MSPROF_DAEMON_OK) {
             CmdLog::CmdErrorLog("The tool perf is invalid, please check"
-                " if the tool and sudo are available.");
+                                " if the tool and sudo are available.");
             return MSPROF_DAEMON_ERROR;
         }
         if (CheckHostSysToolsIsExist(TOOL_NAME_LTRACE, PROF_SCRIPT_FILE_PATH) != MSPROF_DAEMON_OK) {
             CmdLog::CmdErrorLog("The tool ltrace is invalid, please check"
-                " if the tool and sudo are available.");
+                                " if the tool and sudo are available.");
             return MSPROF_DAEMON_ERROR;
         }
     }
     if (params_->host_disk_profiling.compare(ON) == 0) {
         if (CheckHostSysToolsIsExist(TOOL_NAME_IOTOP, PROF_SCRIPT_FILE_PATH) != MSPROF_DAEMON_OK) {
             CmdLog::CmdErrorLog("The tool iotop is invalid, please check if"
-                " the tool and sudo are available.");
+                                " the tool and sudo are available.");
             return MSPROF_DAEMON_ERROR;
         }
     }
-    params_->host_sys = cmdInfo.args[ARGS_HOST_SYS];
-    params_->host_disk_freq = 50; // host_disk_freq the default value is 50 Hz.
     return MSPROF_DAEMON_OK;
 }
 
@@ -521,7 +688,7 @@ int32_t InputParser::CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo)
 {
     if (cmdInfo.args[ARGS_HOST_SYS_PID] == nullptr) {
         CmdLog::CmdErrorLog("Argument --host-sys-pid is empty,"
-            "Please enter a valid --host-sys-pid value.");
+                            "Please enter a valid --host-sys-pid value.");
         return MSPROF_DAEMON_ERROR;
     }
 
@@ -531,7 +698,8 @@ int32_t InputParser::CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo)
             return MSPROF_DAEMON_ERROR, "ARGS_HOST_SYS_PID %s is invalid", cmdInfo.args[ARGS_HOST_SYS_PID]);
         if (!(ParamValidation::instance()->CheckHostSysPidIsValid(hostSysRet))) {
             CmdLog::CmdErrorLog("Argument --host-sys-pid: invalid int value: %d."
-                "The process cannot be found, please enter a correct host-sys-pid.", hostSysRet);
+                                "The process cannot be found, please enter a correct host-sys-pid.",
+                hostSysRet);
             return MSPROF_DAEMON_ERROR;
         } else {
             params_->host_sys_pid = hostSysRet;
@@ -539,14 +707,15 @@ int32_t InputParser::CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo)
         }
     } else {
         CmdLog::CmdErrorLog("Argument --host-sys-pid: invalid value: %s."
-            "Please input an integer value.The min value is 0.", cmdInfo.args[ARGS_HOST_SYS_PID]);
+                            "Please input an integer value.The min value is 0.",
+            cmdInfo.args[ARGS_HOST_SYS_PID]);
         return MSPROF_DAEMON_ERROR;
     }
 }
 
 int32_t InputParser::CheckAnalysisOutputValid(const std::string &path, const struct MsprofCmdInfo &cmdInfo) const
 {
-    std::vector<int> analysisOpts = { ARGS_EXPORT, ARGS_PARSE, ARGS_QUERY, ARGS_ANALYZE };
+    std::vector<int> analysisOpts = {ARGS_EXPORT, ARGS_PARSE, ARGS_QUERY, ARGS_ANALYZE};
     for (auto &opt : analysisOpts) {
         if (cmdInfo.args[opt] == nullptr) {
             continue;
@@ -578,7 +747,8 @@ int32_t InputParser::CheckOutputValid(const struct MsprofCmdInfo &cmdInfo)
         }
         if (path.size() > MAX_PATH_LENGTH) {
             CmdLog::CmdErrorLog("Argument --output is invalid because of exceeds"
-                " the maximum length of %d", MAX_PATH_LENGTH);
+                                " the maximum length of %d",
+                MAX_PATH_LENGTH);
             return MSPROF_DAEMON_ERROR;
         }
         if (!Utils::CheckPathWithInvalidChar(path)) {
@@ -587,8 +757,8 @@ int32_t InputParser::CheckOutputValid(const struct MsprofCmdInfo &cmdInfo)
         }
         if (Utils::CreateDir(path) != PROFILING_SUCCESS) {
             char errBuf[MAX_ERR_STRING_LEN + 1] = {0};
-            CmdLog::CmdErrorLog("Create output dir failed.ErrorCode: %d, ErrorInfo: %s.",
-                OsalGetErrorCode(), OsalGetErrorFormatMessage(OsalGetErrorCode(), errBuf, MAX_ERR_STRING_LEN));
+            CmdLog::CmdErrorLog("Create output dir failed.ErrorCode: %d, ErrorInfo: %s.", OsalGetErrorCode(),
+                OsalGetErrorFormatMessage(OsalGetErrorCode(), errBuf, MAX_ERR_STRING_LEN));
             return MSPROF_DAEMON_ERROR;
         }
         if (!Utils::IsDir(path)) {
@@ -602,7 +772,7 @@ int32_t InputParser::CheckOutputValid(const struct MsprofCmdInfo &cmdInfo)
         params_->result_dir = Utils::CanonicalizePath(path);
         if (params_->result_dir.empty()) {
             CmdLog::CmdErrorLog("Argument --output is invalid because of"
-                " get the canonicalized absolute pathname failed");
+                                " get the canonicalized absolute pathname failed");
             return MSPROF_DAEMON_ERROR;
         }
     } else {
@@ -624,8 +794,8 @@ int32_t InputParser::CheckStorageLimitValid(const struct MsprofCmdInfo &cmdInfo)
     }
     const std::string storageLimit = params_->storageLimit;
     if (!ParamValidation::instance()->CheckStorageLimit(params_)) {
-        CmdLog::CmdErrorLog("Argument --storage-limit %s is invalid, valid range is %dMB~%uMB",
-            storageLimit.c_str(), STORAGE_LIMIT_DOWN_THD, UINT32_MAX);
+        CmdLog::CmdErrorLog("Argument --storage-limit %s is invalid, valid range is %dMB~%uMB", storageLimit.c_str(),
+            STORAGE_LIMIT_DOWN_THD, UINT32_MAX);
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
@@ -743,11 +913,10 @@ int32_t InputParser::CheckAppValid(const struct MsprofCmdInfo &cmdInfo)
         params_->app_dir = Utils::GetCwdString();
         params_->app = Utils::BaseName(cmdPath);
         return MSPROF_DAEMON_OK;
-    } else {
-        // e.g: ./main args
-        // set app_dir to cmdPath dir to set result_dir to app dir when --output not set, and set app to cmdPath base name to avoid empty app error in HandleApp, and save all app parameters to app_parameters.
-        return CheckUserCmdValid(cmdPath);
     }
+    // e.g: ./main args
+    // set app_dir to cmdPath dir to set result_dir to app dir when --output not set, and set app to cmdPath base name to avoid empty app error in HandleApp, and save all app parameters to app_parameters.
+    return CheckUserCmdValid(cmdPath);
 }
 
 /**
@@ -781,12 +950,12 @@ int32_t InputParser::PreCheckApp(const std::string &appDir, const std::string &a
 
     if (Utils::IsDir(appPath)) {
         CmdLog::CmdErrorLog("Argument --application:%s is a directory, "
-            "please enter the executable file path.", appPath.c_str());
+                            "please enter the executable file path.",
+            appPath.c_str());
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
 }
-
 
 int32_t InputParser::CheckEnvironmentValid(const struct MsprofCmdInfo &cmdInfo)
 {
@@ -872,7 +1041,7 @@ bool InputParser::CheckDynaProfPidValid(const std::string &pid, std::vector<int3
     UtilsStringBuilder<std::string> builder;
     if (!nonNumPidVec.empty()) {
         CmdLog::CmdErrorLog("Argument --pid: invalid non-numeric pid value: %s, stop profiling.",
-                            builder.Join(nonNumPidVec, ",").c_str());
+            builder.Join(nonNumPidVec, ",").c_str());
         return false;
     }
     if (validPids.empty()) {
@@ -881,8 +1050,8 @@ bool InputParser::CheckDynaProfPidValid(const std::string &pid, std::vector<int3
     }
     if (!invalidPidVec.empty()) {
         CmdLog::CmdWarningLog("Argument --pid: invalid pid value: %s, "
-                            "will not collect profiling data for these process.",
-                            builder.Join(invalidPidVec, ",").c_str());
+                              "will not collect profiling data for these process.",
+            builder.Join(invalidPidVec, ",").c_str());
     }
     return true;
 }
@@ -924,14 +1093,15 @@ int32_t InputParser::CheckPythonPathValid(const struct MsprofCmdInfo &cmdInfo) c
 
     if (params_->pythonPath.size() > MAX_PATH_LENGTH) {
         CmdLog::CmdErrorLog("Argument --python-path is invalid because of exceeds"
-            " the maximum length of %d", MAX_PATH_LENGTH);
+                            " the maximum length of %d",
+            MAX_PATH_LENGTH);
         return MSPROF_DAEMON_ERROR;
     }
 
     std::string absolutePythonPath = Utils::CanonicalizePath(params_->pythonPath);
     if (absolutePythonPath.empty()) {
-        CmdLog::CmdErrorLog("Argument --python-path %s does not exist or permission denied!!!",
-            params_->pythonPath.c_str());
+        CmdLog::CmdErrorLog(
+            "Argument --python-path %s does not exist or permission denied!!!", params_->pythonPath.c_str());
         return MSPROF_DAEMON_ERROR;
     }
 
@@ -942,7 +1112,8 @@ int32_t InputParser::CheckPythonPathValid(const struct MsprofCmdInfo &cmdInfo) c
 
     if (Utils::IsDir(absolutePythonPath)) {
         CmdLog::CmdErrorLog("Argument --python-path %s is a directory, "
-            "please enter the executable file path.", params_->pythonPath.c_str());
+                            "please enter the executable file path.",
+            params_->pythonPath.c_str());
         return MSPROF_DAEMON_ERROR;
     }
 
@@ -958,7 +1129,8 @@ int32_t InputParser::CheckExportSummaryFormat(const struct MsprofCmdInfo &cmdInf
     params_->exportSummaryFormat = cmdInfo.args[ARGS_SUMMARY_FORMAT];
     if (params_->exportSummaryFormat != JSON_FORMAT && params_->exportSummaryFormat != CSV_FORMAT) {
         CmdLog::CmdErrorLog("Argument --summary-format: invalid value: %s. "
-            "Please input 'json' or 'csv'.", cmdInfo.args[ARGS_SUMMARY_FORMAT]);
+                            "Please input 'json' or 'csv'.",
+            cmdInfo.args[ARGS_SUMMARY_FORMAT]);
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
@@ -973,7 +1145,8 @@ int32_t InputParser::CheckExportType(const struct MsprofCmdInfo &cmdInfo) const
     params_->exportType = cmdInfo.args[ARGS_EXPORT_TYPE];
     if (params_->exportType != TEXT_EXPORT_TYPE && params_->exportType != DB_EXPORT_TYPE) {
         CmdLog::CmdErrorLog("Argument --type: invalid value: %s. "
-            "Please input 'text' or 'db'.", cmdInfo.args[ARGS_EXPORT_TYPE]);
+                            "Please input 'text' or 'db'.",
+            cmdInfo.args[ARGS_EXPORT_TYPE]);
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
@@ -998,10 +1171,10 @@ int32_t InputParser::CheckAnalyzeRuleSwitch(const struct MsprofCmdInfo &cmdInfo)
 
     std::vector<std::string> ruleVal = Utils::Split(cmdInfo.args[ARGS_RULE], false, "", ",");
     for (size_t i = 0; i < ruleVal.size(); ++i) {
-        if (ruleVal[i].compare("communication") != 0 &&
-            ruleVal[i].compare("communication_matrix") != 0) {
+        if (ruleVal[i].compare("communication") != 0 && ruleVal[i].compare("communication_matrix") != 0) {
             CmdLog::CmdErrorLog("Argument --rule: invalid value: %s. "
-                                "Please input 'communication' or 'communication_matrix'.", ruleVal[i].c_str());
+                                "Please input 'communication' or 'communication_matrix'.",
+                ruleVal[i].c_str());
             return MSPROF_DAEMON_ERROR;
         }
     }
@@ -1077,24 +1250,26 @@ int32_t InputParser::CheckSysPeriodValid(const struct MsprofCmdInfo &cmdInfo) co
 {
     if (cmdInfo.args[ARGS_SYS_PERIOD] == nullptr) {
         CmdLog::CmdErrorLog("Argument --sys-period is empty,"
-            "Please enter a valid --sys-period value.");
+                            "Please enter a valid --sys-period value.");
         return MSPROF_DAEMON_ERROR;
     }
 
     if (Utils::CheckStringIsNonNegativeIntNum(cmdInfo.args[ARGS_SYS_PERIOD])) {
         int32_t syspeRet = 0;
-        FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(syspeRet, cmdInfo.args[ARGS_SYS_PERIOD]), return MSPROF_DAEMON_ERROR, 
-            "syspeRet %s is invalid", cmdInfo.args[ARGS_SYS_PERIOD]);
+        FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(syspeRet, cmdInfo.args[ARGS_SYS_PERIOD]),
+            return MSPROF_DAEMON_ERROR, "syspeRet %s is invalid", cmdInfo.args[ARGS_SYS_PERIOD]);
         if (!(ParamValidation::instance()->IsValidSleepPeriod(syspeRet))) {
             CmdLog::CmdErrorLog("Argument --sys-period: invalid int value: %d."
-                "The range of period is 1~2592000 seconds.", syspeRet);
+                                "The range of period is 1~2592000 seconds.",
+                syspeRet);
             return MSPROF_DAEMON_ERROR;
         } else {
             return MSPROF_DAEMON_OK;
         }
     } else {
         CmdLog::CmdErrorLog("Argument --sys-period: invalid value: %s."
-            "Please input an integer value.The range of period is 1~2592000 seconds.", cmdInfo.args[ARGS_SYS_PERIOD]);
+                            "Please input an integer value.The range of period is 1~2592000 seconds.",
+            cmdInfo.args[ARGS_SYS_PERIOD]);
         return MSPROF_DAEMON_ERROR;
     }
 }
@@ -1111,13 +1286,13 @@ int32_t InputParser::CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo)
 {
     if (cmdInfo.args[ARGS_SYS_DEVICES] == nullptr) {
         CmdLog::CmdErrorLog("Argument --sys-devices is empty,"
-            "Please enter a valid --sys-devices value.");
+                            "Please enter a valid --sys-devices value.");
         return MSPROF_DAEMON_ERROR;
     }
     params_->devices = cmdInfo.args[ARGS_SYS_DEVICES];
     if (params_->devices.empty()) {
         CmdLog::CmdErrorLog("Argument --sys-devices is empty,"
-            "Please enter a valid --sys-devices value.");
+                            "Please enter a valid --sys-devices value.");
         return MSPROF_DAEMON_ERROR;
     }
     if (std::string(cmdInfo.args[ARGS_SYS_DEVICES]) == ALL) {
@@ -1128,7 +1303,8 @@ int32_t InputParser::CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo)
     for (size_t i = 0; i < devices.size(); ++i) {
         if (!(ParamValidation::instance()->CheckDeviceIdIsValid(devices[i]))) {
             CmdLog::CmdErrorLog("Argument --sys-devices: invalid value: %s."
-                "Please input a valid device id.", devices[i].c_str());
+                                "Please input a valid device id.",
+                devices[i].c_str());
             return MSPROF_DAEMON_ERROR;
         }
     }
@@ -1148,12 +1324,14 @@ int32_t InputParser::CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t 
             return MSPROF_DAEMON_OK;
         } else {
             CmdLog::CmdErrorLog("Argument --%s: invalid int value: %d."
-                "Please input data is in %u to %u.", LONG_OPTIONS[opt].name, optRet, min, max);
+                                "Please input data is in %u to %u.",
+                LONG_OPTIONS[opt].name, optRet, min, max);
             return MSPROF_DAEMON_ERROR;
         }
     } else {
         CmdLog::CmdErrorLog("Argument --%s: invalid value: %s."
-            "Please input an integer value in %u-%u.", LONG_OPTIONS[opt].name, cmdInfo.args[opt], min, max);
+                            "Please input an integer value in %u-%u.",
+            LONG_OPTIONS[opt].name, cmdInfo.args[opt], min, max);
         return MSPROF_DAEMON_ERROR;
     }
 }
@@ -1166,7 +1344,8 @@ int32_t InputParser::CheckArgsIsNumber(const struct MsprofCmdInfo &cmdInfo, int3
     }
     if (!Utils::CheckStringIsUnsignedIntNum(cmdInfo.args[opt])) {
         CmdLog::CmdErrorLog("Argument --%s: invalid value: %s."
-            "Please input an integer value.", LONG_OPTIONS[opt].name, cmdInfo.args[opt]);
+                            "Please input an integer value.",
+            LONG_OPTIONS[opt].name, cmdInfo.args[opt]);
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
@@ -1231,7 +1410,7 @@ int32_t InputParser::CheckSysCpu()
         MSPROF_LOGI("Start the detection tool.");
         if (CheckHostSysToolsIsExist(TOOL_NAME_PERF, PROF_SCRIPT_PROF) != MSPROF_DAEMON_OK) {
             CmdLog::CmdErrorLog("The tool perf is invalid, please check"
-                " if the tool and sudo are available.");
+                                " if the tool and sudo are available.");
             return MSPROF_DAEMON_ERROR;
         }
     }
@@ -1245,13 +1424,13 @@ int32_t InputParser::CheckMstxValid()
             return MSPROF_DAEMON_OK;
         } else {
             CmdLog::CmdErrorLog("Argument --mstx-domain-include/--mstx-domain-exclude "
-                "must be used with --msproftx=on.");
+                                "must be used with --msproftx=on.");
             return MSPROF_DAEMON_ERROR;
         }
     } else {
         if (!params_->mstxDomainInclude.empty() && !params_->mstxDomainExclude.empty()) {
             CmdLog::CmdErrorLog("Argument --mstx-domain-include and --mstx-domain-exclude "
-                "cannot be used at the same time.");
+                                "cannot be used at the same time.");
             return MSPROF_DAEMON_ERROR;
         }
         return MSPROF_DAEMON_OK;
@@ -1310,14 +1489,14 @@ void InputParser::MsprofFreqUpdateParams(const struct MsprofCmdInfo &cmdInfo, in
     switch (opt) {
         case ARGS_INSTR_PROFILING_FREQ: {
                 int32_t instrProfilingFreq = 0;
-                FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(instrProfilingFreq, cmdInfo.args[opt]), return, 
+                FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(instrProfilingFreq, cmdInfo.args[opt]), return,
                     "instrProfilingFreq %s is invalid", cmdInfo.args[opt]);
                 params_->instrProfilingFreq = instrProfilingFreq;
             }
             break;
         case ARGS_SYS_PERIOD: {
                 int32_t period = 0;
-                FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(period, cmdInfo.args[opt]), return, 
+                FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(period, cmdInfo.args[opt]), return,
                     "profiling_period %s is invalid", cmdInfo.args[opt]);
                 params_->profiling_period = period;
             }
@@ -1598,7 +1777,7 @@ void ArgsManager::AddHostArgs()
     Args hostSys = {"host-sys", "The host-sys data type, include cpu, mem, disk, network, osrt, platform",
         HOST_SYS_CPU};
     Args hostSysPid = {"host-sys-pid", "Set the PID of the app process for "
-        "which you want to collect performance data."};
+                                       "which you want to collect performance data."};
     Args hostSysUsage = {"host-sys-usage", "The host-sys-usage data type, include cpu, mem.(full-platform)",
         HOST_SYS_CPU};
     Args hostSysUsageFreq = {

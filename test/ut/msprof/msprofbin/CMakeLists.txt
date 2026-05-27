@@ -102,7 +102,6 @@ set(common_file
 
 
 set(src_file
-    ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/src/msprof_bin.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/src/win/msprof_bin.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/src/msprof_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/msprofbin/src/msprof_params_adapter.cpp
@@ -248,4 +247,3 @@ set_target_properties(msprof_bin_utest
 )
 
 add_dependencies(msprof_bin_utest msprof_bin_utest_proto)
-
