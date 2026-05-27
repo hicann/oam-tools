@@ -250,6 +250,16 @@ class SingleOpCase:
         if not soc_version:
             soc_version = SingleOpCase.get_soc_version_from_cce(
                 configs.get("cce_file"))
+        if not soc_version:
+            # Both DSMI probe and cce file fallback failed. Returning early
+            # avoids handing None to run_dirty_ub -> te_set_version, which
+            # raises a confusing `TypeError: expected str, bytes or
+            # os.PathLike object, not NoneType` from deep inside tbe.
+            err = ("Cannot determine soc_version: DSMI probe failed and "
+                   "cce_file fallback returned no result. Aborting single "
+                   "op case run.")
+            utils.print_error_log(err)
+            return err
         device_id = configs.get("device_id")
         try:
             device_id = int(device_id)
