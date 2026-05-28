@@ -172,6 +172,19 @@ mk_dir() {
     echo "created ${create_dir}"
 }
 
+clean_cpack_staging() {
+    local build_path="$1"
+    local cpack_path="${build_path%/}/_CPack_Packages"
+
+    if [ -z "${build_path}" ] || [ ! -d "${cpack_path}" ]; then
+        return
+    fi
+
+    echo "clear cpack staging directory"
+    chmod -R u+w "${cpack_path}" 2>/dev/null
+    rm -rf "${cpack_path}"
+}
+
 print_success() {
   echo
   echo $dotted_line
@@ -318,7 +331,7 @@ build_oam_tools() {
     -DENABLE_PACKAGE=TRUE"
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
-    make ${VERBOSE} -j${THREAD_NUM} && make package
+    make ${VERBOSE} -j${THREAD_NUM} && clean_cpack_staging "${BUILD_PATH}" && make package
     # make package
     if [ 0 -ne $? ]; then
         echo "execute command: make ${VERBOSE} -j${THREAD_NUM} && make install failed."
