@@ -273,11 +273,7 @@ int32_t InputParser::CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t 
             return compareSwitchStr(cmpCode, switchStr, errorMsg, opt, cmdInfo);
         }
         case ARGS_TASK_BLOCK: {
-            if (!ParamValidation::instance()->CheckTaskBlockValid("--task-block", switchStr)) {
-                CmdLog::CmdErrorLog("Argument --%s: invalid value: %s. ", LONG_OPTIONS[opt].name, cmdInfo.args[opt]);
-                return MSPROF_DAEMON_ERROR;
-            }
-            return MSPROF_DAEMON_OK;
+            return CheckTaskBlockValid("--task-block", switchStr);
         }
         case ARGS_TASK_TIME: {
             const bool supportL3 = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3);
