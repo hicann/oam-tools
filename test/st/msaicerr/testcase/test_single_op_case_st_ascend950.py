@@ -17,10 +17,10 @@
 # ----------------------------------------------------------------------------
 import os
 import sys
-from pathlib import Path
 import subprocess
 import shutil
 import inspect
+from pathlib import Path
 from argparse import Namespace
 
 import pytest
@@ -29,6 +29,7 @@ from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath, CommonAssert
 
 sys.path.append(MSAICERR_PATH)
 sys.path.append(f'{cur_abspath}/../res/package')
+
 from ms_interface.ascend950.compile_op import CompileOP
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
 from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernel, AscendOpKernelRunner, AscendOpKernelParam
@@ -36,7 +37,26 @@ from ms_interface.constant import ModeCustom
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.run_dirty_ub import run_dirty_ub
-from ms_interface.dsmi_interface import DsmiChipInfoStru
+from ms_interface.dsmi_interface import DSMIInterface, DsmiChipInfoStru
+
+
+def _detect_soc_version():
+    try:
+        info = DSMIInterface().get_chip_info(0)
+        if info is None:
+            return None
+        return info.get_complete_platform()
+    except Exception:
+        return None
+
+
+_soc = _detect_soc_version()
+if _soc is None or "950" not in str(_soc):
+    pytest.skip(
+        f"test_single_op_case_st_ascend950 requires an Ascend950 host "
+        f"(detected SOC: {_soc!r}); skipping module.",
+        allow_module_level=True,
+    )
 
 
 class TestUtilsMethods():
