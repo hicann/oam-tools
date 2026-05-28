@@ -40,6 +40,7 @@ protected:
     uint16_t GetQosMonitorNumber() const override;
 
 private:
+    void InsertPmuFeature();
     void InsertSysFeature();
 };
 }}}

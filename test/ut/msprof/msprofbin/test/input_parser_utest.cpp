@@ -652,6 +652,35 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.ParamsCheck());
 }
 
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid) {
+    InputParser parser = InputParser();
+
+    MOCKER_CPP(&Platform::CheckIfSupport, bool (Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V4))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
+
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "all"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "on"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
+}
+
 TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};

@@ -1312,6 +1312,48 @@ int32_t InputParser::CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo)
     return MSPROF_DAEMON_OK;
 }
 
+/**
+ * @brief  : Check task block is valid
+ * @param  : [in] switchName : the switch name
+ * @param  : [in] config : task block config
+ * @return : MSPROF_DAEMON_OK: succ
+ *           MSPROF_DAEMON_ERROR: failed
+ */
+int32_t InputParser::CheckTaskBlockValid(const std::string &switchName, const std::string &config) const
+{
+    if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_BLOCK)) {
+        CmdLog::CmdErrorLog("Argument %s is not supported", switchName.c_str());
+        MSPROF_LOGE("Argument %s is not supported", switchName.c_str());
+        return MSPROF_DAEMON_ERROR;
+    }
+
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 && 
+        config.compare(MSVP_PROF_ALL) != 0) {
+        std::string taskBlockRanges;
+        if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
+            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
+            Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
+            taskBlockRanges = "'all', 'on', 'off'.";
+        } else {
+            taskBlockRanges = "'all', 'off'.";
+        }
+        CmdLog::CmdErrorLog("Argument %s: invalid value: %s. Please input %s", 
+            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
+            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
+        return MSPROF_DAEMON_ERROR;
+    }
+    if (config.compare(MSVP_PROF_ON) == 0 && 
+        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
+        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
+        Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
+        CmdLog::CmdErrorLog("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
+        MSPROF_LOGE("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
+        return MSPROF_DAEMON_ERROR;
+    }
+    return MSPROF_DAEMON_OK;
+}
+
 int32_t InputParser::CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const
 {
     if (cmdInfo.args[opt] == nullptr) {
@@ -1324,8 +1366,7 @@ int32_t InputParser::CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t 
             return MSPROF_DAEMON_OK;
         } else {
             CmdLog::CmdErrorLog("Argument --%s: invalid int value: %d."
-                                "Please input data is in %u to %u.",
-                LONG_OPTIONS[opt].name, optRet, min, max);
+                "Please input an integer value in %u-%u.", LONG_OPTIONS[opt].name, optRet, min, max);
             return MSPROF_DAEMON_ERROR;
         }
     } else {

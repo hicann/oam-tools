@@ -28,6 +28,7 @@ MdcMiniV3Platform::MdcMiniV3Platform()
         PLATFORM_TASK_AICORE_LPM,
         PLATFORM_TASK_DYNAMIC,
         PLATFORM_TASK_DELAY_DURATION,
+        PLATFORM_TASK_SCALE,
     };
     for (PlatformFeature feature : unsupportFeature) {
         supportedFeature_.erase(feature);

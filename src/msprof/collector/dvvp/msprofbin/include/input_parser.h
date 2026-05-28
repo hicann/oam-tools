@@ -243,6 +243,7 @@ private:
     int32_t CheckLlcProfilingValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckSysPeriodValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo);
+    int32_t CheckTaskBlockValid(const std::string &switchName, const std::string &config) const;
     int32_t CheckHostSysValid(const struct MsprofCmdInfo &cmdInfo);
     int32_t CheckHostSysToolsValid() const;
     int32_t CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo);
