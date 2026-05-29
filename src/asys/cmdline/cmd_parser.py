@@ -17,6 +17,7 @@
 # ----------------------------------------------------------------------------
 
 import argparse
+import sys
 import textwrap
 import enum
 
@@ -269,6 +270,7 @@ class CommandLineParser:
         self.parser = argparse.ArgumentParser(prog="asys", formatter_class=argparse.RawDescriptionHelpFormatter,
                                               description=description_msg)
         subparsers = self.parser.add_subparsers(dest='subparser_name', help='asys supported commands')
+        self.__config_parser = None
 
         # Config the parser from Command and Args
         for cmd in Command:
@@ -278,6 +280,7 @@ class CommandLineParser:
                 continue
             parser = subparsers.add_parser(cmd_conf[KEY_NAME], help=cmd_conf[KEY_HELP], allow_abbrev=False)
             if cmd_conf[KEY_NAME] == consts.config_cmd:
+                self.__config_parser = parser
                 self.__set_config_cmd_parser(parser, cmd_conf)
                 continue
             if cmd_conf[KEY_NAME] == consts.analyze_cmd:
@@ -306,7 +309,10 @@ class CommandLineParser:
 
     @staticmethod
     def __set_config_cmd_parser(parser, cmd_conf):
-        group = parser.add_mutually_exclusive_group(required=False)
+        # 不使用 add_mutually_exclusive_group：Python 3.14 的 argparse 会将互斥
+        # 组成员合并渲染为 "[--get | --restore]"，与历史 3.12 风格 "[--get] [-d ]
+        # [--restore]"（保留参数声明顺序）不一致。这里改为常规 add_argument，
+        # 在 parse() 阶段手动校验互斥关系，并复用 argparse 错误信息格式。
         supported_args = cmd_conf[KEY_ARGS]
         for arg in supported_args:
             arg_conf = arg.value
@@ -319,12 +325,8 @@ class CommandLineParser:
                 )
                 continue
 
-            if arg_conf.get(KEY_NAME) in ["get", "restore"]:
-                group.add_argument(arg_name, required=arg_conf[KEY_REQUIRED], action="store_true",
-                                   help=arg_conf[KEY_HELP])
-            else:
-                parser.add_argument(arg_name, required=arg_conf[KEY_REQUIRED], action="store_true",
-                                    help=arg_conf[KEY_HELP])
+            parser.add_argument(arg_name, required=arg_conf[KEY_REQUIRED], action="store_true",
+                                help=arg_conf[KEY_HELP])
 
     @staticmethod
     def __set_analyze_cmd_parser(parser, cmd_conf):
@@ -416,6 +418,12 @@ class CommandLineParser:
         Returns:
             RetCode: return code (SUCCESS:0, FAILED:1)
         """
+        # config 子命令的 --get / --restore 互斥校验：原本通过 argparse 的
+        # mutually_exclusive_group 实现，但 3.14 改变了 usage 渲染顺序，故改为
+        # 手动校验。在 parse_args 之前预扫描 argv，确保互斥错误优先于 required
+        # 缺失错误抛出，与历史 mutex group 行为一致；错误信息复用
+        # subparser.error()，与原 argparse 输出格式完全相同。
+        self.__check_config_mutex_in_argv()
         args = self.parser.parse_args()
         if args.subparser_name is None:  # -h, --help, and only asys
             return RetCode.SUCCESS
@@ -423,3 +431,15 @@ class CommandLineParser:
             return RetCode.FAILED
         ParamDict().set_args(args)
         return RetCode.SUCCESS
+
+    def __check_config_mutex_in_argv(self):
+        if self.__config_parser is None:
+            return
+        argv = sys.argv[1:]
+        if not argv or argv[0] != consts.config_cmd:
+            return
+        sub_argv = argv[1:]
+        has_get = any(tok == "--get" or tok.startswith("--get=") for tok in sub_argv)
+        has_restore = any(tok == "--restore" or tok.startswith("--restore=") for tok in sub_argv)
+        if has_get and has_restore:
+            self.__config_parser.error("argument --restore: not allowed with argument --get")
