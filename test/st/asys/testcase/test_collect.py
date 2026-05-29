@@ -500,6 +500,7 @@ class TestCollect(AssertTest):
         mocker.patch("os.kill", return_value=True)
         mocker.patch("time.sleep", return_value=True)
         mocker.patch("collect.stacktrace.stacktrace_collect.input", return_value="y")
+        mocker.patch("os.listdir", return_value=[])
         os.environ["ASCEND_WORK_PATH"] = st_root_path + "/data/asys_test_dir/ascend/"
         sys.argv = [CONF_SRC_PATH, "collect", "-r=stacktrace", "--remote=12345", "--all"]
         ParamDict().set_env_type("EP")

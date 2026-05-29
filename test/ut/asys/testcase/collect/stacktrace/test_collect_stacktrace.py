@@ -282,3 +282,25 @@ class TestCollectStackAtrace(AssertTest):
         ret = AsysStackTrace()._wait_bin_file_generate(5)
         self.assertTrue(not ret)
 
+    def test_clear_dfx_log_remove_log_files(self, mocker):
+        mocker.patch("os.listdir", return_value=["stackcore_tracer_35_a.log", "stackcore_tracer_35_b.log"])
+        mocker.patch("os.path.isfile", return_value=True)
+        mock_remove = mocker.patch("os.remove")
+        AsysStackTrace._clear_dfx_log("/fake/dir")
+        self.assertTrue(mock_remove.call_count == 2)
+        mock_remove.assert_any_call(os.path.join("/fake/dir", "stackcore_tracer_35_a.log"))
+        mock_remove.assert_any_call(os.path.join("/fake/dir", "stackcore_tracer_35_b.log"))
+
+    def test_clear_dfx_log_keep_non_log_files(self, mocker):
+        mocker.patch("os.listdir", return_value=["stackcore_tracer_35_trace.log", "stackcore.bin", "stackcore.txt"])
+        mocker.patch("os.path.isfile", return_value=True)
+        mock_remove = mocker.patch("os.remove")
+        AsysStackTrace._clear_dfx_log("/fake/dir")
+        self.assertTrue(mock_remove.call_count == 1)
+        mock_remove.assert_called_once_with(os.path.join("/fake/dir", "stackcore_tracer_35_trace.log"))
+
+    def test_clear_dfx_log_empty_dir(self, mocker):
+        mocker.patch("os.listdir", return_value=[])
+        mock_remove = mocker.patch("os.remove")
+        AsysStackTrace._clear_dfx_log("/fake/dir")
+        self.assertTrue(mock_remove.call_count == 0)

@@ -211,6 +211,16 @@ class AsysStackTrace(AscendTraceDll):
             return False
         return True
 
+    @staticmethod
+    def _clear_dfx_log(folder_path):
+        for file in os.listdir(folder_path):
+            if file.endswith(".log") and file.startswith("stackcore_tracer_35_"):
+                log_path = os.path.join(folder_path, file)
+                try:
+                    os.remove(log_path)
+                except OSError as e:
+                    continue
+
     def run(self):
         """
         send signals to export stackcore files.
@@ -257,6 +267,7 @@ class AsysStackTrace(AscendTraceDll):
             return False
 
         folder_path = os.path.dirname(bin_file_path)
+        self._clear_dfx_log(folder_path)
         ret = f.collect_dir(folder_path, self.output, COPY_MODE)
         if not ret:
             log_warning(f"Copy output file from {folder_path} to {self.output} failed.")
