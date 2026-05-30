@@ -320,6 +320,35 @@ validate_pytest_result() {
     return $return_code
 }
 
+run_pytest_with_coverage() {
+    local case_name="$1"
+    local source_dir="$2"
+    local test_dir="$3"
+    local output_file="$4"
+    local cov_dir="${BUILD_OUTPUT_DIR}/${case_name}_cov"
+
+    mkdir -p "${cov_dir}"
+    # Each case gets its own COVERAGE_FILE so concurrent or sequential runs of
+    # different components do not overwrite one another's .coverage data file.
+    export COVERAGE_FILE="${cov_dir}/.coverage"
+
+    python3 -m coverage run --source="${source_dir}" -m pytest "${test_dir}" > "${output_file}" 2>&1
+    echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+    python3 -m coverage report >> "${output_file}" 2>&1
+    python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
+
+    unset COVERAGE_FILE
+}
+
+run_pytest_plain() {
+    local case_name="$1"
+    local test_dir="$2"
+    local output_file="$3"
+
+    python3 -m pytest "${test_dir}" > "${output_file}" 2>&1
+    echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+}
+
 run_test_case() {
     local case_name="$1"
     local framework="${TEST_CASES[$case_name]}"
@@ -333,28 +362,16 @@ run_test_case() {
 
     case "$case_name" in
         asys_st)
-            python3 -m coverage run --source=./src/asys -m pytest ./test/st/asys/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
-            python3 -m coverage report >> "${output_file}" 2>&1
-            python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
+            run_pytest_with_coverage "${case_name}" "./src/asys" "./test/st/asys/testcase" "${output_file}"
             ;;
         asys_ut)
-            python3 -m coverage run --source=./src/asys -m pytest ./test/ut/asys/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
-            python3 -m coverage report >> "${output_file}" 2>&1
-            python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
+            run_pytest_with_coverage "${case_name}" "./src/asys" "./test/ut/asys/testcase" "${output_file}"
             ;;
         msaicerr_st)
-            python3 -m coverage run --source=./src/msaicerr -m pytest ./test/st/msaicerr/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
-            python3 -m coverage report >> "${output_file}" 2>&1
-            python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
+            run_pytest_with_coverage "${case_name}" "./src/msaicerr" "./test/st/msaicerr/testcase" "${output_file}"
             ;;
         msaicerr_ut)
-            python3 -m coverage run --source=./src/msaicerr -m pytest ./test/ut/msaicerr/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
-            python3 -m coverage report >> "${output_file}" 2>&1
-            python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
+            run_pytest_with_coverage "${case_name}" "./src/msaicerr" "./test/ut/msaicerr/testcase" "${output_file}"
             ;;
         msprof_ut)
             if [[ -f "./build/test/ut/msprof/msprofbin/msprof_bin_utest" ]]; then
@@ -367,16 +384,13 @@ run_test_case() {
             fi
             ;;
         install_st)
-            python3 -m pytest ./test/st/install/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            run_pytest_plain "${case_name}" "./test/st/install/testcase" "${output_file}"
             ;;
         upgrade_st)
-            python3 -m pytest ./test/st/upgrade/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            run_pytest_plain "${case_name}" "./test/st/upgrade/testcase" "${output_file}"
             ;;
         uninstall_st)
-            python3 -m pytest ./test/st/uninstall/testcase > "${output_file}" 2>&1
-            echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            run_pytest_plain "${case_name}" "./test/st/uninstall/testcase" "${output_file}"
             ;;
         *)
             echo "ERROR: Unknown test case: $case_name"

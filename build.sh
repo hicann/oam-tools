@@ -348,6 +348,16 @@ build_oam_tools() {
     echo "oam_tools build success!"
 }
 
+# Python-only components have no compiled artefacts and don't need build_oam_tools.
+# When -u is used and the requested component is in this list, skip the heavy
+# build (cmake/make/cpack/.run packaging, msprof wheel, msprobe staging, etc.).
+is_python_only_component() {
+    case "$1" in
+        asys|msaicerr) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 main() {
     cd "${BASEPATH}"
     checkopts "$@"
@@ -356,12 +366,25 @@ main() {
         THREAD_NUM=$CORE_NUMS
     fi
 
-    g++ -v
-    echo "---------------- oam_tools build start ----------------"
-    build_oam_tools || { echo "oam_tools build failed."; exit 1; }
-    echo "---------------- oam_tools build finished ----------------"
+    local skip_build="off"
+    if [[ "${ENABLE_UT}" == "on" && "${EXEC_TEST}" == "on" ]] && is_python_only_component "${TEST_COMPONENT}"; then
+        skip_build="on"
+        echo "---------------- skip oam_tools build for python-only component: ${TEST_COMPONENT} ----------------"
+    fi
+
+    if [[ "${skip_build}" == "off" ]]; then
+        g++ -v
+        echo "---------------- oam_tools build start ----------------"
+        build_oam_tools || { echo "oam_tools build failed."; exit 1; }
+        echo "---------------- oam_tools build finished ----------------"
+    fi
+
     if [[ "${ENABLE_UT}" == "on" && "${EXEC_TEST}" == "on" ]];then
-        source "${ASCEND_HOME_PATH}/bin/setenv.bash"
+        if [[ -f "${ASCEND_HOME_PATH}/bin/setenv.bash" ]]; then
+            source "${ASCEND_HOME_PATH}/bin/setenv.bash"
+        else
+            echo "WARNING: ${ASCEND_HOME_PATH}/bin/setenv.bash not found, skipping source"
+        fi
         export LD_LIBRARY_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"/:$LD_LIBRARY_PATH
         
         local run_tests_args=()
