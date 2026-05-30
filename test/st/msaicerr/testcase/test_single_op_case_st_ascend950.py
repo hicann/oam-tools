@@ -80,13 +80,12 @@ class TestUtilsMethods():
         single_op_case = SingleOpCase(aic_err_info, 'op_test')
         config_file = single_op_case.generate_config()
         run_dirty_ub(config_file, "Ascend950", 0)
-        # 在 SingleOpCase.run 内部把 run_dirty_ub 整体 mock 掉：测试只关心
-        # run() 串起 run_kernel 后返回值（assert "None" in res），不应受
-        # 主机真实 SOC（DSMI 可能返回 Ascend910B3 等非 950 值）或 tbe 桩
-        # 影响。否则会落入 run_dirty_ub_tik，因 generate_config() 不带
-        # compile_temp_dir，Path(None) 抛 TypeError。
         mocker.patch('ms_interface.single_op_test_frame.single_op_case.run_dirty_ub',
                      return_value=True)
+        mocker.patch(
+            "ms_interface.single_op_test_frame.single_op_case.DSMIInterface",
+            side_effect=Exception("mock dsmi unavailable"),
+        )
         mocker.patch.object(SingleOpCase, "get_soc_version_from_cce", return_value="Ascend950")
         mocker.patch.object(SingleOpCase, 'run_kernel', return_value=None)
         res = single_op_case.run(config_file, 'op_test')

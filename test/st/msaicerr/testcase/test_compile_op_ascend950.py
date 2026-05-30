@@ -42,6 +42,9 @@ class TestCompileOp():
         compile_file_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
+        # 写入与当前芯片一致的标记文件，命中复用分支
+        temp_dir.joinpath(ModeCustom.ADD_CUSTOM.value,
+                          CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
         compile_file_path.joinpath(
             f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test")
         shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
@@ -110,3 +113,52 @@ class TestCompileOp():
         build_result = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
         assert build_result == []
+
+    def test_get_compile_file_chip_marker_written(self, mocker, caplog):
+        # 编译成功后应写入芯片标记文件，供后续复用校验
+        temp_dir = Path(cur_abspath).joinpath(
+            "../test_get_compile_file_chip_marker_written")
+        mocker.patch.object(Path, "exists", return_value=False)
+        mocker.patch("shutil.which", return_value=True)
+        res = subprocess.run('ls')
+        mocker.patch("subprocess.run", return_value=res)
+        op_kernel_path = temp_dir.joinpath(
+            ModeCustom.ADD_CUSTOM.value, 'op_kernel')
+        op_kernel_path.mkdir(parents=True, exist_ok=True)
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        compile_file_path = temp_dir.joinpath(
+            ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
+        compile_file_path.mkdir(parents=True, exist_ok=True)
+        compile_file_path.joinpath(
+            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test")
+        shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
+                                               "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
+        build_result = compile_op.get_compile_file(temp_dir)
+        marker_file = temp_dir.joinpath(
+            ModeCustom.ADD_CUSTOM.value, CompileOP.COMPILE_CHIP_MARKER)
+        marker_content = marker_file.read_text()
+        shutil.rmtree(temp_dir)
+        assert len(build_result) == 2
+        assert marker_content == "Ascend950"
+
+    def test_get_compile_file_other_chip_not_reuse(self, mocker, caplog):
+        # 旧芯片(Ascend950)产物存在，但当前为 Ascend910_96 且无匹配标记，
+        # 不应复用旧产物，而是进入编译流程；msopgen 缺失时返回空。
+        temp_dir = Path(cur_abspath).joinpath(
+            "../test_get_compile_file_other_chip_not_reuse")
+        compile_file_path = temp_dir.joinpath(
+            ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
+        compile_file_path.mkdir(parents=True, exist_ok=True)
+        # 旧芯片 Ascend950 的标记与残留产物
+        temp_dir.joinpath(ModeCustom.ADD_CUSTOM.value,
+                          CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
+        compile_file_path.joinpath(
+            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("old")
+        mocker.patch("shutil.which", return_value=False)
+        other_chip_op = CompileOP(op_name, inputs, outputs,
+                                  'Ascend910_96', 'Ascend910_96')
+        build_result = other_chip_op.get_compile_file(temp_dir)
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir)
+        assert build_result == []
+

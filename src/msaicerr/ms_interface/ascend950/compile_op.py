@@ -28,11 +28,15 @@ from ms_interface.dsmi_interface import DSMIInterface
 
 class CompileOP:
 
-    def __init__(self, op_name, inputs, outputs, soc_version):
+    # 记录某个算子编译产物所对应芯片的标记文件名，用于跨芯片复用时的校验
+    COMPILE_CHIP_MARKER = ".compile_chip"
+
+    def __init__(self, op_name, inputs, outputs, soc_version, chip="Ascend950"):
         self.op_name = op_name
         self.inputs = inputs
         self.outputs = outputs
         self.soc_version = soc_version
+        self.chip = chip
 
     @staticmethod
     def get_ub_size():
@@ -85,7 +89,7 @@ class CompileOP:
         new_env["PATH"] = new_env["PATH"] + ":" + python_bin_path
         # 1、生成自定义算子模板
         utils.print_debug_log("Start run msopgen!")
-        cmd = f"msopgen gen -i {json_file} -c ai_core-Ascend950 -lan cpp -out {self.op_name}"
+        cmd = f"msopgen gen -i {json_file} -c ai_core-{self.chip} -lan cpp -out {self.op_name}"
         res = utils.run_cmd_output(cmd, cwd=compile_temp_dir, env=new_env)
         utils.print_debug_log("Generating a custom operator Template")
         if not res:
@@ -115,8 +119,8 @@ class CompileOP:
                                                                  f"uint32_t total_length = {self.get_ub_size()};")}
         }
         compile_temp_dir = Path(compile_temp_dir)
-        # 判断temp是否存在之前编译过，如果能查询到则直接复用，否则重新编译
-        if compile_temp_dir.exists():
+        # 判断temp是否存在之前编译过，如果能查询到且芯片一致则直接复用，否则重新编译
+        if compile_temp_dir.exists() and self._is_cache_chip_matched(compile_temp_dir):
             find_res = self.get_compile_file_from_temp(compile_temp_dir)
             if find_res:
                 return find_res
@@ -124,6 +128,9 @@ class CompileOP:
         python_bin_path = os.path.join(sys.base_prefix, "bin")
         if not (shutil.which("msopgen") or shutil.which("msopgen", path=python_bin_path)):
             utils.print_error_log("The msopgen tool does not exist.")
+            return []
+        # 清理可能残留的旧芯片编译目录，避免 msopgen 生成失败或复用到旧产物
+        if not self._clean_op_build_dir(compile_temp_dir):
             return []
         # 1、生成json文件
         json_file = self.make_json_file(compile_temp_dir)
@@ -138,6 +145,8 @@ class CompileOP:
         if not find_res:
             utils.print_error_log("Compiling the operator failed. Check the environment.")
             return []
+        # 4、记录本次编译产物所属芯片，供后续复用校验
+        self._write_chip_marker(compile_temp_dir)
         build_bin, build_json = find_res
         # 5、修改json
         with open(build_json, "r") as f:
@@ -148,3 +157,45 @@ class CompileOP:
         with open(build_json, "w") as f:
             json.dump(data, f)
         return [build_bin, build_json]
+
+    def _get_chip_marker_file(self, compile_temp_dir):
+        # 标记文件放在算子编译目录下，记录该产物对应的芯片
+        return compile_temp_dir.joinpath(self.op_name, CompileOP.COMPILE_CHIP_MARKER)
+
+    def _write_chip_marker(self, compile_temp_dir):
+        marker_file = self._get_chip_marker_file(compile_temp_dir)
+        try:
+            marker_file.parent.mkdir(parents=True, exist_ok=True)
+            marker_file.write_text(self.chip)
+        except OSError as ex:
+            utils.print_warn_log(f"Failed to write compile chip marker {marker_file}: {ex}")
+
+    def _is_cache_chip_matched(self, compile_temp_dir):
+        # 仅当标记文件存在且与当前芯片一致时，才允许复用已有编译产物
+        marker_file = self._get_chip_marker_file(compile_temp_dir)
+        if not marker_file.exists():
+            utils.print_debug_log(
+                "The compile chip marker does not exist, recompile to avoid reusing artifacts of another chip.")
+            return False
+        try:
+            cached_chip = marker_file.read_text().strip()
+        except OSError as ex:
+            utils.print_warn_log(f"Failed to read compile chip marker {marker_file}: {ex}")
+            return False
+        if cached_chip != self.chip:
+            utils.print_debug_log(
+                f"The cached compile artifacts belong to chip {cached_chip}, "
+                f"but current chip is {self.chip}, recompile is required.")
+            return False
+        return True
+
+    def _clean_op_build_dir(self, compile_temp_dir):
+        # 重新编译前清理旧的算子目录，避免 msopgen 因目录已存在而失败或复用旧芯片产物
+        op_dir = compile_temp_dir.joinpath(self.op_name)
+        if op_dir.exists():
+            try:
+                shutil.rmtree(op_dir)
+            except OSError as ex:
+                utils.print_error_log(f"Failed to clean old compile dir {op_dir}: {ex}, clean it manually please")
+                return False
+        return True
