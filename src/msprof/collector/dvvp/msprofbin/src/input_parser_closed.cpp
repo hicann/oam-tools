@@ -328,6 +328,16 @@ int32_t InputParser::CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t 
             }
             return MSPROF_DAEMON_OK;
         }
+        case ARGS_DVPP_PROFILING: {
+            if (!Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP) &&
+                !Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP_EX)) {
+                CmdLog::CmdWarningLog("The argument: dvpp-profiling is useless on this platform.");
+                return MSPROF_DAEMON_OK;
+            }
+            const std::vector<std::string> cmpCode = {OFF, ON};
+            const std::string errorMsg = "Argument --%s: invalid value: %s. Please input 'on' or 'off'.";
+            return compareSwitchStr(cmpCode, switchStr, errorMsg, opt, cmdInfo);
+        }
         default: {
             const std::vector<std::string> cmpCode = {OFF, ON};
             const std::string errorMsg = "Argument --%s: invalid value: %s. Please input 'on' or 'off'.";

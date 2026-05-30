@@ -585,6 +585,336 @@ TEST_F(INPUT_PARSER_UTEST, CheckHostSysUsageValid) {
 TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
     EXPECT_EQ(ARGS_INSTR_PROFILING, LONG_OPTIONS[ARGS_INSTR_PROFILING].val);
     EXPECT_EQ(ARGS_INSTR_PROFILING_FREQ, LONG_OPTIONS[ARGS_INSTR_PROFILING_FREQ].val);
+
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    auto configManger = Analysis::Dvvp::Common::Config::ConfigManager::instance();
+
+    configManger->configMap_["type"] = "1";
+    configManger->isInit_ = true;
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    {
+        ArgsManager argsManager = ArgsManager();
+        argsManager.argsList_.clear();
+        argsManager.AddDvvpArgs();
+        EXPECT_EQ(static_cast<size_t>(2), argsManager.argsList_.size());
+    }
+
+    cmdInfo.args[ARGS_DVPP_FREQ] = "50";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
+    cmdInfo.args[ARGS_DVPP_FREQ] = "0"; // 超出 1~100 范围
+    EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
+    cmdInfo.args[ARGS_DVPP_FREQ] = "101"; // 超出 1~100 范围
+    EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
+
+    // 平台支持 DVPP 时, dvpp-profiling 按 on/off 校验取值
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "on";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "off";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "invalid"; // 非法取值
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+    cmdInfo.args[ARGS_DVPP_PROFILING] = nullptr; // 缺省值
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+
+    MOCKER_CPP(static_cast<bool (Platform::*)(const ::Dvvp::Collect::Platform::PlatformFeature) const>(
+                   &Platform::CheckIfSupport))
+        .stubs()
+        .will(returnValue(false));
+
+    {
+        ArgsManager argsManager = ArgsManager();
+        argsManager.argsList_.clear();
+        argsManager.AddDvvpArgs();
+        EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
+    }
+
+    cmdInfo.args[ARGS_DVPP_FREQ] = "101";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
+
+    // 平台不支持 DVPP 时, dvpp-profiling 跳过校验直接放行(返回成功并告警)
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "on";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+
+    GlobalMockObject::verify();
+    Platform::instance()->Uninit();
+    configManger->Uninit();
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+
+    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    auto configManger = Analysis::Dvvp::Common::Config::ConfigManager::instance();
+    Platform::instance()->Init();
+
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSampleModeValid(cmdInfo, ARGS_AIV_MODE));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSampleModeValid(cmdInfo, ARGS_AIC_MODE));
+    cmdInfo.args[ARGS_AIV_MODE] = "aa";
+    cmdInfo.args[ARGS_AIC_MODE] = "aa";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSampleModeValid(cmdInfo, ARGS_AIV_MODE));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSampleModeValid(cmdInfo, ARGS_AIC_MODE));
+    cmdInfo.args[ARGS_AIV_MODE] = "sample-based";
+    cmdInfo.args[ARGS_AIC_MODE] = "sample-based";
+    configManger->configMap_["type"] = "5";
+    configManger->isInit_ = true;
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckSampleModeValid(cmdInfo, ARGS_AIV_MODE));
+    configManger->Uninit();
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckSampleModeValid(cmdInfo, ARGS_AIC_MODE));
+
+    // check aic metrics valid
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+
+    cmdInfo.args[ARGS_AIC_METRICS] = "";
+    cmdInfo.args[ARGS_AIV_METRICS] = "";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+
+    // 固定为已链接的真实平台(type 5), 使 PmuToFeature 的 metric->feature 映射可用;
+    // 通过 mock CheckIfSupport 控制平台是否支持对应 feature, 不依赖未链接的平台类
+    configManger->configMap_["type"] = "5";
+    configManger->isInit_ = true;
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    cmdInfo.args[ARGS_AIC_METRICS] = "1";
+    cmdInfo.args[ARGS_AIV_METRICS] = "1";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+
+    // 平台支持 Memory(MEMORY_PMU): mock CheckIfSupport 对该 feature 返回 true
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_TASK_MEMORY_PMU))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    cmdInfo.args[ARGS_AIC_METRICS] = "Memory";
+    cmdInfo.args[ARGS_AIV_METRICS] = "Memory";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+
+    // 平台不支持 L2Cache(L2_CACHE_PMU): 默认 mock 返回 false
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    cmdInfo.args[ARGS_AIV_METRICS] = "L2Cache";
+    cmdInfo.args[ARGS_AIC_METRICS] = "L2Cache";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+
+    // 平台支持 SOC PMU(L2_CACHE_REG): CheckNpuEventsValid 校验事件格式
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_TASK_L2_CACHE_REG))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    cmdInfo.args[ARGS_NPU_EVENTS] = "0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
+    cmdInfo.args[ARGS_NPU_EVENTS] = "0x1,0x2,0x3";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
+
+    // 平台支持 optype(PLATFORM_TASK_SCALE): CheckCmdOpTypeIsValid 校验取值格式
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_TASK_SCALE))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    parser.params_->opType.clear();
+    cmdInfo.args[ARGS_OP_TYPE] = "Index,Index";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    EXPECT_EQ("Index", parser.params_->opType);
+    parser.params_->opType.clear();
+    cmdInfo.args[ARGS_OP_TYPE] = ",";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    parser.params_->opType.clear();
+    cmdInfo.args[ARGS_OP_TYPE] = "Index,,MatMul";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    parser.params_->opType.clear();
+    std::string opType(257, 't');
+    cmdInfo.args[ARGS_OP_TYPE] = const_cast<char *>(opType.c_str());
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    parser.params_->opType.clear();
+    cmdInfo.args[ARGS_OP_TYPE] = "Index,MatMul";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckCmdOpTypeIsValid(cmdInfo));
+    parser.params_->opType.clear();
+    cmdInfo.args[ARGS_OP_TYPE] = "Index";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    // 平台支持 PEU_PMU 但不支持 SCALE: metrics 校验通过, optype 校验失败
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_TASK_PEU_PMU))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    cmdInfo.args[ARGS_AIC_METRICS] = "PipelineExecuteUtilization";
+    cmdInfo.args[ARGS_AIV_METRICS] = "PipelineExecuteUtilization";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
+
+    GlobalMockObject::verify();
+    configManger->Uninit();
+    Platform::instance()->Uninit();
+
+    // check summary format
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckExportSummaryFormat(cmdInfo));
+    cmdInfo.args[ARGS_SUMMARY_FORMAT] = "aaa";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckExportSummaryFormat(cmdInfo));
+    cmdInfo.args[ARGS_SUMMARY_FORMAT] = "csv";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckExportSummaryFormat(cmdInfo));
+    cmdInfo.args[ARGS_SUMMARY_FORMAT] = "json";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckExportSummaryFormat(cmdInfo));
+
+    // check llc
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckLlcProfilingValid(cmdInfo));
+    cmdInfo.args[ARGS_LLC_PROFILING] = "";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckLlcProfilingValid(cmdInfo));
+    cmdInfo.args[ARGS_LLC_PROFILING] = "read";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckLlcProfilingValid(cmdInfo));
+    cmdInfo.args[ARGS_LLC_PROFILING] = "capacity";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckLlcProfilingValid(cmdInfo));
+
+    // check period
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysPeriodValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_PERIOD] = "capacity";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysPeriodValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_PERIOD] = "-1";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysPeriodValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_PERIOD] = "2";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckSysPeriodValid(cmdInfo));
+
+    // check devices
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysDevicesValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_DEVICES] = "";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysDevicesValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_DEVICES] = "all";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckSysDevicesValid(cmdInfo));
+    cmdInfo.args[ARGS_SYS_DEVICES] = "A";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckSysDevicesValid(cmdInfo));
+
+    // check arg on off
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_ASCENDCL));
+    cmdInfo.args[ARGS_TASK_TIME] = "tas";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
+    cmdInfo.args[ARGS_TASK_TIME] = "off";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
+    cmdInfo.args[ARGS_TASK_TIME] = "L1";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
+    cmdInfo.args[ARGS_TASK_TIME] = "l1";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
+    cmdInfo.args[ARGS_GE_API] = "fwk";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_GE_API));
+    cmdInfo.args[ARGS_GE_API] = "off";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_GE_API));
+    cmdInfo.args[ARGS_GE_API] = "L1";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_GE_API));
+    cmdInfo.args[ARGS_GE_API] = "l1";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_GE_API));
+    cmdInfo.args[ARGS_ASCENDCL] = "A";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_ASCENDCL));
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "on";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
+
+    // check arg range
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+
+    cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "A";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "111";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "1";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+
+    // check args is number
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgsIsNumber(cmdInfo, ARGS_EXPORT_ITERATION_ID));
+    cmdInfo.args[ARGS_EXPORT_ITERATION_ID] = "a";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgsIsNumber(cmdInfo, ARGS_EXPORT_ITERATION_ID));
+    cmdInfo.args[ARGS_EXPORT_ITERATION_ID] = "1";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgsIsNumber(cmdInfo, ARGS_EXPORT_ITERATION_ID));
+
+    // check analyze rule valid range
+    cmdInfo.args[ARGS_RULE] = nullptr;
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAnalyzeRuleSwitch(cmdInfo));
+    cmdInfo.args[ARGS_RULE] = "on";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAnalyzeRuleSwitch(cmdInfo));
+    cmdInfo.args[ARGS_RULE] = "communication";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAnalyzeRuleSwitch(cmdInfo));
+    cmdInfo.args[ARGS_RULE] = "communication,communication_matrix";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAnalyzeRuleSwitch(cmdInfo));
+
+    // params switch valid
+    cmdInfo.args[ARGS_IO_PROFILING] = "1";
+    cmdInfo.args[ARGS_MODEL_EXECUTION] = "1";
+    cmdInfo.args[ARGS_RUNTIME_API] = "1";
+    cmdInfo.args[ARGS_TASK_TSFW] = "1";
+    cmdInfo.args[ARGS_AI_CORE] = "1";
+    cmdInfo.args[ARGS_AIV] = "1";
+    cmdInfo.args[ARGS_CPU_PROFILING] = "1";
+    cmdInfo.args[ARGS_SYS_PROFILING] = "1";
+    cmdInfo.args[ARGS_PID_PROFILING] = "1";
+    cmdInfo.args[ARGS_HARDWARE_MEM] = "1";
+    cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "1";
+    cmdInfo.args[ARGS_DVPP_PROFILING] = "1";
+    cmdInfo.args[ARGS_L2_PROFILING] = "1";
+    cmdInfo.args[ARGS_AICPU] = "1";
+    cmdInfo.args[ARGS_TASK_BLOCK] = "1";
+    cmdInfo.args[ARGS_SYS_LOW_POWER] = "1";
+    cmdInfo.args[ARGS_DVPP_FREQ] = "1";
+    cmdInfo.args[ARGS_IO_SAMPLING_FREQ] = "1";
+    cmdInfo.args[ARGS_PID_SAMPLING_FREQ] = "1";
+    cmdInfo.args[ARGS_SYS_SAMPLING_FREQ] = "1";
+    cmdInfo.args[ARGS_CPU_SAMPLING_FREQ] = "1";
+    cmdInfo.args[ARGS_HCCL] = "1";
+    cmdInfo.args[ARGS_INSTR_PROFILING] = "1";
+    cmdInfo.args[ARGS_PARSE] = "1";
+    cmdInfo.args[ARGS_QUERY] = "1";
+    cmdInfo.args[ARGS_EXPORT] = "1";
+    cmdInfo.args[ARGS_ANALYZE] = "1";
+    cmdInfo.args[ARGS_CLEAR] = "1";
+    cmdInfo.args[ARGS_TASK_MEMORY] = "on";
+    parser.ParamsSwitchValid(cmdInfo, ARGS_TASK_MEMORY);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_IO_PROFILING);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_MODEL_EXECUTION);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_RUNTIME_API);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_TASK_TSFW);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_AI_CORE);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_AIV);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_CPU_PROFILING);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_SYS_PROFILING);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_PID_PROFILING);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_HARDWARE_MEM);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_HCCL);
+    parser.ParamsSwitchValid(cmdInfo, ARGS_INSTR_PROFILING);
+    parser.ParamsSwitchValid(cmdInfo, 111);
+    parser.ParamsSwitchValid2(cmdInfo, 111);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_INTERCONNECTION_PROFILING);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_DVPP_PROFILING);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_L2_PROFILING);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_AICPU);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_TASK_BLOCK);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_SYS_LOW_POWER);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_PARSE);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_QUERY);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_EXPORT);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_ANALYZE);
+    parser.ParamsSwitchValid2(cmdInfo, ARGS_CLEAR);
 }
 
 TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform) {

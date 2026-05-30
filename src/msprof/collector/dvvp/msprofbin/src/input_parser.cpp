@@ -1502,7 +1502,15 @@ int32_t InputParser::MsprofFreqCheckValid(const struct MsprofCmdInfo &cmdInfo, i
         case ARGS_AIC_FREQ:
         case ARGS_AIV_FREQ:
         case ARGS_IO_SAMPLING_FREQ:
+            // 1 - 100
+            ret = CheckArgRange(cmdInfo, opt, 1, 100); // 100 : max length
+            break;
         case ARGS_DVPP_FREQ:
+            if (!Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP) &&
+                !Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP_EX)) {
+                CmdLog::CmdWarningLog("The argument: dvpp-freq is useless on this platform.");
+                return ret;
+            }
             // 1 - 100
             ret = CheckArgRange(cmdInfo, opt, 1, 100); // 100 : max length
             break;
@@ -1774,6 +1782,10 @@ void ArgsManager::AddSysArgs()
 
 void ArgsManager::AddDvvpArgs()
 {
+    if (!Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP) &&
+        !Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_DVPP_EX)) {
+        return;
+    }
     Args dvpp = {"dvpp-profiling",
         "DVPP acquisition switch, the default value is off.",
         OFF};
