@@ -292,6 +292,7 @@ target_link_options(profinj PRIVATE
 )
 
 target_link_libraries(profinj PRIVATE
+    $<BUILD_INTERFACE:intf_pub_cxx17>
     $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:adump_headers>
