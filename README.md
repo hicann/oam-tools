@@ -103,7 +103,7 @@ rm -rf build_out/ build/
 
 ### 功能运行示例
 
-完成[安装](#-安装)后，工具会被释放到 CANN 安装目录下的 `tools/` 子目录（root 用户默认在 `/usr/local/Ascend/cann/${arch}-linux/tools/`，`${arch}` 取值见 [docs/quick_install.md](docs/quick_install.md)）。运行示例前请先加载环境变量：
+完成[安装](#-安装)后，工具会被释放到 CANN 安装目录下的 `tools/` 子目录（root 用户默认在 `/usr/local/Ascend/cann/tools/`）。运行示例前请先加载环境变量：
 
 ```bash
 source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
@@ -117,13 +117,13 @@ source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
 
 ```bash
 # 形式一：显式 python3 调用 .py
-python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys.py -h
+python3 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys.py -h
 
 # 形式二：直接调用软链接 asys（asys.py 自带 #!/usr/bin/env python3 shebang）
-${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys -h
+${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys -h
 ```
 
-asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。下面以软链接形式给出常用调用，把命令前缀简记为 `<asys_bin>`（即 `${ASCEND_INSTALL_PATH}/${arch}-linux/tools/ascend_system_advisor/asys/asys`）：
+asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。下面以软链接形式给出常用调用，把命令前缀简记为 `<asys_bin>`（即 `${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys`）：
 
 ```bash
 # 采集主机与 device 的软硬件信息（不依赖待诊断任务，通常作为环境自检）
@@ -140,20 +140,20 @@ asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定
 
 #### msaicerr（AI Core Error 分析）
 
-msaicerr 入口为 `src/msaicerr/msaicerr.py`，安装后位于 `${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py`。
+msaicerr 入口为 `src/msaicerr/msaicerr.py`，安装后位于 `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`。
 
 ```bash
 # 1) 解析一个已有的 AI Core Error 报告路径，结果输出到 <output_dir>
-python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
 
 # 2) 解析单个 dump 文件（dtype 取值参见 -h 输出）
-python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
 
 # 3) 检测当前环境是否具备运行 msaicerr 所需的条件（仅依赖 device 编号）
-python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -e -dev 0
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -e -dev 0
 
 # 完整参数说明
-python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -h
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -h
 ```
 
 #### msprof（性能调优）
