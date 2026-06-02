@@ -159,13 +159,12 @@ python3 ${ASCEND_INSTALL_PATH}/${arch}-linux/tools/msaicerr/msaicerr.py -h
 
 #### msprof（性能调优）
 
-msprof 由 C++ 侧 collector（`basic`、`dvvp`）和 `msprof_analyze` Python wheel 组成。`bash build.sh` 完成后，wheel 会出现在 `build_out/`（具体文件名形如 `msprof_analyze-<version>-<py_tag>-<arch>.whl`）。
+msprof 由 C++ 侧 collector（`basic`、`dvvp`）和 `msprof` Python wheel（分析脚本）组成。`bash build.sh` 完成后，wheel（`msprof-0.0.1-py3-none-any.whl`）会被拷贝到 `src/msprof/collector/dvvp/msprofbin/` 并打包进 `.run` 安装包；安装时自动解包到 `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/` 目录下，无需手动 `pip install`。
+
+分析脚本由 msprof collector 流水线内部调用（入口为 `profiler_tool/analysis/msprof/msprof.py`），不会在 `PATH` 中注册独立的命令行命令。如需手动运行分析脚本，可直接以 python3 调用安装目录下的入口：
 
 ```bash
-# 安装 wheel 后即可在 PATH 中使用 msprof_analyze 命令
-pip3 install build_out/msprof_analyze-*.whl
-
-msprof_analyze -h
+python3 ${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/analysis/msprof/msprof.py -h
 ```
 
 C++ 侧 collector 一般作为 CANN profiler 流水线的内置组件被调用，开发者无需直接执行；回归通过 `bash build.sh -u --component msprof` 运行 gtest 用例（产物 `build/test/ut/msprof/msprofbin/msprof_bin_utest`）。
