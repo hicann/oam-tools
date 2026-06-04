@@ -276,12 +276,12 @@ int32_t InputParser::ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo)
 
 int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
 {
+    const std::string ntsMetrics = cmdInfo.args[ARGS_NTS_METRICS] == nullptr ? "" : cmdInfo.args[ARGS_NTS_METRICS];
     if (ConfigManager::instance()->GetPlatformType() != PlatformType::CHIP_MDC_V2) {
-        CmdLog::CmdErrorLog("Argument [nts-metrics] is not supported on current platform.");
+        CmdLog::CmdErrorLog("Argument --nts-metrics %s is not supported on current platform.", ntsMetrics.c_str());
         return MSPROF_DAEMON_ERROR;
     }
 
-    const std::string ntsMetrics = cmdInfo.args[ARGS_NTS_METRICS] == nullptr ? "" : cmdInfo.args[ARGS_NTS_METRICS];
     if (ntsMetrics == NTS_PIPE_UTILIZATION) {
         params_->ntsMetrics = ntsMetrics;
         // PipeUtilization is expanded to platform-specific PMU events in RunningMode.
@@ -289,19 +289,21 @@ int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
         return MSPROF_DAEMON_OK;
     }
     if (ntsMetrics.compare(0, NTS_CUSTOM_PREFIX.size(), NTS_CUSTOM_PREFIX) != 0) {
-        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. The nts-metrics only supports PipeUtilization or "
-            "Custom:<event-list>.");
+        CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. Only PipeUtilization or Custom:<event-list> "
+            "is supported.", ntsMetrics.c_str());
         return MSPROF_DAEMON_ERROR;
     }
 
     const std::string eventList = ntsMetrics.substr(NTS_CUSTOM_PREFIX.size());
     if (eventList.empty()) {
-        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Custom event list is empty.");
+        CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. Custom event list is empty.",
+            ntsMetrics.c_str());
         return MSPROF_DAEMON_ERROR;
     }
     std::vector<std::string> events = Utils::Split(eventList, false, "", ",");
     if (events.size() > NTS_EVENT_MAX_NUM) {
-        CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. The number of Custom events exceeds 10.");
+        CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. The number of custom events should be in "
+            "the range of [1, 10].", ntsMetrics.c_str());
         return MSPROF_DAEMON_ERROR;
     }
 
@@ -310,13 +312,12 @@ int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
         uint64_t eventValue = 0;
         const std::string trimmedEvent = Utils::Trim(event);
         if (!ParseNtsEvent(trimmedEvent, eventValue)) {
-            CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Event [%s] is not a hexadecimal or decimal "
-                "integer.",
-                trimmedEvent.c_str());
+            CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. Hexadecimal or decimal parameters are "
+                "allowed in custom mode.", trimmedEvent.c_str());
             return MSPROF_DAEMON_ERROR;
         }
         if (eventValue < NTS_EVENT_MIN || eventValue > NTS_EVENT_MAX) {
-            CmdLog::CmdErrorLog("Argument [nts-metrics] is invalid. Event [%s] is out of range [0x0, 0x71b].",
+            CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. The event is out of range [0x0, 0x71b].",
                 trimmedEvent.c_str());
             return MSPROF_DAEMON_ERROR;
         }
