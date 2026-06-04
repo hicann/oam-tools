@@ -31,7 +31,7 @@ from conftest import (
 
 from ms_interface.constant import Constant
 from ms_interface import utils
-from ms_interface.collection import Collection
+from ms_interface.collection import Collection, is_sub_path
 
 
 class TestUtilsMethods(CommonAssert):
@@ -484,6 +484,10 @@ class TestUtilsMethods(CommonAssert):
             bool(list(output_path.rglob(f'{kernel_name}.json'))), True)
         self.assertEqual(
             bool(list(output_path.rglob(f'{kernel_name}.cce'))), True)
+
+    def test_kernel_file_same_prefix_is_not_sub_path(self):
+        self.assertEqual(is_sub_path('/tmp/input_extra/kernel.o', '/tmp/input'), False)
+        self.assertEqual(is_sub_path('/tmp/input/kernel.o', '/tmp/input'), True)
 
     def test_collect_kernel_file_no_json(self):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"

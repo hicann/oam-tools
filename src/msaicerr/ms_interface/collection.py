@@ -21,6 +21,15 @@ from ms_interface import utils
 from ms_interface.constant import Constant
 
 
+def is_sub_path(path, parent_path):
+    path = os.path.realpath(path)
+    parent_path = os.path.realpath(parent_path)
+    try:
+        return os.path.commonpath([path, parent_path]) == parent_path
+    except ValueError:
+        return False
+
+
 class Collection:
     def __init__(self: any, report_path: str, output_path: str) -> None:
         self.report_path = os.path.realpath(report_path)
@@ -197,8 +206,7 @@ class Collection:
 
         original_files = []
         for kernel_file in list(set(kernel_file_list)):
-            if (os.path.exists(kernel_file) and
-                    os.path.abspath(kernel_file).startswith(os.path.abspath(self.report_path))):
+            if os.path.exists(kernel_file) and is_sub_path(kernel_file, self.report_path):
                 original_files.append(kernel_file)
 
         exist_op_kernel = any(
