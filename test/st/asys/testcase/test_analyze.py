@@ -429,6 +429,23 @@ class TestAnalyze(AssertTest):
         reg_info = q_reg_info.get()
         self.assertTrue(reg_info == {'Thread 1 (21240)': {'#00': ['0x7ffeef83dc20', '0x7ffeef83dcf0', '0x0']}})
 
+    def test_asys_analyze_coredump_gdb_cmd_uses_argv(self, mocker):
+        captured = {}
+
+        def fake_popen(cmd, *args, **kwargs):
+            captured["cmd"] = cmd
+            captured["kwargs"] = kwargs
+            return PopenMock()
+
+        mocker.patch("subprocess.Popen", side_effect=fake_popen)
+        exe_file = "/tmp/app;touch injected"
+        core_file = "/tmp/core $(id)"
+        obj = CoreDump(exe_file, core_file, "", "")
+        obj.start_gdb("")
+
+        self.assertTrue(captured["cmd"] == ["gdb", exe_file, core_file])
+        self.assertTrue("shell" not in captured["kwargs"])
+
     def test_asys_analyze_coredump_threads(self, mocker, capsys):
         mocker.patch("analyze.coredump_analyze.machine", return_value="x86_64")
         mocker.patch("params.param_dict.ParamDict.get_arg", return_value=0)

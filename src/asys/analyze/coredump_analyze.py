@@ -44,7 +44,7 @@ def thread_stacks_reg_info(cmd, thread, stacks, queue_reg_info):
     """
     thread_id = thread.split(" ")[1]
     gdb_process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   bufsize=1, encoding='utf-8', errors='ignore', text=True, shell=True)
+                                   bufsize=1, encoding='utf-8', errors='ignore', text=True)
     _reg_info = {thread: dict()}
     gdb_process.stdin.write(f"thread {thread_id}\n")
 
@@ -105,6 +105,10 @@ class CoreDump:
         if not (is_hexadecimal(data_list[0]) and is_hexadecimal(data_list[1]) and is_hexadecimal(data_list[2])):
             return False
         return True
+
+    @staticmethod
+    def _get_gdb_cmd(exe_file, core_file):
+        return ["gdb", exe_file, core_file]
 
     def collect_info(self, thread_name, data_list, line, before_line):
         """
@@ -197,7 +201,7 @@ class CoreDump:
 
     def _get_reg_info_level_stack(self):
         queue_reg_info = Manager().Queue()
-        cmd = f'gdb {self.exe_file} {self.core_file}'
+        cmd = self._get_gdb_cmd(self.exe_file, self.core_file)
         p = Pool(cpu_count() - 1)
         for thread, stacks in self.bt_info.items():
             p.apply_async(thread_stacks_reg_info, args=(cmd, thread, stacks, queue_reg_info))
@@ -211,9 +215,9 @@ class CoreDump:
         return threads_stacks_reg_info
 
     def _get_reg_info_level_thread(self):
-        gdb_process = subprocess.Popen(f'gdb {self.exe_file} {self.core_file}',
+        gdb_process = subprocess.Popen(self._get_gdb_cmd(self.exe_file, self.core_file),
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                       encoding='utf-8', errors='ignore', text=True, bufsize=1, shell=True)
+                                       encoding='utf-8', errors='ignore', text=True, bufsize=1)
         _reg_info = dict()
         reg_cmd = _get_reg_info_cmd()
         if not reg_cmd:
@@ -256,9 +260,13 @@ class CoreDump:
             return {}
 
     def start_gdb(self, stack_txt):
-        gdb_process = subprocess.Popen(f'gdb {self.exe_file} {self.core_file}',
-                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                       encoding='utf-8', errors='ignore', text=True, shell=True)
+        try:
+            gdb_process = subprocess.Popen(self._get_gdb_cmd(self.exe_file, self.core_file),
+                                           stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                           encoding='utf-8', errors='ignore', text=True)
+        except FileNotFoundError:
+            log_error("Failed to obtain the core dump information.")
+            return stack_txt, 0
         gdb_process.stdin.write("info inferiors\n")
         gdb_process.stdin.write("info sharedlibrary\n")
         gdb_process.stdin.write(f"thread apply all bt {GDB_LAYER_MAX}\n")
