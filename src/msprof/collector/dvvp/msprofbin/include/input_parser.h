@@ -231,6 +231,7 @@ private:
     int32_t CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
     int32_t CheckNpuEventsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo);
+    int32_t CheckNtsCustomMetricsValid(const std::string &ntsMetrics);
     int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo &cmdInfo) const;
     int32_t CheckAiCoreMetricsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     std::string GeneratePrompts() const;

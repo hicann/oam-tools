@@ -282,6 +282,11 @@ int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
         return MSPROF_DAEMON_ERROR;
     }
 
+    if (ntsMetrics.empty()) {
+        CmdLog::CmdErrorLog("Argument --nts-metrics is empty. Please input in the range of PipeUtilization or "
+            "Custom:<event-list>.");
+        return MSPROF_DAEMON_ERROR;
+    }
     if (ntsMetrics == NTS_PIPE_UTILIZATION) {
         params_->ntsMetrics = ntsMetrics;
         // PipeUtilization is expanded to platform-specific PMU events in RunningMode.
@@ -293,7 +298,11 @@ int32_t InputParser::CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo)
             "is supported.", ntsMetrics.c_str());
         return MSPROF_DAEMON_ERROR;
     }
+    return CheckNtsCustomMetricsValid(ntsMetrics);
+}
 
+int32_t InputParser::CheckNtsCustomMetricsValid(const std::string &ntsMetrics)
+{
     const std::string eventList = ntsMetrics.substr(NTS_CUSTOM_PREFIX.size());
     if (eventList.empty()) {
         CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. Custom event list is empty.",

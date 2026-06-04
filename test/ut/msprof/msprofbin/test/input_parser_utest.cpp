@@ -477,6 +477,11 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectInvalidValues) {
     InputParser invalidNameParser = InputParser();
     EXPECT_EQ(nullptr, invalidNameParser.MsprofGetOpts(MSPROF_APP_ARGC, invalidNameArgv));
 
+    const char *emptyArgv[] = {"msprof", "--nts-metrics=", "python3", "test.py", nullptr};
+    optind = 1;
+    InputParser emptyParser = InputParser();
+    EXPECT_EQ(nullptr, emptyParser.MsprofGetOpts(MSPROF_APP_ARGC, emptyArgv));
+
     const char *emptyCustomArgv[] = {"msprof", "--nts-metrics=Custom:", "python3", "test.py", nullptr};
     optind = 1;
     InputParser emptyCustomParser = InputParser();
