@@ -73,6 +73,15 @@ def check_device_valid(device_id):
     return True
 
 
+def is_sub_path(path, parent_path):
+    path = os.path.realpath(path)
+    parent_path = os.path.realpath(parent_path)
+    try:
+        return os.path.commonpath([path, parent_path]) == parent_path
+    except ValueError:
+        return False
+
+
 def analyse_report_path(args):
     if not check_device_valid(args.device_id):
         return Constant.MS_AICERR_INVALID_PARAM_ERROR
@@ -83,7 +92,7 @@ def analyse_report_path(args):
     try:
         current_path = os.getcwd()
         input_path = os.path.abspath(args.report_path)
-        if current_path.find(input_path) >= 0 or os.path.abspath(args.output_path).find(input_path) >= 0:
+        if is_sub_path(current_path, input_path) or is_sub_path(args.output_path, input_path):
             utils.print_error_log("Do not run msaicerr in the directory specified by -p or its subdirectory." \
                         " Make sure -out specifies a different directory (including its subdirectory) from -p.")
             return Constant.MS_AICERR_INVALID_PATH_ERROR

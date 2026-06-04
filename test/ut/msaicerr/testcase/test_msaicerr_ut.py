@@ -128,6 +128,10 @@ class TestUtilsMethods(CommonAssert):
         error_code = msaicerr.main()
         self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PATH_ERROR)
 
+    def test_path_with_same_prefix_is_not_sub_path(self):
+        self.assertEqual(msaicerr.is_sub_path('/tmp/report_output', '/tmp/report'), False)
+        self.assertEqual(msaicerr.is_sub_path('/tmp/report/output', '/tmp/report'), True)
+
     def test_environment_invalid(self, mocker):
         args = ['msaicerr.py', '-p', ASYS_OUTPUT]
         os.environ['ASCEND_OPP_PATH'] = ''
