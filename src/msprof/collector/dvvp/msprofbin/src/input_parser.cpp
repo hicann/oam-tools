@@ -345,7 +345,10 @@ int32_t InputParser::ParamsCheck() const
         return MSPROF_DAEMON_ERROR;
     }
 
-    if (params_->taskBlock == "on" && params_->taskBlockShink == "off" && params_->opType.empty()) {
+    if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE) &&
+        params_->taskBlock == "on" && 
+        params_->taskBlockShink == "off" && 
+        params_->opType.empty()) {
         CmdLog::CmdErrorLog("Argument --task-block: when set to 'all', --optype must not be empty.");
         return MSPROF_DAEMON_ERROR;
     }

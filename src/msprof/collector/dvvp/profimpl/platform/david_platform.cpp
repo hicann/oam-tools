@@ -60,7 +60,6 @@ DavidPlatform::DavidPlatform()
         PLATFORM_TASK_CCU_STATISTIC,
         PLATFORM_TASK_INSTR_PROFILING,
         PLATFORM_TASK_PC_SAMPLING,
-        PLATFORM_TASK_SCALE,
         // Device
         PLATFORM_SYS_DEVICE_UB,
         PLATFORM_SYS_DEVICE_US,

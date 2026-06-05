@@ -48,7 +48,6 @@ CloudV2Platform::CloudV2Platform()
         PLATFORM_TASK_AICPU,
         PLATFORM_TASK_DYNAMIC,
         PLATFORM_TASK_DELAY_DURATION,
-        PLATFORM_TASK_SCALE,
         // PMU
         PLATFORM_TASK_AU_PMU,
         PLATFORM_TASK_PU_PMU,
