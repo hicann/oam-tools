@@ -126,6 +126,7 @@ add_executable(msprof_bin_utest
     test/prof_task_utest.cpp
     test/prof_device_transport_utest.cpp
     test/info_json_utest.cpp
+    test/msopprof_manager_utest.cpp
     #test/running_mode_utest.cpp
     test/adx_prof_api_utest.cpp
     ../stub/drv_stub.cpp

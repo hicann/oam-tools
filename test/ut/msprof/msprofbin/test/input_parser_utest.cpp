@@ -1183,4 +1183,99 @@ TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckCmdOpTypeIsValid(cmdInfo));
     EXPECT_EQ("Add,MatMul,Softmax", parser.params_->opType);
 }
+
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAndmstxDomainExcludeAndMstxAllSet)
+{
+    InputParser parser = InputParser();
+    parser.params_->msproftx = "on";
+    parser.params_->mstxDomainInclude = "a";
+    parser.params_->mstxDomainExclude = "a";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmstxDomainExcludeNotSet)
+{
+    InputParser parser = InputParser();
+    parser.params_->msproftx = "on";
+    parser.params_->mstxDomainInclude = "";
+    parser.params_->mstxDomainExclude = "";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSet)
+{
+    InputParser parser = InputParser();
+    parser.params_->msproftx = "on";
+    parser.params_->mstxDomainInclude = "a";
+    parser.params_->mstxDomainExclude = "";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
+
+    parser.params_->mstxDomainInclude = "";
+    parser.params_->mstxDomainExclude = "a";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSetAndMstxOff)
+{
+    InputParser parser = InputParser();
+    parser.params_->msproftx = "off";
+    parser.params_->mstxDomainInclude = "a";
+    parser.params_->mstxDomainExclude = "";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
+
+    parser.params_->mstxDomainInclude = "";
+    parser.params_->mstxDomainExclude = "a";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeBothNotSetAndMstxOff)
+{
+    InputParser parser = InputParser();
+    parser.params_->msproftx = "off";
+    parser.params_->mstxDomainInclude = "";
+    parser.params_->mstxDomainExclude = "";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid)
+{
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+    cmdInfo.args[ARGS_EXPORT_TYPE] = "invalid_export_type";
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckExportType(cmdInfo));
+
+    cmdInfo.args[ARGS_EXPORT_TYPE] = nullptr;
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckExportType(cmdInfo));
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid)
+{
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+    cmdInfo.args[ARGS_EXPORT_TYPE] = "text";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckExportType(cmdInfo));
+    EXPECT_STREQ("text", parser.params_->exportType.c_str());
+
+    cmdInfo.args[ARGS_EXPORT_TYPE] = "db";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckExportType(cmdInfo));
+    EXPECT_STREQ("db", parser.params_->exportType.c_str());
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnErrorWhenReportsInvalid)
+{
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+    cmdInfo.args[ARGS_REPORTS] = nullptr;
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckReports(cmdInfo));
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
+{
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+    cmdInfo.args[ARGS_REPORTS] = "xx";
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckReports(cmdInfo));
+    EXPECT_STREQ("xx", parser.params_->reportsPath.c_str());
+}
+
 } // namespace
