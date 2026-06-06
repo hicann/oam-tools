@@ -397,7 +397,10 @@ main() {
         if [[ "$RUN_ST_ONLY" == "on" ]]; then
             run_tests_args+=("--st")
         fi
-        
+        if [[ "$ENABLE_COVERAGE" == "on" ]]; then
+            run_tests_args+=("--cov")
+        fi
+
         bash "${BASEPATH}/scripts/run_tests.sh" "${run_tests_args[@]}"
         if [ $? -ne 0 ]; then
             echo "Execute run_tests.sh failed."

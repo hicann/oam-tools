@@ -59,6 +59,7 @@ parse_args() {
     COMPONENT="all"
     RUN_UT=false
     RUN_ST=false
+    RUN_COV=false
 
     if [[ $# -eq 0 ]]; then
         RUN_UT=true
@@ -67,7 +68,7 @@ parse_args() {
     fi
 
     local parsed_args
-    parsed_args=$(getopt -a -o h -l help,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o h -l help,component:,ut,st,cov -- "$@") || {
         print_usage
         exit 1
     }
@@ -90,6 +91,10 @@ parse_args() {
                 ;;
             --st)
                 RUN_ST=true
+                shift
+                ;;
+            --cov)
+                RUN_COV=true
                 shift
                 ;;
             --)
@@ -349,6 +354,43 @@ run_pytest_plain() {
     echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
 }
 
+# Collect C++ gcov coverage for a gtest case (e.g. msprof_ut).
+# $1 case_name (used for *_cov / *_html dir naming, aligned with pytest cases)
+# $2 capture_dir: build subdir holding .gcno/.gcda (the UT build tree)
+# $3 extract_pattern: lcov path glob to keep (e.g. '*/src/msprof/*')
+# $4 output_file: test log to append the coverage summary to
+collect_gcov_coverage() {
+    local case_name="$1"
+    local capture_dir="$2"
+    local extract_pattern="$3"
+    local output_file="$4"
+    local cov_dir="${BUILD_OUTPUT_DIR}/${case_name}_cov"
+    local html_dir="${BUILD_OUTPUT_DIR}/${case_name}_html"
+    # lcov/geninfo and genhtml accept different --ignore-errors categories
+    # (e.g. gcov/mismatch are capture-only), so keep two separate lists.
+    local ign="--ignore-errors=mismatch,gcov,source,negative,unused,empty,inconsistent"
+    local html_ign="--ignore-errors=source,inconsistent,unmapped,category,corrupt"
+
+    mkdir -p "${cov_dir}"
+
+    # baseline (zero counts for every instrumented file) so files that no test
+    # exercised still count toward the denominator, like coverage.py --source.
+    lcov -c -i -d "${capture_dir}" -o "${cov_dir}/base.info" ${ign} >> "${output_file}" 2>&1
+    lcov -c -d "${capture_dir}" -o "${cov_dir}/run.info" ${ign} >> "${output_file}" 2>&1
+    lcov -a "${cov_dir}/base.info" -a "${cov_dir}/run.info" \
+        -o "${cov_dir}/total.info" ${ign} >> "${output_file}" 2>&1
+    lcov --extract "${cov_dir}/total.info" "${extract_pattern}" \
+        -o "${cov_dir}/coverage.info" ${ign} >> "${output_file}" 2>&1
+
+    genhtml "${cov_dir}/coverage.info" -o "${html_dir}" ${html_ign} >> "${output_file}" 2>&1
+
+    local cov_ratio="N/A"
+    cov_ratio=$(lcov --summary "${cov_dir}/coverage.info" ${ign} 2>&1 \
+        | grep -E "lines\.+:" | head -1 | grep -oE "[0-9]+\.[0-9]+%" | head -1 | sed 's/%//')
+    cov_ratio=${cov_ratio:-N/A}
+    echo "${case_name}: gcov parsed: Cov=${cov_ratio}%"
+}
+
 run_test_case() {
     local case_name="$1"
     local framework="${TEST_CASES[$case_name]}"
@@ -377,6 +419,11 @@ run_test_case() {
             if [[ -f "./build/test/ut/msprof/msprofbin/msprof_bin_utest" ]]; then
                 "./build/test/ut/msprof/msprofbin/msprof_bin_utest" > "${output_file}" 2>&1
                 echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+                if [[ "${RUN_COV}" == "true" ]]; then
+                    collect_gcov_coverage "${case_name}" \
+                        "${BUILD_OUTPUT_DIR}/test/ut/msprof" \
+                        '*/src/msprof/*' "${output_file}"
+                fi
             else
                 echo "ERROR: msprof_utest binary not found at ./build/test/ut/msprof/msprofbin/msprof_bin_utest"
                 echo "1" > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
