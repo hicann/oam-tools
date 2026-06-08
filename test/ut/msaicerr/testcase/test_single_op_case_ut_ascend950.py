@@ -54,7 +54,7 @@ class TestUtilsMethods():
                                                                          os.path.join(cur_abspath, "../res/ori_data/collect_milan/collection/DirtyCustom_ab1b6750d7f510985325b603cb06dc8b.json")])
         mocker.patch.object(AscendOpKernelRunner, 'run', return_value=None)
         mocker.patch.object(AscendOpKernelRunner, 'run')
-        mocker.patch("os.path.exists", retrun_value=True)
+        mocker.patch("os.path.exists", return_value=True)
         res = run_dirty_ub(config_file, "Ascend950", 0)
         assert res
 
@@ -98,7 +98,7 @@ class TestUtilsMethods():
                                                                          os.path.join(cur_abspath, "../res/ori_data/collect_milan/collection/DirtyCustom_ab1b6750d7f510985325b603cb06dc8b.json")])
         mocker.patch.object(AscendOpKernelRunner, 'run', return_value=None)
         mocker.patch.object(AscendOpKernelRunner, 'run')
-        mocker.patch("os.path.exists", retrun_value=True)
+        mocker.patch("os.path.exists", return_value=True)
         handler = Ascend950Handler()
         res = handler.run_dirty_ub(config_file, "Ascend910B1", 0)
         assert res
