@@ -14,7 +14,7 @@
 |  安装方式  |  使用说明  |  使用场景  |
 | ----- | ------ | ------ |
 |  WebIDE  | 一站式开发平台，提供在线直接运行的昇腾环境，无需手动安装。<br>当前可提供单机算力，**默认安装最新商发版CANN包**。 | 适用于没有昇腾设备的开发者。|
-|  Docker  | Docker镜像是一种高效部署方式，已预集成CANN包和必备依赖。<br>当前仅适用于Atlas A2系列产品，OS仅支持Ubuntu操作系统。**默认安装最新商发版CANN包**。 |适用有昇腾设备，需要快速搭建环境的开发者。|
+|  Docker  | Docker镜像是一种高效部署方式，已预集成CANN包和必备依赖。<br>当前仅适用于Atlas A2系列产品，OS仅支持Ubuntu操作系统。**默认安装最新商发版CANN包**。 | 需要快速搭建环境的开发者，有无昇腾设备均可|
 |  手动安装  | 按照本文中[方式3：手动安装](#section_manual_install)进行环境准备 |适用有昇腾设备，想体验手动安装CANN包或体验最新master分支能力的开发者。|
 
 ### 方式1：WebIDE环境
@@ -45,7 +45,7 @@
 
 ### 方式2：Docker部署
 
-对于不依赖昇腾设备的开发者，若您想快速搭建昇腾环境，可使用Docker镜像部署。
+若您想快速搭建昇腾环境，可使用Docker镜像部署。
 
 > **说明**：镜像文件比较大，下载需要一定时间，请您耐心等待。关于docker命令的选项介绍可通过`docker --help`查询。
 
@@ -64,9 +64,48 @@
 2.**运行Docker**
 拉取镜像后，需要以特定参数启动容器。
 
+**场景1：需要运行样例（需要访问NPU设备）**
+
+如果需要运行样例或测试，容器需要访问宿主机的NPU设备。以Atlas A2系列产品为例：
+
+```bash
+docker run \
+    --name  oam-tools \
+    --device /dev/davinci0 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
+    -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10 bash
+```
+
+| 参数 | 说明 | 注意事项 |
+| :--- | :--- | :--- |
+| `--name oam-tools` | 为容器指定名称，便于管理。 | 可自定义。 |
+| `--device=/dev/davinci0` | 挂载第 0 张 NPU 设备节点。 | 若有多张卡，需逐个添加（如 `--device=/dev/davinci1`）。 |
+| `--device=/dev/davinci_manager` | 挂载设备管理接口。 | 必须挂载。 |
+| `--device=/dev/devmm_svm` | 挂载设备内存管理模块。 | 必须挂载。 |
+| `--device=/dev/hisi_hdc` | 挂载 HDC 通信通道。 | 必须挂载。 |
+| `-v /usr/local/dcmi:/usr/local/dcmi` | 挂载DCMI（Device Communication Management Interface）目录。 | 必选（运行样例时）。 |
+| `-v /usr/local/bin/npu-smi:...` | 挂载NPU监控工具，用于查看NPU状态。 | 必选（运行样例时）。 |
+| `-v /usr/local/Ascend/driver/...` | 挂载NPU驱动库和版本信息。 | 必选（运行样例时）。 |
+| `-v /etc/ascend_install.info:...` | 挂载昇腾软件安装信息。 | 必选（运行样例时）。 |
+| `-it` | `-i`（交互式）和 `-t`（分配伪终端）的组合参数。 | - |
+| `swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10` | 指定要运行的Docker镜像。 |请确保此镜像名和标签（tag）与你通过`docker pull`拉取的镜像完全一致。 |
+| `bash` | 容器启动后立即执行的命令。 | - |
+
+**场景2：仅编译构建（不需要运行样例）**
+
+如果只需要进行代码编译构建，无需访问NPU设备，使用以下简化命令：
+
 ```bash
 docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10 bash
 ```
+
 | 参数 | 说明 | 注意事项 |
 | :--- | :--- | :--- |
 | `--name oam-tools` | 为容器指定名称，便于管理。 | 可自定义。 |
