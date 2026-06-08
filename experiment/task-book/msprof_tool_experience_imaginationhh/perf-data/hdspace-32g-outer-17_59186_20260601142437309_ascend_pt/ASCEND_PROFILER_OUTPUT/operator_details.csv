@@ -1,0 +1,1716 @@
+Name,Input Shapes,Call Stack,Host Self Duration(us),Host Total Duration(us),Device Self Duration(us),Device Total Duration(us),Device Self Duration With AICore(us),Device Total Duration With AICore(us)
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",56.31,320.0,0,6.7,0,6.7
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",37.76,121.22,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",45.98,83.46,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",37.48,37.48,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",57.0,142.47,0,6.7,0,6.7
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.31,34.31,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",51.16,51.16,6.7,6.7,6.7,6.7
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.64,126.39,0,2.7,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.49,34.49,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.26,43.26,2.7,2.7,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.69,253.8,0,7.1,0,7.1
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.46,93.12,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.74,60.66,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.92,30.92,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",50.33,123.99,0,7.1,0,7.1
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.99,31.99,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.67,41.67,7.1,7.1,7.1,7.1
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",53.38,129.88,0,2.44,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.08,35.08,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.42,41.42,2.44,2.44,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.17,251.61,0,6.82,0,6.82
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.6,91.95,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.1,62.35,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.25,31.25,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.1,123.49,0,6.82,0,6.82
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.31,31.31,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.08,43.08,6.82,6.82,6.82,6.82
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",53.76,123.85,0,2.76,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.87,31.87,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",38.22,38.22,2.76,2.76,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",38.37,253.18,0,7.12,0,7.12
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.81,90.69,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.3,58.88,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.58,29.58,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.42,124.12,0,7.12,0,7.12
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.67,30.67,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",44.03,44.03,7.12,7.12,7.12,7.12
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.92,273.96,0,6.86,0,6.86
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.16,96.39,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.72,64.23,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.51,32.51,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",52.93,129.65,0,6.86,0,6.86
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.44,33.44,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.28,43.28,6.86,6.86,6.86,6.86
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",46.98,125.87,0,2.52,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.05,35.05,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.84,43.84,2.52,2.52,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.58,258.74,0,6.74,0,6.74
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",37.15,98.57,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.72,61.42,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.7,30.7,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.32,123.59,0,6.74,0,6.74
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.83,32.83,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.44,43.44,6.74,6.74,6.74,6.74
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.06,122.92,0,2.48,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.38,32.38,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.48,41.48,2.48,2.48,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.56,273.29,0,6.66,0,6.66
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.48,113.51,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.75,77.03,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",46.28,46.28,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.23,123.22,0,6.66,0,6.66
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.98,32.98,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.01,41.01,6.66,6.66,6.66,6.66
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",46.55,116.06,0,2.34,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.29,31.29,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",38.22,38.22,2.34,2.34,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.12,281.1,0,6.76,0,6.76
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.45,120.56,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",38.36,91.11,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",52.75,52.75,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",50.61,125.42,0,6.76,0,6.76
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.21,34.21,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.6,40.6,6.76,6.76,6.76,6.76
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",62.08,309.93,0,6.74,0,6.74
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.47,99.04,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.71,66.57,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.86,34.86,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",57.0,148.81,0,6.74,0,6.74
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.28,48.28,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.53,43.53,6.74,6.74,6.74,6.74
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.61,124.13,0,2.3,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.08,35.08,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.44,39.44,2.3,2.3,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",37.89,264.53,0,6.64,0,6.64
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.73,94.02,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.24,63.29,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.05,32.05,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",50.36,132.62,0,6.64,0,6.64
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",42.42,42.42,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.84,39.84,6.64,6.64,6.64,6.64
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.67,120.93,0,2.52,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.2,34.2,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.06,39.06,2.52,2.52,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.38,256.13,0,7.06,0,7.06
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.56,100.9,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.85,71.34,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.49,39.49,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.94,119.85,0,7.06,0,7.06
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.75,32.75,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.16,39.16,7.06,7.06,7.06,7.06
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",46.88,126.88,0,2.46,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.69,33.69,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",46.31,46.31,2.46,2.46,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.93,260.35,0,6.68,0,6.68
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.84,95.5,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.08,64.66,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.58,32.58,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.86,128.92,0,6.68,0,6.68
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.12,40.12,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",38.94,38.94,6.68,6.68,6.68,6.68
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.13,273.73,0,6.8,0,6.8
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.26,96.77,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.03,64.51,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.48,33.48,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",61.7,136.83,0,6.8,0,6.8
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.14,34.14,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.99,40.99,6.8,6.8,6.8,6.8
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.78,131.14,0,2.5,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.33,34.33,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.03,48.03,2.5,2.5,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.85,275.62,0,6.48,0,6.48
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.29,92.91,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.36,61.62,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.26,31.26,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",63.58,145.86,0,6.48,0,6.48
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.97,40.97,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.31,41.31,6.48,6.48,6.48,6.48
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",57.19,136.52,0,2.36,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.11,34.11,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",45.22,45.22,2.36,2.36,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.27,285.97,0,6.96,0,6.96
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.74,125.97,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",62.55,96.23,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.68,33.68,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.73,123.73,0,6.96,0,6.96
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.36,32.36,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.64,41.64,6.96,6.96,6.96,6.96
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",53.94,127.46,0,2.54,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.5,33.5,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.02,40.02,2.54,2.54,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",35.09,250.18,0,6.76,0,6.76
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.4,89.33,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.61,59.93,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.32,30.32,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",53.63,125.76,0,6.76,0,6.76
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.51,31.51,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.62,40.62,6.76,6.76,6.76,6.76
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.38,269.13,0,6.78,0,6.78
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.98,103.15,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",39.38,72.17,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.79,32.79,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",49.84,126.6,0,6.78,0,6.78
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",33.63,33.63,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.13,43.13,6.78,6.78,6.78,6.78
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.81,131.98,0,2.68,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.87,41.87,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.3,41.3,2.68,2.68,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.14,256.62,0,7.04,0,7.04
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.88,90.55,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.12,60.67,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.55,30.55,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",55.89,129.93,0,7.04,0,7.04
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.26,32.26,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.78,41.78,7.04,7.04,7.04,7.04
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.24,120.63,0,2.5,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.03,32.03,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.36,41.36,2.5,2.5,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",43.39,258.92,0,6.74,0,6.74
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.82,90.09,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.86,60.27,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.41,30.41,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.0,125.44,0,6.74,0,6.74
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.15,31.15,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",47.29,47.29,6.74,6.74,6.74,6.74
+aten::gelu,"32,1024;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",45.52,118.86,0,2.72,0,0
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",32.7,32.7,0,0,0,0
+aclnnGelu,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/activation.py(734): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",40.64,40.64,2.72,2.72,0,0
+aten::linear,"32,1024;
+1024,1024;
+1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",34.92,251.86,0,7.06,0,7.06
+aten::t,"1024,1024","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",29.95,97.11,0,0,0,0
+aten::transpose,"1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",36.14,67.16,0,0,0,0
+aten::as_strided,"1024,1024;
+;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",31.02,31.02,0,0,0,0
+aten::addmm,"1024;
+32,1024;
+1024,1024;
+;
+","/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",48.4,119.83,0,7.06,0,7.06
+empty_tensor,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",30.27,30.27,0,0,0,0
+aclnnAddmm,,"/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/linear.py(125): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/container.py(240): forward;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1762): _call_impl;
+/opt/buildtools/python-3.12.9/lib/python3.12/site-packages/torch/nn/modules/module.py(1751): _wrapped_call_impl;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(64): main;
+/mnt/workspace/gitCode/imaginationhh/oam-tools/experiment/task-book/msprof_experience_demo/04_pyTorch/src/model_with_profiler.py(72): <module>",41.16,41.16,7.06,7.06,7.06,7.06
