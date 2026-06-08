@@ -18,12 +18,14 @@
 """使用 GitCode API 创建 Pull Request.
 
 使用方法:
-    python create_pr.py --title "PR-Title" --head "user:branch" \
-        --base "develop" --issue "#32"
+    python create_pr.py --owner cann --repo oam-tools \
+        --title "PR-Title" --head "user:branch" \
+        --base "master" --issue "32"
 
 或使用完整的 body 参数:
-    python create_pr.py --title "PR-Title" --head "user:branch" \
-        --base "develop" --body "full-description"
+    python create_pr.py --owner cann --repo oam-tools \
+        --title "PR-Title" --head "user:branch" \
+        --base "master" --body "full-description"
 """
 
 import argparse
@@ -65,9 +67,12 @@ def build_pr_body(body, issue, description):
     template = load_pr_template()
     if not template:
         return ""
+    # 模板已固定写为 `关联Issue #{{issue}}`，这里归一化 issue 值：剥掉用户
+    # 可能传入的前导 '#'，避免 `--issue "#32"` 替换后出现双井号 `##32`。
+    issue_id = issue.lstrip('#')
     return (
         template
-        .replace('{{issue}}', issue)
+        .replace('{{issue}}', issue_id)
         .replace('{{description}}', description)
     )
 
@@ -121,15 +126,15 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Create GitCode Pull Request via API',
     )
-    parser.add_argument('--owner', default='cann', help='repo owner')
-    parser.add_argument('--repo', default='metadef', help='repo name')
+    parser.add_argument('--owner', required=True, help='目标仓 owner（fork 场景填源仓 owner）')
+    parser.add_argument('--repo', required=True, help='目标仓 repo（fork 场景填源仓 repo）')
     parser.add_argument('--title', required=True, help='PR title')
     parser.add_argument(
         '--head', required=True, help='source branch (username:branch)',
     )
-    parser.add_argument('--base', default='develop', help='target branch')
+    parser.add_argument('--base', default='master', help='target branch (默认 master)')
     parser.add_argument('--body', help='full PR body')
-    parser.add_argument('--issue', help='related issue id (e.g. #32)')
+    parser.add_argument('--issue', help='related issue id, 纯数字如 32（带 # 也兼容）')
     parser.add_argument('--description', help='PR description summary')
     parser.add_argument('--token', help='GitCode access token')
     return parser.parse_args()
@@ -142,8 +147,9 @@ def main():
         format='%(asctime)s - %(levelname)s - %(message)s',
     )
     args = parse_args()
-    if not args.token:
-        logger.error("--token is required")
+    token = args.token or os.environ.get('GITCODE_API_TOKEN')
+    if not token:
+        logger.error("缺少访问令牌：请传 --token 或设置环境变量 GITCODE_API_TOKEN")
         return 1
 
     pr_data = {
@@ -153,7 +159,7 @@ def main():
         'body': build_pr_body(args.body, args.issue, args.description or ""),
     }
 
-    result = create_pull_request(args.owner, args.repo, args.token, pr_data)
+    result = create_pull_request(args.owner, args.repo, token, pr_data)
     if result is None:
         logger.error("please check the error message above")
         return 1
