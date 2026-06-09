@@ -143,12 +143,14 @@ done
 
 # ---------------------------------------------------------------------------
 # 5. Build oat command — use OAT.xml if present in repo root
+# 用 bash 数组保存参数，避免 eval 拼接字符串导致路径含空格/shell 元字符时
+# 被拆分或当作命令执行（命令注入/参数错乱）。
 # ---------------------------------------------------------------------------
-_OAT_CMD="$_PYTHON -m oat -mode s -s $REPO_ROOT -r $OAT_REPORT_DIR -n $REPO_NAME -w 1 -f $FILE_LIST"
+_OAT_ARGS=(-m oat -mode s -s "$REPO_ROOT" -r "$OAT_REPORT_DIR" -n "$REPO_NAME" -w 1 -f "$FILE_LIST")
 
 _OAT_XML="$REPO_ROOT/OAT.xml"
 if [ -f "$_OAT_XML" ]; then
-    _OAT_CMD="$_OAT_CMD -oatconfig $_OAT_XML"
+    _OAT_ARGS+=(-oatconfig "$_OAT_XML")
 fi
 
 # ---------------------------------------------------------------------------
@@ -158,7 +160,7 @@ echo ""
 echo "[OAT] Running compliance scan..."
 
 set +e
-eval "$_OAT_CMD" >/dev/null 2>&1
+"$_PYTHON" "${_OAT_ARGS[@]}" >/dev/null 2>&1
 _OAT_RC=$?
 set -e
 
@@ -166,7 +168,7 @@ if [ "$_OAT_RC" -ne 0 ] && [ "$_OAT_RC" -ne 1 ]; then
     echo ""
     echo "[OAT] [WARNING] oat exited with unexpected code $_OAT_RC."
     echo "[OAT] Try re-running manually:"
-    echo "  $_OAT_CMD"
+    echo "  $_PYTHON ${_OAT_ARGS[*]}"
     echo "[OAT] Skipping OAT check, continuing commit..."
     exit 0
 fi

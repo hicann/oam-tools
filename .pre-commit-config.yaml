@@ -16,3 +16,44 @@ repos:
         types: [file]
         stages: [commit]
         verbose: true
+
+  # Python 格式检查 + 基础 lint（ruff）。默认只查本次改动的 .py，不扫存量文件。
+  - repo: https://gitcode.com/gh_mirrors/ru/ruff-pre-commit
+    rev: v0.9.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Python 代码检查（pylint，放宽贴近云端 codecheck，避免本地比云端更严）。
+  - repo: https://gitcode.com/gh_mirrors/pyl/pylint
+    # 用 3.3.x：pylint 4.x 要求 Python>=3.10，而 CI pre-commit 环境是 3.9，
+    # 装 4.x 会失败导致整个 pre-commit 任务报错。3.3.9 兼容 Python 3.9。
+    rev: v3.3.9
+    hooks:
+      - id: pylint
+        args:
+          # pylint 隔离环境不装项目依赖，import-error/no-name-in-module 必关；
+          # C(convention)/R(refactor) 是与华为规范无关的命名/重构噪声，一并关闭。
+          - --disable=C,R,import-error,no-name-in-module,wrong-import-order
+          - --max-line-length=120
+
+  # Python 安全检查（bandit，仅 medium 及以上严重度）。
+  - repo: https://gitcode.com/gh_mirrors/ba/bandit
+    # 用 1.8.6：bandit 1.9.x 要求 Python>=3.10，CI pre-commit 环境是 3.9，
+    # 装 1.9.x 会失败。1.8.6 是兼容 Python 3.9 的最新版。
+    rev: 1.8.6
+    hooks:
+      - id: bandit
+        args: [-ll]
+
+  # 拼写检查（codespell），与 CI 的 StaticCheck_codespell_check 对齐。
+  - repo: https://gitcode.com/gh_mirrors/co/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        # 跳过二进制/构建产物目录；ignore-words-list 收录项目专有缩写避免误判，
+        # 后续遇新误判词追加即可（codespell 按小写匹配）。
+        args:
+          - --skip=*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules
+          - --ignore-words-list=cann,oam,msprof,aicerr,hccl,tbe,nin,fo,optin

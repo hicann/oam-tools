@@ -8,11 +8,28 @@ DEFAULT_SKILLS=("gitcode-pr" "gitcode-issue")
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
+# 先检测本仓已有哪些 skill：本仓已存在的 skill 一律不下载、不覆盖，
+# 以保护本仓对 skill 的本地修改不被远端版本覆盖。
+MISSING_SKILLS=()
+for skill in "${DEFAULT_SKILLS[@]}"; do
+    if [ -d "$SKILLS_DIR/$skill" ]; then
+        echo "Skip '$skill': already exists in repo, keep local version (no download/overwrite)"
+    else
+        MISSING_SKILLS+=("$skill")
+    fi
+done
+
+# 全部已存在则无需克隆，直接结束
+if [ ${#MISSING_SKILLS[@]} -eq 0 ]; then
+    echo "All default skills already present locally. Nothing to install."
+    exit 0
+fi
+
 # 创建临时目录
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
-# 克隆 skills 仓库
+# 克隆 skills 仓库（仅当存在缺失的 skill 时）
 echo "Cloning skills repository..."
 git clone --depth 1 https://gitcode.com/cann-agent/skills.git "$TEMP_DIR/skills"
 if [ $? -ne 0 ]; then
@@ -26,9 +43,9 @@ if [ ! -d "$TEMP_DIR/skills/skills" ]; then
     exit 1
 fi
 
-# 拷贝技能到 .claude/skills/ 目录
+# 仅安装本仓缺失的 skill，已存在的不在此列表中，不会被覆盖
 echo "Installing skills..."
-for skill in "${DEFAULT_SKILLS[@]}"; do
+for skill in "${MISSING_SKILLS[@]}"; do
     if [ -d "$TEMP_DIR/skills/skills/$skill" ]; then
         cp -r "$TEMP_DIR/skills/skills/$skill" "$SKILLS_DIR/"
         echo "Installed skill: $skill"

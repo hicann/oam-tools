@@ -48,13 +48,11 @@ def load_pr_template(template_path=None):
     """加载 PR 模板, 找不到时返回 None."""
     if template_path is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        template_path = os.path.join(
-            script_dir, '..', 'assets', 'pr_template.md'
-        )
+        template_path = os.path.join(script_dir, "..", "assets", "pr_template.md")
 
     if not os.path.exists(template_path):
         return None
-    with open(template_path, encoding='utf-8') as fp:
+    with open(template_path, encoding="utf-8") as fp:
         return fp.read()
 
 
@@ -69,11 +67,9 @@ def build_pr_body(body, issue, description):
         return ""
     # 模板已固定写为 `关联Issue #{{issue}}`，这里归一化 issue 值：剥掉用户
     # 可能传入的前导 '#'，避免 `--issue "#32"` 替换后出现双井号 `##32`。
-    issue_id = issue.lstrip('#')
-    return (
-        template
-        .replace('{{issue}}', issue_id)
-        .replace('{{description}}', description)
+    issue_id = issue.lstrip("#")
+    return template.replace("{{issue}}", issue_id).replace(
+        "{{description}}", description
     )
 
 
@@ -81,15 +77,15 @@ def create_pull_request(owner, repo, token, pr_data):
     """调用 GitCode API 创建 Pull Request, 失败返回 None."""
     logger.info("Creating Pull Request...")
     logger.info("target repo: %s/%s", owner, repo)
-    logger.info("head: %s", pr_data.get('head'))
-    logger.info("base: %s", pr_data.get('base'))
+    logger.info("head: %s", pr_data.get("head"))
+    logger.info("base: %s", pr_data.get("base"))
     logger.info("-" * SEPARATOR_LEN)
 
     url = f"{GITCODE_API_BASE}/repos/{owner}/{repo}/pulls"
     headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
     }
 
     try:
@@ -109,34 +105,41 @@ def create_pull_request(owner, repo, token, pr_data):
         return None
 
     result = response.json()
-    pr_url = (
-        result.get('web_url')
-        or result.get('html_url')
-        or 'unknown'
-    )
+    pr_url = result.get("web_url") or result.get("html_url") or "unknown"
     logger.info("Pull Request created.")
-    logger.info("PR number: #%s", result.get('number', 'unknown'))
+    logger.info("PR number: #%s", result.get("number", "unknown"))
     logger.info("PR url: %s", pr_url)
-    logger.info("state: %s", result.get('state', 'unknown'))
+    logger.info("state: %s", result.get("state", "unknown"))
     return result
 
 
 def parse_args():
     """解析命令行参数."""
     parser = argparse.ArgumentParser(
-        description='Create GitCode Pull Request via API',
+        description="Create GitCode Pull Request via API",
     )
-    parser.add_argument('--owner', required=True, help='目标仓 owner（fork 场景填源仓 owner）')
-    parser.add_argument('--repo', required=True, help='目标仓 repo（fork 场景填源仓 repo）')
-    parser.add_argument('--title', required=True, help='PR title')
     parser.add_argument(
-        '--head', required=True, help='source branch (username:branch)',
+        "--owner", required=True, help="目标仓 owner（fork 场景填源仓 owner）"
     )
-    parser.add_argument('--base', default='master', help='target branch (默认 master)')
-    parser.add_argument('--body', help='full PR body')
-    parser.add_argument('--issue', help='related issue id, 纯数字如 32（带 # 也兼容）')
-    parser.add_argument('--description', help='PR description summary')
-    parser.add_argument('--token', help='GitCode access token')
+    parser.add_argument(
+        "--repo", required=True, help="目标仓 repo（fork 场景填源仓 repo）"
+    )
+    parser.add_argument("--title", required=True, help="PR title")
+    parser.add_argument(
+        "--head",
+        required=True,
+        help="source branch (username:branch)",
+    )
+    parser.add_argument("--base", default="master", help="target branch (默认 master)")
+    parser.add_argument("--body", help="full PR body")
+    parser.add_argument(
+        "--body-file",
+        dest="body_file",
+        help="PR body 文件路径（与 --body 二选一，避免命令行转义）",
+    )
+    parser.add_argument("--issue", help="related issue id, 纯数字如 32（带 # 也兼容）")
+    parser.add_argument("--description", help="PR description summary")
+    parser.add_argument("--token", help="GitCode access token")
     return parser.parse_args()
 
 
@@ -144,19 +147,24 @@ def main():
     """命令行入口."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(levelname)s - %(message)s",
     )
     args = parse_args()
-    token = args.token or os.environ.get('GITCODE_API_TOKEN')
+    token = args.token or os.environ.get("GITCODE_API_TOKEN")
     if not token:
         logger.error("缺少访问令牌：请传 --token 或设置环境变量 GITCODE_API_TOKEN")
         return 1
 
+    body = args.body
+    if body is None and args.body_file:
+        with open(args.body_file, encoding="utf-8") as fp:
+            body = fp.read()
+
     pr_data = {
-        'title': args.title,
-        'head': args.head,
-        'base': args.base,
-        'body': build_pr_body(args.body, args.issue, args.description or ""),
+        "title": args.title,
+        "head": args.head,
+        "base": args.base,
+        "body": build_pr_body(body, args.issue, args.description or ""),
     }
 
     result = create_pull_request(args.owner, args.repo, token, pr_data)

@@ -6,8 +6,8 @@ description: |
 
 ## Install Default Skills Steps
 1. Read `.claude/skills/default-skills/scripts/install-default-skills.sh` to get `DEFAULT_SKILLS`
-2. First try to install or update skills using `.claude/skills/default-skills/scripts/install-default-skills.sh`. After execution, check if `.claude/skills/` directory has `DEFAULT_SKILLS`. If yes, end immediately. If no, continue to next step
-3. Use git to clone `https://gitcode.com/cann-agent/skills.git` to temporary directory with `--depth 1` parameter. Find `DEFAULT_SKILLS` in this repository and copy to `.claude/skills/` directory
+2. First try to install missing skills using `.claude/skills/default-skills/scripts/install-default-skills.sh`. **This script first checks whether each skill already exists under the repo's `.claude/skills/`: any already-present skill is skipped — neither downloaded nor overwritten — to protect local modifications in this repo; only skills missing from this repo are downloaded and installed.** After execution, check if `.claude/skills/` directory has `DEFAULT_SKILLS`. If yes, end immediately. If no, continue to next step
+3. Use git to clone `https://gitcode.com/cann-agent/skills.git` to temporary directory with `--depth 1` parameter. Find the **skills missing from this repo** among `DEFAULT_SKILLS` and copy to `.claude/skills/` directory (**do not overwrite skills already present in this repo**)
 
 ## Default Skills Usage Scenarios
 1. **Scenarios that must trigger gitcode-issue** (use when user mentions any of the following):
