@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+
+import sys
+from unittest.mock import Mock
+
+import pytest
+
+from conftest import MSAICERR_PATH
+from ms_interface import utils
+from ms_interface.constant import Constant
+import msaicerr
+
+sys.path.append(MSAICERR_PATH)
+
+
+@pytest.fixture(autouse=True)
+def _restore_global_result():
+    # handle_exception() flips utils.GLOBAL_RESULT to False; restore it after
+    # each test so the global state does not leak into later cases.
+    saved = utils.GLOBAL_RESULT
+    yield
+    utils.GLOBAL_RESULT = saved
+
+
+def _report_args(**kwargs):
+    args = Mock()
+    args.device_id = 0
+    args.output_path = ""
+    args.report_path = "/some/report"
+    args.tar_file = ""
+    for key, value in kwargs.items():
+        setattr(args, key, value)
+    return args
+
+
+def _dump_args(**kwargs):
+    args = Mock()
+    args.data = "/dump/data.bin"
+    args.output_path = ""
+    args.dest_dtype = "float16"
+    for key, value in kwargs.items():
+        setattr(args, key, value)
+    return args
+
+
+def test_handle_exception_keyboard_interrupt(mocker):
+    hook = mocker.patch("sys.__excepthook__")
+    msaicerr.handle_exception(KeyboardInterrupt, KeyboardInterrupt(), None)
+    assert hook.called
+
+
+def test_handle_exception_other(mocker):
+    mocker.patch("traceback.print_exception")
+    msaicerr.handle_exception(ValueError, ValueError("x"), None)
+    assert utils.GLOBAL_RESULT is False
+
+
+def test_extract_tar(mocker):
+    fake_tar = Mock()
+    mocker.patch("tarfile.open", return_value=fake_tar)
+    msaicerr.extract_tar("a.tar", "/dest")
+    assert fake_tar.extractall.called
+    assert fake_tar.close.called
+
+
+def test_get_select_dir_single(mocker):
+    mocker.patch("os.listdir", return_value=["only"])
+    assert msaicerr.get_select_dir("/p").endswith("only")
+
+
+def test_get_select_dir_multiple(mocker):
+    mocker.patch("os.listdir", return_value=["a", "b"])
+    with pytest.raises(ValueError):
+        msaicerr.get_select_dir("/p")
+
+
+def test_is_sub_path_true():
+    assert msaicerr.is_sub_path("/a/b/c", "/a/b") is True
+
+
+def test_is_sub_path_false():
+    assert msaicerr.is_sub_path("/a/b", "/x/y") is False
+
+
+def test_is_sub_path_value_error(mocker):
+    mocker.patch("os.path.commonpath", side_effect=ValueError)
+    assert msaicerr.is_sub_path("/a", "/b") is False
+
+
+def test_verify_device_id_valid(mocker):
+    dsmi = Mock()
+    dsmi.get_device_count.return_value = 8
+    mocker.patch("msaicerr.DSMIInterface", return_value=dsmi)
+    assert msaicerr.verify_device_id(0) is True
+
+
+def test_verify_device_id_negative(mocker):
+    dsmi = Mock()
+    dsmi.get_device_count.return_value = 8
+    mocker.patch("msaicerr.DSMIInterface", return_value=dsmi)
+    assert msaicerr.verify_device_id(-1) is False
+
+
+def test_verify_device_id_too_large(mocker):
+    dsmi = Mock()
+    dsmi.get_device_count.return_value = 8
+    mocker.patch("msaicerr.DSMIInterface", return_value=dsmi)
+    assert msaicerr.verify_device_id(8) is False
+
+
+def test_check_device_valid_true(mocker):
+    mocker.patch("msaicerr.verify_device_id", return_value=True)
+    assert msaicerr.check_device_valid(0) is True
+
+
+def test_check_device_valid_false(mocker):
+    mocker.patch("msaicerr.verify_device_id", return_value=False)
+    assert msaicerr.check_device_valid(99) is False
+
+
+def test_analyse_invalid_device(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=False)
+    ret = msaicerr.analyse_report_path(_report_args())
+    assert ret == Constant.MS_AICERR_INVALID_PARAM_ERROR
+
+
+def test_analyse_subpath_error(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.is_sub_path", return_value=True)
+    ret = msaicerr.analyse_report_path(_report_args())
+    assert ret == Constant.MS_AICERR_INVALID_PATH_ERROR
+
+
+def test_analyse_full_flow(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.is_sub_path", return_value=False)
+    mocker.patch("ms_interface.utils.check_path_valid")
+    collection = Mock()
+    collection.collect.return_value = True
+    mocker.patch("msaicerr.Collection", return_value=collection)
+    parser = Mock()
+    parser.parse.return_value = Constant.MS_AICERR_NONE_ERROR
+    mocker.patch("msaicerr.AicoreErrorParser", return_value=parser)
+    ret = msaicerr.analyse_report_path(_report_args())
+    assert ret == Constant.MS_AICERR_NONE_ERROR
+
+
+def test_analyse_aic_exception(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.is_sub_path", return_value=False)
+    mocker.patch("ms_interface.utils.check_path_valid",
+                 side_effect=utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR))
+    ret = msaicerr.analyse_report_path(_report_args())
+    assert ret == Constant.MS_AICERR_INVALID_PATH_ERROR
+
+
+def test_convert_dump_invalid_path(mocker):
+    mocker.patch("ms_interface.utils.check_path_valid", side_effect=Exception)
+    ret = msaicerr.convert_dump_data(_dump_args(), "/dump/data.bin")
+    assert ret == Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR
+
+
+def test_convert_dump_with_output_path(mocker):
+    mocker.patch("ms_interface.utils.check_path_valid")
+    mocker.patch("msaicerr.DumpDataParser", return_value=Mock())
+    ret = msaicerr.convert_dump_data(_dump_args(output_path="/out"), "/dump/data.bin")
+    assert ret == Constant.MS_AICERR_NONE_ERROR
+
+
+def test_convert_dump_parse_exception(mocker):
+    mocker.patch("ms_interface.utils.check_path_valid")
+    parser = Mock()
+    parser.parse.side_effect = RuntimeError("boom")
+    mocker.patch("msaicerr.DumpDataParser", return_value=parser)
+    ret = msaicerr.convert_dump_data(_dump_args(), "/dump/data.bin")
+    assert ret == Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR
+
+
+def test_env_invalid_device(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=False)
+    assert msaicerr.test_env(99) == Constant.MS_AICERR_INVALID_PARAM_ERROR
+
+
+def test_env_success(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.get_soc_version", return_value="Ascend910B")
+    mocker.patch("ms_interface.aicore_error_parser.AicoreErrorParser.run_test_env",
+                 return_value=True)
+    assert msaicerr.test_env(0) == Constant.MS_AICERR_NONE_ERROR
+
+
+def test_env_fail(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.get_soc_version", return_value="Ascend910B")
+    mocker.patch("ms_interface.aicore_error_parser.AicoreErrorParser.run_test_env",
+                 return_value=False)
+    assert msaicerr.test_env(0) == Constant.MS_AICERR_HARDWARE_ERR
+
+
+def test_env_exception(mocker):
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.get_soc_version", side_effect=RuntimeError("boom"))
+    assert msaicerr.test_env(0) == Constant.MS_AICERR_HARDWARE_ERR

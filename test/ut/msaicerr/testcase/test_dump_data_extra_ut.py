@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+
+import sys
+
+import numpy as np
+import pytest
+
+from conftest import MSAICERR_PATH
+from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.dump_data_parser import DumpDataParser
+from ms_interface.utils import AicErrException
+
+sys.path.append(MSAICERR_PATH)
+
+
+def _make_parser(dest_dtype="", output_path="", dump_path="/tmp/data.bin"):
+    return DumpDataParser(dump_path, AicErrorInfo(), dest_dtype, output_path)
+
+
+def test_no_dest_dtype():
+    parser = _make_parser(dest_dtype="")
+    result = parser.convert_bin_file_to_npy()
+    assert "Need to specify the dtype" in result
+
+
+def test_invalid_dest_dtype():
+    parser = _make_parser(dest_dtype="not_a_dtype")
+    result = parser.convert_bin_file_to_npy()
+    assert "Invalid dest_dtype" in result
+
+
+def test_convert_success(mocker, tmp_path):
+    parser = _make_parser(dest_dtype="float16",
+                          output_path=str(tmp_path),
+                          dump_path=str(tmp_path / "data.bin"))
+    mocker.patch("numpy.fromfile", return_value=np.ones(4, dtype=np.float16))
+    saved = mocker.patch("numpy.save")
+    _ = parser.convert_bin_file_to_npy()
+    assert saved.called
+    assert len(parser.bin_data_list) == 1
+
+
+def test_convert_dtype_mismatch_warning(mocker, tmp_path):
+    # file name carries .int8 but dest_dtype is float16 -> warning branch
+    parser = _make_parser(dest_dtype="float16",
+                          output_path=str(tmp_path),
+                          dump_path=str(tmp_path / "data.int8.bin"))
+    mocker.patch("numpy.fromfile", return_value=np.ones(4, dtype=np.float16))
+    mocker.patch("numpy.save")
+    result = parser.convert_bin_file_to_npy()
+    assert "different from dest_dtype" in result
+
+
+def test_convert_failure_raises(mocker, tmp_path):
+    parser = _make_parser(dest_dtype="float16",
+                          output_path=str(tmp_path),
+                          dump_path=str(tmp_path / "data.bin"))
+    mocker.patch("numpy.fromfile", side_effect=RuntimeError("boom"))
+    with pytest.raises(AicErrException):
+        parser.convert_bin_file_to_npy()
