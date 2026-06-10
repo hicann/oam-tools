@@ -121,7 +121,6 @@ public:
     virtual ~HcclTest();
 
     void print_help();
-    static struct option longopts[];
 
     int parse_opt(int opt);
     int parse_cmd_line(int argc, char *argv[]);

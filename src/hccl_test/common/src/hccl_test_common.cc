@@ -268,23 +268,32 @@ HcclTest::~HcclTest()
     data = nullptr;
 }
 
-struct option HcclTest::longopts[] = {{"op", required_argument, 0, 'o'},
-    {"datatype", required_argument, 0, 'd'},
-    {"minbytes", required_argument, 0, 'b'},
-    {"maxbytes", required_argument, 0, 'e'},
-    {"stepbytes", required_argument, 0, 'i'},
-    {"stepfactor", required_argument, 0, 'f'},
-    {"root", required_argument, 0, 'r'},
-    {"iters", required_argument, 0, 'n'},
-    {"warmup_iters", required_argument, 0, 'w'},
-    {"check", required_argument, 0, 'c'},
-    {"npus", required_argument, 0, 'p'},
-    {"help", no_argument, 0, 'h'},
-    {"zero_copy", required_argument, 0, 'z'},
-    {"nslb", required_argument, 0, 's'},
-    {"onlydevicetime", required_argument, 0, 't'},
-    {"symmetric_memory", required_argument, 0, 'm'}
-};
+std::vector<struct option> build_longopts(bool is910_95)
+{
+    std::vector<struct option> opts;
+    opts.push_back({"op", required_argument, 0, 'o'});
+    opts.push_back({"datatype", required_argument, 0, 'd'});
+    opts.push_back({"minbytes", required_argument, 0, 'b'});
+    opts.push_back({"maxbytes", required_argument, 0, 'e'});
+    opts.push_back({"stepbytes", required_argument, 0, 'i'});
+    opts.push_back({"stepfactor", required_argument, 0, 'f'});
+    opts.push_back({"root", required_argument, 0, 'r'});
+    opts.push_back({"iters", required_argument, 0, 'n'});
+    opts.push_back({"warmup_iters", required_argument, 0, 'w'});
+    opts.push_back({"check", required_argument, 0, 'c'});
+    opts.push_back({"npus", required_argument, 0, 'p'});
+    opts.push_back({"help", no_argument, 0, 'h'});
+    opts.push_back({"onlydevicetime", required_argument, 0, 't'});
+    if (is910_95) {
+        opts.push_back({"accelerator", required_argument, 0, 'a'});
+    } else {
+        opts.push_back({"zero_copy", required_argument, 0, 'z'});
+        opts.push_back({"nslb", required_argument, 0, 's'});
+        opts.push_back({"symmetric_memory", required_argument, 0, 'm'});
+    }
+    opts.push_back({0, 0, 0, 0});
+    return opts;
+}
 
 void HcclTest::print_help()
 {
@@ -646,7 +655,10 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     int longindex = 0;
     int ret = 0;
     long parsed;
-    while (-1 != (opt = getopt_long(argc, argv, "o:d:b:e:i:f:r:n:w:c:p:z:a:s:t:m:h", longopts, &longindex))) {
+    bool is910_95 = IsSupport910_95();
+    std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
+    std::vector<struct option> longopts = build_longopts(is910_95);
+    while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
         ret = parse_opt(opt);
         if (ret != 0) {
             return ret;
@@ -734,7 +746,12 @@ int HcclTest::destory_alloc_buf()
 
 bool HcclTest::IsSupport910_95()
 {
-    std::string socVersion = aclrtGetSocName();
+    const char* socName = aclrtGetSocName();
+    if (socName == nullptr) {
+        printf("aclrtGetSocName failed");
+        return false;
+    }
+    std::string socVersion(socName);
     if (socVersion.find("Ascend950") != std::string::npos) {
         return true;
     }
