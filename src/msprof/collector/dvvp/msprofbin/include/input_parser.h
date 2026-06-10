@@ -17,6 +17,7 @@
 #ifndef INPUT_PARSER_H
 #define INPUT_PARSER_H
 #include <string>
+#include <map>
 #include <utils/utils.h>
 #include "proto/profiler.pb.h"
 #include "message/prof_params.h"
@@ -283,6 +284,7 @@ private:
     int32_t UninitCheckHostSysCmd(const OsalProcess checkProcess) const;
     int32_t PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[]);
     std::vector<MsprofArgsType> GeneratePlatSwithList() const;
+    std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> GenerateChipV2PlatSwithMap() const;
 
 private:
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params_;
@@ -319,6 +321,7 @@ public:
 private:
     void AddArgs();
     void AddStorageLimitArgs();
+    void AddHCCLArgs();
     void AddModelExecutionArgs();
     void AddAicMetricsArgs();
     void AddHardWareMemArgs();

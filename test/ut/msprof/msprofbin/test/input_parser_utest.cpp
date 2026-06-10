@@ -1278,4 +1278,39 @@ TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
     EXPECT_STREQ("xx", parser.params_->reportsPath.c_str());
 }
 
+TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap)
+{
+    InputParser parser = InputParser();
+    auto platMap = parser.GenerateChipV2PlatSwithMap();
+
+    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+
+    EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_V2]);
+    EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_LITE_V2]);
+}
+
+TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs)
+{
+    ArgsManager argsManager = ArgsManager();
+
+    // Scenario 1: V2 platforms skip the hccl arg, the list stays empty
+    SetPlatformTypeForTest(PlatformType::CHIP_MDC_V2);
+    argsManager.argsList_.clear();
+    argsManager.AddHCCLArgs();
+    EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
+
+    SetPlatformTypeForTest(PlatformType::CHIP_MDC_LITE_V2);
+    argsManager.argsList_.clear();
+    argsManager.AddHCCLArgs();
+    EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
+
+    // Scenario 2: non-V2 platform appends the hccl arg
+    SetPlatformTypeForTest(PlatformType::MINI_TYPE);
+    argsManager.argsList_.clear();
+    argsManager.AddHCCLArgs();
+    EXPECT_EQ(static_cast<size_t>(1), argsManager.argsList_.size());
+}
+
 } // namespace

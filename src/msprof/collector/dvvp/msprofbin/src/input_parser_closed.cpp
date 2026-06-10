@@ -129,6 +129,21 @@ int32_t InputParser::PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[])
     return PROFILING_SUCCESS;
 }
 
+std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>>
+    InputParser::GenerateChipV2PlatSwithMap() const
+{
+    std::vector<MsprofArgsType> mdcV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+    std::vector<MsprofArgsType> mdcLiteV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+
+    return {
+        {PlatformType::CHIP_MDC_V2, mdcV2BlackSwith}, {PlatformType::CHIP_MDC_LITE_V2, mdcLiteV2BlackSwith}
+    };
+}
+
 std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
 {
     Analysis::Dvvp::Common::Config::PlatformType platformType = ConfigManager::instance()->GetPlatformType();
@@ -168,16 +183,14 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_MEM_SERVICEFLOW, ARGS_OP_TYPE};
     std::vector<MsprofArgsType> davidBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
     std::vector<MsprofArgsType> david121BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
-    std::vector<MsprofArgsType> mdcV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
-    std::vector<MsprofArgsType> mdcLiteV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
-
     std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> platformArgsType = {
         {PlatformType::MINI_TYPE, miniBlackSwith}, {PlatformType::CLOUD_TYPE, cloudBlackSwith}, {PlatformType::MDC_TYPE, mdcBlackSwith},
         {PlatformType::DC_TYPE, dcBlackSwith}, {PlatformType::CHIP_V4_1_0, cloudBlackSwithV2}, {PlatformType::MINI_V3_TYPE, miniV3BlackSwith},
         {PlatformType::CHIP_MDC_MINI_V3, mdcMiniV3BlackSwith}, {PlatformType::CHIP_TINY_V1, mdcMiniV3BlackSwith}, {PlatformType::CHIP_MDC_LITE, mdcLiteBlackSwith},
-        {PlatformType::CHIP_CLOUD_V3, davidBlackSwith}, {PlatformType::CHIP_CLOUD_V4, david121BlackSwith}, {PlatformType::CHIP_MDC_V2, mdcV2BlackSwith},
-        {PlatformType::CHIP_MDC_LITE_V2, mdcLiteV2BlackSwith}
+        {PlatformType::CHIP_CLOUD_V3, davidBlackSwith}, {PlatformType::CHIP_CLOUD_V4, david121BlackSwith}
     };
+    std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> chipV2Map = GenerateChipV2PlatSwithMap();
+    platformArgsType.insert(chipV2Map.begin(), chipV2Map.end());
 
     return platformArgsType[platformType];
 }
@@ -636,6 +649,7 @@ void ArgsManager::AddLowPowerArgs()
 void ArgsManager::AddArgs()
 {
     AddStorageLimitArgs();
+    AddHCCLArgs();
     AddModelExecutionArgs();
     AddAicMetricsArgs();
     AddAnalysisArgs();
@@ -714,8 +728,6 @@ ArgsManager::ArgsManager()
     {"sys-period", "Set total sampling period of system profiling in seconds."},
     {"sys-devices", "Specify the profiling scope by device ID when collect sys profiling."
                      "The value is all or ID list (split with ',')."},
-    {"hccl", "Show hccl profiling data, the default value is off. "
-                "[Note] This option will be discarded in later versions.", OFF},
     {"msproftx", "Show msproftx and mstx data, the default value is off.", OFF},
     {"mstx-domain-include", "Choose to only include mstx events from a comma separated list of domains;\n"
         "\t\t\t\t\t\t   `default` filters the mstx default domain;\n"
@@ -759,10 +771,23 @@ void ArgsManager::AddStorageLimitArgs()
     argsList_.push_back(storageLimitArgs);
 }
 
+void ArgsManager::AddHCCLArgs()
+{
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2) {
+        return;
+    }
+    Args hcclArgs = {"hccl", "Show hccl profiling data, the default value is off. "
+        "[Note] This option will be discarded in later versions.", OFF};
+    argsList_.push_back(hcclArgs);
+}
+
 void ArgsManager::AddModelExecutionArgs()
 {
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_MINI_V3 ||
-    ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_TINY_V1) {
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_TINY_V1) {
         return;
     }
     Args modelExecutionArgs = {"model-execution", "Show ge model execution profiling data, the default value is off. "
@@ -775,6 +800,8 @@ void ArgsManager::AddAicpuArgs()
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::MDC_TYPE ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_MINI_V3 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_TINY_V1) {
         return;
     }
@@ -826,6 +853,8 @@ void ArgsManager::AddIoArgs()
         ConfigManager::instance()->GetPlatformType() == PlatformType::MDC_TYPE ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_MINI_V3 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_TINY_V1) {
         return;
     }
@@ -872,6 +901,12 @@ void ArgsManager::AddInterArgs()
             OFF};
         interFreq = {"sys-interconnection-freq", "PCIE acquisition frequency, range 1 ~ 50, "
             "the default value is 50, unit Hz.", "50"};
+    }
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2) {
+        interArgs.SetDetail("SIO and PA acquisition switch, the default value is off.");
+        interFreq.SetDetail("SIO and PA acquisition frequency, range 1 ~ 50, "
+            "the default value is 50, unit Hz.");
     }
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3) {
         interArgs.SetDetail("PCIE, CCU, SIO and UB acquisition switch, the default value is off.");
