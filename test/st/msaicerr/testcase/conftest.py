@@ -37,8 +37,15 @@ DUMP_EXCEPTION_STR = "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:07.468.927
 FFTS_PLUS_TASK_EXECUTE_FAILED = "fftsplus task execute failed, device_id=0, stream_id=2, report_stream_id=2, task_id=6, flip_num=0, fault kernel_name=2_0_11_GatherV2, program id=1."
 AIC_INFO_DEV_FUNC = "[AIC_INFO] dev_func:te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1__kernel0"
 EXCEPTION_INFO_DUMP_ARGS_DATA = "exception info dump args data, addr:0x12c200000000; size:268448256 bytes"
-L1_DUMP_EXECPTION_TO_FILE = "[ERROR] GE(1582604,python3):2024-12-06-15:17:06.252.046 [exception_dumper.cc:424]1582604 DumpNodeInfo: ErrorNo: 4294967295(failed) [INIT][DEFAULT][1] dump exception to file, file: /home/donghongru/aic_test/dump/extra-info/data-dump/0/GatherV2.GatherV21.1.1733469426252033"
-L0_DUMP_EXECPTION_TO_FILE0 = "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807][tid:1592077] [1] dump exception to file, file: ./new/extra-info/data-dump/0/exception_info.42.1.1726159207469285"
+L1_DUMP_EXCEPTION_TO_FILE = (
+    '[ERROR] GE(1582604,python3):2024-12-06-15:17:06.252.046 [exception_dumper.cc:424]1582604 DumpNodeInf'
+    'o: ErrorNo: 4294967295(failed) [INIT][DEFAULT][1] dump exception to file, file: /home/donghongru/aic'
+    '_test/dump/extra-info/data-dump/0/GatherV2.GatherV21.1.1733469426252033'
+)
+L0_DUMP_EXCEPTION_TO_FILE0 = (
+    '[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807][tid:1592077] [1] dump'
+    ' exception to file, file: ./new/extra-info/data-dump/0/exception_info.42.1.1726159207469285'
+)
 AIC_INFO_NODE_NAME = ":[AIC_INFO] node_name:GatherV2, node_type:GatherV2, stream_id:2, task_id:6"
 AICORE_KERNEL_EXECUTE_FAILED = "Aicore kernel execute failed, device_id=0, stream_id=42, report_stream_id=42, task_id=1, flip_num=0, fault kernel_name=FlashAttentionScore_1_mix_aic, fault kernel info ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic, program id=0, hash=1208019939949783628."
 ERROR_INFO = "[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.023 [device_error_proc.cc:1402]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial number is 87, there is an fftsplus aivector error exception, core id is 0, error code = 0, dump info: pc start: 0x12c042d73754, current: 0x12c042d75b18, vec error info: 0x99000000a2, mte error info: 0x5003000031, ifu error info: 0x200000007ffc0, ccu error info: 0x280d00000084, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c040569000."

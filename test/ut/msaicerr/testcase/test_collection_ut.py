@@ -25,8 +25,8 @@ from conftest import (
     CommonAssert,
     AICORE_KERNEL_EXECUTE_FAILED,
     AICORE_KERNEL_EXECUTE_FAILED_2,
-    GE_DUMP_EXECPTION_TO_FILE_L1,
-    DUMP_EXECPTION_TO_FILE
+    GE_DUMP_EXCEPTION_TO_FILE_L1,
+    DUMP_EXCEPTION_TO_FILE
 )
 
 from ms_interface.constant import Constant
@@ -123,11 +123,11 @@ class TestUtilsMethods(CommonAssert):
     @pytest.mark.parametrize(
         "collect_level, plog, err_time_res, device_id_res, data_name_res",
         [
-            (1, GE_DUMP_EXECPTION_TO_FILE_L1, "2024-12-06-15:17:06.252.046", "1",
+            (1, GE_DUMP_EXCEPTION_TO_FILE_L1, "2024-12-06-15:17:06.252.046", "1",
              "GatherV2.GatherV21.1.1733469426252033"),  # collect_level is 1 GE LOG
-            (0, DUMP_EXECPTION_TO_FILE, "2024-09-12-16:40:08.360.226", "0",
+            (0, DUMP_EXCEPTION_TO_FILE, "2024-09-12-16:40:08.360.226", "0",
              "exception_info.42.1.1726159207469285"),  # collect_level is 0 DUMP LOG
-            (1, DUMP_EXECPTION_TO_FILE, "2024-09-12-16:40:08.360.226",
+            (1, DUMP_EXCEPTION_TO_FILE, "2024-09-12-16:40:08.360.226",
              "0", "exception_info.42.1.1726159207469285")
             # collect_level is 1  DUMP LOG
         ]

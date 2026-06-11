@@ -62,7 +62,7 @@ class AscendHandlerBase:
             runner.run(ascend_op_param)
         return True
 
-    def get_complie_file(self, soc_version, temp_dir):
+    def get_compile_file(self, soc_version, temp_dir):
         inputs = [{"name": "x", "param_type": "required", "format": ["ND"], "type": ["float16"]},
                   {"name": "y", "param_type": "required", "format": ["ND"], "type": ["float16"]}]
         outputs = [{"name": "z", "param_type": "required", "format": ["ND"], "type": ["float16"]}]

@@ -30,10 +30,10 @@ from conftest import (
     AIC_INFO_DEV_FUNC,
     AIC_INFO_DEV_FUNC_ERROR,
     EXCEPTION_INFO_DUMP_ARGS_DATA,
-    L1_DUMP_EXECPTION_TO_FILE,
+    L1_DUMP_EXCEPTION_TO_FILE,
     AIC_INFO_NODE_NAME,
     AIC_INFO_NODE_NAME_ERROR,
-    L0_DUMP_EXECPTION_TO_FILE0,
+    L0_DUMP_EXCEPTION_TO_FILE0,
     AICORE_KERNEL_EXECUTE_FAILED,
     AICORE_KERNEL_EXECUTE_FAILED_ERROR,
     FFTS_PLUS_TASK_EXECUTE_FAILED_ERROR,
@@ -105,7 +105,7 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         report_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         report_path.mkdir(parents=True, exist_ok=True)
-        define_keywords = [L0_DUMP_EXECPTION_TO_FILE0]
+        define_keywords = [L0_DUMP_EXCEPTION_TO_FILE0]
         write_log_keyword_to_file(report_path, define_keywords + keywords)
         mkdir_dump_file_path(node_name, report_path)
         collection = Collection(report_path, output_path)
@@ -141,7 +141,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA,
-            L0_DUMP_EXECPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED])
+            L0_DUMP_EXCEPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED])
         mkdir_dump_file_path(node_name, input_path)
         collection = Collection(input_path, output_path)
         collection.collect()
@@ -158,7 +158,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA,
-            L0_DUMP_EXECPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED_ERROR])
+            L0_DUMP_EXCEPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED_ERROR])
         mkdir_dump_file_path(node_name, input_path)
         collection = Collection(input_path, output_path)
         collection.collect()
@@ -190,7 +190,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA, FFTS_PLUS_TASK_EXECUTE_FAILED_ERROR,
-            L0_DUMP_EXECPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED_ERROR])
+            L0_DUMP_EXCEPTION_TO_FILE0, AICORE_KERNEL_EXECUTE_FAILED_ERROR])
         mkdir_dump_file_path(node_name, input_path)
         collection = Collection(input_path, output_path)
         collection.collect()
@@ -220,7 +220,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [AIC_INFO_DEV_FUNC,
                                                DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA,
-                                               L1_DUMP_EXECPTION_TO_FILE])
+                                               L1_DUMP_EXCEPTION_TO_FILE])
         collection = Collection(input_path, output_path)
         collection.collect()
         self.assertIn(self.debug_info.read_text(
@@ -286,7 +286,7 @@ class TestUtilsMethods(CommonAssert):
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
-            DUMP_EXCEPTION_STR, AIC_INFO_DEV_FUNC_ERROR, EXCEPTION_INFO_DUMP_ARGS_DATA, L1_DUMP_EXECPTION_TO_FILE])
+            DUMP_EXCEPTION_STR, AIC_INFO_DEV_FUNC_ERROR, EXCEPTION_INFO_DUMP_ARGS_DATA, L1_DUMP_EXCEPTION_TO_FILE])
         mkdir_dump_file_path(node_name, input_path)
         utils.ExceptionRootCause().cache_error = True
         collection = Collection(input_path, output_path)
@@ -304,7 +304,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, AIC_INFO_DEV_FUNC, EXCEPTION_INFO_DUMP_ARGS_DATA,
-            L1_DUMP_EXECPTION_TO_FILE, AIC_INFO_NODE_NAME_ERROR])
+            L1_DUMP_EXCEPTION_TO_FILE, AIC_INFO_NODE_NAME_ERROR])
         mkdir_dump_file_path(node_name, input_path)
         utils.ExceptionRootCause().cache_error = True
         collection = Collection(input_path, output_path)
@@ -322,7 +322,7 @@ class TestUtilsMethods(CommonAssert):
         input_path.mkdir(parents=True, exist_ok=True)
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, AIC_INFO_DEV_FUNC, EXCEPTION_INFO_DUMP_ARGS_DATA,
-            L1_DUMP_EXECPTION_TO_FILE, AIC_INFO_NODE_NAME])
+            L1_DUMP_EXCEPTION_TO_FILE, AIC_INFO_NODE_NAME])
         mkdir_dump_file_path(node_name, input_path)
         mkdir_dump_file_path(node_name, input_path.joinpath("input1"))
         mkdir_dump_file_path(node_name, input_path.joinpath("input2"))

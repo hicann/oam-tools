@@ -39,7 +39,7 @@ description: |
 | `delete-comment` | 删除指定评论 | `pr_ops.py delete-comment --owner O --repo R --comment-id ID` |
 | `issue-prs` | 查 issue 关联的 PR | `pr_ops.py issue-prs --owner O --repo R --issue N` |
 
-脚本路径前缀 `python3 .claude/skills/gitcode-pr/scripts/`。`poll_pipeline.sh` 后台轮询见第 12-C 节。下文各节给出对应脚本调用；原始 API 细节见 `references/gitcode_api.md`，仅供排查/扩展脚本时查阅，日常操作不直接用。
+脚本路径前缀 `python3 .claude/skills/gitcode-pr/scripts/`。`poll_pipeline.sh` 后台轮询见第 12 节。下文各节给出对应脚本调用；原始 API 细节见 `references/gitcode_api.md`，仅供排查/扩展脚本时查阅，日常操作不直接用。
 
 ## 工作流程
 
@@ -296,12 +296,32 @@ git push origin <新分支名> -u
 
 > 仅当明确要在 fork 仓内部提 PR 时，才改用 `origin/<目标分支>` 作为基线。
 
-> **推送后固定动作（每次向 PR 推送改动后都执行，按顺序）**：
-> 1. **一律触发流水线**：`pr_ops.py trigger --pr N --owner O --repo R`。无条件执行，不按"改动是否影响 CI"主观判断——PR 合入要求最终 head 有一轮通过的流水线，且让触发与否取决于判断正是遗漏的来源。即便纯文档改动也触发。
+> **提交前本地检查（强烈建议，按顺序执行）——先检查、后推送**：
+> 1. **首次克隆后装钩子**：`pre-commit install`（`.git/hooks/` 不随仓库走，每个 clone 各装一次）；之后每次 `git commit` 自动对改动文件检查。
+> 2. **保持 diff 精准**：本仓配置已不启用 `ruff-format`（本仓存量代码不符合其风格，它会重排被碰到的整个文件、把存量代码写进 diff，既污染改动又触发云端增量 codecheck 误报）。提交前用 `git diff --cached` 核对暂存内容，确认只含本次意图改动、无任何工具自动重排混入。
+> 3. **增量门禁本地预演**：`.pre-commit-config.yaml` 的 `incremental-codecheck` 钩子用 ruff 只对**本次改动行**跑云端关注的规则（行宽 E501、超大函数 PLR0915、staticmethod PLR6301、print→logging T201、外部程序绝对路径 S607、裸 sys.exit PLR1722），复现云端"只查增量行"的行为——push 前预警自己引入的违规，又不被存量违规淹没。
+> 4. **以云端为准**：本地与云端 codecheck 存在粒度错配（云端按 PR 增量行、本地 pylint/ruff 按整文件，故本仓为避免被存量淹没用 `--disable=C,R`，这几类只能靠上面的增量钩子补回）；ruff 不查的跨文件规则（如重复代码 R0801）及其他华为专有规则仍以云端结果为准。
+> 5. **push 前必跑全量 UT（强制，无论创建 PR 还是后续修改）**：云端 `UT_Test` 跑**全部组件**（`asys`/`msaicerr`/`msprof` 等），任一用例失败即 FAILED 阻断。**只跑自己改动相关的测试不够**——改动可能被其他组件的测试间接依赖（例如改 `build.sh` 会让 `test/ut/asys/testcase/common/test_build_script.py` 这种"校验脚本写法"的测试失败）。因此每次 push 前在仓库根目录跑：
+>    ```bash
+>    bash build.sh -u --ut --noexec 2>/dev/null  # 若已 build 过, 可直接复用下面 pytest
+>    # 或直接对各组件 pytest（已 build 过、环境就绪时更快）：
+>    python3 -m pytest test/ut/asys/ test/ut/msaicerr/ -q
+>    ```
+>    全绿才 push。本地缺依赖跑不全的组件（如 msprof gtest 需编译）要在汇报里说明"本地未覆盖 X，依赖云端 UT_Test"。
+>
+> **`--no-verify` 慎用**：仅在确认钩子报的是未触及行的存量问题时才用，且用前必须 `git diff --cached` 核对——否则会把 pre-commit 自动改动（如历史遗留的 ruff-format 重排）一并提交，正是 diff 被污染的根源。
+>
+> **`git reset --hard` 慎用**：它会丢弃未提交的工作区改动与未跟踪新文件。清理临时测试文件用 `git rm --cached` + `rm`；动 `reset --hard` 前先 `git stash` 或 commit 未完成工作。
+
+> **推送后固定动作（先完成上面的本地检查并 push，再每次按顺序执行）**：
+> 1. **一律触发流水线，且 push 与 trigger 必须绑成一条命令**：`git push origin <branch> --force-with-lease && python3 .claude/skills/gitcode-pr/scripts/pr_ops.py trigger --pr N --owner O --repo R`。**严禁把 push 单独成命令、trigger 留到下一步**——一旦中间隔了思考，注意力会被"挂监控/等结果"抢占而漏掉 trigger（本 skill 历史踩坑：force-push 后转去挂 Monitor，跳过了 trigger，导致流水线没跑、白等一轮）。用 `&&` 让 trigger 成为 push 成功的必然后续，不靠"我记得"。无条件触发，不按"改动是否影响 CI"主观判断，即便纯文档改动也触发。trigger 返回 `{triggered:true}` 后立即 `date '+%Y-%m-%dT%H:%M:%S%z'` 记下时间戳，供第 12 节监控 `--since` 用。
 > 2. **判断是否同步 PR 描述**：本次改动若使描述过时（新增文件/功能、改变实现方式、解决新评审、累积多块改动）→ 用 `pr_ops.py update-pr` 更新；纯小修通常无需。是否更新由你判断，接口调用由脚本完成。
 > 3. **跟进流水线结果**：按第 12 节监控（脚本轮询 + 模型判断）。
 
-> **提交前本地检查（强烈建议）**：本仓 `.pre-commit-config.yaml` 配了 `ruff`/`pylint`/`bandit`，能在 push 前拦截大部分云端 `codecheck` 类 Python 问题、减少流水线失败轮次。首次需 `pre-commit install`（`.git/hooks/` 不随仓库走，每次 clone 各自装一次）；之后每次 `git commit` 自动对改动文件检查。注意它**不完全等价云端 codecheck**——华为专有规则（G.LOG.02 用 logging、G.EDV.05 subprocess 绝对路径、G.ERR.11 避免函数内 sys.exit 等）pylint 不一定覆盖，仍以云端结果为准。
+> **控制 commit 数量（云端 `Check_Pr` 硬门禁，按顺序判断）**：CANN 仓 `Check_Pr` 要求**单个 PR 的 commit 数不超过 5 个**，超过即 `Check_Pr` FAILED 阻断合入（与 codecheck 无关，纯按 commit 数判定）。每次提交前先 `git rev-list --count upstream/<base>..HEAD` 确认当前 commit 数，并按下列规则选提交方式：
+> 1. **非重大逻辑变更**（修流水线、采纳评审、补门禁、文档/注释微调等）→ 用 `git commit --amend` 合并进上一个相关 commit，不新增 commit 数。amend 已推送的 commit 后用 `git push --force-with-lease` 覆盖远程。
+> 2. **重大变更**（新增功能/文件、改变实现方式、引入独立主题）→ 自主判断：可新增一个 commit，**但新增后 commit 总数仍须 ≤5**；若新增会超 5，则改用 `git reset --soft upstream/<base>` 收回全部改动到暂存区、再按逻辑主题分组重提为 ≤5 个 commit（reset 前先 `git branch -f backup-xxx HEAD` 备份，重提后用 `git diff backup-xxx --stat` 校验内容零差异，确保未丢改动）。
+> 3. **任何时候 commit 数逼近或超过 5** → 立即按主题 squash 到 ≤5（同上 reset --soft + 分组重提），再 `--force-with-lease` 推送。
 
 **示例：基于源仓 master 提交单个 commit**
 ```bash
@@ -388,36 +408,50 @@ PR 创建后 `cann-robot` 会自动评论检查 CLA 签署与审批进度：
 
 ### 12. 后续跟进（监控 PR 状态）
 
-**创建 PR 并触发流水线后，必须先询问用户选择监控方式**，再据此执行。轮询监控是长时间、低强度的等待型任务，却持续占用当前高能力 agent 的 token，故给出三种方式按成本/掌控权取舍：
+**创建 PR 并触发流水线后，默认用「脚本轮询 + 模型监听结果」跟进**：把长时间、低强度的机械等待交给确定性脚本 `poll_pipeline.sh`，本 agent 只在脚本产出结果时被唤醒，做需要判断力的事（定位根因、改码、撰写回复）。机械等待全程在脚本里，不消耗模型 token，且天然支持多轮循环。除非用户明确要求改用别的方式（自己掌控节奏不轮询、或本 agent 全程亲自轮询），否则一律走此默认路径。
 
-> 请选择 PR 的后续监控方式：
-> 1. **不监控** —— 不轮询，后续由你自主操作（查看流水线/评审、决定何时改代码）。适合你想自己掌控节奏。
-> 2. **本 agent 监控** —— 由我（当前 agent）持续轮询 PR 状态（流水线 + 评审 + state），发现问题自动改码、回复、重新触发，直到合入或阻塞。一个 agent 全程闭环，但轮询会持续消耗我的 token。
-> 3. **其他 agent 监控（推荐）** —— 我只负责改代码 + 回复评审意见；流水线触发与轮询交给一个 token 消耗较少的独立 agent（如 opencode 或其他你惯用的 agent）。把机械的等待型轮询交给廉价 agent、高能力 agent 只做需要判断力的事，**更省费用**，故推荐此项。我改完/回复完后写一份交接文件并提示你，**由你手动启动那个 agent**去读文件、触发并轮询。
+**启动监控（单轮，固化命令——必须照抄，避免误判进程与取到旧结果）**：
 
-根据用户选择执行下面对应分支。
+> 两个历史踩坑：①用 `pgrep -f poll_pipeline.sh` 判断进程会**误匹配自己这条含该字符串的命令**，把"没在跑"误判成"在跑"；②刚 push 后新流水线还没出结果，`get-pipeline` 取到的是**上一轮旧结果表**，会把旧的 FAILED 当成本轮结果误报。下面命令固化了两者的正确做法。
 
-#### 12-A 选项1：不监控
+1. **记录本次 push 时间**（用于 `--since` 过滤，绝不能省）：push 完立即 `date '+%Y-%m-%dT%H:%M:%S%z'` 存为 `PUSH_TS`。
 
-向用户给出 PR 链接、当前流水线触发状态，并说明后续可随时让我「继续监控 PR <号>」。结束本次跟进，不启动任何轮询。
+2. **清旧结果 + 后台启动轮询脚本**（`--since` 传 `PUSH_TS`，脚本只认该时刻之后的新结果表，旧结果一律不取）：
 
-#### 12-B 选项2：本 agent 监控
+   ```bash
+   rm -f .gitcode-handoff/result-<PR>.json   # 清掉上一轮残留, 避免 Monitor 立即被旧结果唤醒
+   nohup bash .claude/skills/gitcode-pr/scripts/poll_pipeline.sh \
+     --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo> \
+     --interval 120 --max-wait 3600 --since "<PUSH_TS>" > /tmp/poll-<PR>.log 2>&1 &
+   disown
+   ```
 
-PR 创建并触发流水线后，需**轮询监控** PR 状态直到合入或需要人工介入。每轮必须检查**三件事**：①流水线结果（cann-robot 评论）②人类评审意见（非 robot、非自己的评论）③PR `state`。三者每轮都要查；人类评审意见可能在流水线通过后、甚至分多轮陆续提出，因此持续轮询期间每轮都要重新拉取评审意见，而非只查一次。
+3. **确认进程真在跑**（用 `ps aux | grep` 且**排除 grep 自身和当前命令**，不要用 `pgrep -f`）：
 
-**全程只用一个监控**：监控的对象是 **PR 本身**（按 PR 号持续盯它的状态、最新流水线结果与新评审），不绑定某一次 commit。推送新 commit、重新触发流水线后，**复用同一个监控**继续跟进，不要为每个 commit 另起新监控。每轮基于当前 `head` 的最新结果判断，直到 PR `merged`/`closed` 或出现需人工介入的阻塞时，该监控才结束。
+   ```bash
+   sleep 2
+   ps aux | grep "poll_pipeline.sh" | grep -v grep | grep -q "pr <PR_NUMBER>" \
+     && echo "poll running ok" || echo "poll NOT running"
+   ```
 
-**所有读取/回复操作都调脚本拿 JSON，不要现写 curl/jq**（脚本已固化 per_page=100、终态筛选、引用回复等踩坑逻辑）。先用 `resolve-repo` 拿到 `parent_owner/parent_repo`，下文 `--owner/--repo` 均传这两个值。
+4. **用 Monitor 监听结果文件**，脚本写出 `result-<PR>.json` 即唤醒本 agent，无需自己 sleep 轮询。
 
-```bash
-# 查 PR 状态（state: open/merged/closed）
-python3 .claude/skills/gitcode-pr/scripts/pr_ops.py get-state \
-  --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo>
-```
+5. **被唤醒后先核对结果是不是本轮的**（防旧结果误报）：读 result 后用 `get-pipeline --since "<PUSH_TS>"` 复核，若返回 `has_result=false` 说明本轮流水线**还没出结果**（读到的是旧残留），继续等待、不要据此判断；只有 `--since` 过滤后仍有结果表才是本轮真实结果。
 
-- `state` 为 `merged` → 已合入，结束跟进。
-- `state` 为 `closed`（未合入）→ 被关闭，停止并向用户说明。
-- `state` 为 `open` → 按下面两步检查，未闭环则等待一轮后再查。
+6. **读 result 判断**（脚本输出 `{state, has_result, pipeline_pass, failed_tasks, timeout}`）：
+   - `state=merged` → 完成。
+   - `state=closed` → 被关闭，向用户汇报。
+   - `pipeline_pass=true` → 流水线通过，按 12.2 取评审意见、回复。
+   - `pipeline_pass=false`（真失败）→ 按 12.1 定位根因 → 改码 → `git push` → `pr_ops.py reply` 回复评审 → `pr_ops.py trigger` 重新触发 → 回到第 1 步重起一轮 poll（多轮循环）。
+   - `timeout=true` → 超时仍无结果，向用户汇报由人工查看。
+
+**监控对象是 PR 本身**（按 PR 号持续盯它的 `state`、最新流水线结果与新评审），不绑定某一次 commit；推送新 commit、重新触发后复用同一轮询循环，不为每个 commit 另起监控。每轮关注三件事：①流水线结果 ②人类评审意见（非 robot、非自己，可能在流水线通过后分多轮陆续提出，故每轮重新拉取）③PR `state`。直到 `merged`/`closed` 或出现需人工介入的阻塞为止。
+
+**职责边界**：脚本做轮询/取结果/触发/回复的 API 调用（确定性）；本 agent 只做定位根因、改代码、判断评审是否采纳、撰写回复正文（需判断力）。所有读取/回复操作都调 `pr_ops.py` 子命令拿 JSON，不要现写 curl/jq（脚本已固化 per_page=100、终态筛选、引用回复等踩坑逻辑）。先用 `resolve-repo` 拿 `parent_owner/parent_repo`，下文 `--owner/--repo` 均传这两个值。
+
+> **可选：跨独立 agent 交接**。若用户要求把轮询交给另一台机器/另一个独立 agent（而非本地脚本），改写交接文件 `.gitcode-handoff/pipeline-<PR>.json`（含 pr/owner/repo/branch/head_sha），由该 agent 读取后调用同一套 `pr_ops.py` 执行。
+
+下面 12.1–12.4 是被唤醒后处理流水线、评审、闭环、描述同步的具体动作。
 
 #### 12.1 流水线：未通过则查因、修复、重新触发
 
@@ -430,14 +464,15 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py get-pipeline \
 
 返回 `{has_result, all_success, tasks, failed_tasks, created_at}`。判断：
 - `has_result=false` → 流水线仍在跑，**继续等待**，不要据此判断状态。
-- `has_result=true && all_success=true` → 流水线通过，进入 13.2 看评审意见。
+- `has_result=true && all_success=true` → 流水线通过，进入 12.2 看评审意见。
 - `has_result=true && all_success=false` → 看 `failed_tasks`：含 `FAILED`/`FAILURE`/`ERROR` 为真失败；仅 `WARNING` 通常不阻断合入，由你结合任务名判断是否需处理。
 
 真失败时**必须**：
-  1. 从失败日志/评论定位**根因**（编译错误、UT 失败、门禁未过等）。
-  2. 在本地分支**修复**，提交并推送到 PR 源分支（`git push origin <branch>`）。
-  3. 执行**推送后固定动作**（见第 8 节）：一律 `pr_ops.py trigger` 触发 → 判断是否 update-pr → 跟进。
-  4. 回到 12.1 继续轮询，直到流水线通过。
+  1. **UT_Test / codecheck 失败 → 直接向用户索要报错日志**，不要自己尝试获取（OBS 产物 `ut_cov.tar.gz` 有鉴权 AccessDenied、openlibing 看板需登录有 WAF，程序化都拿不到；自己反复试既耗 token 又拿不到、还易被旧结果误导）。向用户明确请求："请把 PR 页面里 `UT_Test`（或 codecheck）失败的报错日志贴给我"，拿到日志再定位。其他类型失败（如 `Check_Pr` commit 数超限、编译错误评论可见）可自行从评论/规则判断。
+  2. 拿到日志后定位**根因**。
+  3. 在本地分支**修复**，提交并推送到 PR 源分支（`git push origin <branch>`）；推送前按第 7 节"提交前本地检查"**跑全量 UT**确认本地全绿。
+  4. 执行**推送后固定动作**（见第 8 节）：一律 `pr_ops.py trigger` 触发 → 判断是否 update-pr → 跟进。
+  5. 回到 12.1 继续轮询，直到流水线通过。
 
 > **每次修改并推送后，判断是否需同步更新 PR 描述**（见第 12.4 节）。新增文件/功能、改变实现方式、解决新的评审问题时，描述应随之更新；纯 bugfix/格式调整通常无需改。
 
@@ -448,7 +483,7 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py get-codecheck \
   --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo>
 ```
 
-返回 `{codecheck_pass, codecheck_result, precommit_result, commit_id, detail_url}`。`commit_id` 可确认结论对应哪次提交。但**逐条告警明细无法脚本化**：明细在 `detail_url`（openlibing 看板）需登录查看，有 WAF 拦截程序化访问，且严禁把 token 发往该第三方域名——明细只能**由用户在浏览器登录后导出 xlsx**，再用 Python `zipfile` 解析（`xl/sharedStrings.xml` + `xl/worksheets/sheet1.xml`）。codecheck 是 Python 增量检查，编码须守仓库规范（print→logging、避免函数内 sys.exit、subprocess 用绝对路径、返回值一致、推导式不超两子句等）。
+返回 `{codecheck_pass, codecheck_result, precommit_result, commit_id, detail_url}`。`commit_id` 可确认结论对应哪次提交。但**逐条告警明细只能由用户提供**：明细在 `detail_url`（openlibing 看板）需登录查看、有 WAF 拦截程序化访问，且严禁把 token 发往该第三方域名——`get-codecheck` 只能告诉你 pass/fail，**拿不到逐条明细**。codecheck 失败时**直接请用户把报错明细贴给你**（用户在浏览器看板复制，或导出 xlsx 后贴关键行），不要自己反复尝试下载/解析（既拿不到又耗 token）。拿到明细后再定位修复。codecheck 是 Python 增量检查，编码须守仓库规范（print→logging、避免函数内 sys.exit、subprocess 用绝对路径、返回值一致、推导式不超两子句等），可优先用第 7 节 `incremental-codecheck` 钩子本地预演自查。
 
 #### 12.2 评审意见：标准处理流程
 
@@ -492,9 +527,17 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py reply-review \
 
 #### 12.3 闭环条件
 
+**流水线通过 ≠ 可以停止监控。** 监控的终点只有一个：PR `state` 变为 `merged`（或 `closed`）。在那之前必须**持续监控**，因为人类评审意见往往在流水线通过后才陆续出现，且 `/lgtm`、`/approve` 等审批要等评审被回应、问题被解决后才会给。因此：
+
+- **持续轮询直到 `state=merged`/`closed`**，不要因"流水线全绿"就结束跟进或交接。流水线绿只是必要条件之一，合入还需评审通过 + 审批门禁满足。
+- **每轮都重新 `get-reviews` 拉取人类评审意见**（评审可能分多轮、在不同时间点提出）。**只要有未回复的评审意见，就必须按 12.2 逐条回复**（采纳则改码+回复、不采纳则说明理由）——评审者通常要看到回应才会 `/lgtm`，漏回复会卡住合入。
+- 改码回复后按第 8 节推送后固定动作（push && trigger 一条命令）重新触发，复用同一监控继续。
+
 持续轮询直到满足其一：
-- `state=merged`（流水线通过 + 评审通过 + 门禁满足，通常 `cann-robot` 自动合入）→ 完成。
-- `state=closed` 或出现需用户决策的阻塞（如 CLA 无法自动解决、评审分歧）→ 停止并向用户汇报。
+- `state=merged`（流水线通过 + 评审通过 + 门禁满足，通常 `cann-robot` 自动合入）→ 完成，向用户汇报合入。
+- `state=closed` 或出现需用户决策的阻塞（如 CLA 无法自动解决、评审分歧无法达成一致）→ 停止并向用户汇报。
+
+> 简言之：**监控的对象是"直到合入"，不是"直到流水线通过"**。流水线通过后仍要盯评审、回评审、等审批，直到 `merged` 才算闭环。
 
 #### 12.4 同步更新 PR 描述（多轮修改后）
 
@@ -510,35 +553,6 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py update-pr \
 ```
 
 返回 `{updated, pr, fields}`。仅传 `--body/--body-file` 改描述；需改标题再加 `--title`（不传则不动）。描述应继续遵循仓库模板 `.gitcode/PULL_REQUEST_TEMPLATE.zh-CN.md` 的结构。
-
-#### 12-C 选项3：脚本轮询 + 模型监听结果（推荐，省 token）
-
-把"机械轮询等待"交给确定性脚本 `poll_pipeline.sh`，本 agent 只在脚本产出结果时被唤醒、做需要判断力的事（定位根因、改码、撰写回复）。脚本替代了原先"另起一个低成本 agent 轮询"的角色——无需常驻第二个 agent 进程，且天然支持**多轮循环**。
-
-**单轮流程**：
-
-1. **后台启动轮询脚本**（写 `.gitcode-handoff/result-<PR>.json`，到出完成结果或 merged/closed 即退出）：
-
-   ```bash
-   bash .claude/skills/gitcode-pr/scripts/poll_pipeline.sh \
-     --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo> \
-     --interval 120 --max-wait 3600 &
-   ```
-
-2. **用 Monitor 监听结果文件**，脚本写出 `result-<PR>.json` 即唤醒本 agent，无需自己 sleep 轮询。
-
-3. **读 result 判断**（脚本输出 `{state, has_result, pipeline_pass, failed_tasks, timeout}`）：
-   - `state=merged` → 完成。
-   - `state=closed` → 被关闭，向用户汇报。
-   - `pipeline_pass=true` → 流水线通过，按 13.2 取评审意见、回复。
-   - `pipeline_pass=false`（真失败）→ 按 13.1 定位根因 → 改码 → `git push` → `pr_ops.py reply` 回复评审 → `pr_ops.py trigger` 重新触发 → **回到第 1 步重起一轮 poll**（多轮循环）。
-   - `timeout=true` → 超时仍无结果，向用户汇报由人工查看。
-
-**多轮循环**：失败修复后重起 poll 脚本即进入下一轮，本 agent 仍只在每轮结果就绪时被唤醒，机械等待全程在脚本里，不消耗模型 token。
-
-**职责边界**：脚本做轮询/取结果/触发/回复的 API 调用（确定性）；本 agent 只做定位根因、改代码、判断评审是否采纳、撰写回复正文（需判断力）。
-
-**可选：跨独立 agent 交接**。若确需把轮询交给另一台机器/另一个独立 agent（而非本地脚本），可改写交接文件 `.gitcode-handoff/pipeline-<PR>.json`（含 pr/owner/repo/branch/head_sha），由该 agent 读取后调用同一套 `pr_ops.py` 执行；此为可选路径，默认用上面的本地脚本 + Monitor 即可。
 
 ---
 

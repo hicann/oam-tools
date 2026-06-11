@@ -1,3 +1,7 @@
+# 约束 pre-commit 最小版本：本配置用了 `stages: [pre-commit]` 新 stage 名，
+# 旧版 pre-commit 加载时会报非法 stage 导致所有钩子失效。3.2.0 起支持该名。
+minimum_pre_commit_version: "3.2.0"
+
 repos:
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v16.0.0
@@ -14,16 +18,18 @@ repos:
         language: system
         pass_filenames: true
         types: [file]
-        stages: [commit]
+        stages: [pre-commit]
         verbose: true
 
   # Python 格式检查 + 基础 lint（ruff）。默认只查本次改动的 .py，不扫存量文件。
+  # 注意：不启用 ruff-format。本仓存量 Python 代码不符合 ruff-format 风格，
+  # 一旦它重排被碰到的整个文件，会把不属于本次改动的存量代码也写进 diff，
+  # 既违反精准修改、又让云端增量 codecheck 把重排行当新增来误报（重复代码/超大函数等）。
   - repo: https://gitcode.com/gh_mirrors/ru/ruff-pre-commit
     rev: v0.9.9
     hooks:
       - id: ruff
         args: [--fix]
-      - id: ruff-format
 
   # Python 代码检查（pylint，放宽贴近云端 codecheck，避免本地比云端更严）。
   - repo: https://gitcode.com/gh_mirrors/pyl/pylint
@@ -37,6 +43,22 @@ repos:
           # C(convention)/R(refactor) 是与华为规范无关的命名/重构噪声，一并关闭。
           - --disable=C,R,import-error,no-name-in-module,wrong-import-order
           - --max-line-length=120
+
+  # 增量行 codecheck：本地复现云端"只查本次改动行"的增量行为。
+  # 云端 codecheck 对行宽(C0301)/超大函数(R0915)/staticmethod(R6301)按增量行卡门禁，
+  # 但上面的 pylint 按整文件检查且关掉了 C/R，无法对这几类预警；若整文件放开又会被
+  # 存量违规淹没、比云端更严。此钩子用 pylint 全量检查后只保留命中 staged 改动行的告警，
+  # 既能 push 前预警自己引入的违规，又不被存量违规阻塞。
+  - repo: local
+    hooks:
+      - id: incremental-codecheck
+        name: Incremental codecheck (changed lines only)
+        entry: python3 scripts/incremental_codecheck.py
+        language: python
+        # 钩子内部用 ruff 驱动检查，需在隔离环境装 ruff。
+        additional_dependencies: [ruff==0.9.9]
+        types: [python]
+        require_serial: true
 
   # Python 安全检查（bandit，仅 medium 及以上严重度）。
   - repo: https://gitcode.com/gh_mirrors/ba/bandit

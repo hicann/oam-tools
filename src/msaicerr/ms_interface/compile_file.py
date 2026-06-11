@@ -64,10 +64,10 @@ def get_compile_from_tik(soc_version, compile_temp_dir):
     return [build_bins[0], build_jsons[0]]
 
 
-def get_complie_file(soc_version, temp_dir):
+def get_compile_file(soc_version, temp_dir):
     handlers = utils.load_ascend_handlers()
     for handler in handlers:
         if handler.is_chip_handler(soc_version):
-            return handler.get_complie_file(soc_version, temp_dir)
+            return handler.get_compile_file(soc_version, temp_dir)
     build_result = get_compile_from_tik(soc_version, temp_dir)
     return build_result

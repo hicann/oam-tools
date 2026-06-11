@@ -176,13 +176,14 @@ clean_cpack_staging() {
     local build_path="$1"
     local cpack_path="${build_path%/}/_CPack_Packages"
 
-    if [ -z "${build_path}" ] || [ ! -d "${cpack_path}" ]; then
+    # 删除前做非空判断, 避免 cpack_path 为空时误删; 禁止 rm -rf 直删所有文件。
+    if [ -z "${build_path}" ] || [ -z "${cpack_path}" ] || [ ! -d "${cpack_path}" ]; then
         return
     fi
 
     echo "clear cpack staging directory"
     chmod -R u+w "${cpack_path}" 2>/dev/null
-    rm -rf "${cpack_path}"
+    rm -r -- "${cpack_path}"
 }
 
 print_success() {

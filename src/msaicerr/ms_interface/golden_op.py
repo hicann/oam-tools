@@ -25,7 +25,7 @@ from ms_interface.single_op_test_frame.common.ascend_tbe_op import (AscendOpKern
                                                                     AscendOpKernelRunner,
                                                                     AscendOpKernelRunnerParam)
 from ms_interface.dsmi_interface import DSMIInterface
-from ms_interface.compile_file import get_complie_file
+from ms_interface.compile_file import get_compile_file
 
 class GoldenOp:
     
@@ -38,7 +38,7 @@ class GoldenOp:
         return block_dim
 
     def run_golden_op(self, soc_version, device_id, temp_dir):
-        build_result = get_complie_file(soc_version, temp_dir)
+        build_result = get_compile_file(soc_version, temp_dir)
         if not build_result:
             return False
         build_bin, build_json = build_result

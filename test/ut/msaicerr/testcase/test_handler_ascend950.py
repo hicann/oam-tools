@@ -37,7 +37,8 @@ cur_abspath = os.path.dirname(__file__)
 
 class TestAscend950Handler:
 
-    def test_get_complie_file(self, mocker, caplog):
+    @staticmethod
+    def test_get_compile_file(mocker, caplog):
         mocker.patch.object(AscendOpKernelRunner, 'run')
         mocker.patch.object(AscendRTSApi, '_load_runtime_so')
         mocker.patch.object(AscendRTSApi, 'register_kernel_launch_fill_func')
@@ -64,7 +65,7 @@ class TestAscend950Handler:
         shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
                                                "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
         handler = Ascend950Handler()
-        build_result = handler.get_complie_file("Ascend950", temp_dir)
+        build_result = handler.get_compile_file("Ascend950", temp_dir)
         shutil.rmtree(temp_dir)
         assert f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o' in str(
             build_result[0])

@@ -34,7 +34,7 @@ def test_clean_cpack_staging_restores_write_permission_before_remove():
 
     function_body = match.group("body")
     chmod_index = function_body.find('chmod -R u+w "${cpack_path}"')
-    remove_index = function_body.find('rm -rf "${cpack_path}"')
+    remove_index = function_body.find('rm -r -- "${cpack_path}"')
 
     assert 'local cpack_path="${build_path%/}/_CPack_Packages"' in function_body
     assert chmod_index != -1
