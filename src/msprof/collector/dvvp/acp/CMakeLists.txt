@@ -222,6 +222,7 @@ target_include_directories(profinj PRIVATE
     ${third_party_INCLUDE_DIR}
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
     ${MSPROF_DIR}/inc/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}/proto/profiler_proto/
