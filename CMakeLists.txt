@@ -149,12 +149,24 @@ if(EXISTS "${BUNDLE_PKG}/aml")
     unset(_aml_plugin_bin)
 
     # install() commands mirror file(COPY) so CPack's cmake --install step also stages these files
-    install(FILES
-        ${BUNDLE_PKG}/aml/lib64/libascend_ml.so
-        ${BUNDLE_PKG}/aml/lib64/libascend_ml_detect.so
+    # Guard: these two libs are required; fail loudly at configure time rather than producing
+    # a broken run package that only crashes at runtime.
+    foreach(_required_lib
+        "${BUNDLE_PKG}/aml/lib64/libascend_ml.so"
+        "${BUNDLE_PKG}/aml/lib64/libascend_ml_detect.so"
+    )
+        if(NOT EXISTS "${_required_lib}")
+            message(FATAL_ERROR "Required AML library not found: ${_required_lib}")
+        endif()
+    endforeach()
+    file(GLOB _aml_runtime_libs CONFIGURE_DEPENDS
+        "${BUNDLE_PKG}/aml/lib64/libascend_ml*.so"
+    )
+    install(FILES ${_aml_runtime_libs}
         DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/lib64
         COMPONENT oam-tools
     )
+    unset(_aml_runtime_libs)
     install(FILES
         ${BUNDLE_PKG}/aml/lib64/plugin/libascend_mix_test.so
         DESTINATION tools/aml/lib64/plugin
