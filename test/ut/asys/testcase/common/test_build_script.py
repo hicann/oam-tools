@@ -27,19 +27,24 @@ def get_build_script_content():
     return (REPO_ROOT / "build.sh").read_text(encoding="utf-8")
 
 
-def test_clean_cpack_staging_restores_write_permission_before_remove():
+def test_safe_rm_dir_defined():
+    build_content = get_build_script_content()
+    match = re.search(r"\nsafe_rm_dir\(\) \{(?P<body>.*?)\n\}", build_content, re.S)
+    assert match is not None, "safe_rm_dir 函数未定义"
+
+    function_body = match.group("body")
+    assert '[ -z "${dir_path}" ] || [ ! -d "${dir_path}" ]' in function_body
+    assert 'chmod -R u+w "${dir_path}" 2>/dev/null' in function_body
+    assert 'rm -r -- "${dir_path}"' in function_body
+
+
+def test_clean_cpack_staging_uses_safe_rm_dir():
     build_content = get_build_script_content()
     match = re.search(r"\nclean_cpack_staging\(\) \{(?P<body>.*?)\n\}", build_content, re.S)
     assert match is not None
 
     function_body = match.group("body")
-    chmod_index = function_body.find('chmod -R u+w "${cpack_path}"')
-    remove_index = function_body.find('rm -r -- "${cpack_path}"')
-
-    assert 'local cpack_path="${build_path%/}/_CPack_Packages"' in function_body
-    assert chmod_index != -1
-    assert remove_index != -1
-    assert chmod_index < remove_index
+    assert 'safe_rm_dir "${cpack_path}"' in function_body
 
 
 def test_package_cleans_cpack_staging_before_make_package():

@@ -172,18 +172,26 @@ mk_dir() {
     echo "created ${create_dir}"
 }
 
+# 安全删除目录：非空判断 + 存在性检查 + 恢复写权限后再删除，禁止 rm -rf。
+safe_rm_dir() {
+    local dir_path="$1"
+    if [ -z "${dir_path}" ] || [ ! -d "${dir_path}" ]; then
+        return
+    fi
+    chmod -R u+w "${dir_path}" 2>/dev/null
+    rm -r -- "${dir_path}"
+}
+
 clean_cpack_staging() {
     local build_path="$1"
     local cpack_path="${build_path%/}/_CPack_Packages"
 
-    # 删除前做非空判断, 避免 cpack_path 为空时误删; 禁止 rm -rf 直删所有文件。
-    if [ -z "${build_path}" ] || [ -z "${cpack_path}" ] || [ ! -d "${cpack_path}" ]; then
+    if [ -z "${build_path}" ] || [ -z "${cpack_path}" ]; then
         return
     fi
 
     echo "clear cpack staging directory"
-    chmod -R u+w "${cpack_path}" 2>/dev/null
-    rm -r -- "${cpack_path}"
+    safe_rm_dir "${cpack_path}"
 }
 
 print_success() {
@@ -242,7 +250,7 @@ build_adump_analysis() {
     fi
     local compare_dst="${BASEPATH}/src/operator_cmp/msaccucmp/compare"
     mkdir -p "${BASEPATH}/src/operator_cmp/msaccucmp"
-    [ -n "${compare_dst}" ] && rm -rf "${compare_dst}"
+    [ -n "${compare_dst}" ] && safe_rm_dir "${compare_dst}"
     mkdir "${compare_dst}"
     cp -r "${src_dir}"/* "${compare_dst}/."
 }
@@ -253,19 +261,14 @@ cmake_generate_make() {
     local cmake_args="$2"
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]];then
         echo "clear all files in build directory"
-        # cpack 打包脚本会把 _CPack_Packages/makeself_staging 目录树 chmod 到 0550，
-        # rm -rf 进不去这些目录，先恢复 owner 写位再删
-        if [ -n "${build_path}" ] && [ -d "${build_path}" ]; then
-            chmod -R u+w "${build_path}" 2>/dev/null
-            rm -rf "${build_path}"
-        fi
+        safe_rm_dir "${build_path}"
     fi
     mk_dir "${build_path}"
     cd "${build_path}"
     [ -f CMakeCache.txt ] && rm CMakeCache.txt
     [ -f Makefile ] && rm Makefile
     [ -f cmake_install.cmake ] && rm cmake_install.cmake
-    [ -d CMakeFiles ] && rm -rf CMakeFiles
+    [ -d CMakeFiles ] && safe_rm_dir CMakeFiles
     echo "${cmake_args}"
     cmake ${cmake_args} ..
     if [ 0 -ne $? ]; then
@@ -285,14 +288,14 @@ build_oam_tools() {
     # 1. 先处理 --make_clean：清理 bundle 目录
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]]; then
         echo "--make_clean: clearing bundle directory"
-        [ -d "bundle" ] && rm -rf "bundle"
+        safe_rm_dir "bundle"
         [ -f ".bundle_version" ] && rm -f ".bundle_version"
     fi
 
     # 2. 处理 --make_clean：清理 submodule 目录（msprof, msprobe）
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]]; then
         echo "--make_clean: clearing submodule directory (msprof, msprobe)"
-        [ -d "submodule" ] && rm -rf "submodule"
+        safe_rm_dir "submodule"
     fi
 
     # 3. 判断是否需要执行 install_bundle.sh
@@ -313,8 +316,8 @@ build_oam_tools() {
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"
     ENABLE_BINARY=TRUE
-    BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}/"
-    BUILD_OUT_PATH="${BASEPATH}/${BUILD_OUT}/"
+    BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
+    BUILD_OUT_PATH="${BASEPATH}/${BUILD_OUT}"
     CMAKE_ARGS="\
     -DCMAKE_INSTALL_PREFIX=${BUILD_PATH} \
     -DENABLE_UT=${ENABLE_UT} \
