@@ -25,7 +25,7 @@ constexpr char MDC_V2_MEMORYUB[] = "0x3,0x5,0x70c,0x206,0x204,0x571,0x572";
 constexpr char MDC_V2_AIRTHMETICUTILIZATION[] = "0x323,0x324";
 constexpr char MDC_V2_RESOURCECONFLICTRATIO[] = "0x540,0x556,0x502,0x528";
 constexpr char MDC_V2_L2CACHE[] = "0x424,0x425,0x426,0x42a,0x42b,0x42c";
-constexpr char MDC_V2_L2CACHEEVENT[] = "0x00,0x81,0x82,0x83,0x74,0x75";
+constexpr char MDC_V2_L2CACHEEVENT[] = "0x00,0x75,0x76,0x77,0x64,0x65";
 constexpr uint16_t MAX_QOS_MONITOR_NUM = 8;
 
 PLATFORM_REGISTER(CHIP_MDC_V2, MdcV2Platform);
@@ -62,7 +62,6 @@ MdcV2Platform::MdcV2Platform()
         PLATFORM_TASK_L2_CACHE_PMU,
         PLATFORM_TASK_RCR_PMU,
         PLATFORM_TASK_SOC_PMU,
-        PLATFORM_TASK_SOC_PMU_NOC,
         // Device
         PLATFORM_SYS_DEVICE_US,
         // Feature
