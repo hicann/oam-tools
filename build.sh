@@ -342,8 +342,8 @@ build_oam_tools() {
         return 1
     fi
     if [ -f cann*.run ];then
-        mkdir -pv $BUILD_OUT_PATH
-        mv cann*.run $BUILD_OUT_PATH
+        mkdir -pv "$BUILD_OUT_PATH"
+        mv cann*.run "$BUILD_OUT_PATH"
     else
         echo "package oam_tools run failed"
         return 1

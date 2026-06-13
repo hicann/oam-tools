@@ -314,14 +314,42 @@ git push origin <新分支名> -u
 > **`git reset --hard` 慎用**：它会丢弃未提交的工作区改动与未跟踪新文件。清理临时测试文件用 `git rm --cached` + `rm`；动 `reset --hard` 前先 `git stash` 或 commit 未完成工作。
 
 > **推送后固定动作（先完成上面的本地检查并 push，再每次按顺序执行）**：
-> 1. **一律触发流水线，且 push 与 trigger 必须绑成一条命令**：`git push origin <branch> --force-with-lease && python3 .claude/skills/gitcode-pr/scripts/pr_ops.py trigger --pr N --owner O --repo R`。**严禁把 push 单独成命令、trigger 留到下一步**——一旦中间隔了思考，注意力会被"挂监控/等结果"抢占而漏掉 trigger（本 skill 历史踩坑：force-push 后转去挂 Monitor，跳过了 trigger，导致流水线没跑、白等一轮）。用 `&&` 让 trigger 成为 push 成功的必然后续，不靠"我记得"。无条件触发，不按"改动是否影响 CI"主观判断，即便纯文档改动也触发。trigger 返回 `{triggered:true}` 后立即 `date '+%Y-%m-%dT%H:%M:%S%z'` 记下时间戳，供第 12 节监控 `--since` 用。
+> 1. **push 必须先于 trigger，且必须确认 PR 页面 HEAD 已更新后再触发**：
+>    ```bash
+>    # Step 1: push
+>    git push origin <branch> --force-with-lease
+>    # Step 2: 等待 GitCode PR 页面刷新（push 后可能有短暂延迟）
+>    sleep 3
+>    # Step 3: 确认 PR head.sha 已是本次 commit，再触发；否则报错不触发
+>    LOCAL_SHA=$(git rev-parse HEAD)
+>    REMOTE_SHA=$(curl -s -H "private-token: $GITCODE_API_TOKEN" \
+>      "https://gitcode.com/api/v5/repos/<parent_owner>/<parent_repo>/pulls/<PR>" \
+>      | python3 -c "import sys,json; print(json.load(sys.stdin)['head']['sha'])")
+>    if [ "$LOCAL_SHA" = "$REMOTE_SHA" ]; then
+>      python3 .claude/skills/gitcode-pr/scripts/pr_ops.py trigger --pr <PR> --owner <parent_owner> --repo <parent_repo>
+>    else
+>      echo "ERROR: PR head.sha ($REMOTE_SHA) != local HEAD ($LOCAL_SHA), do NOT trigger. Retry after a few seconds."
+>    fi
+>    ```
+>    **原因**：GitCode 流水线由 `compile` 评论触发，触发时拉取的是 PR 的 `head.sha`；若 PR 页面尚未刷新到最新 commit，流水线跑的不是本次改动。push 成功不等于 PR 页面立即刷新，必须用 if/else 真正拦截（python3 exit 0 不会阻断 `&&`）。trigger 返回 `{triggered:true}` 后立即 `date '+%Y-%m-%dT%H:%M:%S%z'` 记下时间戳，供第 12 节监控 `--since` 用。无条件触发，即便纯文档改动也触发。
 > 2. **判断是否同步 PR 描述**：本次改动若使描述过时（新增文件/功能、改变实现方式、解决新评审、累积多块改动）→ 用 `pr_ops.py update-pr` 更新；纯小修通常无需。是否更新由你判断，接口调用由脚本完成。
 > 3. **跟进流水线结果**：按第 12 节监控（脚本轮询 + 模型判断）。
 
-> **控制 commit 数量（云端 `Check_Pr` 硬门禁，按顺序判断）**：CANN 仓 `Check_Pr` 要求**单个 PR 的 commit 数不超过 5 个**，超过即 `Check_Pr` FAILED 阻断合入（与 codecheck 无关，纯按 commit 数判定）。每次提交前先 `git rev-list --count upstream/<base>..HEAD` 确认当前 commit 数，并按下列规则选提交方式：
+> **控制 commit 数量（云端 `Check_Pr` 硬门禁，每次 commit 前必须执行）**：
+>
+> ```bash
+> # 每次 commit 前必跑，输出 >4 立即停下按规则处理
+> # <source_remote> = 指向源仓的 remote（有 upstream 用 upstream，否则查 git remote -v 确认）
+> # <base_branch>   = PR 目标分支（通常 master）
+> git rev-list --count <source_remote>/<base_branch>..HEAD
+> ```
+>
+> CANN 仓 `Check_Pr` 要求**单个 PR 的 commit 数不超过 5 个**，超过即 `Check_Pr` FAILED 阻断合入。按下列规则选提交方式：
 > 1. **非重大逻辑变更**（修流水线、采纳评审、补门禁、文档/注释微调等）→ 用 `git commit --amend` 合并进上一个相关 commit，不新增 commit 数。amend 已推送的 commit 后用 `git push --force-with-lease` 覆盖远程。
-> 2. **重大变更**（新增功能/文件、改变实现方式、引入独立主题）→ 自主判断：可新增一个 commit，**但新增后 commit 总数仍须 ≤5**；若新增会超 5，则改用 `git reset --soft upstream/<base>` 收回全部改动到暂存区、再按逻辑主题分组重提为 ≤5 个 commit（reset 前先 `git branch -f backup-xxx HEAD` 备份，重提后用 `git diff backup-xxx --stat` 校验内容零差异，确保未丢改动）。
+> 2. **重大变更**（新增功能/文件、改变实现方式、引入独立主题）→ 自主判断：可新增一个 commit，**但新增后 commit 总数仍须 ≤5**；若新增会超 5，则改用 `git reset --soft <source_remote>/<base_branch>` 收回全部改动到暂存区、再按逻辑主题分组重提为 ≤5 个 commit（reset 前先 `git branch -f backup-xxx HEAD` 备份，重提后用 `git diff backup-xxx --stat` 校验内容零差异，确保未丢改动）。
 > 3. **任何时候 commit 数逼近或超过 5** → 立即按主题 squash 到 ≤5（同上 reset --soft + 分组重提），再 `--force-with-lease` 推送。
+>
+> **红线**：`git rev-list --count` 返回 ≥5 时，禁止直接 `git commit`，必须先 squash 或 amend。
 
 **示例：基于源仓 master 提交单个 commit**
 ```bash
@@ -408,7 +436,14 @@ PR 创建后 `cann-robot` 会自动评论检查 CLA 签署与审批进度：
 
 ### 12. 后续跟进（监控 PR 状态）
 
-**创建 PR 并触发流水线后，默认用「脚本轮询 + 模型监听结果」跟进**：把长时间、低强度的机械等待交给确定性脚本 `poll_pipeline.sh`，本 agent 只在脚本产出结果时被唤醒，做需要判断力的事（定位根因、改码、撰写回复）。机械等待全程在脚本里，不消耗模型 token，且天然支持多轮循环。除非用户明确要求改用别的方式（自己掌控节奏不轮询、或本 agent 全程亲自轮询），否则一律走此默认路径。
+**创建 PR 并触发流水线后，默认不自动启动监控**。完成第 7 步（push && trigger）后，向用户展示进度报告表格（见"输出格式 → 进度报告"），并提供以下选择：
+
+> **是否启动流水线监控？**
+> - **A. 启动后台监控**（推荐）：脚本在后台轮询，流水线出结果后自动唤醒处理。适合不想手动盯的场景。
+> - **B. 我自己查看**：不启动监控，你在 PR 页面查看结果后回来告知。
+> - **C. 立即查询一次**：现在主动查一次流水线状态，不持续轮询。
+
+用户选 A 才启动 `poll_pipeline.sh`；选 B/C 则按需执行对应动作，不启动后台进程。
 
 **启动监控（单轮，固化命令——必须照抄，避免误判进程与取到旧结果）**：
 
@@ -580,6 +615,22 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py update-pr \
 ---
 
 ## 输出格式
+
+### 进度报告（创建 PR 后必须输出）
+
+每次完成 PR 创建流程后，输出如下表格，标注每个步骤的完成状态：
+
+| 步骤 | 操作 | 状态 | 备注 |
+|------|------|------|------|
+| 1 | 获取访问令牌 | ✅ / ❌ | |
+| 2 | 识别目标仓库 | ✅ / ❌ | `parent_owner/parent_repo` |
+| 3 | 本地检查（UT / pre-commit） | ✅ / ⚠️ 跳过 | 说明原因 |
+| 4 | 准备分支并推送 | ✅ / ❌ | 分支名 |
+| 5 | 创建 PR | ✅ / ❌ | PR #N · URL |
+| 6 | 触发流水线 | ✅ / ❌ | 触发时间戳 |
+| 7 | 监控 | 等待用户选择 | A/B/C |
+
+> 状态说明：✅ 已完成 · ❌ 失败/跳过（说明原因）· ⚠️ 有警告
 
 ### 评论列表格式
 

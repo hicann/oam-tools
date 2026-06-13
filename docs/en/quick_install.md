@@ -132,12 +132,12 @@ Currently supported chip models and their CANN ops packages:
 | `npu-smi info` Name column | Applicable products | `${chip_type}` / `${soc_name}` | CANN ops package |
 | --- | --- | --- | --- |
 | `910B` | Atlas A2 training series / Atlas 800I A2 inference products | `910b` | `Ascend-cann-910b-ops_${cann_version}_linux-${arch}.run` |
-| `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `910_93` | `Ascend-cann-910_93-ops_${cann_version}_linux-${arch}.run` |
+| `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `910_93` | `Ascend-cann-A3-ops_${cann_version}_linux-${arch}.run` |
 | `950` | Atlas 950 series products | `950` | `Ascend-cann-950-ops_${cann_version}_linux-${arch}.run` |
 
 > **Notes**
 > - The Name column values above are the keywords this tool recognizes. `npu-smi info` may print a string with sub-model suffixes (e.g. `910B1` / `910B2` / `910B3` / `910B4` for the `910B` family); matching is by "Name column contains the keyword".
-> - "910C" is a commercial alias and corresponds to `910_93` in package names. There is no `910c` / `910_c` spelling in the download links.
+> - "910C" is a commercial alias. Since CANN 8.5.0, the ops package is uniformly named `Ascend-cann-A3-ops_*`. Do not use `910c`, `910_c`, or `910_93` in the package name.
 > - The actual ops package filename and available versions follow the [CANN download page](https://www.hiascend.com/cann/download). Only the three chip families above are supported; please open an issue for any other chip you'd like added.
 
 #### Software Installation

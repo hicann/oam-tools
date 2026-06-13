@@ -1,12 +1,21 @@
-# oam-tools
+<div align="center">
+
+<p align="center">
+  <img src="docs/figures/oam-tools.svg" alt="OAM-TOOLS">
+</p>
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CANN](https://img.shields.io/badge/CANN-%E2%89%A58.5.0-green.svg)](docs/quick_install.md)
+
+</div>
 
 ## 🚀 概述
 
-oam-tools（Operations, Administration, and Maintenance）项目为开发者提供故障定位工具和性能测试调优工具，包含故障信息收集，软硬件信息展示，AI core error报错分析，AI任务性能采集和分析等能力，提升故障问题定位和AI任务性能分析效率。
+Oam-Tools 为开发者提供故障定位工具和性能测试调优工具，包含故障信息收集，软硬件信息展示，AI core error报错分析，AI任务性能采集和分析等能力，提升故障问题定位和AI任务性能分析效率。
 
 ## 🧩 支持的硬件环境
 
-在搭建环境之前，请先确认本机硬件在本工具的支持范围内。
+在搭建环境之前，请先确认硬件在本工具的支持范围内，若无昇腾设备也可以通过docker方式编译构建(详见[快速安装](docs/quick_install.md#方式2docker部署))。
 
 - **CPU 架构**：`aarch64`、`x86_64`
 - **昇腾 AI 处理器**：
@@ -14,11 +23,15 @@ oam-tools（Operations, Administration, and Maintenance）项目为开发者提�
   | `npu-smi info` Name 列 | 适用产品 | 对应 CANN ops 包代号 |
   | --- | --- | --- |
   | `910B` | Atlas A2 训练系列产品 / Atlas 800I A2 推理产品 | `910b` |
-  | `910_93/910C` | Atlas A3 训练系列产品 / Atlas A3 推理系列产品（业内"910C"对应此项） | `910_93` |
+  | `910_93/910C` | Atlas A3 训练系列产品 / Atlas A3 推理系列产品（业内"910C"对应此项） | `A3` |
   | `950` | Atlas 950 系列产品 | `950` |
 
   > - `npu-smi info`实际可能显示带子型号的字符串（如`910B1` / `910B2` / `910B3` / `910B4`），按"Name 列包含上述关键字"的规则匹配即可。
   > - 其它芯片暂不支持，欢迎提交 issue 反馈。CANN ops 包名拼接规则与下载详见[快速安装](docs/quick_install.md#方式3手动安装)。
+
+## ⚡️ 环境准备
+
+请先按照[快速安装](docs/quick_install.md)指南完成环境准备。
 
 ## 🔍 目录结构
 
@@ -39,11 +52,6 @@ oam-tools（Operations, Administration, and Maintenance）项目为开发者提�
   ├── build.sh                                       # 项目工程编译脚本
   ......
   ```
-
-
-## ⚡️ 环境准备
-
-请先按照[快速安装](docs/quick_install.md)指南完成环境准备。
 
 ## 🌐 源码编译
 
@@ -101,15 +109,20 @@ UT测试用例编译输出目录为`build`，如果想清除历史编译记录�
 rm -rf build_out/ build/
 ```
 
-### 功能运行示例
+### ▶️ 功能运行示例
 
 完成[安装](#-安装)后，工具会被释放到 CANN 安装目录下的 `tools/` 子目录（root 用户默认在 `/usr/local/Ascend/cann/tools/`）。运行示例前请先加载环境变量：
 
 ```bash
-source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+# root 用户默认路径；非 root 用户将 /usr/local 替换为 ${HOME}
+source /usr/local/Ascend/cann/set_env.sh
+# 指定路径安装时：source ${install_path}/cann/set_env.sh
 ```
 
-下文示例中尖括号 `<...>` 内为**用户需要替换的占位**（输入路径、输出路径、device id 等），其余部分原样照抄即可。
+> 执行上方命令后，`${ASCEND_INSTALL_PATH}` 即为 CANN 安装目录：
+> - root 用户默认：`/usr/local/Ascend/cann`
+> - 非 root 用户默认：`${HOME}/Ascend/cann`
+> - 指定路径安装：`${install_path}/cann`
 
 #### asys（故障信息收集 / 诊断）
 
@@ -123,20 +136,18 @@ python3 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys.py -h
 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys -h
 ```
 
-asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。下面以软链接形式给出常用调用，把命令前缀简记为 `<asys_bin>`（即 `${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys`）：
+asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。在环境变量加载生效后，可以直接以asys调用：
 
 ```bash
 # 采集主机与 device 的软硬件信息（不依赖待诊断任务，通常作为环境自检）
-<asys_bin> info
+asys info
 
 # 体检 device 健康状态
-<asys_bin> health
+asys health
 
 # 采集环境中已存在的运维信息并打包到指定输出目录
-<asys_bin> collect --output <output_dir>
+asys collect --output <output_dir>
 ```
-
-将 `<asys_bin>` 加入 `PATH` 后即可直接 `asys info` / `asys health` 等。完整参数以 `<asys_bin> -h` 输出为准。
 
 #### msaicerr（AI Core Error 分析）
 
@@ -186,5 +197,3 @@ pre-commit 是一个用于管理和维护 Git 预提交钩子（hooks）的框�
 - [贡献指南](CONTRIBUTING.md)
 - [安全声明](SECURITY.md)
 - [许可证](LICENSE)
-
-

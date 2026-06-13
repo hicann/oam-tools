@@ -135,6 +135,8 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
    请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
 
 <a id="section_manual_install"></a>
+
+
 ### 方式3：手动安装
 
 对于有昇腾设备的开发者，若您想手动搭建昇腾环境，请参考下述步骤。
@@ -171,12 +173,12 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 | `npu-smi info` Name 列 | 适用产品 | `${chip_type}` / `${soc_name}` | CANN ops 包名 |
 | --- | --- | --- | --- |
 | `910B` | Atlas A2 训练系列产品 / Atlas 800I A2 推理产品 | `910b` | `Ascend-cann-910b-ops_${cann_version}_linux-${arch}.run` |
-| `910_93` | Atlas A3 训练系列产品 / Atlas A3 推理系列产品（业内"910C"对应此项） | `910_93` | `Ascend-cann-910_93-ops_${cann_version}_linux-${arch}.run` |
+| `910_93` | Atlas A3 训练系列产品 / Atlas A3 推理系列产品（业内"910C"对应此项） | `910_93` | `Ascend-cann-A3-ops_${cann_version}_linux-${arch}.run` |
 | `950` | Atlas 950 系列产品 | `950` | `Ascend-cann-950-ops_${cann_version}_linux-${arch}.run` |
 
 > **说明**
 > - 上表 Name 列为本工具识别的型号关键字；`npu-smi info`实际可能显示带子型号的字符串（如`910B`类会显示为`910B1` / `910B2` / `910B3` / `910B4`），按"Name 列包含上述关键字"的规则匹配即可。
-> - "910C"是商用别称，对应包名中的`910_93`，请勿手动拼写为`910c`、`910_c`等下载链接中不存在的型号。
+> - "910C"是商用别称，对应包名中的`A3`（CANN 8.5.0 起统一使用 `Ascend-cann-A3-ops_*`），请勿手动拼写为`910c`、`910_c`、`910_93`等形式。
 > - ops 包的实际文件名与可用版本以 [CANN 官方下载页](https://www.hiascend.com/cann/download) 为准，本工具仅识别上表三类芯片，其它芯片暂不支持，欢迎提交 issue 反馈。
 
 #### 软件安装

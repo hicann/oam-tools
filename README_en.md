@@ -14,11 +14,11 @@ Before setting up the environment, confirm that your hardware is within the supp
   | `npu-smi info` Name column | Applicable products | CANN ops package keyword |
   | --- | --- | --- |
   | `910B` | Atlas A2 training series / Atlas 800I A2 inference products | `910b` |
-  | `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `910_93` |
+  | `910_93` | Atlas A3 training series / Atlas A3 inference series (the commercial name "910C" maps here) | `A3` |
   | `950` | Atlas 950 series products | `950` |
 
   > - `npu-smi info` may print sub-model suffixes (e.g. `910B1` / `910B2` / `910B3` / `910B4`); matching is by "Name column contains the keyword".
-  > - "910C" is a commercial alias; package names use `910_93`. There is no `910c` / `910_c` spelling.
+  > - "910C" is a commercial alias. Since CANN 8.5.0, the ops package is uniformly named `Ascend-cann-A3-ops_*`. Do not use `910c`, `910_c`, or `910_93` in the package name.
   > - Other chips are not yet supported — please open an issue. The full ops package naming convention and download instructions are in [Quick Install](docs/en/quick_install.md#method-3-manual-installation).
 
 ## Directory Structure
@@ -78,6 +78,73 @@ Run the following command to install the compiled oam-tools software package:
 After installation completes, the user-compiled oam-tools software package replaces the oam-tools related software in the installed CANN development kit package.
 
 > If your environment has a `grep` version greater than 3.8.0, a warning appears during installation, for example `grep: warning: stray \ before -`. This occurs because newer grep versions have stricter validation of expressions, but does not affect installation and usage.
+
+### ▶️ Usage Examples
+
+After [installation](#installation), the tools are extracted to the `tools/` subdirectory under the CANN installation directory (root user default: `/usr/local/Ascend/cann/tools/`). Load the environment variables before running any example:
+
+```bash
+# Root user default path; for non-root users, replace /usr/local with ${HOME}
+source /usr/local/Ascend/cann/set_env.sh
+# For a custom install path: source ${install_path}/cann/set_env.sh
+```
+
+> `set_env.sh` sets `${ASCEND_INSTALL_PATH}` to the CANN installation directory (e.g. `/usr/local/Ascend/cann`). All commands below use this variable.
+
+In the examples below, text inside angle brackets `<...>` is a **placeholder you must replace** (input path, output path, device id, etc.); everything else can be copied verbatim.
+
+#### asys (Fault Information Collection / Diagnosis)
+
+The `src/asys/` directory contains both `asys.py` and a symlink `asys` pointing to it. After installation, both forms work directly:
+
+```bash
+# Form 1: explicit python3 call
+python3 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys.py -h
+
+# Form 2: call the symlink directly (asys.py has a #!/usr/bin/env python3 shebang)
+${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys -h
+```
+
+Common commands (using `<asys_bin>` as shorthand for `${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys`):
+
+```bash
+# Collect host and device software/hardware info (environment self-check)
+<asys_bin> info
+
+# Check device health status
+<asys_bin> health
+
+# Collect existing O&M information and package it to the specified output directory
+<asys_bin> collect --output <output_dir>
+```
+
+Add `<asys_bin>` to `PATH` to use `asys info` / `asys health` directly. For full parameters, run `<asys_bin> -h`.
+
+#### msaicerr (AI Core Error Analysis)
+
+The msaicerr entry point is installed at `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`.
+
+```bash
+# Parse an existing AI Core Error report, output results to <output_dir>
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
+
+# Parse a single dump file (dtype values: see -h output)
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
+
+# Check whether the environment meets msaicerr requirements
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -e -dev 0
+
+# Full parameter description
+python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -h
+```
+
+#### msprof (Performance Tuning)
+
+After installation, the msprof analysis script is located at `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/`. It is called internally by the CANN profiler pipeline; to run it manually:
+
+```bash
+python3 ${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/analysis/msprof/msprof.py -h
+```
 
 ## Verification
 
