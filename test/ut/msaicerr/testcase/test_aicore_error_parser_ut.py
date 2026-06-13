@@ -169,6 +169,34 @@ class TestUtilsMethods(CommonAssert):
         aic_info = parser.get_kernel_name_l0(info.node_name)
         self.assertEqual(aic_info.task_id, '6')
 
+    def test_sk_get_kernel_name_l0(self):
+        # SK场景：标志性打印中的kernelName才是正确的算子名，覆盖原逻辑解析结果
+        collect_path = self.temp.joinpath("sk_collect")
+        plog_path = collect_path.joinpath("collection/plog")
+        plog_path.mkdir(parents=True, exist_ok=True)
+        plog_path.joinpath("plog.log").write_text(
+            "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+        parser = AicoreErrorParser(str(collect_path))
+        aic_info = parser.get_kernel_name_l0("node_name")
+        self.assertEqual(aic_info.kernel_name, "Add_sk_kernel_900016000")
+        self.assertEqual(aic_info.node_name, "node_name")
+
+    def test_sk_get_kernel_name_l0_keep_stream_task_from_data_name(self):
+        # 纯SK场景：plog无普通报错行，stream_id/task_id应保留dump文件名中解析出的值，不丢失
+        collect_path = self.temp.joinpath("sk_collect_keep")
+        plog_path = collect_path.joinpath("collection/plog")
+        plog_path.mkdir(parents=True, exist_ok=True)
+        plog_path.joinpath("plog.log").write_text(
+            "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+        parser = AicoreErrorParser(str(collect_path))
+        # data_name 形如 name.stream_id.task_id.timestamp，可解析出 stream_id=42, task_id=1
+        aic_info = parser.get_kernel_name_l0("exception_info.42.1.1726159207469285")
+        self.assertEqual(aic_info.kernel_name, "Add_sk_kernel_900016000")
+        self.assertEqual(aic_info.stream_id, "42")
+        self.assertEqual(aic_info.task_id, "1")
+
     def test_ffts1_get_kernel_name_l0_info(self):
         info = AicErrorInfo()
         info.kernel_name = 'kernel_name'

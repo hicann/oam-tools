@@ -37,6 +37,17 @@ class Collection:
         self.collect_level = 0
         self.ffts_flag = False
 
+    @staticmethod
+    def get_sk_kernel_name(plog_dir) -> str:
+        # SK场景标志性打印中的kernelName才是正确的算子名
+        sk_marker = 'Begin to dump callback exception'
+        sk_cmd = ['grep', sk_marker, '-inrE', plog_dir]
+        sk_regexp = r"kernelName=([^\n]*?)\.\s*$"
+        sk_ret = utils.get_inquire_result(sk_cmd, sk_regexp)
+        if sk_ret:
+            return sk_ret[0]
+        return ""
+
     def check_argument_valid(self: any) -> None:
         utils.check_path_valid(self.report_path, isdir=True)
         utils.check_path_valid(self.output_path, isdir=True, output=True)
@@ -71,6 +82,11 @@ class Collection:
     def get_kernel_name_l0(self: any, data_name) -> tuple:
         # 获取kernel_name
         plog_dir = os.path.join(self.output_path, 'collection', 'plog')
+        # 优先查找SK场景标志性打印，命中则直接返回其中的kernelName
+        sk_kernel_name = self.get_sk_kernel_name(plog_dir)
+        if sk_kernel_name:
+            utils.print_debug_log(f"SK scenario found, kernel_name {sk_kernel_name}, node_name {data_name}")
+            return sk_kernel_name, data_name
         if not self.ffts_flag:
             error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
             kernel_name_cmd = ['grep', error_log, '-inrE', plog_dir]
@@ -78,20 +94,13 @@ class Collection:
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if kernel_name_ret and kernel_name_ret[0][1] != "none":
                 kernel_name = kernel_name_ret[0][1]
-                node_name = data_name
-                utils.print_debug_log(f"AicoreError Found, kernel_name {kernel_name}, node_name {node_name}")
-                return kernel_name, node_name
-
-            kernel_name_regexp = r" .*?fault kernel_name=(.*?),"
-            kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
-            if not kernel_name_ret:
-                utils.print_error_log(f"Failed to get \"{error_log}\" in plog.")
-                raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-
-            kernel_name = kernel_name_ret[0]
-            node_name = data_name
-            utils.print_debug_log(f"AicoreError Found, kernel_name {kernel_name}, node_name {node_name}")
-            return kernel_name, node_name
+            else:
+                kernel_name_regexp = r" .*?fault kernel_name=(.*?),"
+                kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
+                if not kernel_name_ret:
+                    utils.print_error_log(f"Failed to get \"{error_log}\" in plog.")
+                    raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
+                kernel_name = kernel_name_ret[0]
         else:
             kernel_name_cmd = ['grep', 'fftsplus task execute failed', '-inrE', plog_dir]
             kernel_name_regexp = r".*?fault kernel_name=(.*?),"
@@ -99,11 +108,10 @@ class Collection:
             if not kernel_name_ret:
                 utils.print_error_log(f"Failed to get \"fftsplus task execute failed\" in plog.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-
             kernel_name = kernel_name_ret[0]
-            node_name = data_name
-            utils.print_debug_log(f"AicoreError Found, kernel_name {kernel_name}, node_name {node_name}")
-            return kernel_name, node_name
+
+        utils.print_debug_log(f"AicoreError Found, kernel_name {kernel_name}, node_name {data_name}")
+        return kernel_name, data_name
 
     def _get_node_and_kernel_name(self: any, data_name) -> tuple:
         if self.collect_level == 1:

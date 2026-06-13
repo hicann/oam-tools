@@ -63,6 +63,11 @@ AIC_INFO_DEV_FUNC_ERROR = "[AIC_INFO] dev_func:te_gatherv2_1__?kernel0."
 AIC_INFO_NODE_NAME_ERROR = "[AIC_INFO] node_name:GatherV2."
 AICORE_KERNEL_EXECUTE_FAILED_ERROR = "Aicore kernel execute failed, device_id=0, stream_id=42, report_stream_id=42, task_id=1, flip_num=0, fault kernel_name FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic, fault kernel info ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic, program id=0, hash=1208019939949783628."
 FFTS_PLUS_TASK_EXECUTE_FAILED_ERROR = "fftsplus task execute failed,"
+SK_DUMP_CALLBACK_EXCEPTION = (
+    "[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.500 [task.cc:600]1592077 PrintInfo:"
+    "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x12c200000000, "
+    "argSize=64, binHandle=0x12c200000100, extraTensorNum=2, kernelName=Add_sk_kernel_900016000."
+)
 
 # ge 文件名
 GE_GRAPH_FILE = "ge_proto_test_Build.txt"

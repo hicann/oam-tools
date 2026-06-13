@@ -199,6 +199,35 @@ class TestOpsCollect(AssertTest):
         mocker.patch("os.popen", return_value=CmdRet())
         self.assertTrue(get_fault_kernel_name("./") == "te_gatherv2_097ab5be870f5abfbee16f82ff39732eccfee1dbe76f3bcd6ef32b08996dd346_1__kernel0")
 
+    def test_ops_collect_get_fault_kernel_name_sk_scenario(self, mocker):
+        from collect.ops.ops_collect import get_fault_kernel_name
+        mocker.patch("common.FileOperate.check_dir", return_value=True)
+
+        # SK场景：标志性打印中的kernelName才是正确的算子名，且优先于fault kernel_name
+        class CmdRet:
+            def readlines(self):
+                return [
+                    "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
+                    "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000."
+                ]
+            def close(self):
+                return []
+        mocker.patch("os.popen", return_value=CmdRet())
+        self.assertTrue(get_fault_kernel_name("./") == "Add_sk_kernel_900016000")
+
+    def test_ops_collect_get_fault_kernel_name_sk_not_match(self, mocker):
+        from collect.ops.ops_collect import get_sk_kernel_name
+        mocker.patch("common.FileOperate.check_dir", return_value=True)
+
+        # 标志性打印存在但无kernelName字段，返回None，退回普通场景逻辑
+        class CmdRet:
+            def readlines(self):
+                return ["[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1."]
+            def close(self):
+                return []
+        mocker.patch("os.popen", return_value=CmdRet())
+        self.assertTrue(get_sk_kernel_name("./") is None)
+
     def test_ops_collect_get_fault_kernel_name_files(self, mocker):
         from collect.ops.ops_collect import get_fault_kernel_name_files
 

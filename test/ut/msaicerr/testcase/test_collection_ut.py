@@ -463,6 +463,22 @@ class TestUtilsMethods(CommonAssert):
             self.assertEqual(str(e), str(
                 Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR))
 
+    def test_collect_get_kernel_name_l0_sk_scenario(self):
+        # SK场景：标志性打印中的kernelName才是正确的算子名，优先返回
+        input_path = RES_PATH.joinpath("ori_data/collect/notffts")
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        data_name = "GatherV2.GatherV21.1.1733469426252033"
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection_plog_path.joinpath("plog.log").write_text(
+            "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+        collection = Collection(input_path, output_path)
+        collection.ffts_flag = False
+        kernel_name, node_name = collection.get_kernel_name_l0(data_name)
+        self.assertEqual(kernel_name, "Add_sk_kernel_900016000")
+        self.assertEqual(node_name, "GatherV2.GatherV21.1.1733469426252033")
+
     def test_collect_kernel_file(self):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"
         kernel_name = kernel_name1.replace("__kernel0", "").replace("_mix_aic", "") \

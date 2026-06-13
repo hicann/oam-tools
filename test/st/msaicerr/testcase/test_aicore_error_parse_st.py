@@ -77,6 +77,20 @@ class TestUtilsMethods(CommonAssert):
         aic_info = parser.get_kernel_name_l0(info.node_name)
         self.assertEqual(aic_info.task_id, '1')
 
+    def test_sk_get_kernel_name_l0(self):
+        # SK场景：标志性打印中的kernelName才是正确的算子名，覆盖原逻辑解析结果
+        collect_path = self.temp.joinpath("sk_collect")
+        plog_path = collect_path.joinpath("collection/plog")
+        plog_path.mkdir(parents=True, exist_ok=True)
+        plog_path.joinpath("plog.log").write_text(
+            "[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:08.360.500 [task.cc:600]1592077 PrintInfo:"
+            "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+        parser = AicoreErrorParser(str(collect_path))
+        aic_info = parser.get_kernel_name_l0("node_name")
+        self.assertEqual(aic_info.kernel_name, "Add_sk_kernel_900016000")
+        self.assertEqual(aic_info.node_name, "node_name")
+
     def test_get_dump_data_info_notffts(self):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/notffts'))

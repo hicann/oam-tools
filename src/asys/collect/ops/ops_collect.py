@@ -30,6 +30,24 @@ from drv import EnvVarName
 __all__ = ["collect_ops"]
 
 
+def get_sk_kernel_name(plog):
+    """
+    Obtains kernelName from the SK scenario marker print in plog.
+    """
+    sk_marker = "Begin to dump callback exception"
+    cmd_ret = os.popen(f"grep '{sk_marker}' -inrE {plog}")
+    sk_lines = cmd_ret.readlines()
+    cmd_ret.close()
+    if not sk_lines:
+        return None
+    sk_regexp = r"kernelName=([^\n]*?)\.\s*$"
+    for line in sk_lines:
+        sk_ret = re.findall(sk_regexp, line.strip())
+        if sk_ret:
+            return sk_ret[0]
+    return None
+
+
 def get_fault_kernel_name(output_root_path):
     """
     Obtains fault_kernel_name from plog.
@@ -41,6 +59,10 @@ def get_fault_kernel_name(output_root_path):
     for plog in plog_files:
         if not f.check_dir(plog):
             continue
+        # 优先查找SK场景标志性打印，命中则该打印中的kernelName才是正确的算子名
+        sk_kernel_name = get_sk_kernel_name(plog)
+        if sk_kernel_name:
+            return sk_kernel_name
         plog_lines = []
         for msg in error_msg:
             cmd_ret = os.popen(f"grep '{msg}' -inrE {plog}")

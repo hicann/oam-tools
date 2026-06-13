@@ -110,10 +110,26 @@ class AicoreErrorParser:
                     break
         return stream_id, task_id, kernel_name, hash_id
 
+    @staticmethod
+    def get_sk_kernel_name(plog_dir) -> str:
+        # SK场景标志性打印中的kernelName才是正确的算子名
+        sk_marker = 'Begin to dump callback exception'
+        sk_cmd = ['grep', sk_marker, '-inrE', plog_dir]
+        sk_regexp = r"kernelName=([^\n]*?)\.\s*$"
+        sk_ret = utils.get_inquire_result(sk_cmd, sk_regexp)
+        if sk_ret:
+            return sk_ret[0]
+        return ""
+
     def get_kernel_name_l0(self: any, data_name) -> Optional[tuple]:
         # 获取kernel_name
         plog_dir = os.path.join(self.collect_path, 'collection', 'plog')
         err_stream_id, err_task_id = self.parser_data_name(data_name)
+        # 优先查找SK场景标志性打印，命中则该打印中的kernelName才是正确的算子名
+        sk_kernel_name = self.get_sk_kernel_name(plog_dir)
+        # stream_id/task_id 默认采用从dump文件名解析出的值，避免纯SK场景下丢失该信息；
+        # 普通场景下会被plog中解析出的更精确的值覆盖。hash_id 在SK场景下无来源，置空。
+        stream_id, task_id, kernel_name, hash_id = err_stream_id or "", err_task_id or "", "", ""
         if not self.ffts_flag:
             error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
             kernel_name_cmd = ['grep', error_log, '-inrE', plog_dir]
@@ -127,24 +143,31 @@ class AicoreErrorParser:
             else:
                 kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
                 kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
-                if not kernel_name_ret:
+                if not kernel_name_ret and not sk_kernel_name:
                     utils.print_error_log(f"Failed to get \"{error_log}\" in plog.")
                     return None
-                stream_id, task_id, kernel_name, hash_id = \
-                    self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
-                utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
-                                    f"kernel_name: {kernel_name}")
+                if kernel_name_ret:
+                    stream_id, task_id, kernel_name, hash_id = \
+                        self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
+                    utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
+                                        f"kernel_name: {kernel_name}")
         else:
             kernel_name_cmd = ['grep', 'fftsplus task execute failed', '-inrE', plog_dir]
             kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
-            if not kernel_name_ret:
+            if not kernel_name_ret and not sk_kernel_name:
                 utils.print_error_log(f"Failed to get \"fftsplus task execute failed\" in plog.")
                 return None
-            stream_id, task_id, kernel_name, hash_id = \
-                self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
-            utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
-                                  f"kernel_name: {kernel_name}")
+            if kernel_name_ret:
+                stream_id, task_id, kernel_name, hash_id = \
+                    self.parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id)
+                utils.print_debug_log(f"AicoreError Found, Stream id: {stream_id}, task_id: {task_id},"
+                                      f"kernel_name: {kernel_name}")
+
+        # SK场景：用标志性打印中的kernelName覆盖原逻辑解析出的算子名
+        if sk_kernel_name:
+            kernel_name = sk_kernel_name
+            utils.print_debug_log(f"SK scenario found, kernel_name: {kernel_name}")
 
         node_name = data_name
         AicoreErrorInfo = namedtuple("AicoreErrorInfo", ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])

@@ -40,6 +40,7 @@ from conftest import (
     mkdir_dump_file_path,
     FFTS_PLUS_TASK_EXECUTE_FAILED,
     write_log_keyword_to_file,
+    SK_DUMP_CALLBACK_EXCEPTION,
     CommonAssert
 )
 
@@ -196,6 +197,24 @@ class TestUtilsMethods(CommonAssert):
         collection.collect()
         self.assertIn(self.debug_info.read_text(),
                       "Failed to get \"fftsplus task execute failed\" in plog.")
+
+    def test_sk_get_kernel_name_l0(self):
+        """
+        测试SK场景：标志性打印中的kernelName才是正确的算子名，优先返回
+        """
+        data_name = "exception_info.42.1.1726159207469285"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        collection_plog_path = output_path.joinpath("collection/plog")
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        # 同时存在SK标志性打印和普通fault kernel_name，SK场景应优先返回SK的kernelName
+        collection_plog_path.joinpath("plog.log").write_text(
+            f"{SK_DUMP_CALLBACK_EXCEPTION}\n{AICORE_KERNEL_EXECUTE_FAILED}")
+        collection = Collection(input_path, output_path)
+        collection.ffts_flag = False
+        kernel_name, node_name = collection.get_kernel_name_l0(data_name)
+        self.assertEqual(kernel_name, "Add_sk_kernel_900016000")
+        self.assertEqual(node_name, data_name)
 
     def test_get_dump_file(self):
         """
