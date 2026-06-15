@@ -5,6 +5,7 @@ build_out
 bundle
 log/
 src/asys/common/chip_handler.py
+src/operator_cmp/msaccucmp
 .sisyphus/
 .arts
 submodule

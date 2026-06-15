@@ -361,6 +361,15 @@ int32_t MsprofTxManager::ReportStampData(MsprofStampInstance *stamp) const
     return PROFILING_SUCCESS;
 }
 
+int32_t MsprofTxManager::ReportData(MsprofTxInfo &info) const
+{
+    if (reporter_->Report(info) != MSPROF_ERROR_NONE) {
+        MSPROF_LOGE("[ReportData] report profiling data failed.");
+        return PROFILING_FAILED;
+    }
+    return PROFILING_SUCCESS;
+}
+
 void MsprofTxManager::RegisterRuntimeTxCallback(const ProfMarkExCallback func)
 {
     rtProfilerTraceExFunc_ = func;

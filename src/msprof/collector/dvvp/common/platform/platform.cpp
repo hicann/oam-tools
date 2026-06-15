@@ -31,6 +31,7 @@ using namespace analysis::dvvp::common::config;
 
 const std::string ASCEND_HAL_LIB = "libascend_hal.so";
 constexpr uint32_t SUPPORT_OSC_FREQ_API_VERSION = 0x071905;
+constexpr uint32_t SUPPORT_ADPROF_VERSION = 0x72316;
 
 template <class T>
 inline T LoadDlsymApi(VOID_PTR hanle, const std::string &name)
@@ -529,6 +530,32 @@ int32_t AscendHalAdaptor::HalEschedCreateGrpEx(uint32_t devId, struct esched_grp
 
     MSPROF_LOGI("Can't find halEschedCreateGrpEx from ascend_hal library.");
     return DRV_ERROR_NOT_SUPPORT;
+}
+
+bool Platform::CheckIfSupportAdprof(uint32_t deviceId) const
+{
+    if (deviceId == DEFAULT_HOST_ID) {
+        return false;
+    }
+
+    if (DrvGetApiVersion() < SUPPORT_ADPROF_VERSION || GetPlatformType() == CHIP_MINI) {
+        MSPROF_LOGI("Current version not support driver channel.");
+        return false;
+    }
+    constexpr uint32_t vmngNormalNoneSplitMode = 0;
+    uint32_t mode = 0;
+    int32_t ret = ascendHalAdaptor_.DrvGetDeviceSplitMode(deviceId, &mode);
+    if (ret != DRV_ERROR_NONE) {
+        MSPROF_LOGE("Call drvGetDeviceSplitMode failed, return:%d.", ret);
+        return false;
+    }
+    if ((GetPlatformType() == CHIP_DC || GetPlatformType() == CHIP_CLOUD) &&
+        mode != vmngNormalNoneSplitMode) {
+        MSPROF_LOGI("This chip not support driver channel in split mode.");
+        return false;
+    }
+
+    return true;
 }
 }
 }

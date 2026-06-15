@@ -142,6 +142,29 @@ int32_t ProfReporterMgr::StartReporters()
     return PROFILING_SUCCESS;
 }
 
+int32_t ProfReporterMgr::StartAdprofReporters()
+{
+    std::lock_guard<std::mutex> lk(startMtx_);
+    if (!isStarted_) {
+        MSPROF_LOGE("The host reporters have not been started, devprof will not start.");
+        return PROFILING_FAILED;
+    }
+
+    if (adprofReporters_.empty()) {
+        for (auto &module : ADPROF_MODULE_REPORT_TABLE) {
+            adprofReporters_.emplace_back(MsprofReporter(module.name));
+        }
+    }
+
+    for (auto &report : adprofReporters_) {
+        if (report.StartReporter() != PROFILING_SUCCESS) {
+            MSPROF_LOGE("Devprof start reporters failed.");
+            return PROFILING_FAILED;
+        }
+    }
+    return PROFILING_SUCCESS;
+}
+
 int32_t ProfReporterMgr::SendAdditionalData(SHARED_PTR_ALIA<ProfileFileChunk> fileChunk)
 {
     return reporters_[ADDITIONAL].SendData(fileChunk);

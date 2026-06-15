@@ -75,6 +75,7 @@ public:
     int32_t RangeStop(uint32_t rangeId) const;
     void RegisterReporterCallback(const ProfAdditionalBufPushCallback func);
     void RegisterRuntimeTxCallback(const ProfMarkExCallback func);
+    int32_t ReportData(MsprofTxInfo &info) const;
 
 private:
     int32_t MarkExPoint(aclrtStream stream, MsprofTxInfo &info);

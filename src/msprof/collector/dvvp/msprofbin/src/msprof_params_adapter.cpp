@@ -74,6 +74,46 @@ std::string MsprofParamsAdapter::GenerateBandwidthEvents() const
     return builder.Join(llcProfilingEvents, ",");
 }
 
+void MsprofParamsAdapter::GenerateLlcEvents(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
+{
+    if (params == nullptr || (params->hardware_mem.compare("on") != 0)) {
+        return;
+    }
+    if (params->llc_profiling.empty()) {
+        GenerateLlcDefEvents(params);
+        return;
+    }
+    if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_TYPE) {
+        if (params->llc_profiling.compare(LLC_PROFILING_CAPACITY) == 0) {
+            params->llc_profiling_events = GenerateCapacityEvents();
+        } else if (params->llc_profiling.compare(LLC_PROFILING_BANDWIDTH) == 0) {
+            params->llc_profiling_events = GenerateBandwidthEvents();
+        }
+    } else if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->IsDriverSupportLlc()) {
+        if (params->llc_profiling.compare(LLC_PROFILING_READ) == 0) {
+            params->llc_profiling_events = LLC_PROFILING_READ;
+        } else if (params->llc_profiling.compare(LLC_PROFILING_WRITE) == 0) {
+            params->llc_profiling_events = LLC_PROFILING_WRITE;
+        }
+    }
+    if (params->llc_profiling_events.empty()) {
+        MSPROF_LOGE("Does not support this llc profiling type : %s", Utils::BaseName(params->llc_profiling).c_str());
+    }
+}
+
+void MsprofParamsAdapter::GenerateLlcDefEvents(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
+{
+    if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_TYPE) {
+        params->llc_profiling = LLC_PROFILING_CAPACITY;
+        params->llc_profiling_events = GenerateCapacityEvents();
+    } else if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->IsDriverSupportLlc()) {
+        params->llc_profiling = LLC_PROFILING_READ;
+        params->llc_profiling_events = LLC_PROFILING_READ;
+    } else {
+        MSPROF_LOGW("The current platform does not support llc profiling.");
+    }
+}
+
 int32_t MsprofParamsAdapter::UpdateParams(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
 {
     if (params == nullptr) {

@@ -21,7 +21,7 @@
 #include "utils/utils.h"
 #include "errno/error_code.h"
 #include "config/config.h"
-#include "config/closed/config_manager.h"
+#include "config/config_manager.h"
 #include "validation/param_validation.h"
 #include "ascend_hal.h"
 #include "ai_drv_dev_api.h"

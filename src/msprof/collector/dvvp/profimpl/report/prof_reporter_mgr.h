@@ -58,6 +58,7 @@ public:
     int32_t Stop() override;
     void Run(const struct error_message::Context &errorContext) override;
     int32_t StartReporters();
+    int32_t StartAdprofReporters();
     int32_t SendAdditionalData(SHARED_PTR_ALIA<ProfileFileChunk> fileChunk);
     void FlushAdditonalData();
     void FlushAllReporter();
@@ -85,6 +86,7 @@ private:
     std::unordered_map<uint16_t, std::vector<std::pair<uint32_t, std::string>>> reportTypeInfoMapVec_;
     std::unordered_map<uint16_t, uint32_t> indexMap_;
     std::vector<Msprof::Engine::MsprofReporter> reporters_;
+    std::vector<Msprof::Engine::MsprofReporter> adprofReporters_;
 };
 }
 }

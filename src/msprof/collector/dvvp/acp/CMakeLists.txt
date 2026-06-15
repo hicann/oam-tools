@@ -38,13 +38,11 @@ set(acpBinHeader
     ../common/errno
     ../common/logger
     ../common/config
-    ../common/config/closed
     ../common/singleton
     ../common/platform
     ../common/validation
     ../msprofbin/include
     ../profimpl/platform
-    ../profimpl/platform/closed
     ../profimpl/adapter/inc
     ../profimpl/collect/job_wrapper/include
     ../depend/include/stub
@@ -64,18 +62,15 @@ set(acpBinCpp
     ../common/argparse/argparser.cpp
     ../common/utils/utils.cpp
     ../common/cmd_log/cmd_log.cpp
-    ../common/config/closed/config_manager.cpp
+    ../common/config/config_manager.cpp
     ../common/validation/param_validation.cpp
-    ../common/validation/param_validation_closed.cpp
     ../common/thread/thread.cpp
     ../common/thread/thread_pool.cpp
     ../common/socket/local_socket.cpp
     ../common/json/json.cpp
     ../common/platform/platform.cpp
-    ../common/platform/platform_closed.cpp
     ../common/statistics/perf_count.cpp
     ../driver/devmgmt/ai_drv_dev_api.cpp
-    ../driver/devmgmt/ai_drv_dev_api_closed.cpp
     ../driver/channel/ai_drv_prof_api.cpp
     ../depend/stub/error_manager/msprof_error_manager_stub.cpp
     ../msprof/dynamic_profiling/src/dyn_prof_client.cpp
@@ -189,23 +184,19 @@ set(profinjCpp
     ../profimpl/collect/job_wrapper/src/prof_stars_job.cpp
     ../profimpl/collect/job_wrapper/src/prof_biu_perf_job.cpp
     ../common/platform/platform.cpp
-    ../common/platform/platform_closed.cpp
     ../common/utils/utils.cpp
-    ../common/config/closed/config_manager.cpp
+    ../common/config/config_manager.cpp
     ../common/statistics/perf_count.cpp
     ../common/json/json.cpp
     ../common/cmd_log/cmd_log.cpp
     ../common/validation/param_validation.cpp
-    ../common/validation/param_validation_closed.cpp
     ../common/thread/thread.cpp
     ../common/thread/thread_pool.cpp
     ../common/socket/local_socket.cpp
     ../common/argparse/argparser.cpp
     ../driver/devmgmt/ai_drv_dev_api.cpp
-    ../driver/devmgmt/ai_drv_dev_api_closed.cpp
     ../driver/channel/ai_drv_prof_api.cpp
     ../driver/devmgmt/ai_drv_dsmi_api.cpp
-    ../driver/devmgmt/ai_drv_dsmi_api_closed.cpp
     ../app/application.cpp
     ../app/env_manager.cpp
     ../depend/stub/error_manager/msprof_error_manager_stub.cpp
@@ -239,10 +230,8 @@ target_include_directories(profinj PRIVATE
     ../common/queue
     ../common/json
     ../common/config
-    ../common/config/closed
     ../common/singleton
     ../analyze/inc
-    ../profimpl/platform/closed
     ../profimpl/platform
     ../profimpl/adapter/inc
     ../driver/inc

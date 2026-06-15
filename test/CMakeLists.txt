@@ -36,4 +36,5 @@ set(LLT_EXTEND_INCLUDE_DIR
 )
 
 add_subdirectory(ut/msprof/acp)
+add_subdirectory(ut/msprof/job_wrapper)
 add_subdirectory(ut/msprof/msprofbin)

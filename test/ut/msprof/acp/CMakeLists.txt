@@ -56,9 +56,8 @@ set(src_file
     ${MSPROF_SOURCE_DIR}/dvvp/common/argparse/argparser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/utils/utils.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log/cmd_log.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/common/config/closed/config_manager.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/common/config/config_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/validation/param_validation.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/common/validation/param_validation_closed.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/thread/thread.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/thread/thread_pool.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/socket/local_socket.cpp
@@ -66,9 +65,7 @@ set(src_file
     ${MSPROF_SOURCE_DIR}/dvvp/common/platform/platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/statistics/perf_count.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dsmi_api.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dsmi_api_closed.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dev_api.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dev_api_closed.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/driver/channel/ai_drv_prof_api.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/depend/stub/error_manager/msprof_error_manager_stub.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/dynamic_profiling/src/dyn_prof_client.cpp
@@ -120,8 +117,8 @@ set(libmsprofHeaderDir
     ${TOP_DIR}/pkg_inc/aicpu
     ${TOP_DIR}/src/dfx/adump/inc/metadef/external
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/msproftx/mstx/inc
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/closed
-    ${MSPROF_SOURCE_DIR}/dvvp/common/config/closed
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform
+    ${MSPROF_SOURCE_DIR}/dvvp/common/config
     ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
     ${TOP_DIR}/src/third_party/metadef
     ${TOP_DIR}/src/third_party/driver

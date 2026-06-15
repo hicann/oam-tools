@@ -273,6 +273,33 @@ int32_t DrvGetAiCoreNum(uint32_t deviceId, int64_t &aiCoreNum)
     return PROFILING_FAILED;
 }
 
+int32_t DrvGetAivNum(uint32_t deviceId, int64_t &aivNum)
+{
+    const std::set<PlatformType> unsupportTypeSet{PlatformType::MINI_TYPE,
+        PlatformType::CLOUD_TYPE, PlatformType::DC_TYPE};
+    auto type = ConfigManager::instance()->GetPlatformType();
+    if (unsupportTypeSet.find(type) != unsupportTypeSet.cend()) {
+        aivNum = 0;
+        MSPROF_LOGI("Driver doesn't support DrvGetAivNum by halGetDeviceInfo interface");
+        return PROFILING_SUCCESS;
+    }
+    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE),
+    static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aivNum);
+    if (ret == DRV_ERROR_NOT_SUPPORT) {
+        MSPROF_LOGW("Driver doesn't support DrvGetAivNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        return PROFILING_SUCCESS;
+    } else if (ret != DRV_ERROR_NONE) {
+        MSPROF_LOGE("Failed to DrvGetAivNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAivNum, deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
+        return PROFILING_FAILED;
+    }
+
+    MSPROF_LOGI("Succeeded to DrvGetAivNum, deviceId=%u, aivNum=%lld", deviceId, aivNum);
+    return PROFILING_SUCCESS;
+}
+
 int32_t DrvGetDeviceTime(uint32_t deviceId, uint64_t &startMono, uint64_t &cntvct)
 {
     int64_t time = 0;

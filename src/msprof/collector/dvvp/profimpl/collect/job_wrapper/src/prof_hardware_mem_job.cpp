@@ -370,6 +370,32 @@ ProfLlcJob::ProfLlcJob()
 ProfLlcJob::~ProfLlcJob() {}
 
 /*
+ * @berif  : LLC Peripheral Init profiling
+ * @param  : cfg : Collect data config information
+ * @return : PROFILING_FAILED(-1) : failed
+ *         : PROFILING_SUCCESS(0) : success
+ */
+int32_t ProfLlcJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
+{
+    CHECK_JOB_EVENT_PARAM_RET(cfg, return PROFILING_FAILED);
+    if (cfg->comParams->params->hostProfiling) {
+        return PROFILING_FAILED;
+    }
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_TYPE) {
+        MSPROF_LOGI("Mini LLC Profiling not transport by driver channel");
+        return PROFILING_FAILED;
+    }
+
+    collectionJobCfg_ = cfg;
+
+    if (collectionJobCfg_->comParams->params->msprof_llc_profiling.compare(MSVP_PROF_ON) != 0) {
+        MSPROF_LOGI("LLC Profiling not enabled");
+        return PROFILING_FAILED;
+    }
+    return PROFILING_SUCCESS;
+}
+
+/*
  * @berif  : LLC Peripheral Set Config to Driver
  * @param  : None
  * @return : PROFILING_FAILED(-1) : failed

@@ -70,29 +70,13 @@ int32_t UploaderDumper::Start()
         return PROFILING_SUCCESS;
     }
 
-    Thread::SetThreadName(analysis::dvvp::common::config::MSVP_UPLOADER_DUMPER_THREAD_NAME);
-    int32_t ret = Thread::Start();
-    if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGE("Failed to start the reporter %s in UploaderDumper::Start().", module_.c_str());
-        MSPROF_INNER_ERROR("EK9999", "Failed to start the reporter %s in UploaderDumper::Start().",
-            module_.c_str());
-        return PROFILING_FAILED;
-    } else {
-        MSPROF_LOGI("Succeeded in starting the reporter %s in UploaderDumper::Start().", module_.c_str());
-    }
-
-    size_t buffSize = RING_BUFF_CAPACITY;
-    auto iter = std::find_if(std::begin(MSPROF_MODULE_ID_NAME_MAP), std::end(MSPROF_MODULE_ID_NAME_MAP),
+    int32_t ret = PROFILING_SUCCESS;
+    auto iter1 = std::find_if(std::begin(ADPROF_MODULE_REPORT_TABLE), std::end(ADPROF_MODULE_REPORT_TABLE),
         [this](ModuleIdName m) { return m.name == this->module_; });
-    if (iter != std::end(MSPROF_MODULE_ID_NAME_MAP)) {
-        ReceiveData::moduleId_ = iter->id;
-        buffSize = iter->ringBufSize;
-        uint32_t bufferLen = JsonParser::instance()->GetJsonModuleReporterBufferLen(iter->id);
-        if (bufferLen != 0) {
-            buffSize = bufferLen;
-        }
+    if (iter1 != std::end(ADPROF_MODULE_REPORT_TABLE)) {
+        ReceiveData::moduleId_ = iter1->id;
         ReceiveData::moduleName_ = module_;
-        ret = ReceiveData::Init(buffSize);
+        ret = ReceiveData::Init();
     }
     auto iter2 = std::find_if(std::begin(MSPROF_MODULE_REPORT_TABLE), std::end(MSPROF_MODULE_REPORT_TABLE),
         [this](ModuleIdName m) { return m.name == this->module_; });
@@ -103,12 +87,19 @@ int32_t UploaderDumper::Start()
     }
     if (ret != PROFILING_SUCCESS) {
         MSPROF_LOGE("ReceiveData Init failed");
-        MSPROF_INNER_ERROR("EK9999", "ReceiveData Init failed");
         return PROFILING_FAILED;
     }
 
+    Thread::SetThreadName(analysis::dvvp::common::config::MSVP_UPLOADER_DUMPER_THREAD_NAME);
+    ret = Thread::Start();
+    if (ret != PROFILING_SUCCESS) {
+        MSPROF_LOGE("Failed to start the reporter %s in UploaderDumper::Start().", module_.c_str());
+        return PROFILING_FAILED;
+    } else {
+        MSPROF_LOGI("Succeeded in starting the reporter %s in UploaderDumper::Start().", module_.c_str());
+    }
     started_ = true;
-    MSPROF_LOGI("start reporter success. module:%s, capacity:%" PRIu64, module_.c_str(), buffSize);
+    MSPROF_LOGI("UploaderDumper start reporter success. module:%s.", module_.c_str());
     return PROFILING_SUCCESS;
 }
 

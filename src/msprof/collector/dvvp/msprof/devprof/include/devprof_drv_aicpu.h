@@ -32,16 +32,20 @@ public:
     int32_t Stop() override;
     bool IsRegister(void) const;
     void SetProfConfig(uint64_t profConfig);
+    uint64_t GetProfConfig() const;
     int32_t CheckFeatureIsOn(uint64_t feature) const;
     bool CheckProfilingIsOn(uint64_t profConfig);
     int32_t ReportAdditionalInfo(uint32_t agingFlag, ConstVoidPtr data, uint32_t length);
     size_t GetBatchReportMaxSize(uint32_t type) const;
     int32_t AdprofInit(const AicpuStartPara *para);
     int32_t ModuleRegisterCallback(uint32_t moduleId, ProfCommandHandle commandHandle);
-    void DoCallbackHandle(ProfCommandHandle commandHandle);
+    void DoCallbackHandle(uint32_t moduleId, ProfCommandHandle commandHandle);
     void CommandHandleLaunch();
     void DeviceReportStart();
     void DeviceReportStop();
+    int32_t SendAddtionalInfo();
+    void AddStr2IdIntoBuffer(std::string& str);
+    int32_t ReportStr2IdInfoToHost(std::string& dataStr);
 #ifdef __PROF_LLT
     void Reset(void);
 #endif
@@ -60,6 +64,7 @@ private:
     analysis::dvvp::common::queue::BlockBuffer<MsprofAdditionalInfo> aicpuAdditionalBuffer_{};
     MsprofCommandHandle command_;
     std::map<uint32_t, std::set<ProfCommandHandle>> moduleCallbacks_;
+    std::mutex aicpuRegisterMutex_;
 };
 
 #endif

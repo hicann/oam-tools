@@ -20,6 +20,7 @@
 #include <condition_variable>
 #include <string>
 #include <array>
+#include <atomic>
 #include "acl/acl_prof.h"
 #include "common/singleton/singleton.h"
 #include "common/thread/thread.h"
@@ -241,6 +242,7 @@ public:
     int32_t MsprofDeviceHandle(uint32_t devId);
     int32_t MsprofSetConfig(aclprofConfigType cfgType, const std::string &config);
     int32_t StartUploaderDumper() const;
+    int32_t StartAdprofDumper() const;
     int32_t ProfStartCommon(const uint32_t *devIdList, uint32_t devNums);
     int32_t ProfStopCommon(const MsprofConfig *config);
     int32_t ProfStartPureCpu(const MsprofConfig *config);
@@ -257,6 +259,11 @@ public:
     void RegisterTransport(ProfImplRegisterTransport callback);
     void SetDeviceNotify(uint32_t deviceId, bool isOpenDevice);
     bool GetDevicesNotify(const uint32_t *deviceId, uint32_t devNums);
+    void DumpStartInfoFile(uint32_t device);
+    void SetProfWarmup();
+    void ResetProfWarmup();
+    bool IsProfWarmup() const;
+    void ChangeProfWarmupToStart(const std::vector<uint32_t> &devIds) const;
 
 private:
     int32_t MsprofTxSwitchPrecheck();
@@ -333,6 +340,7 @@ private:
     std::string MsprofCheckAndGetChar(CHAR_PTR data, uint32_t dataLen) const;
     void MsprofAclJsonParamAdaper(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params);
     int32_t MsprofAclJsonParamConstruct(NanoJson::Json &acljsonCfg);
+    int32_t MsprofAclJsonParamConstructTwo(NanoJson::Json &acljsonCfg);
     int32_t MsprofAclJsonMetricsConstruct(NanoJson::Json &acljsonCfg);
     int32_t CheckAclJsonConfigInvalid(const NanoJson::Json &acljsonCfg) const;
     int32_t MsprofGeOptionsParamConstruct(const std::string &jobInfo, NanoJson::Json &geoptionCfg);
@@ -356,6 +364,7 @@ private:
 
 private:
     bool isReady_;
+    std::atomic<bool> isProfWarmup_;
     WorkMode mode_;
     std::string resultPath_;
     std::string baseDir_;

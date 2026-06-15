@@ -57,7 +57,7 @@ private:
     bool profStarted_ { false };
     std::string socketPath_;
     std::string dynProfParams_;
-    std::map<DynProfMsgType, ProcFunc> procFuncMap_;
+    std::map<DynProfMsgType, std::function<void()>> procFuncMap_;
     std::map<uint32_t, DynProfDeviceInfo> devicesInfo_;
     std::mutex devInfoMtx_;
     std::mutex devMtx_;

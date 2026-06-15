@@ -59,7 +59,7 @@ function(protobuf_generate comp c_var h_var)
                 COMMAND ${CMAKE_COMMAND} -E make_directory "${proto_output_path}"
                 COMMAND ${CMAKE_COMMAND} -E echo "generate proto cpp_out ${comp} by ${abs_file}"
                 COMMAND ${PROTOC_PROGRAM} -I${file_dir} ${extra_option} --cpp_out=${proto_output_path} ${abs_file}
-                DEPENDS ${abs_file}
+                DEPENDS ${abs_file} $<$<TARGET_EXISTS:host_protoc>:host_protoc>
                 COMMENT "Running C++ protocol buffer compiler on ${file}" VERBATIM )
     endforeach()
 
