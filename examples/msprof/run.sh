@@ -16,8 +16,10 @@
 # ----------------------------------------------------------------------------
 
 set -e
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-bash ./asys/run.sh
-bash ./msaicerr/run.sh
-bash ./msprof/run.sh
+CANN_ROOT="${ASCEND_INSTALL_PATH:-${ASCEND_HOME_PATH:-/usr/local/Ascend/cann}}"
+SETENV="$CANN_ROOT/bin/setenv.bash"
+# shellcheck source=/dev/null
+[ -f "$SETENV" ] && source "$SETENV"
+OUTPUT_DIR="./msprof_output"
+mkdir -p "$OUTPUT_DIR"
+"$CANN_ROOT/tools/profiler/bin/msprof" --output="$OUTPUT_DIR" --host-sys-usage=cpu,mem --sys-period=5

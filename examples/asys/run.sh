@@ -17,4 +17,4 @@
 
 #!/bin/bash
 set -e
-asys info
+asys health

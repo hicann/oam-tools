@@ -66,7 +66,7 @@ class CompileOP:
         template[0]["output_desc"] = self.outputs
         utils.check_path_valid(str(compile_temp_dir), isdir=True, output=True)
         json_file = compile_temp_dir.joinpath(f"{self.op_name}.json")
-        with open(json_file, "w") as f:
+        with open(json_file, "w", encoding="utf-8") as f:
             json.dump(template, f)
         return json_file
 
@@ -101,7 +101,7 @@ class CompileOP:
                                                    kernel_info[self.op_name]["op_kernel_file"])
         op_kernel_file.write_text(kernel_info[self.op_name]["file_content"])
         #  3、编译自定义算子
-        res = utils.run_cmd_output(f"bash build.sh", cwd=compile_temp_dir.joinpath(self.op_name), env=new_env)
+        res = utils.run_cmd_output("bash build.sh", cwd=compile_temp_dir.joinpath(self.op_name), env=new_env)
         utils.print_debug_log("Compiling the custom operator")
         if not res:
             utils.print_error_log("Compiling the operator failed. Check the environment.")
@@ -149,12 +149,12 @@ class CompileOP:
         self._write_chip_marker(compile_temp_dir)
         build_bin, build_json = find_res
         # 5、修改json
-        with open(build_json, "r") as f:
+        with open(build_json, "r", encoding="utf-8") as f:
             data = json.load(f)
             # 算子中未使用workspace，所以需要删除
             if "workspace" in data:
                 del data["workspace"]
-        with open(build_json, "w") as f:
+        with open(build_json, "w", encoding="utf-8") as f:
             json.dump(data, f)
         return [build_bin, build_json]
 

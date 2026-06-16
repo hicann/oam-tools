@@ -16,8 +16,8 @@
 # ----------------------------------------------------------------------------
 
 set -e
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-bash ./asys/run.sh
-bash ./msaicerr/run.sh
-bash ./msprof/run.sh
+CANN_ROOT="${ASCEND_INSTALL_PATH:-${ASCEND_HOME_PATH:-/usr/local/Ascend/cann}}"
+SETENV="$CANN_ROOT/bin/setenv.bash"
+# shellcheck source=/dev/null
+[ -f "$SETENV" ] && source "$SETENV"
+python3 "$CANN_ROOT/tools/msaicerr/msaicerr.py" -e

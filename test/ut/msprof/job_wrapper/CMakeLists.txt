@@ -197,12 +197,13 @@ set(libmsprofHeaderDir
     ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/devprof/include
     ${PROTOBUF_HOST_INCLUDE}
-    ${LLT_EXTEND_INCLUDE_DIR}
     ${TOP_DIR}/src/msprof/inc
     ${TOP_DIR}/src/msprof/inc/toolchain
     ${TOP_DIR}/src/msprof/inc/external
     ${TOP_DIR}/src/msprof/inc/external/acl
+    ${LLT_EXTEND_INCLUDE_DIR}
     ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/external
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
