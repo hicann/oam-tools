@@ -5,7 +5,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![CANN](https://img.shields.io/badge/CANN-%E2%89%A58.5.0-green.svg)](docs/quick_install.md)
+[![CANN](https://img.shields.io/badge/CANN-%E2%89%A58.5.0-green.svg)](./docs/zh/quick_install.md)
 
 </div>
 
@@ -15,7 +15,7 @@ Oam-Tools 为开发者提供故障定位工具和性能测试调优工具，包�
 
 ## 🧩 支持的硬件环境
 
-在搭建环境之前，请先确认硬件在本工具的支持范围内，若无昇腾设备也可以通过docker方式编译构建(详见[快速安装](docs/quick_install.md#方式2docker部署))。
+在搭建环境之前，请先确认硬件在本工具的支持范围内，若无昇腾设备也可以通过docker方式编译构建(详见[快速安装](./docs/zh/quick_install.md#方式2docker部署))。
 
 - **CPU 架构**：`aarch64`、`x86_64`
 - **昇腾 AI 处理器**：
@@ -27,11 +27,11 @@ Oam-Tools 为开发者提供故障定位工具和性能测试调优工具，包�
   | `950` | Atlas 950 系列产品 | `950` |
 
   > - `npu-smi info`实际可能显示带子型号的字符串（如`910B1` / `910B2` / `910B3` / `910B4`），按"Name 列包含上述关键字"的规则匹配即可。
-  > - 其它芯片暂不支持，欢迎提交 issue 反馈。CANN ops 包名拼接规则与下载详见[快速安装](docs/quick_install.md#方式3手动安装)。
+  > - 其它芯片暂不支持，欢迎提交 issue 反馈。CANN ops 包名拼接规则与下载详见[快速安装](./docs/zh/quick_install.md#方式3手动安装)。
 
 ## ⚡️ 环境准备
 
-请先按照[快速安装](docs/quick_install.md)指南完成环境准备。
+请先按照[快速安装](./docs/zh/quick_install.md)指南完成环境准备。
 
 ## 🔍 目录结构
 
@@ -69,7 +69,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 
 - `--cann_3rd_lib_path`：第三方库存储目录，默认值为 `./third_party`。若本地不存在第三方库，编译脚本将自动从 gitcode 开源仓库下载各第三方库源码。
 - 编译过程中会自动下载闭源二进制包，该包含有保证功能正常运行所需的库及头文件，且仅提供 release 版本，**即使编译选项指定为 debug，也只会下载 release 版本的 tar 包**。
-- 若编译环境无法访问网络，请参考[离线编译环境准备](docs/quick_install.md#离线编译环境准备)提前完成依赖包的下载与配置，并通过 `--cann_3rd_lib_path` 参数指定依赖包所在目录后再执行编译。
+- 若编译环境无法访问网络，请参考[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备)提前完成依赖包的下载与配置，并通过 `--cann_3rd_lib_path` 参数指定依赖包所在目录后再执行编译。
 - 更多编译参数请通过 `bash build.sh -h` 查看。
 
 编译完成后，`build_out` 目录下会生成 `cann-oam-tools_<cann_version>_linux-<arch>.run` 软件包，其中 `<cann_version>` 为版本号，`<arch>` 为操作系统架构（可选值：`x86_64` 或 `aarch64`）。
@@ -89,7 +89,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 
 编译完成后，用户可以进行测试验证项目功能是否正常。
 
-> Python 依赖安装已在[环境准备](docs/quick_install.md)中处理，无需额外操作。
+> Python 依赖安装已在[环境准备](./docs/zh/quick_install.md)中处理，无需额外操作。
 
 编译执行测试用例：
 ```bash

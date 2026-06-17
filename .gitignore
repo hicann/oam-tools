@@ -13,3 +13,5 @@ TODO.md
 /third_party/
 *.whl
 .gitcode-handoff/
+.claude/
+.opencode/
