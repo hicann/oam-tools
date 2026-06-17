@@ -14,27 +14,4 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-############ intf_pub c++17 ############
-add_library(intf_llt_pub INTERFACE)
-target_compile_options(intf_llt_pub INTERFACE
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>
-)
-target_link_libraries(intf_llt_pub INTERFACE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
-    c_sec
-    dl
-    GTestShared::gtest
-    GTestShared::gtest_main
-    mockcpp
-)
-
-set(LLT_EXTEND_INCLUDE_DIR
-    ${runtime_INCLUDE_DIR}
-    ${third_party_INCLUDE_DIR}
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
-)
-
-add_subdirectory(ut/msprof/acp)
-add_subdirectory(ut/msprof/job_wrapper)
-add_subdirectory(ut/msprof/msprofbin)
+add_subdirectory(ut/msprof)

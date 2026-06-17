@@ -196,12 +196,14 @@ validate_gtest_result() {
     fi
 
     if grep -qE "^\[  PASSED  \]" "$output_file"; then
-        passed_count=$(grep -E "^\[  PASSED  \]" "$output_file" | awk '{print $4}' | sed 's/tests\.$//')
+        # 一个 case 可能运行多个 gtest target，输出含多段 [ PASSED ]，需累加求和
+        passed_count=$(grep -E "^\[  PASSED  \]" "$output_file" | awk '{gsub(/tests?\.$/,"",$4); s+=$4} END{print s}')
     fi
     passed_count=${passed_count:-0}
 
     if grep -qE "^\[  FAILED  \]" "$output_file"; then
-        failed_count=$(grep -E "^\[  FAILED  \]" "$output_file" | awk '{print $4}' | sed 's/tests, listed below:$//')
+        # 同上：累加所有 target 的失败用例数（取每段汇总行的数字）
+        failed_count=$(grep -E "^\[  FAILED  \] [0-9]+ test" "$output_file" | awk '{s+=$2} END{print s}')
     fi
     failed_count=${failed_count:-0}
 
@@ -416,18 +418,29 @@ run_test_case() {
             run_pytest_with_coverage "${case_name}" "./src/msaicerr" "./test/ut/msaicerr/testcase" "${output_file}"
             ;;
         msprof_ut)
-            if [[ -f "./build/test/ut/msprof/msprofbin/msprof_bin_utest" ]]; then
-                "./build/test/ut/msprof/msprofbin/msprof_bin_utest" > "${output_file}" 2>&1
-                echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
-                if [[ "${RUN_COV}" == "true" ]]; then
-                    collect_gcov_coverage "${case_name}" \
-                        "${BUILD_OUTPUT_DIR}/test/ut/msprof" \
-                        '*/src/msprof/*' "${output_file}"
-                fi
-            else
-                echo "ERROR: msprof_utest binary not found at ./build/test/ut/msprof/msprofbin/msprof_bin_utest"
+            local msprof_ut_manifest="${BUILD_OUTPUT_DIR}/msprof_ut_targets.txt"
+            local msprof_ut_rc=0
+            : > "${output_file}"
+            if [[ ! -f "${msprof_ut_manifest}" ]]; then
+                echo "ERROR: msprof ut target manifest not found at ${msprof_ut_manifest}" | tee -a "${output_file}"
                 echo "1" > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
                 return 1
+            fi
+            while IFS= read -r ut_bin; do
+                [[ -z "${ut_bin}" ]] && continue
+                if [[ -f "${ut_bin}" ]]; then
+                    echo "----- running ${ut_bin} -----" >> "${output_file}"
+                    "${ut_bin}" >> "${output_file}" 2>&1 || msprof_ut_rc=1
+                else
+                    echo "ERROR: msprof_utest binary not found at ${ut_bin}" | tee -a "${output_file}"
+                    msprof_ut_rc=1
+                fi
+            done < "${msprof_ut_manifest}"
+            echo ${msprof_ut_rc} > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+            if [[ "${RUN_COV}" == "true" ]]; then
+                collect_gcov_coverage "${case_name}" \
+                    "${BUILD_OUTPUT_DIR}/test/ut/msprof" \
+                    '*/src/msprof/*' "${output_file}"
             fi
             ;;
         install_st)

@@ -33,6 +33,8 @@ public:
                          OsalProcess &appProcess);
 
 private:
+    static int32_t ResolveAppCmd(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
+        std::vector<std::string> &paramsCmd, std::string &cmd);
     static int32_t PrepareAppEnvs(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
         std::vector<std::string> &envsV);
     static int32_t PrepareLaunchAppCmd(std::stringstream &ssCmdApp,
@@ -46,6 +48,7 @@ private:
     static void SetAppEnv(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
         std::vector<std::string> &envsV);
     static void SourceEnv(std::vector<std::string> &argsVec);
+    static std::string GetAppPath(std::vector<std::string> paramsCmd);
     static std::string GetCmdString(const std::string paramsName);
 };
 }  // namespace app
