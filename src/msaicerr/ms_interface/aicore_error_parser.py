@@ -1244,11 +1244,18 @@ exit()"""
         cmd = ['python3', f'{current_path}/golden_op.py', soc_version, str(device_id), compile_temp_dir]
         ret = subprocess.run(cmd, env=new_env)
         if ret.returncode != 0:
+            utils.print_error_log(
+                f"The built-in sample operator subprocess exited with code {ret.returncode}. "
+                f"Possible causes: driver not loaded, chip not supported (soc_version={soc_version}), "
+                f"or golden_op.py dependencies missing. Check log at {golden_op_path}.")
             return False
         build_dir = Path(compile_temp_dir).joinpath(ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
         build_jsons = list(build_dir.rglob(f"{ModeCustom.ADD_CUSTOM.value}*.json"))
         if not build_jsons:
-            utils.print_error_log(f"Can not find json file in {build_dir}")
+            utils.print_error_log(
+                f"Can not find compiled json in {build_dir}. "
+                f"Possible causes: soc_version mismatch (got '{soc_version}'), "
+                f"or CANN toolkit (atc/ccec) not correctly installed.")
             return False
         with open(build_jsons[0], "r") as f:
             data = json.load(f)
@@ -1258,7 +1265,10 @@ exit()"""
         kernel_name = data.get("kernelName")
         if kernel_name:
             if AicoreErrorParser.search_aicerr_log(kernel_name, golden_op_path):
-                utils.print_error_log("There is an aicore error exception.")
+                utils.print_error_log(
+                    f"AI Core error detected while running the built-in sample operator. "
+                    f"Possible causes: hardware fault, driver version mismatch, or insufficient device memory. "
+                    f"Check the device log at {golden_op_path} for details.")
                 return False
         if os.path.exists(golden_op_path):
             shutil.rmtree(golden_op_path)
