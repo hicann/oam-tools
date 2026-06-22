@@ -68,6 +68,25 @@ class TestOpsCollect(AssertTest):
         ParamDict().asys_output_timestamp_dir = ut_root_path
         self.assertTrue(collect_ops("./output") is None)
 
+    def test_ops_collect_sk_scenario(self, mocker):
+        # SK场景：跳过算子文件收集(collect_ops_from_dump/collect_file)，保留配置类收集
+        mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
+        mocker.patch("params.ParamDict.get_arg", return_value="./")
+        mocker.patch("collect.ops.ops_collect.is_sk_scenario", return_value=True)
+        dump_mock = mocker.patch("collect.ops.ops_collect.collect_ops_from_dump", return_value=True)
+        file_mock = mocker.patch("collect.ops.ops_collect.collect_file", return_value=None)
+        debug_mock = mocker.patch("collect.ops.ops_collect.collect_debug_kernel", return_value=None)
+        opp_mock = mocker.patch("collect.ops.ops_collect.collect_opp_config", return_value=True)
+        custom_mock = mocker.patch("collect.ops.ops_collect.collect_custom_opp_config", return_value=True)
+        self.assertTrue(collect_ops("./output") is None)
+        # 算子文件收集被跳过
+        dump_mock.assert_not_called()
+        file_mock.assert_not_called()
+        # 配置类收集仍执行
+        debug_mock.assert_called_once()
+        opp_mock.assert_called_once()
+        custom_mock.assert_called_once()
+
     def test_ops_collect_switch_off(self, mocker):
         mocker.patch("params.ParamDict.get_command", return_value=consts.launch_cmd)
         mocker.patch("params.ParamDict.get_ini", return_value="0")

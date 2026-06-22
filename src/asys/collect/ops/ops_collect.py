@@ -22,7 +22,7 @@ import re
 
 from params import ParamDict
 from common import consts
-from common import log_debug, log_warning
+from common import log_debug, log_info, log_warning
 from common import FileOperate as f
 from common.file_operate import COPY_MODE, MOVE_MODE
 from drv import EnvVarName
@@ -32,7 +32,7 @@ __all__ = ["collect_ops"]
 
 def get_sk_kernel_name(plog):
     """
-    Obtains kernelName from the SK scenario marker print in plog.
+    Obtains kernelName from the SuperKernel scenario marker print in plog.
     """
     sk_marker = "Begin to dump callback exception"
     cmd_ret = os.popen(f"grep '{sk_marker}' -inrE {plog}")
@@ -46,6 +46,26 @@ def get_sk_kernel_name(plog):
         if sk_ret:
             return sk_ret[0]
     return None
+
+
+def is_sk_scenario(output_root_path):
+    """
+    Determine whether the current scenario is SK (super kernel) by the marker
+    print in plog. SK is judged by the marker only, independent of whether the
+    device-side files are generated.
+    """
+    sk_marker = "Begin to dump callback exception"
+    run_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "run", "plog")
+    debug_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "debug", "plog")
+    for plog in [run_plog, debug_plog]:
+        if not f.check_dir(plog):
+            continue
+        cmd_ret = os.popen(f"grep '{sk_marker}' -inrE {plog}")
+        sk_lines = cmd_ret.readlines()
+        cmd_ret.close()
+        if sk_lines:
+            return True
+    return False
 
 
 def get_fault_kernel_name(output_root_path):
@@ -283,7 +303,10 @@ def collect_ops(output_root_path):
     if not check_launch_ops():
         return
 
-    if not collect_ops_from_dump(output_root_path):
+    # SK场景下只生成host.o，没有device .o/.json，跳过算子文件收集，其余配置类收集保持不变
+    if is_sk_scenario(output_root_path):
+        log_info("SuperKernel scenario detected, skip collecting operator files.")
+    elif not collect_ops_from_dump(output_root_path):
         collect_file(output_root_path)
     collect_debug_kernel(output_root_path)
     collect_opp_config(output_root_path)

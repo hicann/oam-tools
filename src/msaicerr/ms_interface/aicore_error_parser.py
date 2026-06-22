@@ -75,6 +75,7 @@ class AicoreErrorParser:
         self.collect_path = collect_path
         self.parse_level = 0
         self.ffts_flag = False
+        self.is_sk = False
         self.device_id = device_id
         self.collect_succ = collect_succ
 
@@ -88,7 +89,80 @@ class AicoreErrorParser:
                 if arg_after == arg_before:
                     return True
             return False
-        
+
+    @staticmethod
+    def _find_sk_host_o(kernel_path: str, kernel_name: str) -> str:
+        # host.o命名为<kernel_name>*_host.o，kernel_name与_host.o之间可能有额外字符，需glob匹配
+        host_files = sorted(Path(kernel_path).glob(f"{kernel_name}*_host.o"))
+        if not host_files:
+            return ""
+        if len(host_files) > 1:
+            utils.print_debug_log(f"Multiple host.o found for {kernel_name}, use {host_files[0]}.")
+        return str(host_files[0])
+
+    @staticmethod
+    def _get_kernel_file_by_name(kernel_path: str, kernel_name: str, tiling_key: str):
+        # 算子名能直接拼出.o时，按命名约定取.o/.json/.cce
+        if not os.path.exists(os.path.join(kernel_path, kernel_name + ".o")):
+            return None
+        bin_file = os.path.join(kernel_path, kernel_name + ".o")
+        json_file = os.path.join(kernel_path, kernel_name + ".json")
+        cce_file = os.path.join(kernel_path, kernel_name + "_" + str(tiling_key) + ".cce")
+        if not os.path.exists(cce_file):
+            cce_file = os.path.join(kernel_path, kernel_name + ".cce")
+        return KernelFile(bin_file, json_file, cce_file)
+
+    @staticmethod
+    def _match_kernel_by_json(kernel_path: str, kernel_file_list: list) -> tuple:
+        # 读取.json中的binFileName，定位成对的.o/.json
+        bin_file = ""
+        json_file = ""
+        for file_name in kernel_file_list:
+            if (not os.path.exists(file_name)) or file_name.endswith("_loc.json") or (not file_name.endswith(".json")):
+                continue
+            json_file = os.path.join(kernel_path, file_name)
+            with open(json_file, 'r') as f:
+                json_data = json.load(f)
+                if not json_data:
+                    continue
+                bin_file = json_data.get("binFileName")
+                if not bin_file:
+                    continue
+                bin_file = os.path.join(kernel_path, bin_file + ".o")
+                json_file = os.path.join(kernel_path, bin_file + ".json")
+                if not os.path.exists(bin_file) or not os.path.exists(json_file):
+                    continue
+                else:
+                    break
+        return bin_file, json_file
+
+    @staticmethod
+    def _fill_kernel_backup(kernel_file_list: list, bin_file: str, json_file: str, tiling_key: str) -> tuple:
+        # 用文件列表里的.o/.json/.cce兜底填充缺失项，.cce优先匹配tiling_key
+        bin_file_backup = ""
+        json_file_backup = ""
+        cce_file_backup = ""
+        cce_file = ""
+        for file_name in kernel_file_list:
+            if not os.path.exists(file_name):
+                continue
+            if file_name.endswith(".o"):
+                bin_file_backup = file_name
+            elif file_name.endswith(".json") and (not file_name.endswith("_loc.json")):
+                json_file_backup = file_name
+            elif file_name.endswith(".cce"):
+                tiling_key = "_" + str(tiling_key) + "."
+                if tiling_key in file_name:
+                    cce_file = file_name
+                cce_file_backup = file_name
+        if not os.path.exists(bin_file):
+            bin_file = bin_file_backup
+        if not os.path.exists(json_file):
+            json_file = json_file_backup
+        if not os.path.exists(cce_file):
+            cce_file = cce_file_backup
+        return bin_file, json_file, cce_file
+
     @staticmethod
     def parser_kernel_info(kernel_name_ret, err_stream_id, err_task_id):
         stream_id, task_id, kernel_name, hash_id = kernel_name_ret[0]
@@ -167,7 +241,7 @@ class AicoreErrorParser:
         # SK场景：用标志性打印中的kernelName覆盖原逻辑解析出的算子名
         if sk_kernel_name:
             kernel_name = sk_kernel_name
-            utils.print_debug_log(f"SK scenario found, kernel_name: {kernel_name}")
+            utils.print_debug_log(f"SuperKernel scenario found, kernel_name: {kernel_name}")
 
         node_name = data_name
         AicoreErrorInfo = namedtuple("AicoreErrorInfo", ["stream_id", "task_id", "node_name", "kernel_name", "hash_id"])
@@ -196,6 +270,13 @@ class AicoreErrorParser:
             self.parse_level = 1
         else:
             self.parse_level = 0
+
+        # SK场景标志性打印，命中则只生成host.o，没有device .o/.json/.cce
+        sk_check_path_cmd = ['grep', 'Begin to dump callback exception', '-inrE', self.collect_path]
+        sk_check_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
+        sk_check_path_ret = utils.get_inquire_result(sk_check_path_cmd, sk_check_path_regexp)
+        if sk_check_path_ret:
+            self.is_sk = True
 
     @staticmethod
     def _get_extra_info(aic_extra_error):
@@ -234,76 +315,6 @@ class AicoreErrorParser:
             code2_int = (((code2_int >> 32) << 17) & (code2_int & 0x1FFFF)) << 128
             new_code = code0_int | code1_int | code2_int
         return str(hex(new_code))
-
-    def _get_kernel_and_json_file(self: any, kernel_name: str, tiling_key: str):
-        kernel_path = os.path.join(self.collect_path, "collection", "compile")
-        kernel_name = kernel_name.replace("__kernel0", "").replace("_mix_aic", "").replace("_mix_aiv", "")
-        if os.path.exists(os.path.join(kernel_path, kernel_name + ".o")):
-            bin_file = os.path.join(kernel_path, kernel_name + ".o")
-            json_file = os.path.join(kernel_path, kernel_name + ".json")
-            cce_file = os.path.join(kernel_path, kernel_name + "_" + str(tiling_key) + ".cce")
-            if not os.path.exists(cce_file):
-                cce_file = os.path.join(kernel_path, kernel_name + ".cce")
-            kernel_file = KernelFile(bin_file, json_file, cce_file)
-            return kernel_file
-
-
-        find_path_cmd = ['grep', kernel_name, '-inrE', self.collect_path]
-        regexp = r"([_\-/0-9a-zA-Z.]{1,}\.json|[_\-/0-9a-zA-Z.]{1,}\.o|[_\-/0-9a-zA-Z.]{1,}\.cce)"
-        kernel_file_list = utils.get_inquire_result(find_path_cmd, regexp)
-        kernel_file_list = [kernel_file for kernel_file in kernel_file_list if
-                            kernel_file.startswith(self.collect_path)]
-        if not kernel_file_list:
-            utils.print_error_log(f"The {kernel_name}.o or {kernel_name}.json cannot be found in {self.collect_path}.")
-            return None
-
-        bin_file = ""
-        json_file = ""
-        cce_file = ""
-        for file_name in kernel_file_list:
-            if (not os.path.exists(file_name)) or file_name.endswith("_loc.json") or (not file_name.endswith(".json")):
-                continue
-            json_file = os.path.join(kernel_path, file_name)
-            with open(json_file, 'r') as f:
-                json_data = json.load(f)
-                if not json_data:
-                    continue
-                bin_file = json_data.get("binFileName")
-                if not bin_file:
-                    continue
-                bin_file = os.path.join(kernel_path, bin_file + ".o")
-                json_file = os.path.join(kernel_path, bin_file + ".json")
-                if not os.path.exists(bin_file) or not os.path.exists(json_file):
-                    continue
-                else:
-                    break
-        if os.path.exists(bin_file) and os.path.exists(json_file):
-            utils.print_info_log(f"kernel_file {bin_file}, json_file: {json_file} found.")
-
-        bin_file_backup = ""
-        json_file_backup = ""
-        cce_file_backup = ""
-        for file_name in kernel_file_list:
-            if not os.path.exists(file_name):
-                continue
-            if file_name.endswith(".o"):
-                bin_file_backup = file_name
-            elif file_name.endswith(".json") and (not file_name.endswith("_loc.json")):
-                json_file_backup = file_name
-            elif file_name.endswith(".cce"):
-                tiling_key = "_" + str(tiling_key) + "."
-                if tiling_key in file_name:
-                    cce_file = file_name
-                cce_file_backup = file_name
-        if not os.path.exists(bin_file):
-            bin_file = bin_file_backup
-        if not os.path.exists(json_file):
-            json_file = json_file_backup
-        if not os.path.exists(cce_file):
-            cce_file = cce_file_backup
-
-        kernel_file = KernelFile(bin_file, json_file, cce_file)
-        return kernel_file
 
     @staticmethod
     @screen_error
@@ -857,6 +868,10 @@ class AicoreErrorParser:
                                   f"or copy {Constant.OBJ_DUMP_FILE} and {o_file} to another host and execute : "
                                   f"{Constant.OBJ_DUMP_FILE} -d {kernel_name}.o > {kernel_name}.o.txt")
             return False
+        if self.is_sk:
+            # SK场景下只有host.o，没有cce/json，仅复制host.o，跳过L1的cce/tbe行号匹配
+            utils.copy_src_to_dest([o_file], dir_path)
+            return True
         utils.copy_src_to_dest([cce_file, o_file, json_file], dir_path)
         loc_json_file = os.path.join(kernel_meta_path, kernel_name + "_loc.json")
         diff_str, err_pc = self._get_info_for_decompile(info)
@@ -1322,12 +1337,18 @@ exit()"""
         date_string = time.strftime("%Y%m%d%H%M%S", time.localtime(int(time.time())))
         compile_temp_dir = os.path.abspath(f"temp_{date_string}")
         utils.print_info_log(f"Step 9. Verify a single operator.")
-        if not (os.path.exists(info.bin_file) and os.path.exists(info.json_file)):
-            utils.print_info_log(f"Skip exec single op case because the kernel file dose not exist.")
+        # SK场景下只有host.o、没有json，仅校验bin_file；非SK场景校验bin_file+json_file
+        if self.is_sk:
+            kernel_file_exist = os.path.exists(info.bin_file)
+        else:
+            kernel_file_exist = os.path.exists(info.bin_file) and os.path.exists(info.json_file)
+        if not kernel_file_exist:
+            utils.print_info_log(f"Skip exec single op case because the kernel file does not exist.")
         else:
             host_info = copy.deepcopy(info)
-            host_info.bin_file = os.path.join(self.collect_path, "collection", "compile", info.kernel_name + "_host.o")
-            if os.path.exists(host_info.bin_file):
+            compile_path = os.path.join(self.collect_path, "collection", "compile")
+            host_info.bin_file = self._find_sk_host_o(compile_path, info.kernel_name)
+            if host_info.bin_file and os.path.exists(host_info.bin_file):
                 host_op_test_result, host_op_test_mem_monitor, host_op_test_log_path = (
                     self._test_single_op(host_info, err_i_folder, compile_temp_dir, "host_single_op"))
                 if not self.check_hash_id(host_info.hash_id, host_op_test_log_path):
@@ -1336,25 +1357,27 @@ exit()"""
                         "the kernel load on the host is different from the device."
                     )
 
-            info.run_device_id = self.device_id
-            if info.data_dump_result:
-                info.single_op_test_result, info.single_op_mem_monitor, info.single_op_log_path = (
-                    self._test_single_op(info, err_i_folder, compile_temp_dir, "single_op"))
-            if info.single_op_test_result != RetCode.SUCCESS:
-                self.check_hash_id(info.hash_id, info.single_op_log_path)
-            else:
-                error_op_test_result, error_op_test_mem_monitor, error_op_test_log_path = (
-                    self._test_single_op(info, err_i_folder, compile_temp_dir, "error_single_op"))
-                self.check_hash_id(info.hash_id, error_op_test_log_path)
+            # SK场景下没有device .o，跳过device单算子测试
+            if not self.is_sk:
+                info.run_device_id = self.device_id
+                if info.data_dump_result:
+                    info.single_op_test_result, info.single_op_mem_monitor, info.single_op_log_path = (
+                        self._test_single_op(info, err_i_folder, compile_temp_dir, "single_op"))
+                if info.single_op_test_result != RetCode.SUCCESS:
+                    self.check_hash_id(info.hash_id, info.single_op_log_path)
+                else:
+                    error_op_test_result, error_op_test_mem_monitor, error_op_test_log_path = (
+                        self._test_single_op(info, err_i_folder, compile_temp_dir, "error_single_op"))
+                    self.check_hash_id(info.hash_id, error_op_test_log_path)
 
-            if info.single_op_test_result != RetCode.SUCCESS:
-                utils.print_info_log(
-                    "Successfully reproduced the AI Core exception by running the single-operator test case."
-                )
-            else:
-                utils.print_debug_log(
-                    "Failed to reproduce the AI Core exception by running the single-operator test case."
-                )
+                if info.single_op_test_result != RetCode.SUCCESS:
+                    utils.print_info_log(
+                        "Successfully reproduced the AI Core exception by running the single-operator test case."
+                    )
+                else:
+                    utils.print_debug_log(
+                        "Failed to reproduce the AI Core exception by running the single-operator test case."
+                    )
         if os.path.exists(compile_temp_dir):
             # 如果编译临时文件存在，则删除临时文件夹
             shutil.rmtree(compile_temp_dir)
@@ -1615,3 +1638,38 @@ exit()"""
                     dump_data_info = dump_info
         
         return error_stream_task, dump_data_info
+
+    def _get_sk_kernel_file(self: any, kernel_path: str, kernel_name: str) -> "KernelFile":
+        # SK场景下只生成host.o，反编译目标为host.o，没有json/cce
+        host_file = self._find_sk_host_o(kernel_path, kernel_name)
+        if not host_file:
+            utils.print_warn_log(f"The {kernel_name}*_host.o cannot be found in {kernel_path}.")
+        return KernelFile(host_file, "", "")
+
+    def _find_kernel_file_list(self: any, kernel_name: str) -> list:
+        find_path_cmd = ['grep', kernel_name, '-inrE', self.collect_path]
+        regexp = r"([_\-/0-9a-zA-Z.]{1,}\.json|[_\-/0-9a-zA-Z.]{1,}\.o|[_\-/0-9a-zA-Z.]{1,}\.cce)"
+        kernel_file_list = utils.get_inquire_result(find_path_cmd, regexp)
+        return [kernel_file for kernel_file in kernel_file_list if kernel_file.startswith(self.collect_path)]
+
+    def _get_kernel_and_json_file(self: any, kernel_name: str, tiling_key: str):
+        kernel_path = os.path.join(self.collect_path, "collection", "compile")
+        kernel_name = kernel_name.replace("__kernel0", "").replace("_mix_aic", "").replace("_mix_aiv", "")
+        if self.is_sk:
+            return self._get_sk_kernel_file(kernel_path, kernel_name)
+
+        kernel_file = self._get_kernel_file_by_name(kernel_path, kernel_name, tiling_key)
+        if kernel_file is not None:
+            return kernel_file
+
+        kernel_file_list = self._find_kernel_file_list(kernel_name)
+        if not kernel_file_list:
+            utils.print_error_log(f"The {kernel_name}.o or {kernel_name}.json cannot be found in {self.collect_path}.")
+            return None
+
+        bin_file, json_file = self._match_kernel_by_json(kernel_path, kernel_file_list)
+        if os.path.exists(bin_file) and os.path.exists(json_file):
+            utils.print_info_log(f"kernel_file {bin_file}, json_file: {json_file} found.")
+
+        bin_file, json_file, cce_file = self._fill_kernel_backup(kernel_file_list, bin_file, json_file, tiling_key)
+        return KernelFile(bin_file, json_file, cce_file)

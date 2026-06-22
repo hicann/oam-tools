@@ -552,6 +552,8 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch.object(AicoreErrorParser,
                             'check_hash_id', return_value=True)
         mocker.patch.object(AicoreErrorParser,
+                            '_find_sk_host_o', return_value='kernel_host.o')
+        mocker.patch.object(AicoreErrorParser,
                             '_test_single_op', side_effect=test_single_mock)
         parser.run_single_operator(info, "err_i_folder")
         if expect_log_level == 'debug':
@@ -560,6 +562,41 @@ class TestUtilsMethods(CommonAssert):
             self.assertEqual(info_mock.call_count, 2)
         elif expect_log_level == 'warn':
             self.assertEqual(warn_mock.call_count, 1)
+
+    def test_run_single_operator_sk(self, mocker):
+        # SK场景：只校验bin_file、只跑host_single_op，跳过device单算子测试
+        parser = AicoreErrorParser(os.path.join(
+            cur_abspath, '../res/ori_data/collect/ffts/'))
+        parser.is_sk = True
+        info = AicErrorInfo()
+        info.data_dump_result = True
+        info.json_file = ''
+        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch('shutil.rmtree', return_value=None)
+        mocker.patch.object(AicoreErrorParser, 'check_hash_id', return_value=True)
+        mocker.patch.object(AicoreErrorParser, '_find_sk_host_o', return_value='kernel_host.o')
+        single_op_mock = mocker.patch.object(
+            AicoreErrorParser, '_test_single_op', return_value=(RetCode.SUCCESS, '', ''))
+        parser.run_single_operator(info, "err_i_folder")
+        # SK下只执行host_single_op一次，device single_op/error_single_op被跳过
+        self.assertEqual(single_op_mock.call_count, 1)
+        self.assertEqual(single_op_mock.call_args[0][3], "host_single_op")
+
+    def test_run_single_operator_sk_no_host_o(self, mocker):
+        # SK场景：bin_file不存在时跳过单算子执行
+        parser = AicoreErrorParser(os.path.join(
+            cur_abspath, '../res/ori_data/collect/ffts/'))
+        parser.is_sk = True
+        info = AicErrorInfo()
+        info.bin_file = ''
+        info.json_file = ''
+        mocker.patch('shutil.rmtree', return_value=None)
+        info_mock = mocker.patch('ms_interface.utils.print_info_log')
+        single_op_mock = mocker.patch.object(
+            AicoreErrorParser, '_test_single_op', return_value=(RetCode.SUCCESS, '', ''))
+        parser.run_single_operator(info, "err_i_folder")
+        single_op_mock.assert_not_called()
+        self.assertIn(str(info_mock.call_args_list), "Skip exec single op case")
 
     @pytest.mark.parametrize(
         "cce_exist, content, result",
@@ -724,6 +761,35 @@ class TestUtilsMethods(CommonAssert):
         info.bin_file = str(ori_data_path.joinpath(
             'decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o'))
         self.assertEqual(parser._decompile('', '', info), False)
+
+    def test_get_kernel_and_json_file_sk(self, mocker):
+        # SK场景：bin_file指向<kernel_name>*_host.o，json/cce为空
+        kernel_name = "Add_sk_kernel_900016000"
+        compile_path = self.temp.joinpath("collection/compile")
+        compile_path.mkdir(parents=True, exist_ok=True)
+        host_file = compile_path.joinpath(f"{kernel_name}_xxx_host.o")
+        host_file.touch()
+        parser = AicoreErrorParser(str(self.temp))
+        parser.is_sk = True
+        kernel_file = parser._get_kernel_and_json_file(kernel_name, "0")
+        self.assertEqual(kernel_file.bin_file, str(host_file))
+        self.assertEqual(kernel_file.json_file, '')
+        self.assertEqual(kernel_file.cce_file, '')
+
+    def test_decompile_sk_only_host_o(self, mocker):
+        # SK场景：只反编译host.o，跳过L1的cce/tbe行号匹配，直接返回True
+        parser = AicoreErrorParser('')
+        parser.parse_level = 1
+        parser.is_sk = True
+        mocker.patch('os.path.exists', return_value=True)
+        copy_mock = mocker.patch('ms_interface.utils.copy_src_to_dest', return_value=None)
+        mocker.patch.object(parser, '_get_decompile_status', return_value=0)
+        info = AicErrorInfo()
+        info.bin_file = str(ori_data_path.joinpath(
+            'decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o'))
+        self.assertEqual(parser._decompile('', '', info), True)
+        # SK下只复制host.o一个文件
+        copy_mock.assert_called_once_with([info.bin_file], '')
 
     def test_get_v300_error_code(self, mocker):
         parser = AicoreErrorParser('')
