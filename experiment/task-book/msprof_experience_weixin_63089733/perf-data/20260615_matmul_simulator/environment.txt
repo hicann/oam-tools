@@ -1,0 +1,11 @@
+GitCode account: weixin_63089733
+Task: https://gitcode.com/cann/oam-tools/issues/129
+Operator source: /home/whj/hw_work_place/asc-devkit_1/examples/01_simd_cpp_api/01_utilities/05_mindstudio_tools/msProf
+Operator: MatmulLeakyRelu, kernel matmul_leakyrelu_custom
+Shape: A[1024,256] fp16, B[256,640] fp16, bias[640] fp32, C[1024,640] fp32
+Input data: deterministic all-ones A/B and zero bias
+CANN toolkit: 9.1.0, innerversion V100R001C11B094, arch x86_64
+Compiler: CMake 3.16.3, g++ 9.4.0, bisheng from CANN 9.1.0
+Board access: /dev/davinci* not visible in this workspace; npu-smi not found
+Collection command: msprof op simulator --soc-version=Ascend910B1 --dump=on --output=... ./build/demo_sim
+Collection time: 2026-06-15 Asia/Shanghai
