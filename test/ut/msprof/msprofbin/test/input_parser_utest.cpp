@@ -311,8 +311,13 @@ TEST_F(INPUT_PARSER_UTEST, CheckPythonPathValid) {
     cmdInfo.args[ARGS_PYTHON_PATH] = "TestPython";
     EXPECT_EQ(PROFILING_FAILED, parser.CheckPythonPathValid(cmdInfo));
     Utils::RemoveDir("TestPython");
-    cmdInfo.args[ARGS_PYTHON_PATH] = "/usr/bin/python3";
+
+    // mmAccess2 stub always returns EN_OK, so just creating the file is enough
+    std::string fakePython = "./CheckPythonPathValid_tmp";
+    std::ofstream(fakePython).close();
+    cmdInfo.args[ARGS_PYTHON_PATH] = fakePython.data();
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckPythonPathValid(cmdInfo));
+    std::remove(fakePython.c_str());
 }
 
 TEST_F(INPUT_PARSER_UTEST, ParamsCheck) {
