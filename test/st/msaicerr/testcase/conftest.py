@@ -84,7 +84,7 @@ class CommonAssert:
         assert expected in received
 
     @staticmethod
-    def asseerNotIn(received, expected):
+    def assertNotIn(received, expected):
         assert expected not in received
 
 

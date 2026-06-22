@@ -505,6 +505,35 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(is_sub_path('/tmp/input_extra/kernel.o', '/tmp/input'), False)
         self.assertEqual(is_sub_path('/tmp/input/kernel.o', '/tmp/input'), True)
 
+    def test_collect_kernel_file_sk_only_host_o(self):
+        # SK场景：只生成host.o，没有device .o/.json，仅校验host.o存在，不报error
+        kernel_name = "Add_sk_kernel_900016000"
+        host_name = f"{kernel_name}_xxx_host.o"
+        input_path = self.temp.joinpath("input_sk")
+        input_path.mkdir(parents=True, exist_ok=True)
+        input_path.joinpath('test.log').write_text(f"{input_path}/{host_name}")
+        input_path.joinpath(host_name).touch()
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        utils.ExceptionRootCause().cache_error = True
+        collection = Collection(input_path, output_path)
+        collection.is_sk = True
+        collection.collect_kernel_file(kernel_name)
+        self.assertEqual(
+            bool(list(output_path.rglob(host_name))), True)
+        self.assertNotIn("related file cannot be found in",
+                         utils.ExceptionRootCause().format_causes())
+
+    def test_check_host_and_device_kernel_name_sk(self):
+        # SK场景：无device .o，跳过host/device一致性检查，直接返回True
+        data_name = "GatherV2.GatherV21.1.1733469426252033"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}/dump")
+        input_path.mkdir(parents=True, exist_ok=True)
+        collection = Collection(input_path, output_path)
+        collection.is_sk = True
+        res = collection.check_host_and_device_kernel_name(data_name)
+        self.assertEqual(res, True)
+
     def test_collect_kernel_file_no_json(self):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"
         kernel_name = kernel_name1.replace("__kernel0", "").replace("_mix_aic", "") \

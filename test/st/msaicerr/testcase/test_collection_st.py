@@ -275,7 +275,7 @@ class TestUtilsMethods(CommonAssert):
         collection.collect()
         text = self.debug_info.read_text(encoding="utf-8")
         assert "The kernel load on the host is different from the device" not in text
-        self.asseerNotIn(
+        self.assertNotIn(
             text, "The kernel load on the host is different from the device")
 
     def test_run_collect_level_ffts(self, mocker):

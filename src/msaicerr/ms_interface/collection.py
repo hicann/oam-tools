@@ -36,6 +36,7 @@ class Collection:
         self.output_path = os.path.realpath(output_path)
         self.collect_level = 0
         self.ffts_flag = False
+        self.is_sk = False
 
     @staticmethod
     def get_sk_kernel_name(plog_dir) -> str:
@@ -85,7 +86,7 @@ class Collection:
         # 优先查找SK场景标志性打印，命中则直接返回其中的kernelName
         sk_kernel_name = self.get_sk_kernel_name(plog_dir)
         if sk_kernel_name:
-            utils.print_debug_log(f"SK scenario found, kernel_name {sk_kernel_name}, node_name {data_name}")
+            utils.print_debug_log(f"SuperKernel scenario found, kernel_name {sk_kernel_name}, node_name {data_name}")
             return sk_kernel_name, data_name
         if not self.ffts_flag:
             error_log = 'Aicore kernel execute failed|AI Core kernel execution failed'
@@ -170,6 +171,13 @@ class Collection:
         if ffts_check_path_ret:
             self.ffts_flag = True
 
+        # SK场景标志性打印，命中则只生成host.o，没有device .o/.json/.cce
+        sk_check_path_cmd = ['grep', 'Begin to dump callback exception', '-inrE', self.report_path]
+        sk_check_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
+        sk_check_path_ret = utils.get_inquire_result(sk_check_path_cmd, sk_check_path_regexp)
+        if sk_check_path_ret:
+            self.is_sk = True
+
         original_files = list(set(plog_path_ret))
         dest_path = os.path.join(self.output_path, 'collection', 'plog')
         utils.check_path_valid(dest_path, isdir=True, output=True)
@@ -222,7 +230,12 @@ class Collection:
         )
         exist_op_json = any(kernel_file.endswith(".json") for kernel_file in original_files)
 
-        if not (exist_op_json and exist_op_kernel):
+        if self.is_sk:
+            # SK场景下只生成host.o，没有device .o/.json，仅校验host.o是否存在
+            exist_host_kernel = any(kernel_file.endswith("host.o") for kernel_file in original_files)
+            if not exist_host_kernel:
+                utils.print_warn_log(f"The {kernel_name}`s host.o cannot be found in {self.report_path}.")
+        elif not (exist_op_json and exist_op_kernel):
             utils.print_error_log(f"The {kernel_name}`s related file cannot be found in {self.report_path}.")
 
         original_files = list(set(original_files))
@@ -293,6 +306,9 @@ class Collection:
             raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
 
     def check_host_and_device_kernel_name(self, data_name):
+        if self.is_sk:
+            # SK场景下没有device .o，跳过host/device一致性检查
+            return True
         kernel_cmd = ['find', self.report_path, '-name', data_name]
         _, kernel_info = utils.execute_command(kernel_cmd)
         kernel_path = kernel_info.split(data_name)[0]
