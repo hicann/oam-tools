@@ -285,13 +285,25 @@ int32_t FILETransport::SaveChunk(const char *data, SHARED_PTR_ALIA<analysis::dvv
         MSPROF_LOGE("Check tlv head failed");
         return PROFILING_FAILED;
     }
+
+    if (packet->len > TLV_VALUE_MAX_LEN) {
+        MSPROF_LOGE("Invalid packet len: %u, max: %u", packet->len, TLV_VALUE_MAX_LEN);
+        return PROFILING_FAILED;
+    }
+
     const ProfTlvValue *tlvValue = reinterpret_cast<const ProfTlvValue *>(packet->value);
+
+    if (tlvValue->chunkSize > TLV_VALUE_CHUNK_MAX_LEN) {
+        MSPROF_LOGE("Invalid chunkSize: %zu, max: %u", tlvValue->chunkSize, TLV_VALUE_CHUNK_MAX_LEN);
+        return PROFILING_FAILED;
+    }
+
     fileChunk->isLastChunk = tlvValue->isLastChunk;
     fileChunk->chunkModule = tlvValue->chunkModule;
     fileChunk->chunkSize = tlvValue->chunkSize;
     fileChunk->offset = tlvValue->offset;
     fileChunk->chunk = std::string(tlvValue->chunk, tlvValue->chunkSize);
-    fileChunk->fileName = tlvValue->fileName;
+    fileChunk->fileName = std::string(tlvValue->fileName, strnlen(tlvValue->fileName, TLV_VALUE_FILENAME_MAX_LEN));
 
     std::string jobId = Utils::GetInfoPrefix(fileChunk->extraInfo);
     std::string devId = Utils::GetInfoSuffix(fileChunk->extraInfo);

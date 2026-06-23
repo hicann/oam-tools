@@ -359,12 +359,14 @@ run_pytest_plain() {
 # Collect C++ gcov coverage for a gtest case (e.g. msprof_ut).
 # $1 case_name (used for *_cov / *_html dir naming, aligned with pytest cases)
 # $2 capture_dir: build subdir holding .gcno/.gcda (the UT build tree)
-# $3 extract_pattern: lcov path glob to keep (e.g. '*/src/msprof/*')
+# $3 extract_arg: 覆盖率统计口径。可为：
+#      - lcov path glob（如 '*/src/msprof/*'），按通配符保留；
+#      - 一个已存在的白名单文件路径，按其中逐行列出的源文件精确保留。
 # $4 output_file: test log to append the coverage summary to
 collect_gcov_coverage() {
     local case_name="$1"
     local capture_dir="$2"
-    local extract_pattern="$3"
+    local extract_arg="$3"
     local output_file="$4"
     local cov_dir="${BUILD_OUTPUT_DIR}/${case_name}_cov"
     local html_dir="${BUILD_OUTPUT_DIR}/${case_name}_html"
@@ -381,8 +383,19 @@ collect_gcov_coverage() {
     lcov -c -d "${capture_dir}" -o "${cov_dir}/run.info" ${ign} >> "${output_file}" 2>&1
     lcov -a "${cov_dir}/base.info" -a "${cov_dir}/run.info" \
         -o "${cov_dir}/total.info" ${ign} >> "${output_file}" 2>&1
-    lcov --extract "${cov_dir}/total.info" "${extract_pattern}" \
-        -o "${cov_dir}/coverage.info" ${ign} >> "${output_file}" 2>&1
+    # 口径：白名单文件 → 按文件列表精确 extract；否则按通配符 extract。
+    if [[ -f "${extract_arg}" ]]; then
+        local extract_files=()
+        local _f
+        while IFS= read -r _f; do
+            [[ -n "${_f}" ]] && extract_files+=("${_f}")
+        done < "${extract_arg}"
+        lcov --extract "${cov_dir}/total.info" "${extract_files[@]}" \
+            -o "${cov_dir}/coverage.info" ${ign} >> "${output_file}" 2>&1
+    else
+        lcov --extract "${cov_dir}/total.info" "${extract_arg}" \
+            -o "${cov_dir}/coverage.info" ${ign} >> "${output_file}" 2>&1
+    fi
 
     genhtml "${cov_dir}/coverage.info" -o "${html_dir}" ${html_ign} >> "${output_file}" 2>&1
 
@@ -391,6 +404,52 @@ collect_gcov_coverage() {
         | grep -E "lines\.+:" | head -1 | grep -oE "[0-9]+\.[0-9]+%" | head -1 | sed 's/%//')
     cov_ratio=${cov_ratio:-N/A}
     echo "${case_name}: gcov parsed: Cov=${cov_ratio}%"
+}
+
+# 动态生成 msprof 覆盖率统计白名单：
+# oam-tools 本仓只编译/安装 acp 与 msprofbin 两个模块，其余 lib(profapi/profimpl/
+# msprofiler 等)在 runtime 仓编译。覆盖率只应统计这两个模块实际编译的源文件，
+# 因此从二者的生产 CMakeLists 动态解析源文件清单，避免分母混入本仓不编译的代码。
+# $1 输出白名单文件路径
+gen_msprof_cov_whitelist() {
+    local out_file="$1"
+    local collector_dir="${BASEPATH}/src/msprof/collector"
+    python3 - "$collector_dir" "$out_file" <<'PYEOF'
+import os, re, sys
+collector = sys.argv[1]
+out_file = sys.argv[2]
+dvvp = os.path.join(collector, "dvvp")
+varmap = {
+    "PROF_BASIC_DIR": os.path.join(collector, "basic"),
+    "MSPROF_SOURCE_DIR": collector,
+    "MSPROF_DIR": os.path.join(collector, "..", ".."),
+}
+def resolve(token, cmdir):
+    m = re.match(r'\$\{([A-Z_]+)\}/(.*)', token)
+    if m:
+        var, rest = m.group(1), m.group(2)
+        if var in varmap:
+            return os.path.normpath(os.path.join(varmap[var], rest))
+        return None
+    if token.startswith("$"):
+        return None
+    return os.path.normpath(os.path.join(cmdir, token))
+srcs = set()
+for cm in [os.path.join(dvvp, "acp", "CMakeLists.txt"),
+           os.path.join(dvvp, "msprofbin", "CMakeLists.txt")]:
+    if not os.path.isfile(cm):
+        continue
+    cmdir = os.path.dirname(cm)
+    txt = open(cm).read()
+    for tok in re.findall(r'[^\s"()]+\.(?:cpp|c)\b', txt):
+        p = resolve(tok, cmdir)
+        if p and os.path.isfile(p):
+            srcs.add(os.path.abspath(p))
+with open(out_file, "w") as f:
+    for s in sorted(srcs):
+        f.write(s + "\n")
+print("msprof cov whitelist: %d source files" % len(srcs))
+PYEOF
 }
 
 run_test_case() {
@@ -438,9 +497,11 @@ run_test_case() {
             done < "${msprof_ut_manifest}"
             echo ${msprof_ut_rc} > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
             if [[ "${RUN_COV}" == "true" ]]; then
+                local msprof_cov_whitelist="${BUILD_OUTPUT_DIR}/msprof_cov_files.txt"
+                gen_msprof_cov_whitelist "${msprof_cov_whitelist}" >> "${output_file}" 2>&1
                 collect_gcov_coverage "${case_name}" \
                     "${BUILD_OUTPUT_DIR}/test/ut/msprof" \
-                    '*/src/msprof/*' "${output_file}"
+                    "${msprof_cov_whitelist}" "${output_file}"
             fi
             ;;
         install_st)

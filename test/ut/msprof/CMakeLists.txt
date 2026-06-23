@@ -49,8 +49,12 @@ set(LLT_EXTEND_INCLUDE_DIR
 set(MSPROF_UT_SUBDIRS
     acp
     app
+    common
+    driver
     job_wrapper
+    message
     msprofbin
+    transport
 )
 
 # 逐个加入子目录，并自动收集其中的可执行 UT target

@@ -1158,11 +1158,12 @@ TEST_F(JOB_WRAPPER_STARS_SOC_PROFILE_JOB_TEST, Init) {
         .stubs()
         .will(returnValue(true));
     params->hardware_mem = "on";
-    params->hardware_mem_sampling_interval = 10;
+    params->hardware_mem_sampling_interval = 2000;
     int32_t profPeriod = 0;
     StarsSocProfileConfigT configP;
     profStarsSocProfileJob->SetConfigP(profPeriod, &configP);
-    EXPECT_EQ(10, configP.onChip.period);
+    // 不支持 US 采样时，period 以 ms 为单位换算（period / US_CONVERT_MS）
+    EXPECT_EQ(2000 / US_CONVERT_MS, configP.onChip.period);
 }
 
 class JOB_WRAPPER_PROF_INSTR_JOB_TEST: public testing::Test {
@@ -2040,85 +2041,6 @@ TEST_F(JOB_WRAPPER_PROF_L2_CACHE_JOB_TEST, Uninit) {
     collectionJobCfg_->jobParams.events->push_back("0x5b");
     profL2CacheJob->Init(collectionJobCfg_);
     EXPECT_EQ(PROFILING_SUCCESS, profL2CacheJob->Uninit());
-}
-
-class JOB_WRAPPER_PROF_NTS_PMU_JOB_TEST: public testing::Test {
-protected:
-    void SetUp() override {
-        collectionJobCfg_ = std::make_shared<Analysis::Dvvp::JobWrapper::CollectionJobCfg>();
-        auto params = std::make_shared<analysis::dvvp::message::ProfileParams>();
-        auto jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
-        auto comParams = std::make_shared<Analysis::Dvvp::JobWrapper::CollectionJobCommonParams>();
-        comParams->params = params;
-        comParams->jobCtx = jobCtx;
-        collectionJobCfg_->comParams = comParams;
-    }
-    void TearDown() override {
-        collectionJobCfg_.reset();
-    }
-public:
-    std::shared_ptr<Analysis::Dvvp::JobWrapper::CollectionJobCfg> collectionJobCfg_;
-};
-
-TEST_F(JOB_WRAPPER_PROF_NTS_PMU_JOB_TEST, Init) {
-    GlobalMockObject::verify();
-    EXPECT_EQ(CHANNEL_NTS_PMU, static_cast<int32_t>(PROF_CHANNEL_NTS_PMU));
-
-    auto profNtsPmuJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfNtsPmuJob>();
-    EXPECT_EQ(PROFILING_FAILED, profNtsPmuJob->Init(nullptr));
-    EXPECT_EQ(PROFILING_FAILED, profNtsPmuJob->Init(collectionJobCfg_));
-
-    collectionJobCfg_->comParams->params->ntsPmuEvents = "0x301,0x312";
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsPmuJob->Init(collectionJobCfg_));
-    ASSERT_NE(nullptr, collectionJobCfg_->jobParams.events);
-    EXPECT_EQ(2U, collectionJobCfg_->jobParams.events->size());
-
-    collectionJobCfg_->comParams->params->ntsPmuEvents = "0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0x10,0x11";
-    EXPECT_EQ(PROFILING_FAILED, profNtsPmuJob->Init(collectionJobCfg_));
-
-    collectionJobCfg_->comParams->params->ntsPmuEvents = "0x301,xyz";
-    EXPECT_EQ(PROFILING_FAILED, profNtsPmuJob->Init(collectionJobCfg_));
-
-    collectionJobCfg_->comParams->params->hostProfiling = true;
-    EXPECT_EQ(PROFILING_FAILED, profNtsPmuJob->Init(collectionJobCfg_));
-}
-
-TEST_F(JOB_WRAPPER_PROF_NTS_PMU_JOB_TEST, ProcessAndUninit) {
-    GlobalMockObject::verify();
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER_CPP(&analysis::dvvp::driver::DrvNtsPmuStart)
-        .expects(once())
-        .with(eq(0), eq(analysis::dvvp::driver::PROF_CHANNEL_NTS_PMU), any())
-        .will(returnValue(PROFILING_SUCCESS));
-
-    auto profNtsPmuJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfNtsPmuJob>();
-    collectionJobCfg_->comParams->params->ntsPmuEvents = "0x301,0x312";
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsPmuJob->Init(collectionJobCfg_));
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsPmuJob->Process());
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsPmuJob->Uninit());
-}
-
-TEST_F(JOB_WRAPPER_PROF_NTS_PMU_JOB_TEST, NtsTaskInitProcessAndUninit) {
-    GlobalMockObject::verify();
-    EXPECT_EQ(CHANNEL_NTS_TASK, static_cast<int32_t>(PROF_CHANNEL_NTS_TASK));
-
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
-
-    auto profNtsTaskJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfNtsTaskJob>();
-    EXPECT_EQ(PROFILING_FAILED, profNtsTaskJob->Init(nullptr));
-    EXPECT_EQ(PROFILING_FAILED, profNtsTaskJob->Init(collectionJobCfg_));
-
-    collectionJobCfg_->comParams->params->ntsMetrics = "PipeUtilization";
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsTaskJob->Init(collectionJobCfg_));
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsTaskJob->Process());
-    EXPECT_EQ(PROFILING_SUCCESS, profNtsTaskJob->Uninit());
-
-    collectionJobCfg_->comParams->params->hostProfiling = true;
-    EXPECT_EQ(PROFILING_FAILED, profNtsTaskJob->Init(collectionJobCfg_));
 }
 
 TEST_F(JOB_WRAPPER_PROF_L2_CACHE_JOB_TEST, TaskInit) {

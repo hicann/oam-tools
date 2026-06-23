@@ -439,10 +439,10 @@ TEST_F(JOB_WRAPPER_PROF_MEM_APP_JOB_TEST, Init) {
     EXPECT_EQ(PROFILING_FAILED, profMemJob->Init(nullptr));
     EXPECT_EQ(PROFILING_FAILED, profMemJob->Init(collectionJobCfg_));
     collectionJobCfg_->comParams->params->memProfiling = "on";
-    collectionJobCfg_->comParams->params->appMemProfiling = "";
+    collectionJobCfg_->comParams->params->app = "";
     EXPECT_EQ(PROFILING_FAILED, profMemJob->Init(collectionJobCfg_));
 
-    collectionJobCfg_->comParams->params->appMemProfiling = "on";
+    collectionJobCfg_->comParams->params->app = "test_app";
     EXPECT_EQ(PROFILING_SUCCESS, profMemJob->Init(collectionJobCfg_));
 
     collectionJobCfg_->comParams->params->hostProfiling = true;

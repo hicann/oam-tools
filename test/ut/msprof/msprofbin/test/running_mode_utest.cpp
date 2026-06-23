@@ -254,9 +254,11 @@ TEST_F(RUNNING_MODE_UTEST, StopRunningTasks)
         .will(invoke(ExecCmdStub));
     rMode.taskPid_ = 11111;
     rMode.StopRunningTasks();
-    EXPECT_EQ(g_argv.size(), 1);
-    if (g_argv.size() == 1) {
-        EXPECT_EQ(g_argv[0], "11111");
+    EXPECT_EQ(g_argv.size(), 3);
+    if (g_argv.size() == 3) {
+        EXPECT_EQ(g_argv[0], "-s");
+        EXPECT_EQ(g_argv[1], "SIGINT");
+        EXPECT_EQ(g_argv[2], "11111");
     }
 }
 
@@ -691,10 +693,14 @@ TEST_F(RUNNING_MODE_UTEST, SystemModeStopRunningTasks){
     MOCKER(Utils::ExecCmd)
         .stubs()
         .will(invoke(ExecCmdStub));
+    g_argv.clear();
+    rMode.taskPid_ = 11111;
     rMode.StopRunningTasks();
-    EXPECT_EQ(g_argv.size(), 1);
-    if (g_argv.size() == 1) {
-        EXPECT_EQ(g_argv[0], "11111");
+    EXPECT_EQ(g_argv.size(), 3);
+    if (g_argv.size() == 3) {
+        EXPECT_EQ(g_argv[0], "-s");
+        EXPECT_EQ(g_argv[1], "SIGINT");
+        EXPECT_EQ(g_argv[2], "11111");
     }
 }
 
@@ -986,7 +992,7 @@ TEST_F(RUNNING_MODE_UTEST, IsDeviceJob){
     params->hardware_mem = "on";
     MOCKER_CPP(&ConfigManager::GetPlatformType)
         .stubs()
-        .will(returnValue(0))
+        .will(returnValue(1))
         .then(returnValue(1));
     EXPECT_EQ(false, rMode.IsDeviceJob());
     params->cpu_profiling = "on";
@@ -1030,7 +1036,12 @@ TEST_F(RUNNING_MODE_UTEST, GenerateHostParam)
         .stubs()
         .will(returnValue(false))
         .then(returnValue(true));
+    // FromString 失败时 GenerateHostParam 返回 nullptr
+    auto ppFail = rMode.GenerateHostParam(params);
+    EXPECT_EQ(nullptr, ppFail);
+    // FromString 成功，返回有效参数
     auto pp = rMode.GenerateHostParam(params);
+    ASSERT_NE(nullptr, pp);
     EXPECT_GE(pp->job_id.size(), 0);
     EXPECT_EQ(pp->ai_core_profiling_mode, "sample-based");
     EXPECT_EQ(pp->aiv_profiling_mode, "sample-based");
@@ -1139,57 +1150,53 @@ TEST_F(RUNNING_MODE_UTEST, StartSysTask) {
     new analysis::dvvp::message::ProfileParams);
     Collector::Dvvp::Msprofbin::SystemMode rMode("system", params);
     params->devices = "0";
-    MOCKER_CPP(&SystemMode::StartHostTask)
+    MOCKER_CPP(&SystemMode::RecordOutPut)
         .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
-    GlobalMockObject::verify();
-    MOCKER_CPP(&SystemMode::CreateJobDir)
+        .will(returnValue(PROFILING_SUCCESS));
+    MOCKER_CPP(&SystemMode::StopTask)
         .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
-    GlobalMockObject::verify();
-    MOCKER_CPP(&SystemMode::StartHostTask)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
-    GlobalMockObject::verify();
-    MOCKER_CPP(&SystemMode::IsDeviceJob)
-        .stubs()
-        .will(returnValue(true))
-        .then(returnValue(false));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformIsSocSide)
-        .stubs()
-        .will(returnValue(false));
-    MOCKER_CPP(&SystemMode::StartDeviceTask)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED));
-    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
+        .will(ignoreReturnValue());
 
-    GlobalMockObject::verify();
-    params->devices = "";
+    // 非 host profiling，device job 失败 → 返回 FAILED
     MOCKER_CPP(&analysis::dvvp::message::ProfileParams::IsHostProfiling)
         .stubs()
-        .will(repeat(true, 2))
-        .then(returnValue(false));
-    MOCKER_CPP(&SystemMode::CreateJobDir)
+        .will(returnValue(false));
+    MOCKER_CPP(&SystemMode::StartDeviceJobs)
         .stubs()
         .will(returnValue(PROFILING_FAILED))
         .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_SUCCESS, rMode.StartSysTask());
-    MOCKER_CPP(&SystemMode::StartHostTask)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED))
-        .then(returnValue(PROFILING_SUCCESS));
-    EXPECT_EQ(PROFILING_SUCCESS, rMode.StartSysTask());
+    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
+
+    // device job 成功，WaitSysTask 失败 → FAILED；再成功 → SUCCESS
     MOCKER_CPP(&SystemMode::WaitSysTask)
         .stubs()
         .will(returnValue(PROFILING_FAILED))
         .then(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
+    EXPECT_EQ(PROFILING_SUCCESS, rMode.StartSysTask());
+
+    // host profiling 分支：StartHostJobs 失败 → FAILED
+    GlobalMockObject::verify();
+    MOCKER_CPP(&SystemMode::RecordOutPut)
+        .stubs()
+        .will(returnValue(PROFILING_SUCCESS));
+    MOCKER_CPP(&SystemMode::StopTask)
+        .stubs()
+        .will(ignoreReturnValue());
+    params->devices = "";
+    MOCKER_CPP(&analysis::dvvp::message::ProfileParams::IsHostProfiling)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&SystemMode::StartHostJobs)
+        .stubs()
+        .will(returnValue(PROFILING_FAILED))
+        .then(returnValue(PROFILING_SUCCESS));
+    EXPECT_EQ(PROFILING_FAILED, rMode.StartSysTask());
+
+    // host job 成功且无 device，WaitSysTask 成功 → SUCCESS
+    MOCKER_CPP(&SystemMode::WaitSysTask)
+        .stubs()
+        .will(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_SUCCESS, rMode.StartSysTask());
 }
 

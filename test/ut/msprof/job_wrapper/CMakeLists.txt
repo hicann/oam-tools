@@ -151,22 +151,22 @@ set(localSrcFiles
     ../stub/profile_drv_user_stub.cpp
     ../stub/error_manager_stub2.cpp
     ../stub/tsd_stub.cpp
-    # test/prof_job_utest.cpp
+    test/prof_job_utest.cpp
     test/prof_job_ccu_utest.cpp
-    # test/prof_peripheral_job_utest.cpp
+    test/prof_peripheral_job_utest.cpp
     test/prof_timer_utest.cpp
     test/collection_register_utest.cpp
     test/prof_device_soc_utest.cpp
-    # test/prof_device_acp_utest.cpp
-    # test/job_factory_utest.cpp
-    # test/prof_channel_manager_utest.cpp
+    test/prof_device_acp_utest.cpp
+    test/job_factory_utest.cpp
+    test/prof_channel_manager_utest.cpp
     test/prof_host_job_utest.cpp
-    # test/prof_manager_utest.cpp
-    # test/info_json_test.cpp
+    test/prof_manager_utest.cpp
+    test/info_json_test.cpp
     test/prof_diagnostic_utest.cpp
     test/prof_biu_perf_utest.cpp
-    # test/adx_prof_api_utest.cpp
-    # test/prof_device_rpc_utest.cpp
+    test/adx_prof_api_utest.cpp
+    # test/prof_device_rpc_utest.cpp  # 依赖开源版不含的 adda 设备侧 collection_entry.h
 )
 
 
