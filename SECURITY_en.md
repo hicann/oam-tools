@@ -59,6 +59,6 @@ The public network addresses included in this project code are as follows:
 | Maintenance upgrade file directory | 770 (rwxrwx---) |
 | Business data file | 640 (rw-r-----) |
 | Business data file directory | 750 (rwxr-x---) |
-| Key components, private keys, certificates, ciphertext file directory | 700 (rwx—----) |
+| Key components, private keys, certificates, ciphertext file directory | 700 (rwx------) |
 | Key components, private keys, certificates, encrypted ciphertext | 600 (rw-------) |
 | Encryption and decryption interfaces, encryption and decryption scripts | 500 (r-x------) |

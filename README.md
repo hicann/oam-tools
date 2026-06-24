@@ -84,7 +84,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 
 安装完成之后，用户编译生成的oam-tools软件包会替换已安装CANN开发套件包中的oam-tools相关软件。
 
-> 如果您的环境上`grep`版本大于3.8.0，安装时会出现告警，例如`grep: waring: stray \ before -`，这是由于grep高版本对表达式有更严格的校验，但并不影响安装和使用
+> 如果您的环境上`grep`版本大于3.8.0，安装时会出现告警，例如`grep: warning: stray \ before -`，这是由于grep高版本对表达式有更严格的校验，但并不影响安装和使用
                                        
 ## 🧪 验证
 
