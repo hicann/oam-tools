@@ -362,6 +362,11 @@ is_python_only_component() {
     esac
 }
 
+generate_asys_chip_handler() {
+    echo "---------------- generating chip_handler.py for asys component ----------------"
+    cmake -P "${BASEPATH}/src/asys/asys.cmake" || { echo "generate chip_handler.py failed."; exit 1; }
+}
+
 main() {
     cd "${BASEPATH}"
     checkopts "$@"
@@ -374,6 +379,7 @@ main() {
     if [[ "${ENABLE_UT}" == "on" && "${EXEC_TEST}" == "on" ]] && is_python_only_component "${TEST_COMPONENT}"; then
         skip_build="on"
         echo "---------------- skip oam_tools build for python-only component: ${TEST_COMPONENT} ----------------"
+        generate_asys_chip_handler
     fi
 
     if [[ "${skip_build}" == "off" ]]; then
