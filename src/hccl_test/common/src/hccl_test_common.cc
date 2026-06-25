@@ -1124,7 +1124,7 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
 
     int ret = destory_alloc_buf();
     if (ret != 0) {
-        printf("hccl_op_base destory_alloc_buf failed, ret[%d]", ret);
+        printf("hccl_op_base destroy_alloc_buf failed, ret[%d]", ret);
         return HCCL_E_MEMORY;
     }
     return HCCL_SUCCESS;
