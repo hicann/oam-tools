@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # coding=utf-8
-# ----------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+
+# Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,38 +14,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
-"""Generate deterministic MatmulLeakyRelu input and golden files.
 
-The original asc-devkit sample uses numpy. This task package keeps the
-reproducer dependency-light by using only Python standard library.
-"""
 
 import os
-import struct
+import numpy as np
 
 
-M = 1024
-N = 640
-K = 256
-
-
-def main():
+def gen_golden_data():
+    m = 256
+    n = 256
+    k = 64
+    x1_gm = np.random.randint(-10, 10, [m, k]).astype(np.float16)
+    x2_gm = np.random.randint(-10, 10, [k, n]).astype(np.float16)
+    golden = np.matmul(x1_gm.astype(np.float32), x2_gm.astype(np.float32)).astype(np.float16)
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
-
-    # IEEE 754 fp16 little-endian: 1.0 = 0x3c00.
-    with open("input/x1_gm.bin", "wb") as f:
-        f.write(b"\x00\x3c" * (M * K))
-    with open("input/x2_gm.bin", "wb") as f:
-        f.write(b"\x00\x3c" * (K * N))
-    with open("input/bias.bin", "wb") as f:
-        f.write(struct.pack("<f", 0.0) * N)
-
-    # A and B are all 1.0, bias is 0, so each output element is K.
-    with open("output/golden.bin", "wb") as f:
-        f.write(struct.pack("<f", float(K)) * (M * N))
+    x1_gm.tofile("./input/x1_gm.bin")
+    x2_gm.tofile("./input/x2_gm.bin")
+    golden.tofile("./output/golden.bin")
 
 
 if __name__ == "__main__":
-    main()
+    gen_golden_data()

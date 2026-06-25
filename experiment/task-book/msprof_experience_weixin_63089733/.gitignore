@@ -1,5 +1,10 @@
+# 编译与运行中间产物
 app/build/
 app/input/
 app/output/
-logs/
-perf-data/??????????????_simulator/
+app/scripts/__pycache__/
+**/__pycache__/
+
+# msprof 原始采集中间产物(只保留 mindstudio_profiler_output 解析结果)
+perf-data/**/PROF_*/
+prof_out/

@@ -1,0 +1,32 @@
+# 采集命令(910B3 真实上板)
+$ msprof --application="./demo" \
+       --output="./prof_out" \
+       --ai-core=on --task-time=on --aicpu=on \
+       --aic-metrics=PipeUtilization \
+       --analyze=on
+
+[WARNING] The argument --analyze is useless when --application is not empty
+[INFO] Start profiling...
+[INFO] Start export data in PROF_000001_20260624165816821_PRLMHBPPFEBGJDAB.
+[INFO] [MSVP] msprof_common.py: Start analyzing data in ".../host" ...
+[INFO] [MSVP] msprof_common.py: Analysis data in ".../host" finished.
+[INFO] [MSVP] msprof_common.py: Start analyzing data in ".../device_0" ...
+[INFO] [MSVP] msprof_common.py: Analysis data in ".../device_0" finished.
+[INFO] [MSVP] msprof_export.py: All collected data will be exported, path is: .../device_0.
+[INFO] [MSVP] msprof_common.py: Start exporting summary output_file.
+[INFO] [MSVP] msprof_common.py: End exporting summary output_file. The file is stored in the .../mindstudio_profiler_output path.
+[INFO] Export all data in PROF_000001_20260624165816821_PRLMHBPPFEBGJDAB done.
+[INFO] Start query data in PROF_000001_20260624165816821_PRLMHBPPFEBGJDAB.
+Job Info     Device ID   Dir Name   Collection Time                Model ID   Iteration Number   Rank ID
+NA                       host       2026-06-24 16:58:16.823282     N/A        N/A                -1
+NA           0           device_0   2026-06-24 16:58:17.388998     N/A        N/A                -1
+[INFO] Query all data in PROF_000001_20260624165816821_PRLMHBPPFEBGJDAB done.
+[INFO] Profiling finished.
+[INFO] Process profiling data complete. Data is saved in .../prof_out/PROF_000001_20260624165816821_PRLMHBPPFEBGJDAB
+
+# 备注
+# 1) 首次直接执行 `msprof ./demo` 报错:
+#    [ERROR] profiling error Argument --output=./ is writable by groups.
+#    原因: msprof 出于防提权考虑拒绝 group 可写的输出目录。
+#    解决: 显式指定 --output 到一个 group/other 不可写的目录(chmod 750),并改用 --application 形式。
+# 2) --analyze 在 --application 非空(在线采集)时无效,采集后会自动完成 analyze/export,故 WARNING 可忽略。

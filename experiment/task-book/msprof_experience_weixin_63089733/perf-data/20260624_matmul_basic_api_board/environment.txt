@@ -1,0 +1,19 @@
+GitCode account: weixin_63089733
+Task: https://gitcode.com/cann/oam-tools/issues/129
+Operator source: asc-devkit/examples/01_simd_cpp_api/00_introduction/02_matrix/matmul_basic_api
+Operator: Matmul, kernel mmad_custom<256,64,256,128,128,64,256>
+Shape: A[256,64] fp16, B[64,256] fp16, C[256,256] fp16
+Input data: numpy random int [-10,10) cast to fp16
+Hardware: Atlas A2 (910B3), 1 chip visible (NPU 1 / Chip 0), HBM 65536 MB
+CANN toolkit: 8.5.2 (满足任务书要求 >=8.5.0)
+Compiler: CMake + bisheng (CANN 8.5.2), npu-arch=dav-2201, host CXX g++ 9.4.0, aarch64
+msprof: /home/developer/Ascend/cann-8.5.2/bin/msprof (msprof 25.5.0)
+Collection command: msprof --application="./demo" --output="./prof_out" --ai-core=on --task-time=on --aicpu=on --aic-metrics=PipeUtilization --analyze=on
+Collection time: 2026-06-24 Asia/Shanghai
+Verification: test pass! (error ratio 0.0000, tolerance 0.0001)
+
+== npu-smi info ==
+npu-smi 25.5.0                   Version: 25.5.0
+NPU 1  910B3   Health OK   Power 88.8W  Temp 38C
+Chip 0  0000:0A:00.0   AICore 0%   HBM-Usage 3203 / 65536 MB
+No running processes found in NPU 1
