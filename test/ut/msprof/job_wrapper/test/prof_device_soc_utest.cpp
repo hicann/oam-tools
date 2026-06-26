@@ -213,7 +213,6 @@ TEST_F(PROF_DEVICE_SOC_UTEST, GenerateFileName) {
     EXPECT_EQ(genName, "/tmp/PROF_DEVICE_SOC_UTEST/GenerateFileName.0");
 }
 
-#ifndef BUILD_OPEN_PROJECT
 TEST_F(PROF_DEVICE_SOC_UTEST, ParseAiCoreConfig) {
     GlobalMockObject::verify();
 
@@ -254,7 +253,7 @@ TEST_F(PROF_DEVICE_SOC_UTEST, ParseAiCoreConfig) {
     EXPECT_EQ(PROFILING_FAILED,jobDeviceSoc->ParseAiCoreConfig(cfg));
     EXPECT_EQ(PROFILING_SUCCESS,jobDeviceSoc->ParseAiCoreConfig(cfg));
 }
-#endif
+
 TEST_F(PROF_DEVICE_SOC_UTEST, ParsePmuConfig) {
     GlobalMockObject::verify();
 

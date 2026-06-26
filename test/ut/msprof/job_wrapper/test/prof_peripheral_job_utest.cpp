@@ -694,7 +694,6 @@ public:
     std::shared_ptr<Analysis::Dvvp::JobWrapper::CollectionJobCfg> collectionJobCfg_;
 };
 
-#ifndef BUILD_OPEN_PROJECT
 TEST_F(JOB_WRAPPER_PROF_HSCB_JOB_TEST, AicpuHscbInit) {
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
@@ -831,7 +830,6 @@ TEST_F(JOB_WRAPPER_PROF_HSCB_JOB_TEST, AicpuHscbUninit) {
     EXPECT_EQ(PROFILING_FAILED, profAicpuHscb->Uninit());
     EXPECT_EQ(PROFILING_SUCCESS, profAicpuHscb->Uninit());
 }
-#endif
 /* **************************************************************** */
 
 class JOB_WRAPPER_PROF_HCCS_JOB_TEST : public testing::Test {

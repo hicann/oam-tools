@@ -28,13 +28,9 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/config/config_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
 )
-if(NOT BUILD_OPEN_PROJECT)
-    list(APPEND profilerSrcFiles
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
-    )
-endif()
 
 set(localSrcFiles
     test/main.cpp
@@ -116,9 +112,6 @@ target_compile_definitions(driver_utest PRIVATE
     MSPROF_DEBUG
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(driver_utest PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_libraries(driver_utest PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>

@@ -50,6 +50,8 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/transport/file_manager.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/transport/file_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_api_plugin.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/op_transport.cpp
@@ -69,15 +71,19 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_pipe_transfer.cpp
     ${CppPath}
     ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux.c
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux_mem.c
 )
 
 set(localSrcFiles
     test/main.cpp
     test/transport_utest.cpp
     test/uploader_utest.cpp
-    #test/prof_channel_utest.cpp  # 依赖开源版不含的 adda 设备侧 collection_entry.h
+    test/prof_channel_utest.cpp
     test/hash_data_test.cpp
-    #test/file_manager_utest.cpp  # 依赖 OSAL 设备侧 osal_mem/adda，开源版不支持
+    test/file_manager_utest.cpp
+    test/file_ageing_test.cpp
+    test/file_slice_test.cpp
     ../stub/hdc-api-stub.cpp
     ../stub/hdc-log-stub.cpp
     ../stub/drv_stub.cpp
@@ -176,12 +182,11 @@ target_compile_options(transport PRIVATE
 )
 
 target_compile_definitions(transport PRIVATE
+    DLOG_EVENT=4
+    OSAL
     MSPROF_DEBUG
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(transport PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_libraries(transport PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>

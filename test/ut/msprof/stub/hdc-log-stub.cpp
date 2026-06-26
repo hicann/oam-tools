@@ -22,11 +22,16 @@
 #include <string>
 #include "securec.h"
 
+#ifndef DLOG_EVENT
+#define DLOG_EVENT 4
+#endif
+
 const std::map<int, std::string> LOG_LEVEL_INFO = {
     {DLOG_DEBUG, "DEBUG"},
     {DLOG_INFO,  "INFO"},
     {DLOG_WARN,  "WARING"},
-    {DLOG_ERROR, "ERROR"}
+    {DLOG_ERROR, "ERROR"},
+    {DLOG_EVENT, "EVENT"}
 };
 
 void DlogErrorInner(int moduleId, const char *format, ...) {

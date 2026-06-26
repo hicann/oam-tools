@@ -73,14 +73,11 @@ set(src_file
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
 )
-if(NOT BUILD_OPEN_PROJECT)
-    list(APPEND src_file
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
-    )
-endif()
+
 list(APPEND src_file
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/job_wrapper/src/collection_job.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/job_wrapper/src/collection_register.cpp
@@ -171,9 +168,6 @@ target_compile_definitions(acp_utest PRIVATE
     __PROF_LLT
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(acp_utest PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_options(acp_utest PRIVATE
    -ldl

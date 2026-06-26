@@ -31,6 +31,10 @@ using namespace Analysis::Dvvp::Common::Statistics;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 #define MAX_BUFFER_SIZE (1024 * 1024 * 2)
 #define MAX_THRESHOLD_SIZE (MAX_BUFFER_SIZE * 0.8)
+static constexpr auto PROF_CHANNEL_NTS_TASK_COMPAT =
+    static_cast<analysis::dvvp::driver::AI_DRV_CHANNEL>(152);
+static constexpr auto PROF_CHANNEL_NTS_PMU_COMPAT =
+    static_cast<analysis::dvvp::driver::AI_DRV_CHANNEL>(153);
 class TRANSPORT_PROF_CHANNELREADER_UTEST: public testing::Test {
 protected:
     virtual void SetUp() {
@@ -186,12 +190,12 @@ TEST_F(TRANSPORT_PROF_CHANNELREADER_UTEST, FlushDrvBuffDoesNotSupportNtsPmu) {
     uint32_t flushsize = 0;
     MOCKER(&analysis::dvvp::driver::DrvProfFlush)
         .expects(never())
-        .with(eq(0U), eq(static_cast<uint32_t>(analysis::dvvp::driver::PROF_CHANNEL_NTS_PMU)), outBound(flushsize))
+        .with(eq(0U), eq(static_cast<uint32_t>(PROF_CHANNEL_NTS_PMU_COMPAT)), outBound(flushsize))
         .will(returnValue(PROFILING_SUCCESS));
 
     std::shared_ptr<analysis::dvvp::transport::ChannelReader> reader(
         new analysis::dvvp::transport::ChannelReader(
-            0, analysis::dvvp::driver::PROF_CHANNEL_NTS_PMU, "data/nts_pmu.data",
+            0, PROF_CHANNEL_NTS_PMU_COMPAT, "data/nts_pmu.data",
             _job_ctx));
     EXPECT_EQ(PROFILING_SUCCESS, reader->Init());
     EXPECT_FALSE(reader->IsSupportFlushDrvBuff());
@@ -206,12 +210,12 @@ TEST_F(TRANSPORT_PROF_CHANNELREADER_UTEST, FlushDrvBuffDoesNotSupportNtsTask) {
     uint32_t flushsize = 0;
     MOCKER(&analysis::dvvp::driver::DrvProfFlush)
         .expects(never())
-        .with(eq(0U), eq(static_cast<uint32_t>(analysis::dvvp::driver::PROF_CHANNEL_NTS_TASK)), outBound(flushsize))
+        .with(eq(0U), eq(static_cast<uint32_t>(PROF_CHANNEL_NTS_TASK_COMPAT)), outBound(flushsize))
         .will(returnValue(PROFILING_SUCCESS));
 
     std::shared_ptr<analysis::dvvp::transport::ChannelReader> reader(
         new analysis::dvvp::transport::ChannelReader(
-            0, analysis::dvvp::driver::PROF_CHANNEL_NTS_TASK, "data/nts_task.data",
+            0, PROF_CHANNEL_NTS_TASK_COMPAT, "data/nts_task.data",
             _job_ctx));
     EXPECT_EQ(PROFILING_SUCCESS, reader->Init());
     EXPECT_FALSE(reader->IsSupportFlushDrvBuff());

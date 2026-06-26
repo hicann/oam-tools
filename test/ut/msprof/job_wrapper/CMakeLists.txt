@@ -120,15 +120,12 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/channel/nano_stars_profile.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/channel/channel_job.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
 )
-if(NOT BUILD_OPEN_PROJECT)
-    list(APPEND profilerSrcFiles
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
-    )
-endif()
+
 list(APPEND profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_compute_device_job.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/msproftx/mstx/src/mstx_domain_mgr.cpp
@@ -162,6 +159,7 @@ set(localSrcFiles
     test/prof_channel_manager_utest.cpp
     test/prof_host_job_utest.cpp
     test/prof_manager_utest.cpp
+    test/prof_params_adapter_utest.cpp
     test/info_json_test.cpp
     test/prof_diagnostic_utest.cpp
     test/prof_biu_perf_utest.cpp
@@ -291,9 +289,6 @@ target_compile_definitions(job_wrapper PRIVATE
     MSPROF_DEBUG
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(job_wrapper PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_libraries(job_wrapper PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>
@@ -307,4 +302,3 @@ set_target_properties(job_wrapper
     OUTPUT_NAME job_wrapper
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-

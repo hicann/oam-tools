@@ -35,14 +35,10 @@ set(profilerSrcList
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/dynamic_profiling/src/dyn_prof_client.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/depend/stub/error_manager/msprof_error_manager_stub.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
     ${CppPath}
 )
-if(NOT BUILD_OPEN_PROJECT)
-    list(APPEND profilerSrcList
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
-    )
-endif()
 
 set(profilerSrcFile
     test/main.cpp
@@ -154,9 +150,6 @@ target_compile_definitions(application_utest PRIVATE
     MSPROF_DEBUG
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(application_utest PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_libraries(application_utest PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>

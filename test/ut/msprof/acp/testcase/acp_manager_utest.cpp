@@ -432,7 +432,6 @@ TEST_F(ACP_MANAGER_UTEST, AcpNewLaunchKernelTest)
         rtLaunchKernelWithArgsArray(func, numBlocks, stm, cfg, args));
 }
 
-#ifndef BUILD_OPEN_PROJECT
 TEST_F(ACP_MANAGER_UTEST, AcpManagerTest)
 {
     MOCKER_CPP(analysis::dvvp::common::utils::Utils::CreateDir)
@@ -499,9 +498,7 @@ drvError_t halGetDeviceInfoSamplingStub(uint32_t devId, int32_t moduleType, int3
     }
     return DRV_ERROR_NONE;
 }
-#endif
 
-#ifndef BUILD_OPEN_PROJECT
 TEST_F(ACP_MANAGER_UTEST, ParseDavidPcSamplingData)
 {
     GlobalMockObject::verify();
@@ -545,7 +542,6 @@ TEST_F(ACP_MANAGER_UTEST, ParseDavidPcSamplingData)
     EXPECT_EQ(ret, PROFILING_SUCCESS);
     Platform::instance()->Uninit();
 }
-#endif
 
 TEST_F(ACP_MANAGER_UTEST, DumpBinary)
 {
@@ -579,7 +575,6 @@ TEST_F(ACP_MANAGER_UTEST, AddBinaryBaseAddr)
     AcpManager::instance()->UnInit();
 }
 
-#ifndef BUILD_OPEN_PROJECT
 TEST_F(ACP_MANAGER_UTEST, AcpManagerCustomBase)
 {
     GlobalMockObject::verify();
@@ -609,4 +604,3 @@ TEST_F(ACP_MANAGER_UTEST, AcpManagerCustomBase)
     AcpManager::instance()->UnInit();
     Platform::instance()->Uninit();
 }
-#endif

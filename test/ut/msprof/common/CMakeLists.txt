@@ -46,6 +46,8 @@ target_include_directories(osal_linux_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -84,6 +86,181 @@ set_target_properties(osal_linux_utest
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+###################### osal_utest ###########################
+# 覆盖 osal.c 的 OsalXxx 封装转发层（osal_linux_utest 只测 LinuxXxx 实现）
+add_executable(osal_utest
+    test/main.cpp
+    test/osal_utest.cpp
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux.c
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux_mem.c
+    ../stub/common-utils-stub.cpp
+    ../stub/hdc-log-stub.cpp
+)
+
+target_include_directories(osal_utest PRIVATE
+    ${libmsprofHeaderDir}
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/acl
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
+    ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
+    ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${MSPROF_SOURCE_DIR}/dvvp/common
+    ${MSPROF_SOURCE_DIR}/basic/osal
+    ../stub/
+)
+
+target_compile_options(osal_utest PRIVATE
+    -g
+    -pipe
+    -Wall
+    -fno-access-control
+    -Wfloat-equal
+    -Wextra
+)
+
+target_compile_definitions(osal_utest PRIVATE
+    OSAL
+    google=ascend_private
+)
+
+target_link_options(osal_utest PRIVATE
+   -ldl
+   -lpthread
+)
+
+target_link_libraries(osal_utest PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub>
+    c_sec
+)
+
+set_target_properties(osal_utest
+    PROPERTIES
+    OUTPUT_NAME osal_utest
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+###################### local_socket_utest ###########################
+add_executable(local_socket_utest
+    test/main.cpp
+    test/local_socket_utest.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/common/socket/local_socket.cpp
+    ../stub/hdc-log-stub.cpp
+)
+
+target_include_directories(local_socket_utest PRIVATE
+    ${LIBC_SEC_HEADER}
+    ${TOP_DIR}/output/third_party/gtest_shared/include
+    ${TOP_DIR}/third_party/libc_sec/include
+    ${TOP_DIR}/src/dfx/error_manager
+    ${TOP_DIR}/src/inc
+    ${TOP_DIR}/src/msprof/inc
+    ${TOP_DIR}/src/msprof/inc/toolchain
+    ${TOP_DIR}/src/msprof/inc/external
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/acl
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
+    ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
+    ${MSPROF_SOURCE_DIR}/dvvp
+    ${MSPROF_SOURCE_DIR}/dvvp/common
+    ${MSPROF_SOURCE_DIR}/dvvp/common/utils
+    ${MSPROF_SOURCE_DIR}/dvvp/common/logger
+    ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
+    ${MSPROF_SOURCE_DIR}/basic/osal
+    ../stub/
+)
+
+target_compile_options(local_socket_utest PRIVATE
+    -g
+    -pipe
+    -Wall
+    -fno-access-control
+    -Wfloat-equal
+    -Wextra
+)
+
+target_compile_definitions(local_socket_utest PRIVATE
+    OSAL
+    google=ascend_private
+)
+
+target_link_libraries(local_socket_utest PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub>
+    c_sec
+)
+
+set_target_properties(local_socket_utest
+    PROPERTIES
+    OUTPUT_NAME local_socket_utest
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+###################### chunk_pool_utest ###########################
+add_executable(chunk_pool_utest
+    test/main.cpp
+    test/chunk_pool_utest.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/common/memory/chunk_pool.cpp
+    ../stub/hdc-log-stub.cpp
+)
+
+target_include_directories(chunk_pool_utest PRIVATE
+    ${LIBC_SEC_HEADER}
+    ${TOP_DIR}/output/third_party/gtest_shared/include
+    ${TOP_DIR}/third_party/libc_sec/include
+    ${TOP_DIR}/src/dfx/error_manager
+    ${TOP_DIR}/src/inc
+    ${TOP_DIR}/src/msprof/inc
+    ${TOP_DIR}/src/msprof/inc/toolchain
+    ${TOP_DIR}/src/msprof/inc/external
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/acl
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
+    ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
+    ${MSPROF_SOURCE_DIR}/dvvp
+    ${MSPROF_SOURCE_DIR}/dvvp/common
+    ${MSPROF_SOURCE_DIR}/dvvp/common/utils
+    ${MSPROF_SOURCE_DIR}/dvvp/common/logger
+    ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
+    ${MSPROF_SOURCE_DIR}/basic/osal
+    ../stub/
+)
+
+target_compile_options(chunk_pool_utest PRIVATE
+    -g
+    -pipe
+    -Wall
+    -fno-access-control
+    -Wfloat-equal
+    -Wextra
+)
+
+target_compile_definitions(chunk_pool_utest PRIVATE
+    OSAL
+    google=ascend_private
+)
+
+target_link_libraries(chunk_pool_utest PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub>
+    c_sec
+)
+
+set_target_properties(chunk_pool_utest
+    PROPERTIES
+    OUTPUT_NAME chunk_pool_utest
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 ###################### param_validation_utest ###########################
 protobuf_generate(param_validation_utest_proto
     CppPath
@@ -106,6 +283,10 @@ add_executable(param_validation_utest
     ${MSPROF_SOURCE_DIR}/dvvp/driver/channel/ai_drv_prof_api.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mini_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
     ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
     ${MSPROF_SOURCE_DIR}/dvvp/depend/stub/error_manager/msprof_error_manager_stub.cpp
@@ -116,10 +297,6 @@ add_executable(param_validation_utest
     ../stub/profile_drv_user_stub.cpp
     ${CppPath}
 )
-if(NOT BUILD_OPEN_PROJECT)
-    target_sources(param_validation_utest PRIVATE
-        ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/nano_platform.cpp)
-endif()
 
 target_include_directories(param_validation_utest PRIVATE
     ${LIBC_SEC_HEADER}
@@ -181,9 +358,6 @@ target_compile_definitions(param_validation_utest PRIVATE
     MSPROF_DEBUG
     google=ascend_private
 )
-if(BUILD_OPEN_PROJECT)
-    target_compile_definitions(param_validation_utest PRIVATE BUILD_OPEN_PROJECT)
-endif()
 
 target_link_libraries(param_validation_utest PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>

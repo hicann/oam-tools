@@ -15,13 +15,13 @@
  */
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include "gtest/gtest.h"
 #include "mockcpp/mockcpp.hpp"
 #include "file_interface.h"
 #include "file_transport.h"
 #include "transport.h"
 #include "errno/error_code.h"
-#include "osal/osal_mem.h"
 #include "utils/utils.h"
 
 class FileManagerUtest: public testing::Test {
@@ -37,13 +37,13 @@ protected:
 
 ProfFileChunk * CreateCFileChunk(uint8_t deviceId, uint32_t chunkSize, int32_t type)
 {
-    ProfFileChunk *chunk = (ProfFileChunk *)OsalMalloc(sizeof(ProfFileChunk));
+    ProfFileChunk *chunk = static_cast<ProfFileChunk *>(std::malloc(sizeof(ProfFileChunk)));
     chunk->deviceId = deviceId;
     chunk->chunkSize = chunkSize;
     chunk->chunkType = type;
     chunk->isLastChunk = false;
     chunk->offset = -1;
-    chunk->chunk = (uint8_t*)OsalMalloc(1048576); // 1*1024*1024
+    chunk->chunk = static_cast<uint8_t *>(std::malloc(1048576)); // 1*1024*1024
     (void)memset_s(chunk->fileName, sizeof(chunk->fileName), 0, sizeof(chunk->fileName));
     (void)sprintf_s(chunk->fileName, sizeof(chunk->fileName), "%s", "nano_stars_profile.data");
     return chunk;
