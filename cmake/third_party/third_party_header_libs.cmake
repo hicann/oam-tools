@@ -53,7 +53,7 @@ set_target_properties(alog PROPERTIES
 # 添加Runtime中依赖的文件地址
 set(runtime_INCLUDE_DIR
     ${ASCEND_CANN_PACKAGE_PATH}/include
-    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/dump

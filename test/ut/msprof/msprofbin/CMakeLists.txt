@@ -141,7 +141,7 @@ set(libmsprofHeaderDir
     ${TOP_DIR}/src/dfx/msprof/collector/basic/osal
     ${TOP_DIR}/src/dfx/msprof/collector/dvvp/proto
     ${TOP_DIR}/src/msprof/inc
-    ${TOP_DIR}/include/driver
+    ${TOP_DIR}/pkg_inc/driver
     ${TOP_DIR}/include/external
     ${TOP_DIR}/include/external/acl
     ${TOP_DIR}/src/dfx/error_manager
