@@ -77,7 +77,7 @@ class AsysStackTrace(AscendTraceDll):
         if target_work_path:
             self.trace_work_path = os.path.join(target_work_path, ATRACE_LOG_NAME)
             log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
-                    f"get from environment variables ASCEND_WORK_PATH of process {self.remote_id}.")
+                    f"get from environment variables of process {self.remote_id}.")
         else:
             self.trace_work_path = os.path.join(asys_env_var.home_path, "ascend", ATRACE_LOG_NAME)
             log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
