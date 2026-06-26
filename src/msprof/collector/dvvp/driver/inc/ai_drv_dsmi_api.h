@@ -16,7 +16,6 @@
 #ifndef ANALYSIS_DVVP_DEVICE_AI_DRV_DSMI_API_H
 #define ANALYSIS_DVVP_DEVICE_AI_DRV_DSMI_API_H
 
-#include <map>
 #include <string>
 #include "ascend_hal.h"
 #include "message/prof_params.h"
