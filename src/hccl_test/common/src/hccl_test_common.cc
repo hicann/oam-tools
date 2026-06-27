@@ -284,12 +284,12 @@ std::vector<struct option> build_longopts(bool is910_95)
     opts.push_back({"npus", required_argument, 0, 'p'});
     opts.push_back({"help", no_argument, 0, 'h'});
     opts.push_back({"onlydevicetime", required_argument, 0, 't'});
+    opts.push_back({"symmetric_memory", required_argument, 0, 'm'});
     if (is910_95) {
         opts.push_back({"accelerator", required_argument, 0, 'a'});
     } else {
         opts.push_back({"zero_copy", required_argument, 0, 'z'});
         opts.push_back({"nslb", required_argument, 0, 's'});
-        opts.push_back({"symmetric_memory", required_argument, 0, 'm'});
     }
     opts.push_back({0, 0, 0, 0});
     return opts;
@@ -312,9 +312,9 @@ void HcclTest::print_help()
     printf("[-w,--warmup_iters <warmup iteration count>] \n\t");
     printf("[-c,--check <result verification> 0:disabled 1:quiet 2:verbose (default 1)] \n\t");
     printf("[-p,--npus <npus used for one node>] \n\t");
+    printf("[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t");
     if (!IsSupport910_95()) {
         printf("[-z,--zero_copy  0:disabled 1:enabled.] \n\t");
-        printf("[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t");
         printf("[-s,--nslb  0:disabled 1:enabled.] \n\t");
     }
     printf("[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not support aicpu_ts.] \n\t");
@@ -656,7 +656,7 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     int ret = 0;
     long parsed;
     bool is910_95 = IsSupport910_95();
-    std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
+    std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
     std::vector<struct option> longopts = build_longopts(is910_95);
     while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
         ret = parse_opt(opt);
@@ -1130,6 +1130,16 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
     return HCCL_SUCCESS;
 }
 
+void HcclTest::fill_physical_mem_prop(aclrtPhysicalMemProp &prop, int32_t deviceId)
+{
+    prop.handleType = ACL_MEM_HANDLE_TYPE_NONE;
+    prop.allocationType = ACL_MEM_ALLOCATION_TYPE_PINNED;
+    prop.memAttr = ACL_HBM_MEM_HUGE;
+    prop.location.id = deviceId;
+    prop.location.type = ACL_MEM_LOCATION_TYPE_DEVICE;
+    prop.reserve = 0;
+}
+
 int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
 {
     if (ptr == nullptr || size == 0 || handle == nullptr) {
@@ -1140,12 +1150,7 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
     int32_t deviceId;
     ACLCHECK(aclrtGetDevice(&deviceId));
     aclrtPhysicalMemProp prop;
-    prop.handleType = ACL_MEM_HANDLE_TYPE_NONE;
-    prop.allocationType = ACL_MEM_ALLOCATION_TYPE_PINNED;
-    prop.memAttr = ACL_HBM_MEM_HUGE;
-    prop.location.id = deviceId;
-    prop.location.type = ACL_MEM_LOCATION_TYPE_DEVICE;
-    prop.reserve = 0;
+    fill_physical_mem_prop(prop, deviceId);
 
     size_t allocSize = size;
     size_t granularity = 0;
@@ -1155,6 +1160,19 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
         return HCCL_E_RUNTIME;
     }
     allocSize = (allocSize + granularity - 1) / granularity * granularity;
+
+    if (IsSupport910_95()) {
+        aclError allocRet = aclrtMalloc(ptr, allocSize, ACL_MEM_MALLOC_HUGE_ONLY);
+        if(allocRet != ACL_SUCCESS) {
+            printf("[%s][%d] aclrtMalloc failed.\n", __FUNCTION__, __LINE__);
+            if (*ptr != nullptr) {
+                aclrtFree(*ptr);
+                *ptr = nullptr;
+            }
+            return HCCL_E_RUNTIME;
+        }
+        return HCCL_SUCCESS;
+    }
 
     ret = aclrtReserveMemAddress(ptr, allocSize, 0, nullptr, 1);
     if (ret != ACL_SUCCESS) {
@@ -1181,9 +1199,19 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
 
 int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
 {
-    if (ptr == nullptr || handle == nullptr) {
+    if (ptr == nullptr) {
         return HCCL_SUCCESS;
     }
+
+    if (IsSupport910_95()) {
+        ACLCHECK(aclrtFree(ptr));
+        return HCCL_SUCCESS;
+    }
+
+    if (handle == nullptr) {
+        return HCCL_SUCCESS;
+    }
+
     aclError ret = ACL_SUCCESS;
     ret = aclrtUnmapMem(ptr);
     if (ret != ACL_SUCCESS) {

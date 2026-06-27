@@ -174,6 +174,7 @@ protected:
     int hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle);
     int register_symmetric_memory(HcclCommSymWindow &sym_win);
     int deregister_symmetric_memory(HcclCommSymWindow &sym_win);
+    void fill_physical_mem_prop(aclrtPhysicalMemProp &prop, int32_t deviceId);
 
 private:
     int set_device_sat_mode();
