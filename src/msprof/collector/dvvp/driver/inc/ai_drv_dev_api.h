@@ -17,7 +17,6 @@
 #define ANALYSIS_DVVP_DEVICE_AI_DRV_DEV_API_H
 
 #include <vector>
-#include <map>
 #include <string>
 #include "ascend_hal.h"
 #include "message/prof_params.h"

@@ -16,7 +16,6 @@
 #ifndef ANALYSIS_DVVP_ANALYZE_OP_ANALYZER_H
 #define ANALYSIS_DVVP_ANALYZE_OP_ANALYZER_H
 
-#include <map>
 #include <vector>
 #include <mutex>
 #include <condition_variable>
