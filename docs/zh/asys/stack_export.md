@@ -35,15 +35,19 @@ asys collect -r=stacktrace --remote=pid --all --quiet --timeout=num --output=pat
 ## 使用示例和输出说明
 
 ```bash
-asys collect -r=stacktrace --remote=468625 --all --quiet --timeout=10
+asys collect -r=stacktrace --remote=892839 --all --quiet --timeout=10 --output=./
 ```
 
 输出示例如下：
 
 ```bash
-2025-04-01 02:59:10,344 [ASYS] [INFO]: asys start.
-2025-04-01 02:59:10,370 [ASYS] [WARNING]: This command sends signal 35 to the process:468625. If the process is executed to disable signal receiving through the environment variable ASCEND_COREDUMP_SIGNAL=none, the process:468625 will be killed. Are you sure that signal reception is not disabled? (Y/N)
-2025-04-01 02:59:11,151 [ASYS] [INFO]: stackcore file path: /home/test/atrace/trace_468625_468625_20250401025858603877/stackcore_event_468625_20250401025910399626/stackcore_tracer_35_468625_atrace_test_20250401025910399934.txt
-2025-04-01 02:59:11,151 [ASYS] [INFO]: collect task execute finish.
-2025-04-01 02:59:11,151 [ASYS] [INFO]: asys finish.
+2026-06-26 03:12:35,573 [ASYS] [INFO]: asys start.
+2026-06-26 03:12:35,615 [ASYS] [WARNING]: This command sends signal 35 to the process:892839. If the process is executed to disable signal receiving through the environment variable ASCEND_COREDUMP_SIGNAL=none, the process:892839 will be killed.
+2026-06-26 03:12:35,615 [ASYS] [INFO]: bin file generate path is /root/ascend/atrace, get from default path.
+2026-06-26 03:12:36,236 [ASYS] [INFO]: bin file generated, awaiting stack trace completion.
+2026-06-26 03:12:36,988 [ASYS] [INFO]: start parse bin file
+2026-06-26 03:12:36,997 [ASYS] [INFO]: stackcore file path: /root/ascend/atrace/trace_892633_892633_20260626030851615735/stackcore_event_892839_20260626031235677855/stackcore_tracer_35_892839_aoe_20260626031235677902.txt
+2026-06-26 03:12:36,998 [ASYS] [INFO]: Stacktrace output directory: /root/asys_output_20260626031235573
+2026-06-26 03:12:36,998 [ASYS] [INFO]: collect task execute finish.
+2026-06-26 03:12:36,998 [ASYS] [INFO]: asys finish.
 ```
