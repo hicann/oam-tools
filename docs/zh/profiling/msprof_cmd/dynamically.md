@@ -40,10 +40,10 @@
 - attach方式：
 
   ```sh
-  msprof --dynamic=on [options]
+  msprof --dynamic=on --pid=<pid> [options]
   ```
 
-  launch方式必须传入用户程序，app参数说明请参见[app参数说明](general_collect_commands.md#app参数说明)，options参数说明请参见表1，同时可叠加其他采集项，例如[采集AI任务运行性能数据](ai_runtime_profile_data.md)或[采集AI处理器系统数据](processorai_accelerator_system_data.md)中的参数。
+launch方式必须传入用户程序，app参数说明请参见[app参数说明](general_collect_commands.md#app参数说明)，options参数说明请参见表1，同时可叠加其他采集项，例如[采集AI任务运行性能数据](ai_runtime_profile_data.md)或[采集AI处理器系统数据](processorai_accelerator_system_data.md)中的参数。
 
 ## 参数说明
 
@@ -52,7 +52,7 @@
 |参数|**可选/必选**|描述|
 |--|--|--|
 |--dynamic|必选|控制动态采集性能数据的开关，可选on或off，默认值为off。|
-|--pid|attach方式必选；launch方式该参数不选|指定需要采集的应用程序的PID。可同时配置一个或多个PID，配置示例：--pid 1,2,3。获取PID的方法可参考获取AI任务PID，也可执行如下命令获取当前环境可以采集的所有PID：<br> `ls ~/dynamic_profiling_socket_* 2>/dev/null \| awk -F '_' '{print $4}' \| paste -sd ',' -`|
+|--pid|attach方式必选；launch方式该参数不选|指定需要采集的应用程序的PID。可同时配置一个或多个PID，配置示例：--pid=1,2,3。获取PID的方法可参考获取AI任务PID，也可执行如下命令获取当前环境可以采集的所有PID：<br> `ls ~/dynamic_profiling_socket_* 2>/dev/null \| awk -F '_' '{print $4}' \| paste -sd ',' -`|
 |--output|可选|指定性能数据的存放路径。默认未配置该参数，表示将性能数据保存在当前路径。路径中不能包含特殊字符。|
 |start|可选|启动采集。<br>- start 、stop命令执行次数上限为100，两条命令执行次数总和超过100次后，服务端将终止连接，即最多采集50份性能数据。重新连接服务端时，重新计算次数。<br>- 反复执行start 、stop命令时，可能因stop结束Profiling流程而终止了CANN组件的数据上报，因此打印ERROR日志，为正常现象。|
 |stop|可选|停止采集。每完成一次start和stop命令，在`--output`参数指定路径下生成一个存放数据文件的PROF*_*XXX目录。|
