@@ -16,7 +16,7 @@
 
 add_library(ascend_hal_headers INTERFACE)
 target_include_directories(ascend_hal_headers INTERFACE
-    $<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver>
+    $<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include/driver>
     $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/ascend_hal>
     $<INSTALL_INTERFACE:include/ascend_hal/driver>
@@ -27,8 +27,8 @@ set(LOCAL_H2C_PY_PATH ${LOCAL_STUB_PATH}/h2c.py)
 
 add_library(ascend_hal_stub SHARED)
 
-set(LOCAL_ASCEND_H_FILE_PATH ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal.h)
-set(LOCAL_ASCEND_H_FILE_PATH1 ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal_external.h)
+set(LOCAL_ASCEND_H_FILE_PATH ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal.h)
+set(LOCAL_ASCEND_H_FILE_PATH1 ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_external.h)
 set(LOCAL_ASCEND_C_FILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/ascend_hal.c)
 
 add_custom_command(
@@ -67,9 +67,9 @@ message("INSTALL_LIBRARY_DIR : ${INSTALL_LIBRARY_DIR}")
 install(TARGETS ascend_hal_stub ascend_hal_headers
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}/stub
 )
-install(FILES   ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal_define.h
-                ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal_error.h
-                ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal.h
-                ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/driver/ascend_hal_external.h
+install(FILES   ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_define.h
+                ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_error.h
+                ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal.h
+                ${ASCEND_CANN_PACKAGE_PATH}/include/driver/ascend_hal_external.h
     DESTINATION ${INSTALL_INCLUDE_DIR}/ascend_hal/driver EXCLUDE_FROM_ALL
 )
