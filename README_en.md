@@ -109,7 +109,7 @@ Common commands (using `<asys_bin>` as shorthand for `${ASCEND_INSTALL_PATH}/too
 
 ```bash
 # Collect host and device software/hardware info (environment self-check)
-<asys_bin> info
+<asys_bin> info -r="status" -d=0
 
 # Check device health status
 <asys_bin> health
@@ -118,7 +118,7 @@ Common commands (using `<asys_bin>` as shorthand for `${ASCEND_INSTALL_PATH}/too
 <asys_bin> collect --output <output_dir>
 ```
 
-Add `<asys_bin>` to `PATH` to use `asys info` / `asys health` directly. For full parameters, run `<asys_bin> -h`.
+Add `<asys_bin>` to `PATH` to use `asys info -r="status"` / `asys health` directly. For full parameters, run `<asys_bin> -h`.
 
 #### msaicerr (AI Core Error Analysis)
 

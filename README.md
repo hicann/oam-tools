@@ -144,7 +144,7 @@ asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定
 
 ```bash
 # 采集主机与 device 的软硬件信息（不依赖待诊断任务，通常作为环境自检）
-asys info
+asys info -r="status" -d=0
 
 # 体检 device 健康状态
 asys health

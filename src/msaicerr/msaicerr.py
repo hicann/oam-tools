@@ -164,13 +164,15 @@ def test_env(device_id=0):
         result = AicoreErrorParser.run_test_env(soc_version, device_id=device_id)
         if result:
             utils.print_info_log(
-                "The build-in sample operator runs successfully, The environment is normal.")
+                "The built-in sample operator runs successfully, The environment is normal.")
             return Constant.MS_AICERR_NONE_ERROR
         else:
             utils.print_error_log(
-                "The built-in sample operator running failed. Check the software and hardware environment.")
+                "The built-in sample operator running failed. See the detailed error logs above for "
+                "specific failure cause (e.g. chip incompatibility, driver issue, missing dependencies).")
             return Constant.MS_AICERR_HARDWARE_ERR
-    except BaseException:
+    except BaseException as e:
+        utils.print_error_log(f"Exception occurred during environment test: {str(e)}")
         return Constant.MS_AICERR_HARDWARE_ERR
 
 

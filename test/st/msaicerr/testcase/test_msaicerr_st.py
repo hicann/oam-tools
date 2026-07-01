@@ -232,7 +232,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch("msaicerr.verify_device_id", return_value=True)
         msaicerr.main()
         self.assertEqual(
-            'The build-in sample operator runs successfully, The environment is normal.' in mock_stdout.getvalue(),
+            'The built-in sample operator runs successfully, The environment is normal.' in mock_stdout.getvalue(),
             True)
 
     def test_check_env_fail(self, mocker):
@@ -245,7 +245,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch("msaicerr.verify_device_id", return_value=True)
         msaicerr.main()
         self.assertEqual(
-            'The built-in sample operator running failed. Check the software and hardware environment.' in mock_stdout.getvalue(),
+            'See the detailed error logs above' in mock_stdout.getvalue(),
             True)
 
     def test_only_dev(self, mocker):
