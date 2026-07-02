@@ -15,6 +15,7 @@
  */
 
 #include <cerrno>
+#include <deque>
 #include <string>
 
 #include "gtest/gtest.h"
@@ -29,13 +30,53 @@ using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::socket;
 using namespace analysis::dvvp::common::utils;
 
+namespace {
+std::deque<OsalSockHandle> g_socketReturns;
+std::deque<int32_t> g_bindReturns;
+std::deque<int32_t> g_listenReturns;
+std::deque<OsalSockHandle> g_acceptReturns;
+std::deque<int32_t> g_connectReturns;
+std::deque<OsalSsize> g_sendReturns;
+std::deque<OsalSsize> g_recvReturns;
+std::deque<int32_t> g_chmodReturns;
+std::deque<int32_t> g_unlinkReturns;
+std::deque<int32_t> g_errorCodeReturns;
+std::deque<int32_t> g_closeReturns;
+
+template <typename T>
+T PopOrDefault(std::deque<T> &values, T defaultValue)
+{
+    if (values.empty()) {
+        return defaultValue;
+    }
+    T value = values.front();
+    values.pop_front();
+    return value;
+}
+
+void ResetSocketStubs()
+{
+    g_socketReturns.clear();
+    g_bindReturns.clear();
+    g_listenReturns.clear();
+    g_acceptReturns.clear();
+    g_connectReturns.clear();
+    g_sendReturns.clear();
+    g_recvReturns.clear();
+    g_chmodReturns.clear();
+    g_unlinkReturns.clear();
+    g_errorCodeReturns.clear();
+    g_closeReturns.clear();
+}
+} // namespace
+
 extern "C" {
 OsalSockHandle OsalSocket(int32_t sockFamily, int32_t type, int32_t protocol)
 {
     (void)sockFamily;
     (void)type;
     (void)protocol;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_socketReturns, static_cast<OsalSockHandle>(OSAL_EN_ERROR));
 }
 
 int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
@@ -43,14 +84,14 @@ int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
     (void)sockFd;
     (void)addr;
     (void)addrLen;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_bindReturns, OSAL_EN_ERROR);
 }
 
 int32_t OsalListen(OsalSockHandle sockFd, int32_t backLog)
 {
     (void)sockFd;
     (void)backLog;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_listenReturns, OSAL_EN_ERROR);
 }
 
 OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen *addrLen)
@@ -58,7 +99,7 @@ OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen
     (void)sockFd;
     (void)addr;
     (void)addrLen;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_acceptReturns, static_cast<OsalSockHandle>(OSAL_EN_ERROR));
 }
 
 int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
@@ -66,7 +107,7 @@ int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrL
     (void)sockFd;
     (void)addr;
     (void)addrLen;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_connectReturns, OSAL_EN_ERROR);
 }
 
 OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, int32_t sendFlag)
@@ -75,7 +116,7 @@ OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, 
     (void)sendBuf;
     (void)sendLen;
     (void)sendFlag;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_sendReturns, static_cast<OsalSsize>(OSAL_EN_ERROR));
 }
 
 OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, int32_t recvFlag)
@@ -84,31 +125,31 @@ OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, 
     (void)recvBuf;
     (void)recvLen;
     (void)recvFlag;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_recvReturns, static_cast<OsalSsize>(OSAL_EN_ERROR));
 }
 
 int32_t OsalChmod(const CHAR *filename, int32_t mode)
 {
     (void)filename;
     (void)mode;
-    return OSAL_EN_ERROR;
+    return PopOrDefault(g_chmodReturns, OSAL_EN_ERROR);
 }
 
 int32_t OsalUnlink(const CHAR *filename)
 {
     (void)filename;
-    return OSAL_EN_OK;
+    return PopOrDefault(g_unlinkReturns, OSAL_EN_OK);
 }
 
 int32_t OsalGetErrorCode(void)
 {
-    return 0;
+    return PopOrDefault(g_errorCodeReturns, 0);
 }
 
 int32_t OsalClose(int32_t fd)
 {
     (void)fd;
-    return OSAL_EN_OK;
+    return PopOrDefault(g_closeReturns, OSAL_EN_OK);
 }
 }
 
@@ -128,10 +169,16 @@ CHAR_PTR Utils::GetErrno()
 
 class LOCAL_SOCKET_UTEST : public testing::Test {
 protected:
+    void SetUp() override
+    {
+        ResetSocketStubs();
+    }
+
     void TearDown() override
     {
         GlobalMockObject::verify();
         GlobalMockObject::reset();
+        ResetSocketStubs();
     }
 };
 
@@ -141,38 +188,13 @@ TEST_F(LOCAL_SOCKET_UTEST, Create)
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Create("", backlog));
 
     const std::string key = "create";
-    MOCKER(OsalSocket)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK));
+    g_socketReturns = {OSAL_EN_ERROR, OSAL_EN_OK, OSAL_EN_OK, OSAL_EN_OK, OSAL_EN_OK, OSAL_EN_OK};
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Create(key, backlog));
 
-    MOCKER(OsalBind)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK));
-    MOCKER(OsalGetErrorCode)
-        .stubs()
-        .will(returnValue(0))
-        .then(returnValue(EADDRINUSE));
-    MOCKER(OsalChmod)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK))
-        .then(returnValue(OSAL_EN_OK));
-    MOCKER(OsalListen)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK));
-    MOCKER(OsalClose).stubs().will(returnValue(OSAL_EN_OK));
-    MOCKER(OsalUnlink).stubs().will(returnValue(OSAL_EN_OK));
+    g_bindReturns = {OSAL_EN_ERROR, OSAL_EN_ERROR, OSAL_EN_OK, OSAL_EN_OK, OSAL_EN_OK};
+    g_errorCodeReturns = {0, EADDRINUSE};
+    g_chmodReturns = {OSAL_EN_ERROR, OSAL_EN_OK, OSAL_EN_OK};
+    g_listenReturns = {OSAL_EN_ERROR, OSAL_EN_OK};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Create(key, backlog));
     EXPECT_EQ(SOCKET_ERR_EADDRINUSE, LocalSocket::Create(key, backlog));
@@ -183,10 +205,7 @@ TEST_F(LOCAL_SOCKET_UTEST, Create)
 
 TEST_F(LOCAL_SOCKET_UTEST, Open)
 {
-    MOCKER(OsalSocket)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK));
+    g_socketReturns = {OSAL_EN_ERROR, OSAL_EN_OK};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Open());
     EXPECT_EQ(OSAL_EN_OK, LocalSocket::Open());
@@ -196,15 +215,8 @@ TEST_F(LOCAL_SOCKET_UTEST, Accept)
 {
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Accept(-1));
 
-    MOCKER(OsalAccept)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(10));
-    MOCKER(OsalGetErrorCode)
-        .stubs()
-        .will(returnValue(0))
-        .then(returnValue(EAGAIN));
+    g_acceptReturns = {OSAL_EN_ERROR, OSAL_EN_ERROR, 10};
+    g_errorCodeReturns = {0, EAGAIN};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Accept(1));
     EXPECT_EQ(SOCKET_ERR_EAGAIN, LocalSocket::Accept(1));
@@ -216,10 +228,7 @@ TEST_F(LOCAL_SOCKET_UTEST, Connect)
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Connect(-1, "socket"));
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Connect(1, ""));
 
-    MOCKER(OsalConnect)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_OK));
+    g_connectReturns = {OSAL_EN_ERROR, OSAL_EN_OK};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Connect(1, "socket"));
     EXPECT_EQ(PROFILING_SUCCESS, LocalSocket::Connect(1, "socket"));
@@ -254,15 +263,8 @@ TEST_F(LOCAL_SOCKET_UTEST, Recv)
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Recv(fd, nullptr, 1, 0));
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Recv(fd, &fd, 0, 0));
 
-    MOCKER(OsalSocketRecv)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(10));
-    MOCKER(OsalGetErrorCode)
-        .stubs()
-        .will(returnValue(0))
-        .then(returnValue(EAGAIN));
+    g_recvReturns = {OSAL_EN_ERROR, OSAL_EN_ERROR, 10};
+    g_errorCodeReturns = {0, EAGAIN};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Recv(fd, &fd, 1, 0));
     EXPECT_EQ(SOCKET_ERR_EAGAIN, LocalSocket::Recv(fd, &fd, 1, 0));
@@ -276,15 +278,8 @@ TEST_F(LOCAL_SOCKET_UTEST, Send)
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Send(fd, nullptr, 1, 0));
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Send(fd, &fd, 0, 0));
 
-    MOCKER(OsalSocketSend)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(OSAL_EN_ERROR))
-        .then(returnValue(10));
-    MOCKER(OsalGetErrorCode)
-        .stubs()
-        .will(returnValue(0))
-        .then(returnValue(EAGAIN));
+    g_sendReturns = {OSAL_EN_ERROR, OSAL_EN_ERROR, 10};
+    g_errorCodeReturns = {0, EAGAIN};
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::Send(fd, &fd, 1, 0));
     EXPECT_EQ(SOCKET_ERR_EAGAIN, LocalSocket::Send(fd, &fd, 1, 0));
@@ -294,7 +289,7 @@ TEST_F(LOCAL_SOCKET_UTEST, Send)
 TEST_F(LOCAL_SOCKET_UTEST, Close)
 {
     int32_t fd = 0;
-    MOCKER(OsalClose).stubs().will(returnValue(OSAL_EN_ERROR));
+    g_closeReturns = {OSAL_EN_ERROR};
     LocalSocket::Close(fd);
     EXPECT_EQ(-1, fd);
 

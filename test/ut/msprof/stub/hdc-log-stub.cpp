@@ -34,79 +34,91 @@ const std::map<int, std::string> LOG_LEVEL_INFO = {
     {DLOG_EVENT, "EVENT"}
 };
 
+namespace {
+constexpr size_t LOG_BUFFER_SIZE = 4096;
+
+bool FormatLog(char *buffer, size_t bufferSize, const char *format, va_list args)
+{
+    if (buffer == nullptr || bufferSize == 0 || format == nullptr) {
+        return false;
+    }
+    return vsnprintf_s(buffer, bufferSize, bufferSize - 1, format, args) >= 0;
+}
+} // namespace
+
 void DlogErrorInner(int moduleId, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogErrorInner.");
         return;
     }
     printf("[ERROR]%s\n", buffer);
-    va_end(args);
 }
 
 void DlogInfoInner(int moduleId, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogInfoInner.");
         return;
     }
     printf("[INFO]%s\n", buffer);
-    va_end(args);
 }
 
 void DlogWarnInner(int moduleId, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogWarnInner.");
         return;
     }
     printf("[WARN]%s\n", buffer);
-    va_end(args);
 }
 
 void DlogEventInner(int moduleId, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogEventInner.");
         return;
     }
     printf("[EVENT]%s\n", buffer);
-    va_end(args);
 }
 
 void DlogDebugInner(int moduleId, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogDebugInner.");
         return;
     }
     printf("[DEBUG]%s\n", buffer);
-    va_end(args);
 }
 
 void DlogRecord(int module_id, int level, const char *fmt, ...){
@@ -118,15 +130,15 @@ void DlogRecord(int module_id, int level, const char *fmt, ...){
     }
 
     va_list args;
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
     va_start(args, fmt);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), fmt, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for DlogRecord.");
         return;
     }
     printf("[%s][pid:%d]%s", levelStr.c_str(), getpid(), buffer);
-    va_end(args);
 }
 
 void DlogFlush(void)
@@ -136,16 +148,16 @@ void DlogFlush(void)
 void ide_log(int priority, const char *format, ...) {
     va_list args;
 
-    char buffer[4096] = {0};
+    char buffer[LOG_BUFFER_SIZE] = {0};
 
     va_start(args, format);
-    int ret = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), format, args);
-    if (ret == -1) {
+    bool formatRet = FormatLog(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    if (!formatRet) {
         printf("[ERROR]Failed to execute vsnprintf_s for ide_log.");
         return;
     }
     printf("[IDE]%s\n", buffer);
-    va_end(args);
 }
 
 int CheckLogLevel(int moduleId, int level)

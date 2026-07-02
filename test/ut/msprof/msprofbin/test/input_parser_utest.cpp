@@ -420,6 +420,14 @@ TEST_F(INPUT_PARSER_UTEST, SysCpuFreqIsParsedFromCommandLine) {
     EXPECT_EQ(CPU_SAMPLING_INTERVAL_FOR_FREQ_TEN, params->cpu_sampling_interval);
 }
 
+TEST_F(INPUT_PARSER_UTEST, MsprofGetOptsRejectsPidSeparatedBySpace) {
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
+    const char *argv[] = {"msprof", "--pid", "5", "--sys-devices=0", "--output=./", "--ai-core=on", nullptr};
+    optind = 1;
+    InputParser parser = InputParser();
+    EXPECT_EQ(nullptr, parser.MsprofGetOpts(6, argv));
+}
+
 TEST_F(INPUT_PARSER_UTEST, NtsMetricsPipeUtilization) {
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
     const char *argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
@@ -964,6 +972,20 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DYNAMIC_PROF_PID));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DELAY_PROF));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DURATION_PROF));
+}
+
+TEST_F(INPUT_PARSER_UTEST, RejectMissingOptionalArgumentWithoutCoreDump) {
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofDynamicCheckValid(cmdInfo, ARGS_DYNAMIC_PROF_PID));
+    EXPECT_TRUE(parser.params_->pid.empty());
+
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
+    EXPECT_TRUE(parser.params_->npuEvents.empty());
+
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckArgOnOff(cmdInfo, ARGS_AI_CORE));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckSysDevicesValid(cmdInfo));
 }
 
 TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {

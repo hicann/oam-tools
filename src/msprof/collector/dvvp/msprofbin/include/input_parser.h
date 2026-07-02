@@ -227,6 +227,7 @@ private:
     bool CheckDynaProfPidValid(const std::string &pid, std::vector<int32_t> &validPids) const;
     bool CheckDynConflict(struct MsprofCmdInfo &cmdInfo) const;
     bool ConflictChecking(struct MsprofCmdInfo &cmdInfo, int32_t opt, const std::string &conflictArgs) const;
+    int32_t CheckOptionValueNotNull(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckSampleModeValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
     int32_t CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;

@@ -393,11 +393,19 @@ static int32_t compareSwitchStr(const std::vector<std::string>& cmpCode, const s
     return MSPROF_DAEMON_OK;
 };
 
+int32_t InputParser::CheckOptionValueNotNull(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const
+{
+    if (opt < ARGS_HELP || opt >= NR_ARGS || cmdInfo.args[opt] != nullptr) {
+        return MSPROF_DAEMON_OK;
+    }
+    CmdLog::CmdErrorLog("Argument --%s: expected one argument. Please use --%s=<value>.",
+        LONG_OPTIONS[opt].name, LONG_OPTIONS[opt].name);
+    return MSPROF_DAEMON_ERROR;
+}
+
 int32_t InputParser::CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const
 {
-    if (cmdInfo.args[opt] == nullptr) {
-        CmdLog::CmdErrorLog("Argument --%s: expected one argument,please enter a valid value.",
-            LONG_OPTIONS[opt].name);
+    if (CheckOptionValueNotNull(cmdInfo, opt) != MSPROF_DAEMON_OK) {
         return MSPROF_DAEMON_ERROR;
     }
     if (opt == ARGS_MSTX_DOMAIN_INCLUDE || opt == ARGS_MSTX_DOMAIN_EXCLUDE) {
@@ -467,6 +475,9 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t
 
 int32_t InputParser::CheckNpuEventsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const
 {
+    if (CheckOptionValueNotNull(cmdInfo, opt) != MSPROF_DAEMON_OK) {
+        return MSPROF_DAEMON_ERROR;
+    }
     params_->npuEvents = cmdInfo.args[opt];
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_REG) &&
         !Platform::instance()->CheckIfSupport(PLATFORM_TASK_SOC_PMU)) {
@@ -1861,9 +1872,7 @@ int32_t InputParser::CheckSysPeriodValid(const struct MsprofCmdInfo &cmdInfo) co
  */
 int32_t InputParser::CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo)
 {
-    if (cmdInfo.args[ARGS_SYS_DEVICES] == nullptr) {
-        CmdLog::CmdErrorLog("Argument --sys-devices is empty,"
-                            "Please enter a valid --sys-devices value.");
+    if (CheckOptionValueNotNull(cmdInfo, ARGS_SYS_DEVICES) != MSPROF_DAEMON_OK) {
         return MSPROF_DAEMON_ERROR;
     }
     params_->devices = cmdInfo.args[ARGS_SYS_DEVICES];
@@ -1933,8 +1942,7 @@ int32_t InputParser::CheckTaskBlockValid(const std::string &switchName, const st
 
 int32_t InputParser::CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const
 {
-    if (cmdInfo.args[opt] == nullptr) {
-        CmdLog::CmdErrorLog("Argument --%s is empty, please enter a valid value.", LONG_OPTIONS[opt].name);
+    if (CheckOptionValueNotNull(cmdInfo, opt) != MSPROF_DAEMON_OK) {
         return MSPROF_DAEMON_ERROR;
     }
     if (Utils::CheckStringIsUnsignedIntNum(cmdInfo.args[opt])) {
@@ -1956,8 +1964,7 @@ int32_t InputParser::CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t 
 
 int32_t InputParser::CheckArgsIsNumber(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const
 {
-    if (cmdInfo.args[opt] == nullptr) {
-        CmdLog::CmdErrorLog("Argument --%s is empty, please enter a valid value.", LONG_OPTIONS[opt].name);
+    if (CheckOptionValueNotNull(cmdInfo, opt) != MSPROF_DAEMON_OK) {
         return MSPROF_DAEMON_ERROR;
     }
     if (!Utils::CheckStringIsUnsignedIntNum(cmdInfo.args[opt])) {
@@ -2169,6 +2176,7 @@ int32_t InputParser::MsprofDynamicCheckValid(const struct MsprofCmdInfo &cmdInfo
             ret = CheckArgOnOff(cmdInfo, opt);
             break;
         case ARGS_DYNAMIC_PROF_PID:
+            ret = CheckOptionValueNotNull(cmdInfo, opt);
             break;
         case ARGS_DELAY_PROF:
             ret = CheckArgRange(cmdInfo, opt, 1, PROF_MAX_DYNAMIC_TIME);
