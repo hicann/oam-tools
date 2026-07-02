@@ -76,7 +76,6 @@ class TestDevice(AssertTest):
     @pytest.mark.parametrize(
         ["device_return", "expect"], [(0, [0, 0, "-", 0]), (1, ["-", "-", "-", "-"])]
     )
-    @pytest.mark.skip(reason="temporarily skipped due to optional acc libs load abort in CI")
     def test_get_device_hbm_info_with_910D(self, mocker, device_return, expect):
         self.assertTrue(True)
 
@@ -95,7 +94,6 @@ class TestDevice(AssertTest):
         self.assertTrue(deviceinfo.get_device_hbm_info(0) == expect)
 
     @pytest.mark.parametrize(["value", "expect"], [(0, 0), (1, "-")])
-    @pytest.mark.skip(reason="temporarily skipped due to optional acc libs load abort in CI")
     def test_get_950_device_temperature(self, value, expect, mocker):
         self.assertTrue(True)
 

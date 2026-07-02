@@ -31,8 +31,6 @@ from common.const import RetCode
 from drv import LoadSoType
 from ..conftest import AssertTest
 
-pytestmark = pytest.mark.skip(reason="temporarily skipped due to optional acc libs load abort in CI")
-
 
 class DsmiHandle:
     def __init__(self, value=0):
