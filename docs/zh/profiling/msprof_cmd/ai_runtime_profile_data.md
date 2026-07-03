@@ -24,17 +24,21 @@ app为必选，相关参数说明请参见[app参数说明](general_collect_comm
 
 --ascendcl=<ascendcl-value\>：可选，控制acl接口性能数据采集的开关，可选on或off，默认为on。可采集acl接口性能数据，包括Host与Device之间、Device间的同步异步内存复制时延等。
 
+<!-- npu="950,A3,910b,910,310p,310b" id29 -->
 ### model-execution
 
 --model-execution=<model-execution-value\>：可选，控制ge model execution性能数据采集开关，可选on或off，默认为off。此开关后续版本会废弃，请使用--task-time开关控制相关数据采集。
+<!-- end id29 -->
 
 ### runtime-api
 
 --runtime-api=<runtime-api-value\>：可选，控制runtime API性能数据采集开关，可选on或off，默认为off。可采集runtime API性能数据，包括Host与Device之间、Device间的同步异步内存复制时延等。
 
+<!-- npu="950,A3,910b,910,310p,310b" id28 -->
 ### hccl
 
 --hccl=<hccl-value\>：可选，控制通信数据采集开关，可选on或off，默认为off。该数据只在多卡、多节点或集群场景下生成。此开关后续版本会废弃，请使用--task-time开关控制相关数据采集。
+<!-- end id28 -->
 
 ### task-time
 
