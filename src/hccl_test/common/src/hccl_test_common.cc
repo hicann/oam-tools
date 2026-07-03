@@ -658,6 +658,9 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     bool is910_95 = IsSupport910_95();
     std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
     std::vector<struct option> longopts = build_longopts(is910_95);
+    if (is910_95) {
+        accelerator_config = 6; // 910_95场景，修改默认加速器模式为CCU_SCHED
+    }
     while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
         ret = parse_opt(opt);
         if (ret != 0) {
