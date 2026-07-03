@@ -178,13 +178,17 @@
   - 1：开启对称内存功能。
   
   **对称内存功能生效有如下约束条件：**
-  - 仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品。
-  - 仅支持超节点内通信。
-  - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test、alltoall_test命令。
+  - 仅支持Ascend 950PR/Ascend 950DT、Atlas A3 训练系列产品/Atlas A3 推理系列产品。
   - 仅支持通信算子展开模式为AI CPU的场景。
-    关于通信算子展开模式的详细说明可参见HCCL_OP_EXPANSION_MODE环境变量。
-  - 仅支持超节点内AI Server间使用HCCS链路进行SDMA通信的场景，不支持使用RoCE进行RDMA通信的场景（即不支持设置环境变量HCCL_INTER_HCCS_DISABLE为“TRUE”，单机场景该环境变量无效）。
-  - 仅支持对称组网，即每个server内卡数相同的场景。
+  - 针对Ascend 950PR/Ascend 950DT：
+    - 仅支持执行all_gather_test命令。
+    - 仅支持URMA通信场景。
+  - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品：
+    - 仅支持超节点内通信。
+    - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test、alltoall_test命令。
+      关于通信算子展开模式的详细说明可参见HCCL_OP_EXPANSION_MODE环境变量。
+    - 仅支持超节点内AI Server间使用HCCS链路进行SDMA通信的场景，不支持使用RoCE进行RDMA通信的场景（即不支持设置环境变量HCCL_INTER_HCCS_DISABLE为“TRUE”，单机场景该环境变量无效）。
+    - 仅支持对称组网，即每个server内卡数相同的场景。
 
   **注：不支持零拷贝和对称内存功能同时开启。**
 
