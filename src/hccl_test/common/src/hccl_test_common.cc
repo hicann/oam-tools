@@ -957,7 +957,8 @@ int HcclTest::init_hcclComm()
         config.hcclOpExpansionMode = accelerator_config;
         HCCLCHECK(HcclCommInitRootInfoConfig(rank_size, &comm_id, rank_id, &config, &hccl_comm));
     } else {
-        init_hcclComm_without_nslb();
+        auto ret = init_hcclComm_without_nslb();
+        if (ret != 0) {return ret;}
     }
 
     return 0;
