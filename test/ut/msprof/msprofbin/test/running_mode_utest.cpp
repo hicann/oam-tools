@@ -579,7 +579,6 @@ TEST_F(RUNNING_MODE_UTEST, AppModeSetDefaultParams){
     Platform::instance()->Init();
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
-    params->taskTsfw = "on";
     Collector::Dvvp::Msprofbin::AppMode rMode("app", params);
     rMode.SetDefaultParams();
     EXPECT_EQ(params->acl, "on");

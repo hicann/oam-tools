@@ -453,9 +453,6 @@ bool ParamValidation::CheckProfilingSwitchIsValid(SHARED_PTR_ALIA<analysis::dvvp
     if (params == nullptr) {
         return false;
     }
-    if (!CheckControlSwitchProfiling(params)) {
-        return false;
-    }
     if (!CheckTsSwitchProfiling(params)) {
         return false;
     }
@@ -499,7 +496,7 @@ bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const
             switchStr.compare(MSVP_PROF_OFF) == 0) {
             return true;
         }
-    } else if (switchName.compare("task_trace") == 0) {
+    } else if (switchName.compare("task_trace") == 0 || switchName.compare("task_time") == 0) {
         if (switchStr.compare(MSVP_PROF_L0) == 0 || switchStr.compare(MSVP_PROF_L1) == 0 ||
             switchStr.compare(MSVP_PROF_L2) == 0 || switchStr.compare(MSVP_PROF_L3) == 0 ||
             IsValidSwitch(switchStr)) {
@@ -534,14 +531,6 @@ bool ParamValidation::CheckParamEmptyInvalid(const std::string &switchName, cons
     MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(),
         switchStr.c_str());
     return false;
-}
-
-bool ParamValidation::CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
-    if (!IsValidSwitch(params->taskTsfw)) {
-        MSPROF_LOGE("Control switch taskTsfw is not valid.");
-    }
-    return true;
 }
 
 bool ParamValidation::CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
@@ -1075,21 +1064,6 @@ bool ParamValidation::CheckFreqIsValid(const std::string &switchName, uint32_t f
         return CheckArgRange(switchName, std::to_string(freq), it->second[0], it->second[1]);
     }
     return false;
-}
-
-/**
- * @brief  : Check mem serviceflow is valid
- * @param  : [in] switchName : the switch name
- * @param  : [in] config : sys mem serviceflow config
- * @return : true
- *           false
- */
-bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, const std::string &config) const
-{
-    FUNRET_CHECK_EXPR_ACTION(!Platform::instance()->CheckIfSupport(PLATFORM_SYS_MEM_SERVICEFLOW), return false,
-        "Argument %s is not supported", switchName.c_str());
-    FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
-    return true;
 }
 
 /**

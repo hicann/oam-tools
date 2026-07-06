@@ -108,27 +108,9 @@ bool ParamValidation::CheckTaskBlockValid(const std::string &switchName, const s
     FUNRET_CHECK_EXPR_ACTION(!Platform::instance()->CheckIfSupport(PLATFORM_TASK_BLOCK), return false,
         "Argument %s is not supported", switchName.c_str());
     FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ALL) != 0 && 
-        config.compare(MSVP_PROF_ON) != 0) {
-        std::string taskBlockRanges;
-        if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
-            Platform::instance()->GetPlatformType() == CHIP_MDC_V2 ||
-            Platform::instance()->GetPlatformType() == CHIP_MDC_LITE_V2) {
-            taskBlockRanges = "'all', 'on', 'off'.";
-        } else {
-            taskBlockRanges = "'all', 'off'.";
-        }
-        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
-            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
-        return false;
-    }
-    if (config.compare(MSVP_PROF_ON) == 0 && 
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
-        Platform::instance()->GetPlatformType() != CHIP_MDC_V2 &&
- 	    Platform::instance()->GetPlatformType() != CHIP_MDC_LITE_V2) {
-        MSPROF_LOGE("The on option is not supported on this platform, please use all to collect block data.");
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0) {
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.",
+            switchName.c_str(), config.c_str());
         return false;
     }
     return true;

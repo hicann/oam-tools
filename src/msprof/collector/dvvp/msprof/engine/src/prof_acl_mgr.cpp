@@ -637,7 +637,6 @@ std::string ProfAclMgr::GetParamJsonStr()
     }
     NanoJson::Json object;
     params_->ToObject(object);
-    object.RemoveByKey("memServiceflow");
     object.RemoveByKey("ubProfiling");
     object.RemoveByKey("ubInterval");
     object.RemoveByKey("opType");
@@ -1413,7 +1412,6 @@ void ProfAclMgr::UpdateDataTypeConfigBySwitches(const SHARED_PTR_ALIA<analysis::
     UpdateDataTypeConfigBySwitch(params->hwts_log, PROF_TASK_TIME);
     UpdateDataTypeConfigBySwitch(params->aicpuTrace, PROF_AICPU_TRACE);
     UpdateDataTypeConfigBySwitch(params->runtimeApi, PROF_RUNTIME_API);
-    UpdateDataTypeConfigBySwitch(params->taskTsfw, PROF_TASK_TSFW);
     UpdateDataTypeConfigBySwitch(params->runtimeTrace, PROF_RUNTIME_TRACE);
     UpdateDataTypeConfigBySwitch(params->ts_fw_training, PROF_TRAINING_TRACE);
     UpdateDataTypeConfigBySwitch(params->ts_keypoint, PROF_TRAINING_TRACE);
@@ -1485,23 +1483,16 @@ int32_t ProfAclMgr::MsprofAclJsonParamConstruct(NanoJson::Json &acljsonCfg)
     params_->geApi = GetJsonStringParam(acljsonCfg, "fwk_schedule", MSVP_PROF_OFF);
     params_->acl = GetJsonStringParam(acljsonCfg, "ascendcl", MSVP_PROF_ON);
     params_->runtimeApi = GetJsonStringParam(acljsonCfg, "runtime_api", MSVP_PROF_ON);
-    params_->taskTrace = GetJsonStringParam(acljsonCfg, "task_trace", MSVP_PROF_ON);
+    params_->taskTrace = GetJsonStringParam(acljsonCfg, "task_time", MSVP_PROF_ON);
     params_->prof_level = params_->taskTrace;
-    if (GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF).compare(MSVP_PROF_ALL) == 0) {
-        params_->taskBlock = MSVP_PROF_ON;
-        params_->taskBlockShink = MSVP_PROF_OFF;
-    } else {
-        params_->taskBlock = GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF);
-        params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
-    }
-    params_->taskTsfw = GetJsonStringParam(acljsonCfg, "task_tsfw", MSVP_PROF_OFF);
+    params_->taskBlock = GetJsonStringParam(acljsonCfg, "task_block", MSVP_PROF_OFF);
+    params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
     params_->aicpuTrace = GetJsonStringParam(acljsonCfg, "aicpu", MSVP_PROF_OFF);
     params_->hcclTrace = GetJsonStringParam(acljsonCfg, "hccl", MSVP_PROF_OFF);
     params_->msproftx = GetJsonStringParam(acljsonCfg, "msproftx", MSVP_PROF_OFF);
     params_->l2CacheTaskProfiling = GetJsonStringParam(acljsonCfg, "l2", MSVP_PROF_OFF);
     Platform::instance()->L2CacheAdaptor(params_->npuEvents, params_->l2CacheTaskProfiling,
         params_->l2CacheTaskProfilingEvents);
-    params_->memServiceflow = GetJsonStringParam(acljsonCfg, "sys_mem_serviceflow", MSVP_PROF_EMPTY_STRING);
     ChangeLevelConf(params_);
     AddCcuInstruction(params_);
     MsprofAclJsonParamAdaper(params_);
@@ -1632,15 +1623,10 @@ void ProfAclMgr::MsprofInitGeOptionsParamAdaper(SHARED_PTR_ALIA<analysis::dvvp::
     params->geApi = GetJsonStringParam(geoptionCfg, "fwk_schedule", MSVP_PROF_OFF);
     params->runtimeApi = GetJsonStringParam(geoptionCfg, "runtime_api", MSVP_PROF_OFF);
     params->taskTrace = GetJsonStringParam(geoptionCfg, "task_trace", MSVP_PROF_ON);
+    params->taskTrace = GetJsonStringParam(geoptionCfg, "task_time", MSVP_PROF_ON);
     params->prof_level = params->taskTrace;
-    if (GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF).compare(MSVP_PROF_ALL) == 0) {
-        params->taskBlock = MSVP_PROF_ON;
-        params->taskBlockShink = MSVP_PROF_OFF;
-    } else {
-        params->taskBlock = GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF);
-        params->taskBlockShink = params->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
-    }
-    params->taskTsfw = GetJsonStringParam(geoptionCfg, "task_tsfw", MSVP_PROF_OFF);
+    params->taskBlock = GetJsonStringParam(geoptionCfg, "task_block", MSVP_PROF_OFF);
+    params->taskBlockShink = params->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
     params->aicpuTrace = GetJsonStringParam(geoptionCfg, "aicpu", MSVP_PROF_OFF);
     params->hcclTrace = GetJsonStringParam(geoptionCfg, "hccl", MSVP_PROF_OFF);
     params->ts_fw_training = GetJsonStringParam(geoptionCfg, "training_trace", MSVP_PROF_OFF);
@@ -1735,7 +1721,6 @@ int32_t ProfAclMgr::MsprofGeOptionsParamConstruct(const std::string &jobInfo,
         MSPROF_LOGW("storage_limit para is invalid");
     }
     storageLimit_ = params_->storageLimit;
-    params_->memServiceflow = GetJsonStringParam(geoptionCfg, "sys_mem_serviceflow", MSVP_PROF_EMPTY_STRING);
     params_->instrProfiling = GetJsonStringParam(geoptionCfg, "instr_profiling", MSVP_PROF_OFF);
     params_->instrProfilingFreq = GetJsonIntParam(geoptionCfg, "instr_profiling_freq",
         DEFAULT_PROFILING_INTERVAL_1000MS);

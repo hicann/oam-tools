@@ -1338,28 +1338,11 @@ int32_t InputParser::CheckTaskBlockValid(const std::string &switchName, const st
         return MSPROF_DAEMON_ERROR;
     }
 
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 && 
-        config.compare(MSVP_PROF_ALL) != 0) {
-        std::string taskBlockRanges;
-        if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
-            Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
-            taskBlockRanges = "'all', 'on', 'off'.";
-        } else {
-            taskBlockRanges = "'all', 'off'.";
-        }
-        CmdLog::CmdErrorLog("Argument %s: invalid value: %s. Please input %s", 
-            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
-        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
-            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
-        return MSPROF_DAEMON_ERROR;
-    }
-    if (config.compare(MSVP_PROF_ON) == 0 && 
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
-        Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
-        CmdLog::CmdErrorLog("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
-        MSPROF_LOGE("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0) {
+        CmdLog::CmdErrorLog("Argument %s: invalid value: %s. Please input 'on' or 'off'.",
+            switchName.c_str(), config.c_str());
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.",
+            switchName.c_str(), config.c_str());
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;

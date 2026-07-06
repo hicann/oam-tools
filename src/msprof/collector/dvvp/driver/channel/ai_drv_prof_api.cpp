@@ -575,8 +575,8 @@ int32_t DrvSetTsCommandType(TsTsFwProfileConfigT &configP,
         configP.ts_memcpy |= static_cast<uint32_t>(TS_PROFILE_COMMAND_TS_FW_AICPU_ENABLE);
         configP.ts_memcpy |= static_cast<uint32_t>(TS_PROFILE_COMMAND_TS_FW_MEMCPY_ENABLE);
     }
-    if (profileParams->taskTsfw.compare("on") == 0) {
-        configP.ts_memcpy |= static_cast<uint32_t>(TS_PROFILE_COMMAND_TS_FW_MANAGEMENT_ENABLE);
+    if (profileParams->taskTsfw.compare("on") == 0) { 
+        configP.ts_memcpy |= static_cast<uint32_t>(TS_PROFILE_COMMAND_TS_FW_MANAGEMENT_ENABLE); 
     }
 	configP.tsBlockdim = TS_PROFILE_COMMAND_TYPE_PROFILING_ENABLE;
     return PROFILING_SUCCESS;

@@ -97,8 +97,8 @@ void ProfParamsAdapter::StartCfgTrfToInnerParam(const uint64_t dataTypeConfig,
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
 {
     MSPROF_LOGI("Begin to transfer msprof StartCfg to inner params");
-    if ((dataTypeConfig & PROF_TASK_TSFW_MASK) != 0) {
-        params->taskTsfw = "on";
+    if ((dataTypeConfig & PROF_TASK_TSFW_MASK) != 0) { 
+        params->taskTsfw = "on"; 
     }
     if ((dataTypeConfig & PROF_TASK_TIME_MASK) != 0) {
         // ts_memcpy
@@ -133,7 +133,7 @@ bool ProfParamsAdapter::CheckJsonConfig(const std::string &switchName, const Nan
 {
     if (switchName == "aic_metrics") {
         return ParamValidation::instance()->CheckAicoreMetricsIsValid(val.GetValue<std::string>());
-    } else if (switchName == "fwk_schedule" || switchName == "task_trace") {
+    } else if (switchName == "fwk_schedule" || switchName == "task_trace" || switchName == "task_time") {
         return ParamValidation::instance()->CheckParamL0L1Invalid(switchName, val.GetValue<std::string>());
     } else if (switchName == "sys_hardware_mem_freq" ||
                switchName == "sys_io_sampling_freq" ||
@@ -148,8 +148,6 @@ bool ProfParamsAdapter::CheckJsonConfig(const std::string &switchName, const Nan
         return CheckHostSysValid(val.GetValue<std::string>());
     } else if (switchName == "host_sys_usage") {
         return CheckHostSysUsageValid(val.GetValue<std::string>());
-    } else if (switchName == "sys_mem_serviceflow") {
-        return ParamValidation::instance()->CheckMemServiceflowValid(switchName, val.GetValue<std::string>());
     } else if (switchName == "task_block") {
         return ParamValidation::instance()->CheckTaskBlockValid(switchName, val.GetValue<std::string>());
     } else {
@@ -276,11 +274,11 @@ int32_t ProfParamsAdapter::CheckApiConfigIsValid(SHARED_PTR_ALIA<analysis::dvvp:
                 return PROFILING_SUCCESS;
             }
             break;
-        case ACL_PROF_SYS_MEM_SERVICEFLOW:
-            if (ParamValidation::instance()->CheckMemServiceflowValid("ACL_PROF_SYS_MEM_SERVICEFLOW", config)) {
-                params->memServiceflow = config;
-                return PROFILING_SUCCESS;
-            }    
+        case ACL_PROF_SYS_MEM_SERVICEFLOW: 
+            if (ParamValidation::instance()->CheckMemServiceflowValid("ACL_PROF_SYS_MEM_SERVICEFLOW", config)) { 
+                params->memServiceflow = config; 
+                return PROFILING_SUCCESS; 
+            }
             break;
         case ACL_PROF_LLC_MODE:
             if (ParamValidation::instance()->CheckLlcConfigValid(config)) {
