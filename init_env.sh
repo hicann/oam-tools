@@ -26,6 +26,7 @@ CANN_VERSION="8.5.0"
 CHIP_TYPE="910b"
 CANN_BASE_URL="https://ascend.devcloud.huaweicloud.com/artifactory/cann-run/software"
 INSTALL_PATH="${INSTALL_PATH:-/usr/local/Ascend}"
+SKIP_OPS="false"
 
 log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
@@ -105,13 +106,15 @@ install_cann() {
         }
     fi
 
-    if [ ! -f "$ops_pkg" ]; then
-        log_info "Downloading CANN ops (${CHIP_TYPE}, ${arch})..."
-        log_info "URL: $ops_url"
-        wget -q --show-progress --no-check-certificate -O "$ops_pkg" "$ops_url" || {
-            log_error "Failed to download ops"
-            return 1
-        }
+    if [ "$SKIP_OPS" = "false" ]; then
+        if [ ! -f "$ops_pkg" ]; then
+            log_info "Downloading CANN ops (${CHIP_TYPE}, ${arch})..."
+            log_info "URL: $ops_url"
+            wget -q --show-progress --no-check-certificate -O "$ops_pkg" "$ops_url" || {
+                log_error "Failed to download ops"
+                return 1
+            }
+        fi
     fi
 
     log_info "Installing CANN toolkit..."
@@ -121,11 +124,13 @@ install_cann() {
         return 1
     }
 
-    log_info "Installing CANN ops..."
-    chmod +x "$ops_pkg"
-    ./$ops_pkg --install --install-path="$INSTALL_PATH" || {
-        log_warn "Ops installation may have issues (this can be normal on non-NPU systems)"
-    }
+    if [ "$SKIP_OPS" = "false" ]; then
+        log_info "Installing CANN ops..."
+        chmod +x "$ops_pkg"
+        ./$ops_pkg --install --install-path="$INSTALL_PATH" || {
+            log_warn "Ops installation may have issues (this can be normal on non-NPU systems)"
+        }
+    fi
 
     log_info "Cleaning up..."
     rm -f "$toolkit_pkg" "$ops_pkg"
@@ -248,11 +253,13 @@ show_help() {
     echo "  --chip-type TYPE         Chip type: 910b, 910_93, etc. (default: ${CHIP_TYPE})"
     echo "  --install-path PATH      Installation path (default: ${INSTALL_PATH})"
     echo "  --skip-cann              Skip CANN installation"
+    echo "  --skip-ops, --toolkit-only  Skip ops package download (compile-only scenario)"
     echo "  --help                   Show this help"
     echo ""
     echo "Examples:"
     echo "  $0                       # Install with defaults"
     echo "  $0 --skip-cann           # Skip CANN, install only deps"
+    echo "  $0 --skip-ops            # Install toolkit only, skip ops"
     echo "  $0 --chip-type 910_93    # Use 910_93 ops package"
     echo ""
 }
@@ -278,6 +285,10 @@ main() {
                 skip_cann=true
                 shift
                 ;;
+            --skip-ops|--toolkit-only)
+                SKIP_OPS="true"
+                shift
+                ;;
             --help|-h)
                 show_help
                 exit 0
@@ -298,6 +309,7 @@ main() {
     echo "  CANN Version:  ${CANN_VERSION}"
     echo "  Chip Type:     ${CHIP_TYPE}"
     echo "  Install Path:  ${INSTALL_PATH}"
+    echo "  Skip Ops:      ${SKIP_OPS}"
     echo ""
 
     local work_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
