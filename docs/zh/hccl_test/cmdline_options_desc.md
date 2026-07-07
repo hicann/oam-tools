@@ -62,15 +62,10 @@
   
   其中\<executable_file\>为集合通信性能测试工具的可执行文件，即支持的测试命令。
   
-  - 针对Ascend 950PR/Ascend 950DT，支持的测试命令有：all_gather_test，all_gatherv_test，all_reduce_test，alltoall_test，alltoallv_test，alltoallvc_test，broadcast_test，reduce_scatter_test，reduce_scatterv_test，reduce_test，scatter_test。
-  - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持的测试命令有：all_gather_test，all_gatherv_test，all_reduce_test，alltoall_test，alltoallv_test，alltoallvc_test，broadcast_test，reduce_scatter_test，reduce_scatterv_test，reduce_test，scatter_test。
-  - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持的测试命令有：all_gather_test，all_gatherv_test，all_reduce_test，alltoall_test，alltoallv_test，alltoallvc_test，broadcast_test，reduce_scatter_test，reduce_scatterv_test，reduce_test，scatter_test。
-    <!-- npu="910" id4 -->
-  - 针对Atlas 训练系列产品，支持的测试命令有：all_gather_test，all_reduce_test，alltoallv_test，alltoall_test，broadcast_test，reduce_scatter_test，reduce_test，scatter_test。
-    <!-- end id4 -->
-    <!-- npu="310p" id5 -->
-  - 针对Atlas 推理系列产品，支持的测试命令有：all_gather_test，all_gatherv_test，all_reduce_test，alltoall_test，alltoallv_test，reduce_scatter_test，reduce_scatterv_test。
-    <!-- end id5 -->
+  HCCL Test工具支持的测试命令包括：broadcast_test，all_gather_test，all_gatherv_test，reduce_test，all_reduce_test，scatter_test，reduce_scatter_test，reduce_scatterv_test，alltoall_test，alltoallv_test，alltoallvc_test。
+  
+  > [!NOTE]说明
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-p \<npus\>或--npus \<npus\>**：可选，单个计算节点上参与训练的NPU个数。
   
@@ -104,54 +99,22 @@
 - **-o \<operator\>或 --op \<operator\>**：可选，Reduce相关执行命令的操作类型，包含：sum、prod、max、min，默认值为sum。
 
   Reduce相关的执行命令有：all_reduce_test、reduce_scatter_test、reduce_scatterv_test、reduce_test。
-  
-  对于执行命令reduce_scatterv_test：
-  - 针对Ascend 950PR/Ascend 950DT，支持的操作类型为sum、max、min。
-  - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持的操作类型为sum、max、min。
-  - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持的操作类型为sum、max、min。
-  <!-- npu="310p" id9 -->
-  - 针对Atlas 推理系列产品，仅支持操作类型sum。
-  <!-- end id9 -->
+
+  > [!NOTE]说明
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-r \<root\>或--root \<root\>**：可选，执行命令为broadcast_test、reduce_test、scatter_test时，需要通过此参数指定根节点的Device ID。
 
   取值范围：[0, 实际Device数量-1]，默认值为：0。
 
-- **-d \<datatype\>或--datatype \<datatype\>**：可选，HCCL执行命令支持的数据类型，默认值为fp32。
+- **-d \<datatype\>或--datatype \<datatype\>**：可选，HCCL Test支持的数据类型，默认值为fp32。
 
-  - 针对执行命令all_reduce_test、reduce_scatter_test、reduce_test：
+  HCCL Test支持配置的数据类型包括：int8、uint8、int16、uint16、int32、uint32、int64、uint64、fp16、fp32、fp64、bfp16、fp8e5m2、fp8e4m3、fp8e8m0、hif8。
+  
+  > [!NOTE]说明
+  > 各测试命令在不同产品上支持的数据类型，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
 
-    - 针对Ascend 950PR/Ascend 950DT，支持数据类型：int8、int16、int32、int64、uint64、fp16、fp32、fp64、bfp16。
-    - Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持数据类型：int8、int16、int32、int64、fp16、fp32、bfp16，其中“prod”操作不支持int16、bfp16数据类型。
-    - Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持数据类型：int8、int16、int32、int64、fp16、fp32、bfp16，其中“prod”操作不支持int16、bfp16数据类型。
-      <!-- npu="910" id13 -->
-    - Atlas 训练系列产品，支持数据类型：int8、int32、int64、fp16、fp32。
-      <!-- end id13 -->
-      <!-- npu="310p" id14 -->
-    - Atlas 推理系列产品，支持的数据类型：int8、int16、int32、fp16、fp32，其中“prod”、“max”、“min”操作不支持int16数据类型。
-      <!-- end id14 -->
-
-  - 针对执行命令broadcast_test、all_gather_test、alltoallv_test、alltoallvc_test、alltoall_test、scatter_test、all_gatherv_test，支持数据类型：int8、uint8、int16、uint16、int32、uint32、int64、uint64、fp16、fp32、fp64、bfp16、fp8e5m2、fp8e4m3、fp8e8m0、hif8。
-
-    其中：
-
-    bfp16数据类型仅支持如下产品：
-    - Ascend 950PR/Ascend 950DT
-    - Atlas A3 训练系列产品/Atlas A3 推理系列产品
-    - Atlas A2 训练系列产品
-
-    fp8e5m2、fp8e4m3、fp8e8m0、hif8数据类型仅支持如下产品：
-
-    Ascend 950PR/Ascend 950DT
-
-  - 针对执行命令reduce_scatterv_test：
-    - 针对Ascend 950PR/Ascend 950DT，支持数据类型：int8、int16、int32、fp16、fp32、bfp16。
-    - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持数据类型：int8、int16、int32、fp16、fp32、bfp16。
-    - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持数据类型：int8、int16、int32、fp16、fp32、bfp16。
-    <!-- npu="310p" id15 -->
-    - 针对Atlas 推理系列产品，支持数据类型：int16、fp16、fp32。
-    <!-- end id15 -->
-
+  <!-- npu="A3" id1 -->
 - **-z \<0/1\>或--zero_copy \<0/1\>**：可选，是否开启零拷贝功能。
 
   单算子模式下由于输入输出buffer动态变化，所以HCCL会使用中间buffer进行中转完成集合通信，但会引入额外的内存拷贝开销。零拷贝功能就是降低内存拷贝开销，直接对业务传入的内存进行操作，从而进行性能提升。
@@ -168,7 +131,9 @@
   - 仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品。
   - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test，broadcast_test命令。
   - 仅支持通信算法的编排展开位置在AI CPU的场景。
+  <!-- end id1 -->
 
+  <!-- npu="A3" id2 -->
 - **-m \<0/1>或--symmetric_memory \<0/1>**：可选，是否开启对称内存功能。
 
   单算子模式下由于输入输出buffer动态变化，所以HCCL会使用中间buffer进行中转完成集合通信，但会引入额外的内存拷贝开销。对称内存功能可以降低内存拷贝开销，直接对业务传入的内存进行操作，从而提升性能。
@@ -191,7 +156,9 @@
     - 仅支持对称组网，即每个server内卡数相同的场景。
 
   **注：不支持零拷贝和对称内存功能同时开启。**
+  <!-- end id2 -->
 
+  <!-- npu="950" id3 -->
 - **-a \<HcclAccelerator\>或--accelerator \<HcclAccelerator\>**：可选，该参数仅支持Ascend 950PR/Ascend 950DT，用于设置加速模式。
   - default：使用默认自适应加速模式，会根据组网、数据量等情况自动选择合适的模式。
   - aicpu_ts：使用Device侧的AI CPU计算单元加速。
@@ -202,6 +169,7 @@
   - aiv_only：不支持此配置。
 
   **注：该配置的优先级高于环境变量HCCL_OP_EXPANSION_MODE。**
+  <!-- end id3 -->
 
 - **-s \<0/1\>或--nslb \<0/1\>**：可选，是否启用NSLB-DP（Network Scale Load Balance-Data Plane：数据面网络级负载均衡）功能。
   - 0（默认值）：不启用。

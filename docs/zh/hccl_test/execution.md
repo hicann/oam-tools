@@ -146,9 +146,11 @@
         node4 slots=8
         ```
 
-    > [!CAUTION]注意
-    > - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，Hostfile文件中，请将属于同一超节点的AI Server信息配置在一起。假设有两个超节点，标识分别为“0”和“1”，请在Hostfile中先配置“0”中的AI Server信息，再配置“1”中的AI Server信息，不支持“0”中的AI Server信息与“1”中的AI Server信息交叉配置。
-    > - 针对单机场景，Hostfile文件可不配置。
+   注意：
+     <!-- npu="A3" id1 -->
+   - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，Hostfile文件中，请将属于同一超节点的AI Server信息配置在一起。假设有两个超节点，标识分别为“0”和“1”，请在Hostfile中先配置“0”中的AI Server信息，再配置“1”中的AI Server信息，不支持“0”中的AI Server信息与“1”中的AI Server信息交叉配置。
+     <!-- end id1 -->
+   - 针对单机场景，Hostfile文件可不配置。
 
 4. 执行HCCL Test工具。
 
@@ -206,13 +208,13 @@
 
 ## 结果说明
 
-执行命令示例：
+命令示例：
 
 ```bash
 # mpirun -n 8 ./bin/all_reduce_test -b 8K -e 64M -f 2 -d fp32 -o sum -p 8
 ```
 
-回显如下所示：
+执行结果示例如下：
 
 ```text
 the minbytes is 8192, maxbytes is 67108864, iters is 20, warmup_iters is 5

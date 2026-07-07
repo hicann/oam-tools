@@ -36,12 +36,17 @@ Atlas 推理系列产品
 
 ## 约束说明
 
+  <!-- npu="950" id8 -->
 - 针对Ascend 950PR/Ascend 950DT，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
+  <!-- end id8 -->
+  <!-- npu="A3" id7 -->
 - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
 
   针对AlltoAll、AlltoAllV算子，HCCL性能测试工具最大支持集群组网包含8K的通信rank的场景。
-
+  <!-- end id7 -->
+  <!-- npu="910b" id6 -->
 - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
+  <!-- end id6 -->
   <!-- npu="910" id9 -->
 - 针对Atlas 训练系列产品，HCCL性能测试工具最大支持集群组网包含4096的通信rank的场景。
   <!-- end id9 -->
