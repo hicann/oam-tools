@@ -1,12 +1,91 @@
-# oam-tools
+<div align="center">
 
-## Overview
+# OAM-Tools
 
-The oam-tools (Operations, Administration, and Maintenance) project provides fault diagnosis tools and performance testing and tuning tools for developers. The project includes capabilities such as fault information collection, software and hardware information display, AI core error analysis, and AI task performance collection and analysis. These capabilities improve the efficiency of fault diagnosis and AI task performance analysis.
+**Huawei CANN Operations, Administration, and Maintenance Toolkit**
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CANN](https://img.shields.io/badge/CANN-%E2%89%A58.5.0-green.svg)](./docs/en/quick_install.md)
+
+</div>
+
+## 📖 Overview
+
+OAM-Tools (Operations, Administration, and Maintenance) is an open-source operations and maintenance toolkit for Huawei CANN, providing developers on Ascend AI processors with two core capabilities: **fault diagnosis** and **performance tuning**. The toolkit covers the complete O&M pipeline — from fault information collection and AI Core Error analysis to AI task performance profiling and analysis — helping developers quickly identify software/hardware issues and optimize AI task performance.
+
+**Use cases**:
+- One-click fault information collection and AI Core Error root cause analysis when AI training/inference tasks encounter anomalies
+- AI task performance tuning: collect key performance indicators across runtime stages to identify bottlenecks
+- Testing collective communication (HCCL) functionality and performance in distributed training scenarios
+
+## ✨ Core Features
+
+OAM-Tools includes four core components that collaboratively cover the full O&M scenario for Ascend AI processors:
+
+| Component | Purpose | Key Capabilities |
+| --- | --- | --- |
+| **asys** (Fault Information Collection) | One-click fault information collection and diagnosis | Fault information collection, business rerun with info collection, software/hardware & Device status display, health check, comprehensive detection, component detection, trace/coredump/stackcore/coretrace/UB file parsing, real-time stack export, AI Core Error fault info parsing, performance data collection |
+| **msaicerr** (AI Core Error Analysis) | AI Core Error problem localization | AI Core Error problem analysis, Dump file parsing and data type conversion, runtime environment check |
+| **msprof** (Performance Tuning) | AI task performance collection and analysis | Collect AI task runtime performance data, AI processor system data, Host-side system data, msproftx data; support dynamic/delayed collection; provide ACL/Ascend Graph/acl.json/environment variable collection methods |
+| **hccl_test** (HCCL Performance Test) | Collective communication functionality and performance testing | Test collective communication functionality and performance based on HCCL single-operator API in distributed training/inference scenarios |
+
+## 🏗️ Project Architecture
+
+OAM-Tools adopts a modular design where the four components are independent yet collaborative: asys and msaicerr focus on fault diagnosis, msprof on performance analysis, and hccl_test on communication testing. All components share the CANN runtime environment and are compiled and packaged into a `.run` installation package via a unified build system (CMake + build.sh). After installation, they are extracted to the `tools/` subdirectory of the CANN installation directory.
+
+**Directory structure**:
+
+```text
+oam-tools/
+├── cmake/                      # Build configuration (CMake modules, third-party library download scripts)
+├── scripts/                    # Auxiliary build and check scripts (oat_check.sh, etc.)
+├── src/                        # Source code
+│   ├── asys/                   # asys: fault information collection tool (Python)
+│   ├── msaicerr/               # msaicerr: AI Core Error analysis tool (Python)
+│   ├── msprof/                 # msprof: performance tuning tool (C++ collector + Python analysis scripts)
+│   ├── hccl_test/              # hccl_test: HCCL performance test tool (C++)
+│   ├── operator_cmp/           # Operator comparison tool
+│   └── third_party/            # Third-party library headers
+├── test/                       # UT/ST test cases
+├── docs/                       # Project documentation (Chinese/English)
+│   ├── zh/                     # Chinese documentation (asys/msaicerr/profiling/hccl_test user guides)
+│   ├── en/                     # English documentation
+│   └── figures/                # Image assets
+├── init_env.sh                 # Development environment one-click setup script
+├── build.sh                    # Project build script
+├── CMakeLists.txt              # CMake main configuration file
+└── version.cmake               # Version and dependency declaration
+```
+
+## 🚀 Quick Start
+
+### 1. Environment Installation
+
+Please refer to the [Quick Installation Guide](./docs/en/quick_install.md) to complete the installation of CANN software packages and build dependencies.
+
+### 2. Build
+
+Load the environment variables from your CANN installation path before building:
+
+```bash
+source <CANN_install_path>/set_env.sh
+```
+
+> Default path is `/usr/local/Ascend/cann` for root users, `${HOME}/Ascend/cann` for non-root users, and `${install_path}/cann` for custom installation paths.
+
+```bash
+bash build.sh
+```
+
+### 3. Install to CANN Directory
+
+```bash
+./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full
+```
 
 ## 🧩 Supported Hardware
 
-Before setting up the environment, confirm that your hardware is within the supported scope of this tool.
+Before setting up the environment, confirm that your hardware is within the supported scope. If you do not have Ascend devices, you can still build via Docker (see [Quick Installation](docs/en/quick_install.md#method-2-docker-deployment)).
 
 - **CPU architecture**: `aarch64`, `x86_64`
 - **Ascend AI processors**:
@@ -19,33 +98,17 @@ Before setting up the environment, confirm that your hardware is within the supp
 
   > - `npu-smi info` may print sub-model suffixes (e.g. `910B1` / `910B2` / `910B3` / `910B4`); matching is by "Name column contains the keyword".
   > - "910C" is a commercial alias. Since CANN 8.5.0, the ops package is uniformly named `Ascend-cann-A3-ops_*`. Do not use `910c`, `910_c`, or `910_93` in the package name.
-  > - Other chips are not yet supported — please open an issue. The full ops package naming convention and download instructions are in [Quick Install](docs/en/quick_install.md#method-3-manual-installation).
+  > - Other chips are not yet supported — please open an issue. The full ops package naming convention and download instructions are in [Quick Installation](docs/en/quick_install.md#method-3-manual-installation).
 
-## Directory Structure
+## 🔧 Source Code Compilation
 
-The key directory structure is as follows:
+Load the environment variables from your CANN installation path before compiling:
 
-```
-├── cmake                                          # Build configuration directory
-├── scripts                                        # Auxiliary build files
-├── src                                            # Source code for all modules
-|   ├── asys                                       # asys module directory
-|   ├── hccl_test                                  # hccl_test module directory
-|   ├── msaicerr                                   # msaicerr module directory 
-|   ├── msprof                                     # msprof module directory
-|   ├── third_party                                # Third-party library headers
-|   └── ......
-├── test                                           # UT/ST test cases
-├── CMakeLists.txt                                 # Build configuration file
-├── build.sh                                       # Project build script
-└── ......
+```bash
+source <CANN_install_path>/set_env.sh
 ```
 
-## Environment Preparation
-
-Complete the environment preparation by following the [Quick Installation](docs/en/quick_install.md) guide.
-
-## Source Code Compilation
+> Default path is `/usr/local/Ascend/cann` for root users, `${HOME}/Ascend/cann` for non-root users, and `${install_path}/cann` for custom installation paths.
 
 Run the following command to compile the project:
 
@@ -67,21 +130,43 @@ Parameters:
 
 After the build completes, the `build_out` directory generates a `cann-oam-tools_<cann_version>_linux-<arch>.run` software package, where `<cann_version>` is the version number and `<arch>` is the operating system architecture (possible values: `x86_64` or `aarch64`).
 
-## Installation
+## 📦 Installation and Verification
+
+### Installation
 
 Run the following command to install the compiled oam-tools software package:
 
 ```bash
-./cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}
+./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}
 ```
 
 After installation completes, the user-compiled oam-tools software package replaces the oam-tools related software in the installed CANN development kit package.
 
 > If your environment has a `grep` version greater than 3.8.0, a warning appears during installation, for example `grep: warning: stray \ before -`. This occurs because newer grep versions have stricter validation of expressions, but does not affect installation and usage.
 
-### ▶️ Usage Examples
+### Verification
 
-After [installation](#installation), the tools are extracted to the `tools/` subdirectory under the CANN installation directory (root user default: `/usr/local/Ascend/cann/tools/`). Load the environment variables before running any example:
+After compilation, users can verify whether the project functions work properly.
+
+> Python dependency installation is handled in [Environment Preparation](docs/en/quick_install.md). No additional operations are required.
+
+```bash
+# Run all component tests
+bash build.sh -u
+
+# Test a specific component (options: asys / msaicerr / msprof / all)
+bash build.sh -u --component msprof
+```
+
+The UT test case compilation output directory is `build`. To clear historical build records:
+
+```bash
+rm -rf build_out/ build/
+```
+
+## ▶️ Usage Examples
+
+After installation, the tools are extracted to the `tools/` subdirectory under the CANN installation directory (root user default: `/usr/local/Ascend/cann/tools/`). Load the environment variables before running any example:
 
 ```bash
 # Root user default path; for non-root users, replace /usr/local with ${HOME}
@@ -93,7 +178,7 @@ source /usr/local/Ascend/cann/set_env.sh
 
 In the examples below, text inside angle brackets `<...>` is a **placeholder you must replace** (input path, output path, device id, etc.); everything else can be copied verbatim.
 
-#### asys (Fault Information Collection / Diagnosis)
+### asys (Fault Information Collection / Diagnosis)
 
 The `src/asys/` directory contains both `asys.py` and a symlink `asys` pointing to it. After installation, both forms work directly:
 
@@ -120,7 +205,7 @@ Common commands (using `<asys_bin>` as shorthand for `${ASCEND_INSTALL_PATH}/too
 
 Add `<asys_bin>` to `PATH` to use `asys info -r="status"` / `asys health` directly. For full parameters, run `<asys_bin> -h`.
 
-#### msaicerr (AI Core Error Analysis)
+### msaicerr (AI Core Error Analysis)
 
 The msaicerr entry point is installed at `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`.
 
@@ -138,7 +223,7 @@ python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -e -dev 0
 python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -h
 ```
 
-#### msprof (Performance Tuning)
+### msprof (Performance Tuning)
 
 After installation, the msprof analysis script is located at `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/`. It is called internally by the CANN profiler pipeline; to run it manually:
 
@@ -146,49 +231,30 @@ After installation, the msprof analysis script is located at `${ASCEND_INSTALL_P
 python3 ${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/analysis/msprof/msprof.py -h
 ```
 
-## Verification
-
-After compilation, users can verify whether the project functions work properly.
-
-> Python dependency installation is handled in [Environment Preparation](docs/en/quick_install.md). No additional operations are required.
-
-Compile and run test cases:
-
-```bash
-bash build.sh -u
-```
-
-To test a specific component, use the `--component` parameter:
-
-Possible values: `asys` (fault information collection), `msaicerr` (AI Core Error analysis), `msprof` (performance tuning), `all` (all components, default)
-
-```bash
-bash build.sh -u --component msprof
-```
-
-The UT test case compilation output directory is `build`. To clear historical build records, run the following:
-
-```bash
-rm -rf build_out/ build/
-```
-
-## Pre-commit
+## 🅿️ Pre-commit
 
 Pre-commit is a framework for managing and maintaining Git pre-commit hooks. By automatically executing code checks, formatting, and security scans before code submission, pre-commit ensures code quality and unifies team standards. This significantly reduces CI/CD pipeline failures and improves collaboration efficiency.
 
 This repository has configured pre-commit. Users can refer to [Chapter 3 of the pre-commit configuration guide](https://gitcode.com/cann/infrastructure/blob/main/docs/SC/pre-commit/pre-commit%E9%85%8D%E7%BD%AE%E6%8C%87%E5%AF%BC%E4%B9%A6.md#3-%E7%A4%BE%E5%8C%BA%E8%B4%A1%E7%8C%AE%E8%80%85%E4%BD%BF%E7%94%A8pre-commit%E8%83%BD%E5%8A%9B) in the CANN community to install pre-commit. The OAT check tool has switched to the Python version oat-py (installed via `pip install oat-py>=1.0.0`), eliminating the need for Java/Maven environment configuration. The first run takes slightly longer as pre-commit creates isolated virtual environments for each hook.
 
-## Related Documentation
+## 📚 Related Documentation
 
-[asys Tool User Guide](https://hiascend.com/document/redirect/CannCommunityasys): Introduces the usage of the asys command-line tool, which supports fault information collection, business rerun with fault information collection, software and hardware and Device status information display, health check, comprehensive detection, component detection, trace file parsing/coredump file parsing/stackcore file parsing/coretrace file parsing, real-time stack export, environment configuration, and AI Core Error fault information parsing.
+### Component User Guides
 
-[msaicerr Tool User Guide](https://hiascend.com/document/redirect/CannCommunitymsaicerr): Introduces the usage of the msaicerr command-line tool for analyzing AI Core Error issues, parsing Dump files, and checking environments.
+| Component | Documentation Link | Description |
+| --- | --- | --- |
+| asys | [asys Tool User Guide](https://hiascend.com/document/redirect/CannCommunityasys) | Fault information collection, business rerun with fault information collection, software/hardware and Device status information display, health check, comprehensive detection, component detection, trace/coredump/stackcore/coretrace file parsing, real-time stack export, environment configuration, AI Core Error fault information parsing |
+| msaicerr | [msaicerr Tool User Guide](https://hiascend.com/document/redirect/CannCommunitymsaicerr) | Analyzing AI Core Error issues, parsing Dump files, checking environments |
+| msprof | [Performance Tuning Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolProfiling) | Collect and analyze key performance indicators of AI tasks running on Ascend AI processors at various running stages, enabling quick identification of software and hardware performance bottlenecks |
+| hccl_test | [HCCL Performance Test Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolHcclTest) | Testing collective communication functionality and performance in distributed training or inference scenarios |
 
-[Performance Tuning Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolProfiling): Introduces the usage of the msprof command-line tool. This tool guides users to collect and analyze key performance indicators of AI tasks running on Ascend AI processors at various running stages, enabling quick identification of software and hardware performance bottlenecks and improving AI task performance analysis efficiency.
+### Other Documentation
 
-[HCCL Performance Test Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolHcclTest): Introduces the usage of the hccl_test tool for testing collective communication functionality and performance in distributed training or inference scenarios.
+- [Quick Installation Guide](docs/en/quick_install.md)
+- [Environment Variable Reference](https://hiascend.com/document/redirect/CannCommunityEnvRef)
 
-## Related Information
+## ℹ️ Related Information
+
 - [Contributing Guide](CONTRIBUTING_en.md)
 - [Security Statement](SECURITY_en.md)
 - [License](LICENSE)
