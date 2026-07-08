@@ -13,7 +13,7 @@
 |方式三：订阅算子信息|将采集到的性能数据解析后写入管道，由用户读入内存，再由用户调用API获取性能数据。|
 
 <!-- npu="950,A3,910b,910,310p,310b" id22 -->
-注：接口详细说明，请参见[《应用开发(Python)》](https://hiascend.com/document/redirect/cannCommunityadevguide)中的“Profiling数据采集”。
+注：接口详细说明，请参见《Runtime运行时 API》。
 <!-- end id22 -->
 
 > [!NOTE]说明

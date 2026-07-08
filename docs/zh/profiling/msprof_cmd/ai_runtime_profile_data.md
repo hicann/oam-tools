@@ -163,7 +163,7 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 设置该参数需要`--sys-hardware-mem`参数设置为on。
 
 <!-- npu="A3,910b,310b" id20 -->
-对于以下型号，采集任务结束后，不建议用户增大采集频率，否则可能导致SoC传输带宽数据丢失。
+对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
 <!-- end id20 -->
 <!-- npu="310b" id21 -->
 - Atlas 200I/500 A2 推理产品
@@ -177,7 +177,7 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 
 ### l2
 
---l2=<l2-value\>：可选，采集L2 Cache、TLB页表缓存的命中率，可选on或off，默认为off。
+--l2=<l2-value\>：可选，采集L2 Cache、TLB页表缓存的命中率，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。
 
 <!-- npu="910b" id24 -->
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品：分析AI Core命中L2次数推荐使用--aic-metrics=L2Cache。

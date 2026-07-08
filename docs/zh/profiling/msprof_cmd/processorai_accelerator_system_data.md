@@ -139,16 +139,18 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
 
+<!-- npu="950,A3,910b,910,310p,310b" id60 -->
 ### sys-hardware-mem-freq
 
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
+
 
 <!-- npu="950" id21 -->
 Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id21 -->
 设置该参数需要`--sys-hardware-mem`参数设置为on。
 <!-- npu="A3,910b,310b" id22 -->
-对于以下型号，采集任务结束后，不建议用户增大采集频率，否则可能导致SoC传输带宽数据丢失。
+对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
 <!-- end id22 -->
 <!-- npu="310b" id23 -->
 - Atlas 200I/500 A2 推理产品
@@ -156,10 +158,11 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 <!-- npu="910b" id24 -->
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 <!-- end id24 -->
-<!-- npu="A3" id25 -->
+<!-- npu="950,A3,910b,910,310p,310b" id25 -->
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 <!-- end id25 -->
-
+<!-- end id60 -->
+<!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id3 -->
 ### llc-profiling
 
 --llc-profiling=<llc-profiling-value\>：可选，LLC Profiling采集事件，需`--sys-hardware-mem`设置为on。取值包括：
@@ -261,6 +264,17 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 ### sys-interconnection-freq
 
 --sys-interconnection-freq=<sys-interconnection-freq-value\>：可选，集合通信带宽数据（HCCS）、集合通信硬件加速单元（CCU）带宽数据、PCIe数据采集频率、片间传输带宽信息采集频率、SIO数据采集频率、UB带宽数据采集频率，范围\[1,50\]，默认值为50，单位Hz。
+
+<!-- npu="A3,910b" id57 -->
+对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
+
+<!-- npu="910b" id58 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+<!-- end id58 -->
+<!-- npu="A3" id59 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+<!-- end id59 -->
+<!-- end id57 -->
 
 设置该参数需`--sys-interconnection-profiling`参数设置为on。
 

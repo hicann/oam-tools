@@ -99,7 +99,7 @@ AI Core性能指标采集项，取值如下：
 
 ### l2
 
-控制L2 Cache和TLB页表缓存命中率的开关，可选on或off，默认为off。
+控制L2 Cache和TLB页表缓存命中率的开关，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。
 <!-- npu="310p" id11 -->
 - Atlas 推理系列产品：支持采集L2 Cache的命中率。
 <!-- end id11 -->

@@ -5,7 +5,7 @@
 <!-- npu="950,A3,910b,910,310p,310b" id1 -->
 可使用mstx API或msproftx API进行性能数据采集，两者二选一，推荐使用mstx API。
 
-Ascend PyTorch Profiler API暂不支持通过msprof命令行工具设置--msproftx=on的方式进行采集，请直接使用Ascend PyTorch Profiler mstx接口。
+TorchNPU Profiler API暂不支持通过msprof命令行工具设置--msproftx=on的方式进行采集，请直接使用TorchNPU Profiler mstx接口。
 <!-- end id1 -->
 
 ## 前提条件

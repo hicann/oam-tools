@@ -186,7 +186,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
 
 ### l2
 
-控制L2 Cache命中率和TLB页表缓存命中率采集开关，可选on或off，默认为off。
+控制L2 Cache命中率和TLB页表缓存命中率采集开关，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。
 
 <!-- npu="310b" id19 -->
 - Atlas 200I/500 A2 推理产品：支持采集L2 Cache的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
