@@ -658,7 +658,9 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     bool is910_95 = IsSupport910_95();
     std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
     std::vector<struct option> longopts = build_longopts(is910_95);
-    if (is910_95) {
+
+    const char *opModeEnv = getenv("HCCL_OP_EXPANSION_MODE");
+    if (is910_95 && opModeEnv == nullptr) { // 需要确保环境变量未配置
         accelerator_config = 6; // 910_95场景，修改默认加速器模式为CCU_SCHED
     }
     while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
@@ -1259,7 +1261,7 @@ int HcclTest::deregister_symmetric_memory(HcclCommSymWindow &sym_win)
 // -t参数对于ccu alltoallvc 算子数据量大于等于 128MB的场景 -t不生效
 aclError HcclTest::start_profile_device_time_if_needed(size_t data_size)
 {
-    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6) && IsSupport910_95();
+    bool isCcuSched = accelerator_config == 6 && IsSupport910_95();
     if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
         ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
         ACLCHECK(aclrtResetEvent(sync_event, stream));
@@ -1269,7 +1271,7 @@ aclError HcclTest::start_profile_device_time_if_needed(size_t data_size)
 
 aclError HcclTest::end_profile_device_time_if_needed(size_t data_size)
 {
-    bool isCcuSched = (accelerator_config == 0 || accelerator_config == 6) && IsSupport910_95();
+    bool isCcuSched = accelerator_config == 6 && IsSupport910_95();
     if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
         int sleepTime = 50 + warmup_iters * 2 + iters * 2;
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
