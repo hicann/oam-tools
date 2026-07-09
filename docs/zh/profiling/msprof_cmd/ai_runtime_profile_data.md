@@ -152,6 +152,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
 
+<!-- npu="950,A3,910b,910,310p,310b" id30 -->
 ### sys-hardware-mem-freq
 
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
@@ -174,7 +175,8 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 <!-- npu="A3" id23 -->
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 <!-- end id23 -->
-
+<!-- end id30 -->
+<!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id1 -->
 ### l2
 
 --l2=<l2-value\>：可选，采集L2 Cache、TLB页表缓存的命中率，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。

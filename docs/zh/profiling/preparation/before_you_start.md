@@ -50,9 +50,12 @@
   - 请确保性能数据保存在不含软链接的当前用户目录下，否则可能引起安全问题。
 
   <!-- @ref: oam-tools/res/docs/zh/profiling/preparation/before_you_start_res.md#id2 -->
- 
+
 - 执行约束
   - 不支持在同一个Device同时拉起多个采集任务。也不可同时开启两种及以上性能数据采集方式。举例说明：使用msprof命令行方式启动Profiling时，app中不能通过acl接口启动Profiling数据采集。
+    <!-- npu="950" id7 -->
+    <br>Ascend 950PR/Ascend 950DT场景下，支持同一个Device同时拉起多个task-time采集任务；当aic-mode取值为task-based时，支持同一个Device同时拉起多个aic-metrics采集任务。
+    <!-- end id7 -->
   - 不建议性能数据的采集功能与Dump功能同时使用。Dump操作会影响系统性能，如果同时开启采集功能与Dump功能，会造成采集的性能数据指标不准确，启动采集前请关闭数据Dump。
 
 - 数据落盘约束
