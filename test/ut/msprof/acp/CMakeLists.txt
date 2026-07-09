@@ -156,6 +156,7 @@ target_include_directories(acp_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${CMAKE_BINARY_DIR}/proto/acp_utest_proto
 )
 

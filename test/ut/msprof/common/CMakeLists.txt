@@ -164,6 +164,7 @@ target_include_directories(local_socket_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -223,6 +224,7 @@ target_include_directories(chunk_pool_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base

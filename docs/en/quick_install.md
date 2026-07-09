@@ -104,7 +104,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
 
     The dependencies used for compiling this project source code are as follows. Note the version requirements.
 
-    - python >= 3.12.0
+    - python >= 3.10.0
     - gcc >= 7.3.0
     - cmake >= 3.16.0
     - ccache

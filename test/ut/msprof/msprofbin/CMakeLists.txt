@@ -151,7 +151,6 @@ set(libmsprofHeaderDir
     ${TOP_DIR}/src/inc
     ${TOP_DIR}/pkg_inc/dump
     ${TOP_DIR}/pkg_inc/aicpu
-    ${TOP_DIR}/src/dfx/adump/inc/metadef/external
     ${MSPROF_SOURCE_DIR}/dvvp/msprof/msproftx/mstx/inc
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform
     ${MSPROF_SOURCE_DIR}/dvvp/common/config
@@ -165,6 +164,7 @@ set(libmsprofHeaderDir
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
 )
 
 target_include_directories(msprof_bin_utest PRIVATE

@@ -30,6 +30,7 @@ set(msprofBinHeader
     ${third_party_INCLUDE_DIR}
     ${MSPROF_DIR}/inc/toolchain
     ${PROTOBUF_HOST_STATIC_INCLUDE}
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     include
     ../
     ../app

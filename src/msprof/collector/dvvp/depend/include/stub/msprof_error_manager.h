@@ -16,7 +16,7 @@
 #ifndef MSPROF_ERROR_MANAGER_STUB_H
 #define MSPROF_ERROR_MANAGER_STUB_H
 
-#include "common/util/error_manager/error_manager.h"
+#include "error_manager.h"
 #include "common/singleton/singleton.h"
 
 #define MSPROF_INPUT_ERROR(error_code, key, value)

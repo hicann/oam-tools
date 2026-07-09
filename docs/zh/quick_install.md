@@ -145,7 +145,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 
     本项目源码编译用到的依赖如下，请注意版本要求。
 
-    - python >= 3.12.0
+    - python >= 3.10.0
     - gcc >= 7.3.0
     - cmake >= 3.16.0
     - ccache
