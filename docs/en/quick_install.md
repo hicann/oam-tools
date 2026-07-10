@@ -14,7 +14,7 @@ This project provides multiple ways to set up the Ascend environment. Choose acc
 | Installation Method | Usage Instructions | Usage Scenario |
 | ----- | ------ | ------ |
 | WebIDE | One-stop development platform that provides an online directly runnable Ascend environment without manual installation. Currently provides single machine computing power and **installs the latest commercial release CANN package by default**. | Suitable for developers without Ascend devices.|
-| Docker | Docker image is an efficient deployment method that pre-integrates CANN packages and necessary dependencies. Currently only applicable to Atlas A2 series products, OS only supports Ubuntu operating system. **Installs the latest commercial release CANN package by default**. |Suitable for developers with Ascend devices who need to quickly set up the environment.|
+| Docker | Docker image is an efficient deployment method that pre-integrates CANN packages and necessary dependencies. Currently only applicable to Atlas A2 series products, OS only supports Ubuntu operating system. **Installs the latest commercial release CANN package by default**. |Suitable for developers who need to quickly set up the environment, with or without Ascend devices.|
 | Manual Installation | Follow [Method 3: Manual Installation](#section_manual_install) in this document for environment preparation |Suitable for developers with Ascend devices who want to experience manual CANN package installation or experience the latest master branch capabilities.|
 
 ### Method 1: WebIDE Environment
@@ -45,7 +45,7 @@ After environment deployment completes, continue with the following steps:
 
 ### Method 2: Docker Deployment
 
-For developers who do not depend on Ascend devices, if you want to quickly set up an Ascend environment, you can use Docker image deployment.
+If you want to quickly set up an Ascend environment, you can use Docker image deployment.
 
 > **Note**: The image file is relatively large and requires some time to download. Please wait patiently. For docker command option descriptions, query through `docker --help`.
 
@@ -62,7 +62,45 @@ For developers who do not depend on Ascend devices, if you want to quickly set u
     ```
 
 2.**Run Docker**
-After pulling the image, start the container with specific parameters.
+After pulling the image, start the container with specific parameters. Choose the corresponding scenario below based on whether you need to run samples (access NPU devices) in the container:
+
+**Scenario 1: Need to Run Samples (Requires NPU Device Access)**
+
+If you need to run samples or tests, the container needs to access the host's NPU devices. Taking Atlas A2 series products as an example:
+
+```bash
+docker run \
+    --name  oam-tools \
+    --device /dev/davinci0 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
+    -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10 bash
+```
+
+| Parameter | Description | Notes |
+| :--- | :--- | :--- |
+| `--name oam-tools` | Specify a name for the container for easy management. | Can be customized. |
+| `--device=/dev/davinci0` | Mount the 0th NPU device node. | If there are multiple cards, add them one by one (e.g., `--device=/dev/davinci1`). |
+| `--device=/dev/davinci_manager` | Mount the device management interface. | Must be mounted. |
+| `--device=/dev/devmm_svm` | Mount the device memory management module. | Must be mounted. |
+| `--device=/dev/hisi_hdc` | Mount the HDC communication channel. | Must be mounted. |
+| `-v /usr/local/dcmi:/usr/local/dcmi` | Mount the DCMI (Device Communication Management Interface) directory. | Required (when running samples). |
+| `-v /usr/local/bin/npu-smi:...` | Mount the NPU monitoring tool for viewing NPU status. | Required (when running samples). |
+| `-v /usr/local/Ascend/driver/...` | Mount the NPU driver library and version information. | Required (when running samples). |
+| `-v /etc/ascend_install.info:...` | Mount the Ascend software installation information. | Required (when running samples). |
+| `-it` | Combination of `-i` (interactive) and `-t` (allocate pseudo-terminal). | - |
+| `swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10` | Specify the Docker image to run. |Ensure that this image name and tag match exactly with the image you pulled through `docker pull`. |
+| `bash` | Command to execute immediately after container starts. | - |
+
+**Scenario 2: Only Compile and Build (No Need to Run Samples)**
+
+If you only need to compile and build the code without accessing NPU devices, use the following simplified command:
 
 ```bash
 docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.5.0-910b-ubuntu22.04-py3.10 bash
