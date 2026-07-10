@@ -38,6 +38,7 @@ import asys
 from common import DeviceInfo, FileOperate
 from params import ParamDict
 from analyze.coredump_analyze import CoreDump, thread_stacks_reg_info
+from analyze.asys_analyze import AsysAnalyze
 from collect import AsysCollect
 from collect.trace import ParseTrace
 
@@ -93,6 +94,49 @@ class PopenMockError2():
         with open(f"{st_root_path}/data/coredump/core-coredump-8032-1717033944_error.txt", "r") as f:
             gdb_str = f.read()
         return gdb_str, 0
+
+
+def great_ub_bins(ub_dir):
+    """生成 UB analyze 所需的合法二进制样例文件"""
+    from common.const import DSMI_UB_PORT_NUM, DL_PORT_RX_VL_NUM, STATS_ITEM_NUM, UBQOS_MAX_SL_NUM
+    os.makedirs(ub_dir, exist_ok=True)
+
+    def write_bin(name, fmt, values):
+        with open(os.path.join(ub_dir, name), "wb") as fw:
+            fw.write(struct.pack(fmt, *values))
+
+    # ubnl_dfx_statistic / ssu_schedule / config_item share the same layout
+    ubnl_fmt = "I" + "64BQ" * STATS_ITEM_NUM
+    ubnl_values = [2]
+    for i in range(STATS_ITEM_NUM):
+        name_bytes = f"stat_{i}".encode("utf-8")
+        name_bytes = name_bytes + b"\x00" * (64 - len(name_bytes))
+        ubnl_values.extend(list(name_bytes))
+        ubnl_values.append(i)
+    for name in ("ubnl_dfx_statistic.bin", "ubnl_dfx_ssu_schedule.bin", "ubnl_dfx_config_item.bin"):
+        write_bin(name, ubnl_fmt, ubnl_values)
+
+    # ubmem_daw: template_id, balance_algorithm, balance_start_bit, reserved
+    write_bin("ubmem_daw.bin", "4B", [1, 1, 4, 0])
+
+    # ubtpl_acl_src: head(HHI8B) + 1 acl entry(IH2BB3B4IIBI12B)
+    head = struct.pack("HHI8B", 1, 0x01, 0x10, *([0] * 8))
+    acl = struct.pack("IH2BB3B4IIBI12B",
+                      3, 5, 0, 0,          # plane_id, ue_idx, 2B
+                      0,                   # eid_flag=0 (128bit uncompressed)
+                      0, 0, 0,             # rsv 3B
+                      0x11111111, 0x22222222, 0x33333333, 0x44444444,  # eid 4I
+                      2, 1,                # trans_type, acl_type
+                      0x00ABCDEF,          # acl_grp_id
+                      *([0] * 12))
+    with open(os.path.join(ub_dir, "ubtpl_acl_src.bin"), "wb") as fw:
+        fw.write(head + acl)
+
+    # sl_to_vl: plane_id, num, then UBQOS_MAX_SL_NUM * (sl, vl)
+    sl_values = [0, 4]
+    for i in range(UBQOS_MAX_SL_NUM):
+        sl_values.extend([i, i % DL_PORT_RX_VL_NUM])
+    write_bin("sl_to_vl.bin", f"2I{UBQOS_MAX_SL_NUM * 2}H", sl_values)
 
 
 class TestAnalyze(AssertTest):
@@ -883,3 +927,105 @@ class TestAnalyze(AssertTest):
         sys.argv = [CONF_SRC_PATH, "analyze", "-r=coretrace", f"--file={coretrace_txt}"]
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
+
+    def test_asys_analyze_ub(self, mocker):
+        """
+        正常用例：analyze -r=ub 解析全部合法 UB 二进制文件，生成对应 txt
+        """
+        ub_dir = os.path.join(test_case_tmp, "ub_input")
+        great_ub_bins(ub_dir)
+        sys.argv = [CONF_SRC_PATH, "analyze", "-r=ub", f"--path={ub_dir}"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        out_dir = find_dir(test_case_tmp, "asys_output_")
+        out_path = os.path.join(test_case_tmp, out_dir)
+        self.assertTrue(check_file_contents(os.path.join(out_path, "ubmem_daw.txt"),
+                                            "Dynamic Address Window"))
+        self.assertTrue(check_file_contents(os.path.join(out_path, "ubnl_dfx_statistic.txt"),
+                                            "UBNL DFX"))
+        self.assertTrue(check_file_contents(os.path.join(out_path, "ubtpl_acl_src.txt"),
+                                            "Source ACL Config"))
+        self.assertTrue(check_file_contents(os.path.join(out_path, "sl_to_vl.txt"),
+                                            "SL to VL Mapping"))
+
+    def test_asys_analyze_ub_no_path(self, caplog):
+        """
+        异常用例：analyze -r=ub 未传入 path
+        """
+        sys.argv = [CONF_SRC_PATH, "analyze", "-r=ub"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        self.assertTrue("Please enter the path to the UB data collection file." in caplog.text)
+
+    def test_asys_analyze_ub_bin_not_found(self, caplog):
+        """
+        异常用例：目录中不存在 UB bin 文件，逐个记录 not found
+        """
+        ub_dir = os.path.join(test_case_tmp, "empty_input")
+        os.mkdir(ub_dir)
+        # 目录非空但不含 UB bin 文件，避免命中 path 非空校验
+        create_file(os.path.join(ub_dir, "other.txt"))
+        sys.argv = [CONF_SRC_PATH, "analyze", "-r=ub", f"--path={ub_dir}"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        # bin 文件不存在时不生成任何 txt 结果
+        out_dir = find_dir(test_case_tmp, "asys_output_")
+        out_path = os.path.join(test_case_tmp, out_dir)
+        self.assertTrue(not any(f.endswith(".txt") for f in os.listdir(out_path)))
+
+    def test_asys_analyze_ub_bin_too_short(self, caplog):
+        """
+        异常用例：UB bin 文件长度不足，触发 parse error
+        """
+        ub_dir = os.path.join(test_case_tmp, "short_input")
+        os.mkdir(ub_dir)
+        with open(os.path.join(ub_dir, "ubmem_daw.bin"), "wb") as fw:
+            fw.write(b"\x01")
+        sys.argv = [CONF_SRC_PATH, "analyze", "-r=ub", f"--path={ub_dir}"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        self.assertTrue("Parse error: ubmem_daw" in caplog.text)
+
+    def test_convert_ub_port_status(self):
+        """
+        直接测试 _convert_ub_port_status：合法/文件缺失/长度不足
+        """
+        from common.const import DSMI_UB_PORT_NUM
+        bin_path = os.path.join(test_case_tmp, "port_status.bin")
+        txt_path = os.path.join(test_case_tmp, "port_status.txt")
+        values = [2] + [i % 4 for i in range(DSMI_UB_PORT_NUM)]
+        with open(bin_path, "wb") as fw:
+            fw.write(struct.pack(f"I{DSMI_UB_PORT_NUM}I", *values))
+        AsysAnalyze._convert_ub_port_status(bin_path, txt_path)
+        self.assertTrue(check_file_contents(txt_path, "DSMI UB Port Status Data"))
+
+        # 文件缺失：不生成 txt
+        miss_txt = os.path.join(test_case_tmp, "miss_status.txt")
+        AsysAnalyze._convert_ub_port_status(os.path.join(test_case_tmp, "no.bin"), miss_txt)
+        self.assertTrue(not os.path.exists(miss_txt))
+
+        # 长度不足：不生成 txt
+        short_path = os.path.join(test_case_tmp, "short.bin")
+        short_txt = os.path.join(test_case_tmp, "short_status.txt")
+        with open(short_path, "wb") as fw:
+            fw.write(b"\x01")
+        AsysAnalyze._convert_ub_port_status(short_path, short_txt)
+        self.assertTrue(not os.path.exists(short_txt))
+
+    def test_convert_ub_port_perf_test(self):
+        """
+        直接测试 _convert_ub_port_perf_test：合法/文件缺失
+        """
+        from common.const import DL_PORT_RX_VL_NUM as s
+        bin_path = os.path.join(test_case_tmp, "port_perf.bin")
+        txt_path = os.path.join(test_case_tmp, "port_perf.txt")
+        fmt = f"4I{s}I{s}I28I4I{s}I{s}I28I"
+        values = list(range(struct.calcsize(fmt) // 4))
+        with open(bin_path, "wb") as fw:
+            fw.write(struct.pack(fmt, *values))
+        AsysAnalyze._convert_ub_port_perf_test(bin_path, txt_path)
+        self.assertTrue(check_file_contents(txt_path, "Port Performance Test Counter"))
+
+        miss_txt = os.path.join(test_case_tmp, "miss_perf.txt")
+        AsysAnalyze._convert_ub_port_perf_test(os.path.join(test_case_tmp, "no.bin"), miss_txt)
+        self.assertTrue(not os.path.exists(miss_txt))

@@ -112,8 +112,8 @@ position
                         script execution.
     diagnose            Diagnoses the hardware status of the device. It has
                         diagnostic capabilities for component, stress_detect,
-                        hbm_detect and cpu_detect. The detect diagnostic only
-                        supports [910B, 910_93, 950, 910_96].
+                        hbm_detect, cpu_detect and aicore_stl_detect. The detect
+                        diagnostic only supports [910B, 910_93, 950, 910_96].
     health              Diagnoses the health status of the device.
     info                Collects the software and hardware information of the
                         host and device.
@@ -193,16 +193,17 @@ options:
         sys.argv = [ASYS_MAIN_PATH, "diagnose", "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
-        except_msg = """usage: asys diagnose [-h] -r {stress_detect,hbm_detect,cpu_detect,component}
+        except_msg = """usage: asys diagnose [-h] -r {stress_detect,hbm_detect,cpu_detect,component,aicore_stl_detect}
                      [-d ] [--timeout ] [--output ]
 
 options:
   -h, --help            show this help message and exit
-  -r {stress_detect,hbm_detect,cpu_detect,component}
+  -r {stress_detect,hbm_detect,cpu_detect,component,aicore_stl_detect}
                         <Positional> Specifies the hardware detection
                         mode. It can be set to 'stress_detect' (AI Core stress
                         test), 'hbm_detect' (HBM detection), 'cpu_detect' (CPU
-                        detection) or 'component' (Operator detection).
+                        detection), 'component' (Operator detection) or
+                        'aicore_stl_detect' (AICore STL self-diagnose).
   -d                    <Optional> Specifies the ID of the device for
                         command execution.
   --timeout             <Optional> Specifies the detection duration,

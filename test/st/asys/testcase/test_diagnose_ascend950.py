@@ -35,6 +35,7 @@ from params import ParamDict
 from common.device import DeviceInfo
 from common.chip_handler import g_device_map
 
+
 class AsysDiagnose0:
 
     def AmlStressDetect(self, a, b):
@@ -55,6 +56,11 @@ class AsysDiagnose0:
     def drvDeviceGetPhyIdByIndex(self, device_id, phyid):
         return 0
 
+    def drvGetPlatformInfo(self, num):
+        num[0] = 1
+        return 0
+
+
 class AsysDiagnose1:
 
     def AmlStressDetect(self, a, b):
@@ -74,6 +80,11 @@ class AsysDiagnose1:
 
     def drvDeviceGetPhyIdByIndex(self, device_id, phyid):
         return 1
+
+    def drvGetPlatformInfo(self, num):
+        num[0] = 1
+        return 0
+
 
 class TestDiagnose(AssertTest):
 
@@ -98,8 +109,15 @@ class TestDiagnose(AssertTest):
     @pytest.mark.parametrize(["chip_type"], [("Ascend 950 V1",)])
     def test_diagnose_supported_soc(self, mocker, capsys, chip_type):
         sys.argv = [CONF_SRC_PATH, "diagnose", "-r=hbm_detect", "--timeout=10"]
-        mocker.patch("common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0())
-        mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())
+        mocker.patch(
+            "common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0()
+        )
+        mocker.patch(
+            "common.device.LoadSoType.get_env_type", return_value="EP"
+        )
+        mocker.patch(
+            "common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1()
+        )
         mocker.patch("os.getuid", return_value=0)
         mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
@@ -110,4 +128,7 @@ class TestDiagnose(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
         captured = capsys.readouterr()
-        self.assertTrue("| HBM Detect             | Warn - All             | \n |                        | (0, 0)                 |" in captured.out)
+        self.assertTrue(
+            "| HBM Detect             | Warn - All             | \n |                        | (0, 0)                 |"
+            in captured.out
+        )

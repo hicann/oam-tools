@@ -79,6 +79,16 @@ class AsysDiagnose2:
     pass
 
 
+class AsysStlDiagnose0:
+    def AmlAicoreStlDetect(self, a):
+        return 0
+
+
+class AsysStlDiagnose1:
+    def AmlAicoreStlDetect(self, a):
+        return 1
+
+
 class Dsmi_handle:
     def dsmi_get_total_ecc_isolated_pages_info(self, dev_id, type, a):
         return 0
@@ -794,6 +804,150 @@ class TestAsysDiagnose(AssertTest):
 
         captured = capsys.readouterr()
         self.assertTrue(except_msg in captured.out)
+
+    def test_diagnose_aicore_stl_950_pass(self, mocker, capsys):
+        """aicore_stl_detect on Ascend950 with a passing device."""
+        self.assertTrue(True)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = None
+
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        self.assertTrue(AsysDiagnose().run() is True)
+        except_msg = "AICore STL Detect"
+        captured = capsys.readouterr()
+        self.assertTrue(except_msg in captured.out)
+
+    def test_diagnose_aicore_stl_950_fail(self, mocker):
+        """aicore_stl_detect on Ascend950 with a failing device returns Warn but run() True."""
+        self.assertTrue(True)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = None
+
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose1())
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        self.assertTrue(AsysDiagnose().run() is True)
+
+    def test_diagnose_aicore_stl_not_950(self, mocker, caplog):
+        """aicore_stl_detect is intercepted on non-Ascend950 chips."""
+        self.assertTrue(True)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = None
+
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        self.assertTrue(AsysDiagnose().run() is False)
+        self.assertTrue(
+            "The aicore_stl_detect mode is only supported on Ascend950." in caplog.text
+        )
+
+    def test_diagnose_aicore_stl_no_so(self, mocker):
+        """aicore_stl_detect fails fast when libaml_aicore_stl.so is not loaded."""
+        self.assertTrue(True)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = None
+
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=RetCode.FAILED)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        self.assertTrue(AsysDiagnose().run() is False)
+
+    def test_diagnose_aicore_stl_timeout_ignored(self, mocker, caplog):
+        """--timeout is accepted but warned-and-ignored for aicore_stl_detect."""
+        self.assertTrue(True)
+        import logging
+        caplog.set_level(logging.WARNING)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = 90
+
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        self.assertTrue(AsysDiagnose().run() is True)
+        self.assertTrue(
+            "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored."
+            in caplog.text
+        )
+
+    def test_diagnose_run_aicore_stl_master_id_error(self):
+        from common.interface import run_aicore_stl
+
+        self.assertTrue(run_aicore_stl(-1, 0, {}) == {-1: "Warn"})
+
+    def test_diagnose_run_aicore_stl_no_handle(self, caplog):
+        from common.interface import run_aicore_stl
+
+        class StlMocker:
+            aml_aicore_stl = None
+
+        ret = {}
+        run_aicore_stl(1, StlMocker(), ret)
+        self.assertTrue(ret == {1: "Warn"})
+        self.assertTrue("libaml_aicore_stl.so is not loaded" in caplog.text)
+
+    def test_diagnose_run_aicore_stl_api_error(self, caplog):
+        from common.interface import run_aicore_stl
+
+        class StlMocker:
+            aml_aicore_stl = AsysDiagnose2()  # no AmlAicoreStlDetect attribute
+
+        ret = {}
+        run_aicore_stl(0, StlMocker(), ret)
+        self.assertTrue(ret == {0: "Warn"})
+        self.assertTrue("Run aicore_stl_detect failed" in caplog.text)
 
     def test_diagnose_env_detect_device_zero(self, mocker, caplog, capsys):
         fake_ret = subprocess.Popen(

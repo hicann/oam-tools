@@ -37,6 +37,7 @@ from drv import EnvVarName
 HBM_MODE = "hbm_detect"
 CPU_MODE = "cpu_detect"
 COMPONENT_MODE = "component"
+AICORE_STL_MODE = "aicore_stl_detect"
 opp_kernels = ["ops_cv", "ops_legacy", "ops_math", "ops_nn", "ops_transformer"]
 SUPPORT_CHIPS = ChipHandler().get_support_chip_regex_list()
 
@@ -111,6 +112,9 @@ class AsysDiagnose():
         elif run_mode == COMPONENT_MODE:
             ret_data_str = self.__get_other_table_data(device_id, ret)
             table_data = {" Component ": [["AI Vector", ret_data_str]]}
+        elif run_mode == AICORE_STL_MODE:
+            ret_data_str = self.__get_other_table_data(device_id, ret)
+            table_data = {" Hardware ": [["AICore STL Detect", ret_data_str]]}
         else:
             ret_data_str = self.__get_other_table_data(device_id, ret)
             table_data = {" Performance ": [["Stress Detect", ret_data_str]]}
@@ -164,6 +168,8 @@ class AsysDiagnose():
             if timeout < CPU_MIN_TIMEOUT or timeout > DETECT_MAX_TIMEOUT:
                 log_error(f"The value of timeout must be in the range of [{CPU_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}].")
                 return False
+        if run_mode == AICORE_STL_MODE and timeout is not False:
+            log_warning("The --timeout argument is not supported in aicore_stl_detect mode and will be ignored.")
         if self.devices_num == 0:
             return False
         return True
@@ -202,11 +208,22 @@ class AsysDiagnose():
         if not diagnose_devices or chip_info == UNKNOWN:
             return False
 
+        # aicore_stl_detect is only supported on Ascend950.
+        if run_mode == AICORE_STL_MODE:
+            diagnose_devices = self.__filter_aicore_stl_devices(diagnose_devices)
+            if not diagnose_devices:
+                log_error("The aicore_stl_detect mode is only supported on Ascend950.")
+                return False
+
         if not self._check_support(run_mode):
             return False
 
-        # load dll: libascend_ml.so
-        if self.device_obj.ascend_ml == RetCode.FAILED:
+        # load dll: libascend_ml.so (or libaml_aicore_stl.so for AICore STL mode)
+        if run_mode == AICORE_STL_MODE:
+            if self.device_obj.aml_aicore_stl == RetCode.FAILED or self.device_obj.aml_aicore_stl is None:
+                log_error("Failed to load libaml_aicore_stl.so for aicore_stl_detect.")
+                return False
+        elif self.device_obj.ascend_ml == RetCode.FAILED:
             return False
 
         t = threading.Thread(target=self.wait_view, daemon=True)
@@ -286,3 +303,15 @@ class AsysDiagnose():
         while not self.finish_flag:
             waiting()
             continue
+
+    def __filter_aicore_stl_devices(self, diagnose_devices):
+        """aicore_stl_detect 仅支持 Ascend950:过滤掉非 950 的 device 并告警。"""
+        stl_devices = []
+        for dev in diagnose_devices:
+            chip_info = self.device_obj.get_chip_info(dev)
+            if chip_info != UNKNOWN and re.search("950", chip_info):
+                stl_devices.append(dev)
+            else:
+                log_warning(f"device_{dev} ({chip_info}) does not support aicore_stl_detect "
+                            "(Ascend950 only), skipped.")
+        return stl_devices

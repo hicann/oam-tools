@@ -133,6 +133,28 @@ def run_cpu(device_id, device_obj, ret):
     return ret_code
 
 
+def run_aicore_stl(device_id, device_obj, ret):
+    """AICore STL self-diagnose: one AmlAicoreStlDetect call per device."""
+    if device_id == ERROR_DEVICE_ID:
+        ret[device_id] = ScreenResult.WARN.value
+        return ret
+    if device_obj.aml_aicore_stl == RetCode.FAILED or device_obj.aml_aicore_stl is None:
+        log_error("Run aicore_stl_detect failed: libaml_aicore_stl.so is not loaded.")
+        ret[device_id] = ScreenResult.WARN.value
+        return ret
+    try:
+        ret_code = device_obj.aml_aicore_stl.AmlAicoreStlDetect(ctypes.c_int32(device_id))
+    except Exception as e:
+        log_error(f"Run aicore_stl_detect failed, error_msg: {e}")
+        ret_code = None
+
+    if ret_code == 0:
+        ret[device_id] = ScreenResult.PASS.value
+    else:
+        ret[device_id] = ScreenResult.WARN.value
+    return ret_code
+
+
 def run_diagnose(device_obj, diagnose_devices, run_mode):
     """Multi-thread parallel execution"""
 
@@ -143,6 +165,8 @@ def run_diagnose(device_obj, diagnose_devices, run_mode):
         _target_func = run_hbm
     elif run_mode == "cpu_detect":
         _target_func = run_cpu
+    elif run_mode == "aicore_stl_detect":
+        _target_func = run_aicore_stl
     else:
         _target_func = run_stress_detect
 

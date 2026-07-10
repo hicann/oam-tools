@@ -80,6 +80,18 @@ class AsysDiagnose2:
     pass
 
 
+class AsysStlDiagnose0:
+
+    def AmlAicoreStlDetect(self, a):
+        return 0
+
+
+class AsysStlDiagnose1:
+
+    def AmlAicoreStlDetect(self, a):
+        return 1
+
+
 @pytest.mark.skip(reason="temporarily skipped due to test failure")
 class TestDiagnose(AssertTest):
 
@@ -142,6 +154,31 @@ class TestDiagnose(AssertTest):
         self.assertTrue(asys.main())
         captured = capsys.readouterr()
         self.assertTrue("| CPU Detect        | Pass                   |" in captured.out)
+
+    def test_diagnose_aicore_stl_1p(self, mocker, capsys):
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        captured = capsys.readouterr()
+        self.assertTrue("AICore STL Detect" in captured.out)
+
+    def test_diagnose_aicore_stl_not_950(self, mocker, caplog):
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        ParamDict().set_env_type("EP")
+        self.assertTrue(not asys.main())
+        self.assertTrue(
+            "The aicore_stl_detect mode is only supported on Ascend950." in caplog.text
+        )
 
     def test_diagnose_stress_2p(self, mocker, capsys):
         sys.argv = [CONF_SRC_PATH, "diagnose", "-r=stress_detect"]

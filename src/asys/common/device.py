@@ -190,6 +190,7 @@ class DeviceInfo:
         self.dsmi_handle = LoadSoType().get_drvdsmi_env_type()
         self.hal_handle = LoadSoType().get_drvhal_env_type()
         self.ascend_ml = LoadSoType().get_ascend_ml()
+        self.aml_aicore_stl = LoadSoType().get_aml_aicore_stl()
         self.ascend_cl = LoadSoType().get_ascend_cl()
 
     @staticmethod

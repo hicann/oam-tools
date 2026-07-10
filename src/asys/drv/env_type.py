@@ -28,6 +28,7 @@ class LoadSoType(metaclass=Singleton):
         self.drvdsmi = None
         self.drvhal = None
         self.asendml = None
+        self.aml_aicore_stl = None
         self.ascend_trace = None
         self.ascendcl = None
         self.env_type = ""
@@ -41,7 +42,7 @@ class LoadSoType(metaclass=Singleton):
             return RetCode.FAILED
         return dll
 
-    @ staticmethod
+    @staticmethod
     def ctypes_close_library(lib):
         if lib and lib != RetCode.FAILED:
             dlclose_func = ctypes.CDLL(None).dlclose
@@ -70,6 +71,14 @@ class LoadSoType(metaclass=Singleton):
             so_name = "libascend_ml.so"
             self.asendml = self.load_dll(so_name)
         return self.asendml
+
+    def get_aml_aicore_stl(self):
+        # libaml_aicore_stl.so exports AmlAicoreStlDetect (AICore STL self-diagnose).
+        # Only in the toolkit run pkg, EP side.
+        if self.aml_aicore_stl is None and self.get_env_type() == "EP":
+            so_name = "libaml_aicore_stl.so"
+            self.aml_aicore_stl = self.load_dll(so_name)
+        return self.aml_aicore_stl
 
     def get_ascend_trace(self):
         if self.ascend_trace is None:
@@ -102,10 +111,12 @@ class LoadSoType(metaclass=Singleton):
         self.ctypes_close_library(self.drvdsmi)
         self.ctypes_close_library(self.drvhal)
         self.ctypes_close_library(self.asendml)
+        self.ctypes_close_library(self.aml_aicore_stl)
         self.ctypes_close_library(self.ascend_trace)
         self.ctypes_close_library(self.ascendcl)
         self.drvdsmi = None
         self.drvhal = None
         self.asendml = None
+        self.aml_aicore_stl = None
         self.ascend_trace = None
         self.ascendcl = None
