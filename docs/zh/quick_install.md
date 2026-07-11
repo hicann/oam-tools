@@ -120,17 +120,9 @@ docker run --name oam-tools -it swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:
 curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 ```
 
-环境部署完成后，请继续以下步骤：
+`init_env.sh` 会自动安装仓库根目录 `requirements.txt` 中声明的 Python 依赖。环境部署完成后，请继续以下步骤：
 
-1. **安装 Python 依赖**
-
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-   > 说明：init_env.sh 已安装 pytest、coverage 等核心依赖，此命令可确保所有依赖完整。
-
-2. **验证环境**
+1. **验证环境**
 
    请参考[环境验证](#环境验证)章节，确认环境和驱动正常。
 

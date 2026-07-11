@@ -22,10 +22,17 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-CANN_VERSION="8.5.0"
+CANN_VERSION="${CANN_VERSION:-}"
 CHIP_TYPE="910b"
 CANN_BASE_URL="https://ascend.devcloud.huaweicloud.com/artifactory/cann-run/software"
-INSTALL_PATH="${INSTALL_PATH:-/usr/local/Ascend}"
+OAM_TOOLS_RAW_BASE_URL="${OAM_TOOLS_RAW_BASE_URL:-https://raw.gitcode.com/cann/oam-tools/raw/master}"
+if [ -z "${INSTALL_PATH:-}" ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+        INSTALL_PATH="/usr/local/Ascend"
+    else
+        INSTALL_PATH="${HOME}/Ascend"
+    fi
+fi
 SKIP_OPS="false"
 
 log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
@@ -33,6 +40,66 @@ log_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 check_command() { command -v "$1" &>/dev/null; }
+
+is_root_user() { [ "$(id -u)" -eq 0 ]; }
+
+get_missing_required_system_deps() {
+    local missing_deps=""
+
+    check_command curl || missing_deps="${missing_deps} curl"
+    check_command wget || missing_deps="${missing_deps} wget"
+    check_command git || missing_deps="${missing_deps} git"
+    check_command cmake || missing_deps="${missing_deps} cmake"
+    check_command make || missing_deps="${missing_deps} make"
+    check_command g++ || missing_deps="${missing_deps} g++"
+
+    printf '%s' "${missing_deps# }"
+}
+
+get_cann_version_from_cmake() {
+    local version_file="$1"
+    local version=""
+    local version_content=""
+
+    if [ -f "$version_file" ]; then
+        version_content=$(cat "$version_file")
+    else
+        if ! check_command curl; then
+            log_error "version.cmake not found and curl is unavailable: $version_file" >&2
+            return 1
+        fi
+        log_warn "version.cmake not found locally, fetching from ${OAM_TOOLS_RAW_BASE_URL}/version.cmake" >&2
+        version_content=$(curl -fsSL "${OAM_TOOLS_RAW_BASE_URL}/version.cmake") || {
+            log_error "Failed to fetch version.cmake" >&2
+            return 1
+        }
+    fi
+
+    version=$(printf '%s\n' "$version_content" | sed -nE 's/^[[:space:]]*set_cann_package[[:space:]]*\([^)]*VERSION[[:space:]]+"([^"]+)".*/\1/p' | head -n 1)
+    if [ -z "$version" ]; then
+        log_error "Failed to parse CANN version from version.cmake" >&2
+        return 1
+    fi
+
+    echo "$version"
+}
+
+get_ops_package_chip_type() {
+    case "$1" in
+        910_93|910c|910C|910_c|910_C|A3|a3)
+            echo "A3"
+            ;;
+        910B|910b)
+            echo "910b"
+            ;;
+        950)
+            echo "950"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
 
 get_arch() {
     local arch=$(uname -m)
@@ -92,8 +159,9 @@ install_cann() {
     mkdir -p "$download_dir"
     cd "$download_dir"
 
+    local ops_package_chip_type=$(get_ops_package_chip_type "$CHIP_TYPE")
     local toolkit_pkg="Ascend-cann-toolkit_${CANN_VERSION}_linux-${arch}.run"
-    local ops_pkg="Ascend-cann-${CHIP_TYPE}-ops_${CANN_VERSION}_linux-${arch}.run"
+    local ops_pkg="Ascend-cann-${ops_package_chip_type}-ops_${CANN_VERSION}_linux-${arch}.run"
     local toolkit_url="${CANN_BASE_URL}/${CANN_VERSION}/${arch}/${toolkit_pkg}"
     local ops_url="${CANN_BASE_URL}/${CANN_VERSION}/${arch}/${ops_pkg}"
 
@@ -108,7 +176,7 @@ install_cann() {
 
     if [ "$SKIP_OPS" = "false" ]; then
         if [ ! -f "$ops_pkg" ]; then
-            log_info "Downloading CANN ops (${CHIP_TYPE}, ${arch})..."
+            log_info "Downloading CANN ops (${ops_package_chip_type}, ${arch})..."
             log_info "URL: $ops_url"
             wget -q --show-progress --no-check-certificate -O "$ops_pkg" "$ops_url" || {
                 log_error "Failed to download ops"
@@ -179,8 +247,27 @@ setup_cann_env() {
 install_system_deps() {
     log_info "Checking system dependencies..."
 
+    local missing_cmds
+    missing_cmds=$(get_missing_required_system_deps)
+
+    if ! is_root_user; then
+        if [ -n "$missing_cmds" ]; then
+            log_warn "Skipping system dependency installation (non-root user)"
+            log_error "Missing required system commands: ${missing_cmds}"
+            log_error "Install them manually or rerun this script as root/sudo"
+            return 1
+        else
+            log_info "Required system dependencies are available"
+        fi
+
+        check_command cmake && log_info "cmake: $(cmake --version 2>&1 | head -1)" || log_warn "cmake: not installed"
+        check_command g++ && log_info "g++: $(g++ --version 2>&1 | head -1)" || log_warn "g++: not installed"
+        check_command ccache && log_info "ccache: available" || log_warn "ccache: not installed"
+        return 0
+    fi
+
     if check_command apt-get; then
-        apt-get update -qq 2>/dev/null
+        apt-get update -qq 2>/dev/null || log_warn "apt-get update failed"
         local pkgs=""
         check_command curl || pkgs="$pkgs curl"
         check_command wget || pkgs="$pkgs wget"
@@ -189,7 +276,7 @@ install_system_deps() {
         check_command make || pkgs="$pkgs make"
         check_command g++ || pkgs="$pkgs g++"
         check_command ccache || pkgs="$pkgs ccache"
-        
+
         if [ -n "$pkgs" ]; then
             log_info "Installing:$pkgs"
             apt-get install -y -qq $pkgs 2>/dev/null || log_warn "Some packages may have failed"
@@ -202,16 +289,51 @@ install_system_deps() {
         check_command cmake || pkgs="$pkgs cmake"
         check_command make || pkgs="$pkgs make"
         check_command g++ || pkgs="$pkgs gcc-c++"
-        
+
         if [ -n "$pkgs" ]; then
             log_info "Installing:$pkgs"
             yum install -y -q $pkgs 2>/dev/null || log_warn "Some packages may have failed"
         fi
+    else
+        log_warn "No supported package manager found, skipping system dependency installation"
     fi
 
-    log_info "cmake: $(cmake --version 2>&1 | head -1)"
-    log_info "g++: $(g++ --version 2>&1 | head -1)"
+    missing_cmds=$(get_missing_required_system_deps)
+    if [ -n "$missing_cmds" ]; then
+        log_error "Missing required system commands after installation attempt: ${missing_cmds}"
+        return 1
+    fi
+
+    check_command cmake && log_info "cmake: $(cmake --version 2>&1 | head -1)" || log_warn "cmake: not installed"
+    check_command g++ && log_info "g++: $(g++ --version 2>&1 | head -1)" || log_warn "g++: not installed"
     check_command ccache && log_info "ccache: available" || log_warn "ccache: not installed"
+}
+
+run_pip_command() {
+    local python="$1"
+    shift
+
+    local pip_log
+    pip_log=$(mktemp "${TMPDIR:-/tmp}/init_env_pip.XXXXXX") || {
+        log_error "Failed to create temporary pip log file"
+        return 1
+    }
+
+    if "$python" -m pip "$@" >"$pip_log" 2>&1; then
+        rm -f "$pip_log"
+        return 0
+    fi
+
+    log_warn "pip command failed: $python -m pip $*"
+    local pip_error_tail
+    pip_error_tail=$(tail -n 5 "$pip_log" 2>/dev/null || true)
+    if [ -n "$pip_error_tail" ]; then
+        while IFS= read -r line; do
+            log_warn "pip: $line"
+        done <<< "$pip_error_tail"
+    fi
+    rm -f "$pip_log"
+    return 1
 }
 
 install_python_deps() {
@@ -219,24 +341,51 @@ install_python_deps() {
 
     local python="python3"
     check_command python3 || python="python"
-    
+
+    if ! check_command "$python"; then
+        log_error "Python is not installed"
+        return 1
+    fi
+
     log_info "Python: $($python --version 2>&1)"
 
-    local required=("pytest>=9.0.1" "coverage>=7.10.0" "pytest-cov>=7.0.0" "pytest-mock>=3.14.0")
-    local to_install=()
+    local requirements_file="${1:-requirements.txt}"
+    local remote_requirements_url="${OAM_TOOLS_RAW_BASE_URL}/requirements.txt"
+    local requirements_content=""
 
-    for pkg in "${required[@]}"; do
-        local name=$(echo "$pkg" | sed 's/>=.*//')
-        $python -c "import $name" 2>/dev/null || to_install+=("$pkg")
-    done
-
-    if [ ${#to_install[@]} -ne 0 ]; then
-        log_info "Installing Python packages: ${to_install[*]}"
-        $python -m pip install --upgrade pip -q 2>/dev/null || true
-        $python -m pip install "${to_install[@]}" -q 2>/dev/null || \
-            log_warn "Some Python packages may have failed to install"
+    if [ -f "$requirements_file" ]; then
+        log_info "Installing Python dependencies from: $requirements_file"
+        run_pip_command "$python" install --upgrade pip -q || log_warn "Failed to upgrade pip, continuing"
+        run_pip_command "$python" install -r "$requirements_file" -q || {
+            log_error "Failed to install Python dependencies from: $requirements_file"
+            return 1
+        }
+    elif check_command curl; then
+        log_warn "requirements.txt not found locally, installing from: $remote_requirements_url"
+        requirements_content=$(curl -fsSL "$remote_requirements_url") || {
+            log_error "Failed to fetch requirements.txt"
+            return 1
+        }
+        local tmp_requirements
+        tmp_requirements=$(mktemp "${TMPDIR:-/tmp}/oam_requirements.XXXXXX") || {
+            log_error "Failed to create temporary requirements file"
+            return 1
+        }
+        printf '%s\n' "$requirements_content" > "$tmp_requirements" || {
+            rm -f "$tmp_requirements"
+            log_error "Failed to write temporary requirements file"
+            return 1
+        }
+        run_pip_command "$python" install --upgrade pip -q || log_warn "Failed to upgrade pip, continuing"
+        run_pip_command "$python" install -r "$tmp_requirements" -q || {
+            rm -f "$tmp_requirements"
+            log_error "Failed to install Python dependencies from: $remote_requirements_url"
+            return 1
+        }
+        rm -f "$tmp_requirements"
     else
-        log_info "All Python dependencies satisfied"
+        log_error "requirements.txt not found and curl is unavailable, cannot install Python dependencies"
+        return 1
     fi
 
     check_command pytest && log_info "pytest: $(pytest --version 2>&1 | head -1)"
@@ -244,13 +393,22 @@ install_python_deps() {
 }
 
 show_help() {
+    local work_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local version_file="${work_dir}/version.cmake"
+    local default_cann_version="${CANN_VERSION:-}"
+
+    if [ -z "$default_cann_version" ] && [ -f "$version_file" ]; then
+        default_cann_version=$(get_cann_version_from_cmake "$version_file" 2>/dev/null || true)
+    fi
+    default_cann_version="${default_cann_version:-auto-detect from version.cmake}"
+
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "oam-tools development environment setup script"
     echo ""
     echo "Options:"
-    echo "  --cann-version VERSION   CANN version (default: ${CANN_VERSION})"
-    echo "  --chip-type TYPE         Chip type: 910b, 910_93, etc. (default: ${CHIP_TYPE})"
+    echo "  --cann-version VERSION   CANN version (default: ${default_cann_version})"
+    echo "  --chip-type TYPE         Chip type examples: 910b, 910_93/A3, 950 (default: ${CHIP_TYPE})"
     echo "  --install-path PATH      Installation path (default: ${INSTALL_PATH})"
     echo "  --skip-cann              Skip CANN installation"
     echo "  --skip-ops, --toolkit-only  Skip ops package download (compile-only scenario)"
@@ -260,12 +418,14 @@ show_help() {
     echo "  $0                       # Install with defaults"
     echo "  $0 --skip-cann           # Skip CANN, install only deps"
     echo "  $0 --skip-ops            # Install toolkit only, skip ops"
-    echo "  $0 --chip-type 910_93    # Use 910_93 ops package"
+    echo "  $0 --chip-type 910_93    # Use A3 ops package"
     echo ""
 }
 
 main() {
     local skip_cann=false
+    local work_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local version_file="${work_dir}/version.cmake"
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -300,6 +460,18 @@ main() {
         esac
     done
 
+    if [ -z "$CANN_VERSION" ]; then
+        if ! CANN_VERSION=$(get_cann_version_from_cmake "$version_file"); then
+            log_error "CANN version could not be determined, please specify --cann-version"
+            exit 1
+        fi
+    fi
+
+    if [ -z "$CANN_VERSION" ]; then
+        log_error "CANN version could not be determined, please specify --cann-version"
+        exit 1
+    fi
+
     echo ""
     echo "=========================================="
     echo "  oam-tools Development Environment Setup"
@@ -312,7 +484,6 @@ main() {
     echo "  Skip Ops:      ${SKIP_OPS}"
     echo ""
 
-    local work_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     cd "$work_dir"
     log_info "Working directory: $work_dir"
 
@@ -325,7 +496,7 @@ main() {
     fi
 
     setup_cann_env
-    install_python_deps
+    install_python_deps "${work_dir}/requirements.txt"
 
     echo ""
     log_info "=========================================="

@@ -119,17 +119,9 @@ After entering the container, execute the following command to initialize the en
 curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
 ```
 
-After environment deployment completes, continue with the following steps:
+`init_env.sh` automatically installs the Python dependencies declared in the repository root `requirements.txt`. After environment deployment completes, continue with the following steps:
 
-1. **Install Python Dependencies**
-
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-   > Note: init_env.sh has installed pytest, coverage, and other core dependencies. This command ensures all dependencies are complete.
-
-2. **Verify Environment**
+1. **Verify Environment**
 
    Refer to the [Environment Verification](#environment-verification) section to confirm that the environment and driver are normal.
 
