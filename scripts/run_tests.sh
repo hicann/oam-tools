@@ -183,12 +183,61 @@ validate_gtest_result() {
     fi
 
     local exit_code=0
-    local passed_count=0
-    local failed_count=0
-
     if [[ -f "${BUILD_OUTPUT_DIR}/${case_name}.exitcode" ]]; then
         exit_code=$(cat "${BUILD_OUTPUT_DIR}/${case_name}.exitcode")
     fi
+    exit_code=${exit_code:-0}
+
+    # 异常退出检测：信号杀死(exit_code >= 128) 或输出含崩溃标记。
+    # 此时框架未正常完成，通过/失败统计不可靠，改为打印崩溃信息和未完成用例。
+    local crashed=false
+    if [[ "$exit_code" =~ ^[0-9]+$ ]] && [[ $exit_code -ge 128 ]]; then
+        crashed=true
+    fi
+    if grep -qE "Segmentation fault|core dumped" "$output_file"; then
+        crashed=true
+    fi
+    if grep -qE "==ERROR:.*Sanitizer" "$output_file"; then
+        crashed=true
+    fi
+    if grep -qE "Aborted|SIGABRT|signal 6" "$output_file"; then
+        crashed=true
+    fi
+
+    if [[ "$crashed" == "true" ]]; then
+        echo "FAILURE: Test case $case_name crashed abnormally (ExitCode=$exit_code)"
+        echo "--- Error output ---"
+        grep -nE "Segmentation fault|core dumped|Aborted|SIGABRT|==ERROR:.*Sanitizer|AddressSanitizer|runtime error:" "$output_file" 2>/dev/null | head -20
+        echo "--- Test case(s) that did not complete ---"
+        # 找出所有 [ RUN ] 但没有对应 [ OK ] 或逐条 [ FAILED ] 的用例
+        awk '
+        /^\[ RUN      \] / {
+            idx = index($0, "] ")
+            testname = substr($0, idx + 2)
+            started[testname] = NR
+        }
+        /^\[       OK \] / {
+            idx = index($0, "] ")
+            testname = substr($0, idx + 2)
+            sub(/ \([0-9]+ ms\).*/, "", testname)
+            delete started[testname]
+        }
+        /^\[  FAILED  \] [A-Za-z_]/ {
+            idx = index($0, "] ")
+            testname = substr($0, idx + 2)
+            sub(/ \([0-9]+ ms\).*/, "", testname)
+            delete started[testname]
+        }
+        END {
+            for (t in started) print t
+        }
+        ' "$output_file"
+        return 1
+    fi
+
+    # 正常退出：解析并打印用例统计
+    local passed_count=0
+    local failed_count=0
 
     if [[ $exit_code -ne 0 ]]; then
         echo "FAILURE: Test case $case_name exited with code $exit_code (expected 0)"
@@ -203,27 +252,12 @@ validate_gtest_result() {
 
     if grep -qE "^\[  FAILED  \]" "$output_file"; then
         # 同上：累加所有 target 的失败用例数（取每段汇总行的数字）
-        failed_count=$(grep -E "^\[  FAILED  \] [0-9]+ test" "$output_file" | awk '{s+=$2} END{print s}')
+        failed_count=$(grep -E "^\[  FAILED  \] [0-9]+ test" "$output_file" | awk '{s+=$4} END{print s}')
     fi
     failed_count=${failed_count:-0}
 
-    if grep -qE "Segmentation fault|core dumped" "$output_file"; then
-        echo "FAILURE: Test case $case_name crashed (Segmentation fault or core dumped)"
-        return_code=1
-    fi
-
-    if grep -qE "==ERROR:.*Sanitizer" "$output_file"; then
-        echo "FAILURE: Test case $case_name has Sanitizer errors"
-        return_code=1
-    fi
-
     if grep -qE "runtime error:" "$output_file"; then
         echo "FAILURE: Test case $case_name has runtime errors"
-        return_code=1
-    fi
-
-    if grep -qE "Aborted|SIGABRT|signal 6" "$output_file"; then
-        echo "FAILURE: Test case $case_name aborted unexpectedly"
         return_code=1
     fi
 
@@ -258,13 +292,45 @@ validate_pytest_result() {
     fi
 
     local exit_code=0
-    local passed_count=0
-    local failed_count=0
-    local error_count=0
-
     if [[ -f "${BUILD_OUTPUT_DIR}/${case_name}.exitcode" ]]; then
         exit_code=$(cat "${BUILD_OUTPUT_DIR}/${case_name}.exitcode")
     fi
+    exit_code=${exit_code:-0}
+
+    # 异常退出检测：信号杀死(exit_code >= 128) 或输出含崩溃标记。
+    # 此时框架未正常完成，通过/失败统计不可靠，改为打印崩溃信息和错误输出。
+    local crashed=false
+    if [[ "$exit_code" =~ ^[0-9]+$ ]] && [[ $exit_code -ge 128 ]]; then
+        crashed=true
+    fi
+    if grep -qE "Segmentation fault|core dumped" "$output_file"; then
+        crashed=true
+    fi
+    if grep -qE "Fatal Python error" "$output_file"; then
+        crashed=true
+    fi
+    if grep -qE "==ERROR:.*Sanitizer" "$output_file"; then
+        crashed=true
+    fi
+    if grep -qE "Aborted|SIGABRT|signal 6" "$output_file"; then
+        crashed=true
+    fi
+
+    if [[ "$crashed" == "true" ]]; then
+        echo "FAILURE: Test case $case_name crashed abnormally (ExitCode=$exit_code)"
+        echo "--- Error output ---"
+        grep -nE "Segmentation fault|core dumped|Fatal Python error|==ERROR:.*Sanitizer|AddressSanitizer|Aborted|SIGABRT" "$output_file" 2>/dev/null | head -20
+        echo "--- Traceback (if any) ---"
+        grep -nE "Traceback \(most recent call last\)|^Error:|^Exception:|raise .*Error" "$output_file" 2>/dev/null | head -20
+        echo "--- Last 20 lines of output ---"
+        tail -20 "$output_file"
+        return 1
+    fi
+
+    # 正常退出：解析并打印用例统计
+    local passed_count=0
+    local failed_count=0
+    local error_count=0
 
     if [[ $exit_code -ne 0 ]]; then
         echo "FAILURE: Test case $case_name exited with code $exit_code (expected 0)"

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <cstdio>
+#include <unistd.h>
+
 #include "gtest/gtest.h"
 
 #if defined(__GNUC__)
@@ -20,7 +23,7 @@ extern "C" void __gcov_dump(void) __attribute__((weak));
 extern "C" void __gcov_exit(void) __attribute__((weak));
 #endif
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
 
     // Runs all tests using Google Test.
@@ -33,5 +36,7 @@ int main(int argc, char** argv) {
         __gcov_exit();
     }
 #endif
+    fflush(stdout);
+    fflush(stderr);
     _exit(ret);
 }
