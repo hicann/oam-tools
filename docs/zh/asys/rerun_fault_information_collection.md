@@ -7,7 +7,7 @@
 ## 注意事项
 
 - 业务复跑默认开启算子编译文件、GE dump图和TF Adapter dump图收集功能。
-- asys launch命令执行时会自动开启NPU\_COLLECT\_PATH、ASCEND\_PROCESS\_LOG\_PATH、ASCEND\_HOST\_LOG\_FILE\_NUM、ASCEND\_WORK\_PATH环境变量临时存放收集到的信息，asys launch命令执行结束时会自动关闭这些环境变量，若用户在执行asys launch命令前手动设置了这些环境变量，则用户设置的这部分环境变量会被覆盖、不生效；若复跑的用户任务脚本中涉及NPU\_COLLECT\_PATH、ASCEND\_PROCESS\_LOG\_PATH、ASCEND\_HOST\_LOG\_FILE\_NUM、ASCEND\_WORK\_PATH这些环境变量，则可能导致asys工具设置的环境变量被覆盖、不生效，进而导致无法收集对应的信息。各环境变量的详细说明及约束，请参见[《环境变量参考》](https://hiascend.com/document/redirect/CannCommunityEnvRef)。
+- asys launch命令执行时会自动开启NPU\_COLLECT\_PATH、ASCEND\_PROCESS\_LOG\_PATH、ASCEND\_WORK\_PATH环境变量临时存放收集到的信息，asys launch命令执行结束时会自动关闭这些环境变量，若用户在执行asys launch命令前手动设置了这些环境变量，则用户设置的这部分环境变量会被覆盖、不生效；若复跑的用户任务脚本中涉及NPU\_COLLECT\_PATH、ASCEND\_PROCESS\_LOG\_PATH、ASCEND\_WORK\_PATH这些环境变量，则可能导致asys工具设置的环境变量被覆盖、不生效，进而导致无法收集对应的信息。各环境变量的详细说明及约束，请参见[《环境变量参考》](https://hiascend.com/document/redirect/CannCommunityEnvRef)。
 - asys launch命令会拉起子进程执行业务命令，若用户主动终止launch命令，业务子进程可能未退出，这时需要用户自行终止业务子进程。
 
 ## 命令格式
