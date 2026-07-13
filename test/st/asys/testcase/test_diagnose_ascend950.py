@@ -86,6 +86,11 @@ class AsysDiagnose1:
         return 0
 
 
+class AsysStlDiagnose0:
+
+    def AmlAicoreStlDetect(self, a):
+        return 0
+
 class TestDiagnose(AssertTest):
 
     def setup_method(self):
@@ -132,3 +137,17 @@ class TestDiagnose(AssertTest):
             "| HBM Detect             | Warn - All             | \n |                        | (0, 0)                 |"
             in captured.out
         )
+
+    def test_diagnose_aicore_stl_loads_so(self, mocker):
+        """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl."""
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        mock_stl = AsysStlDiagnose0()
+        mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=mock_stl)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+

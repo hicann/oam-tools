@@ -180,6 +180,18 @@ class TestDiagnose(AssertTest):
             "The aicore_stl_detect mode is only supported on Ascend950." in caplog.text
         )
 
+    def test_diagnose_aicore_stl_loads_so(self, mocker):
+        """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl."""
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        mock_stl = AsysStlDiagnose0()
+        mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=mock_stl)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+
     def test_diagnose_stress_2p(self, mocker, capsys):
         sys.argv = [CONF_SRC_PATH, "diagnose", "-r=stress_detect"]
         mocker.patch("common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1())

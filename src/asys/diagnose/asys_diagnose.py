@@ -32,7 +32,7 @@ from common.file_operate import FileOperate as f
 from params.param_dict import ParamDict
 from view.table import generate_report
 from view.progress_display import waiting
-from drv import EnvVarName
+from drv import EnvVarName, LoadSoType
 
 HBM_MODE = "hbm_detect"
 CPU_MODE = "cpu_detect"
@@ -220,6 +220,7 @@ class AsysDiagnose():
 
         # load dll: libascend_ml.so (or libaml_aicore_stl.so for AICore STL mode)
         if run_mode == AICORE_STL_MODE:
+            self.device_obj.aml_aicore_stl = LoadSoType().get_aml_aicore_stl()
             if self.device_obj.aml_aicore_stl == RetCode.FAILED or self.device_obj.aml_aicore_stl is None:
                 log_error("Failed to load libaml_aicore_stl.so for aicore_stl_detect.")
                 return False

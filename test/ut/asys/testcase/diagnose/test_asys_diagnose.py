@@ -922,6 +922,31 @@ class TestAsysDiagnose(AssertTest):
             in caplog.text
         )
 
+    def test_diagnose_aicore_stl_loads_so(self, mocker):
+        """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl."""
+        self.assertTrue(True)
+
+        class Args:
+            d = 0
+            r = "aicore_stl_detect"
+            subparser_name = "diagnose"
+            output = None
+            timeout = None
+
+        mock_stl = AsysStlDiagnose0()
+        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=mock_stl)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("os.path.isfile", return_value=True)
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+        ParamDict().set_args(Args())
+        diag = AsysDiagnose()
+        result = diag.run()
+        self.assertTrue(result is True)
+        self.assertTrue(diag.device_obj.aml_aicore_stl is mock_stl)
+
     def test_diagnose_run_aicore_stl_master_id_error(self):
         from common.interface import run_aicore_stl
 
