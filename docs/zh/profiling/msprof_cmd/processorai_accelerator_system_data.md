@@ -72,7 +72,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 
     <!-- npu="310p" id5 -->
   - Atlas 推理系列产品：不支持
-    <!-- end id5 -->   
+    <!-- end id5 -->
 - PipelineExecuteUtilization：计算类和搬运类指令耗时和占比
 
     <!-- npu="310p" id6 -->
@@ -343,6 +343,22 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 <!-- end id55 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id4 -->
+
+<!-- npu="950" id61 -->
+### sys-lp
+
+--sys-lp=<sys-lp-value\>：可选，采集低功耗数据。默认值为on，表示开启，可手动配置为off，表示关闭。仅以下型号支持该参数：
+
+Ascend 950PR/Ascend 950DT
+
+### sys-lp-freq
+
+--sys-lp-freq=<sys-lp-freq-value\>：可选，低功耗数据采集频率。取值范围：[1,100]，默认值：100，单位：Hz。仅以下型号支持该参数：
+
+Ascend 950PR/Ascend 950DT
+<!-- end id61 -->
+
+<!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id4 -->
 ## 使用示例
 
 登录运行环境，在任意路径下执行以下命令：
