@@ -14,6 +14,7 @@
 
 ## 注意事项
 
+- 在执行动态采集前建议先删除之前残留的动态Profiling文件，即先执行命令`rm -rf ~/dynamic_profiling_socket_*`。
 - 在launch方式下，传入的用户程序中，不能设置环境变量“PROFILING\_MODE”和“PROFILING\_OPTIONS”。
 - 在attach方式下，需先设置环境变量“PROFILING\_MODE”为dynamic，然后启动AI任务，最后执行命令行操作。
 
@@ -70,11 +71,11 @@ launch方式必须传入用户程序，app参数说明请参见[app参数说明]
 
   ```sh
   msprof --dynamic=on --output=/home/projects/output  --runtime-api=on /home/projects/MyApp/out/main
-  (msprof) start     
+  (msprof) start
   ...
-  (msprof) stop    
+  (msprof) stop
   ...
-  (msprof) quit    
+  (msprof) quit
   ...
   ```
 
@@ -84,11 +85,11 @@ launch方式必须传入用户程序，app参数说明请参见[app参数说明]
 
   ```sh
   msprof --dynamic=on --pid=<pid> --output=/home/projects/output
-  (msprof) start     
+  (msprof) start
   ...
-  (msprof) stop    
+  (msprof) stop
   ...
-  (msprof) quit    
+  (msprof) quit
   ...
   ```
 
@@ -201,7 +202,7 @@ ls ~/dynamic_profiling_socket_* 2>/dev/null | awk -F '_' '{print $4}' | paste -s
     ```bash
     cat /proc/837666/status | grep NSpid
     ```
-    
+
     打印结果如下。
 
     ```bash
