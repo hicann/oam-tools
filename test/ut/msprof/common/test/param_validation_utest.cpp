@@ -26,10 +26,12 @@
 #include "errno/error_code.h"
 #include "ai_drv_dev_api.h"
 #include "config_manager.h"
+#include "platform_interface.h"
 using namespace analysis::dvvp::common::error;
 using namespace Analysis::Dvvp::Common::Platform;
 using namespace Analysis::Dvvp::Common::Config;
 using namespace analysis::dvvp::common::validation;
+using namespace Dvvp::Collect::Platform;
 
 class COMMON_VALIDATION_PARAM_VALIDATION_TEST: public testing::Test {
 protected:
@@ -763,5 +765,20 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckOpTypeIsValid) {
     EXPECT_EQ(true, ParamValidation::instance()->CheckOpTypeIsValid(opTypeInput, opType, errInfo));
     EXPECT_EQ("MatMul", opType);
 
+    GlobalMockObject::verify();
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetBiuPerfChannelInfos) {
+    GlobalMockObject::verify();
+    std::vector<uint32_t> groupVector = {0, 4};
+
+    // PlatformInterface default — covers platform_interface.cpp.
+    PlatformInterface platformInterface;
+    auto infos = platformInterface.GetBiuPerfChannelInfos(groupVector, 2);
+    EXPECT_EQ(6u, infos.size()); // 2 groups * 3 channel types
+
+    // platform_ is nullptr without Init — covers platform.cpp nullptr early return.
+    Platform::instance()->Uninit();
+    EXPECT_TRUE(Platform::instance()->GetBiuPerfChannelInfos(groupVector, 2).empty());
     GlobalMockObject::verify();
 }

@@ -27,6 +27,22 @@
 #include "prof_biu_perf_job.h"
 #include "file_transport.h"
 #include "prof_inner_api.h"
+#include "ai_drv_dev_api.h"
+#include "mdc_v2_platform.h"
+
+namespace {
+std::vector<int32_t> g_startedChannels;
+
+int32_t DrvInstrProfileStartStub(const uint32_t devId, const analysis::dvvp::driver::AI_DRV_CHANNEL channelId,
+    void *userData, size_t dataSize)
+{
+    (void)devId;
+    (void)userData;
+    (void)dataSize;
+    g_startedChannels.push_back(static_cast<int32_t>(channelId));
+    return analysis::dvvp::common::error::PROFILING_SUCCESS;
+}
+}
 
 using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::message;
@@ -52,13 +68,14 @@ protected:
     }
     virtual void TearDown() {
         collectionJobCfg_.reset();
+        GlobalMockObject::verify();
+        GlobalMockObject::reset();
     }
 public:
     std::shared_ptr<Analysis::Dvvp::JobWrapper::CollectionJobCfg> collectionJobCfg_;
 };
 
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch) {
-    GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
         bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
@@ -79,4 +96,107 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch) {
         EXPECT_EQ(PROFILING_SUCCESS, profBiuPerfJob->Process());
         EXPECT_EQ(PROFILING_SUCCESS, profBiuPerfJob->Uninit());
     } while (0);
+}
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelistChannels)
+{
+    g_startedChannels.clear();
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+    std::vector<BiuPerfChannelInfo> platformChannels = {
+        {0, 0, 0, 11},
+        {2, 0, 2, 17},
+        {3, 0, 3, 20},
+        {5, 0, 5, 26},
+    };
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
+        std::vector<BiuPerfChannelInfo> (Analysis::Dvvp::Common::Platform::Platform::*)(
+            const std::vector<uint32_t> &, uint32_t) const)
+        .stubs()
+        .will(returnValue(platformChannels));
+    int64_t aiCoreNum = 8;
+    MOCKER(analysis::dvvp::driver::DrvGetAiCoreNum)
+        .stubs()
+        .with(any(), outBound(aiCoreNum))
+        .will(returnValue(PROFILING_SUCCESS));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
+        .stubs()
+        .will(invoke(DrvInstrProfileStartStub));
+
+    auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
+    collectionJobCfg_->comParams->params->instrProfiling = "on";
+    collectionJobCfg_->comParams->params->pcSampling = "off";
+    collectionJobCfg_->comParams->params->hostProfiling = false;
+    EXPECT_EQ(PROFILING_SUCCESS, profBiuPerfJob->Init(collectionJobCfg_));
+    EXPECT_EQ(PROFILING_SUCCESS, profBiuPerfJob->Process());
+
+    std::vector<int32_t> expectedChannels = {11, 17, 20, 26};
+    EXPECT_EQ(expectedChannels, g_startedChannels);
+}
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, BiuPerfJobErrorBranches)
+{
+    g_startedChannels.clear();
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+    std::vector<BiuPerfChannelInfo> platformChannels = {
+        {0, 0, 0, 11},
+        {1, 0, 1, 14},
+    };
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
+        std::vector<BiuPerfChannelInfo> (Analysis::Dvvp::Common::Platform::Platform::*)(
+            const std::vector<uint32_t> &, uint32_t) const)
+        .stubs()
+        .will(returnValue(platformChannels));
+    int64_t aiCoreNum = 8;
+    MOCKER(analysis::dvvp::driver::DrvGetAiCoreNum)
+        .stubs()
+        .with(any(), outBound(aiCoreNum))
+        .will(returnValue(PROFILING_SUCCESS));
+    // ChannelIsValid sequence: true, false, true, false
+    // Process ch1: valid → DrvStart fails → lines 150-152
+    // Process ch2: invalid → lines 134-135
+    // Uninit ch1: valid → DrvStop fails → line 173
+    // Uninit ch2: invalid → lines 168-169
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true))
+        .then(returnValue(false))
+        .then(returnValue(true))
+        .then(returnValue(false));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
+        .stubs()
+        .will(returnValue(PROFILING_FAILED));
+    MOCKER(prof_stop)
+        .stubs()
+        .will(returnValue(PROF_ERROR));
+
+    auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
+    collectionJobCfg_->comParams->params->instrProfiling = "on";
+    collectionJobCfg_->comParams->params->pcSampling = "off";
+    collectionJobCfg_->comParams->params->hostProfiling = false;
+    EXPECT_EQ(PROFILING_SUCCESS, profBiuPerfJob->Init(collectionJobCfg_));
+    EXPECT_EQ(PROFILING_FAILED, profBiuPerfJob->Process());
+    EXPECT_EQ(PROFILING_FAILED, profBiuPerfJob->Uninit());
+}
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2GetBiuPerfChannelInfosReturnsWhitelist)
+{
+    using namespace Dvvp::Collect::Platform;
+    MdcV2Platform mdcV2Platform;
+    std::vector<uint32_t> groupVector = {0, 2, 3, 5};
+    auto infos = mdcV2Platform.GetBiuPerfChannelInfos(groupVector, groupVector.size());
+    // MdcV2 returns a fixed whitelist of 4 channels regardless of input.
+    EXPECT_EQ(4u, infos.size());
+    std::vector<int32_t> expectedChannelIds = {11, 17, 20, 26};
+    for (size_t i = 0; i < infos.size(); i++) {
+        EXPECT_EQ(static_cast<int32_t>(infos[i].channelId), expectedChannelIds[i]);
+    }
 }
