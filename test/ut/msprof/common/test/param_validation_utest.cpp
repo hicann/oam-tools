@@ -430,6 +430,66 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckL2CacheEventsValid) {
     Platform::instance()->Uninit();
 }
 
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, L2CacheAdaptorSmmuDfx) {
+    GlobalMockObject::verify();
+    // David (CHIP_CLOUD_V3) supports SMMU DFX: npuEvents gets the ";SMMU_DFX:" segment appended.
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(PlatformType::CHIP_CLOUD_V3));
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+    EXPECT_EQ(0x0E78u, Platform::instance()->GetSmmuDFXOffset());
+    EXPECT_EQ(0x3FFFFFFFu, Platform::instance()->GetSmmuDFXRegMask());
+    std::string l2Switch = "on";
+    std::string l2Events;
+    std::string npuEvents;
+    Platform::instance()->L2CacheAdaptor(npuEvents, l2Switch, l2Events);
+    EXPECT_NE(std::string::npos, npuEvents.find(";SMMU_DFX:"));
+    Platform::instance()->Uninit();
+
+    // MDC v2 (CHIP_MDC_V2) does not override SMMU DFX: offset/mask are 0, no ";SMMU_DFX:" appended.
+    GlobalMockObject::verify();
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(PlatformType::CHIP_MDC_V2));
+    Platform::instance()->Init();
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXOffset());
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXRegMask());
+    l2Switch = "on";
+    l2Events.clear();
+    npuEvents.clear();
+    Platform::instance()->L2CacheAdaptor(npuEvents, l2Switch, l2Events);
+    EXPECT_EQ(std::string::npos, npuEvents.find(";SMMU_DFX:"));
+    Platform::instance()->Uninit();
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, SmmuDFXOffsetAndRegMask) {
+    GlobalMockObject::verify();
+    // CloudV2 (CHIP_V4_1_0 maps to PlatformTypeEnum::CHIP_CLOUD_V2)
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(PlatformType::CHIP_V4_1_0));
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+    EXPECT_EQ(0x0E78u, Platform::instance()->GetSmmuDFXOffset());
+    EXPECT_EQ(0x3FFFFFFFu, Platform::instance()->GetSmmuDFXRegMask());
+    // After Uninit, platform_ is nullptr — getters return 0.
+    Platform::instance()->Uninit();
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXOffset());
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXRegMask());
+    GlobalMockObject::verify();
+
+    // Mini platform does not override SMMU DFX — PlatformInterface default returns 0.
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(PlatformType::MINI_TYPE));
+    Platform::instance()->Init();
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXOffset());
+    EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXRegMask());
+    Platform::instance()->Uninit();
+    GlobalMockObject::verify();
+}
+
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, IsValidSleepPeriod) {
     GlobalMockObject::verify();
 

@@ -239,6 +239,8 @@ public:
     virtual int32_t GetAiPmuMetrics(const std::string &key, std::string &vaule);
     virtual bool FeatureIsSupport(const PlatformFeature feature) const;
     virtual std::string GetSmmuEventStr();
+    virtual uint32_t GetSmmuDFXOffset() const;
+    virtual uint32_t GetSmmuDFXRegMask() const;
     virtual std::string GetL2CacheEvents();
     virtual PlatformFeature PmuMetricsToFeature(const std::string &key) const;
     virtual uint16_t GetMaxMonitorNumber() const;
