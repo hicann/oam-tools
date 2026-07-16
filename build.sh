@@ -203,58 +203,6 @@ print_success() {
   echo
 }
 
-# 将名为 ${name} 的子仓填充到 ${BASEPATH}/submodule/${name}：
-# 优先从 ${CANN_3RD_LIB_PATH}/${name} 复制，否则从 ${git_url} 克隆。
-# 已存在则不重复填充。回显 submodule 内的目标路径。
-populate_submodule() {
-    local name="$1"
-    local git_url="$2"
-    local dest="${BASEPATH}/submodule/${name}"
-    mkdir -p "${BASEPATH}/submodule"
-    if [ ! -d "${dest}" ]; then
-        if [ -d "${CANN_3RD_LIB_PATH}/${name}" ]; then
-            echo "${name} using third_party"
-            cp -r "${CANN_3RD_LIB_PATH}/${name}" "${BASEPATH}/submodule/"
-        else
-            echo "${name} download"
-            (cd "${BASEPATH}/submodule" && git clone "${git_url}")
-        fi
-    fi
-    echo "${dest}"
-}
-
-# build msprof analysis
-build_msprof_analysis() {
-    local build_path
-    if [ -d "${BASEPATH}/../../mindstudio/msprof" ]; then
-        echo "msprof using mindstudio"
-        build_path="${BASEPATH}/../../mindstudio/msprof"
-    else
-        build_path="$(populate_submodule "msprof" "https://gitcode.com/Ascend/msprof.git" | tail -n1)"
-    fi
-    cd "${build_path}"
-    python3 "${build_path}/build/setup.py" bdist_wheel --python-tag=py3 --py-limited-api=cp37
-    cp "${build_path}/dist/msprof-0.0.1-py3-none-any.whl" "${BASEPATH}/src/msprof/collector/dvvp/msprofbin"
-}
-
-# build adump analysis
-build_adump_analysis() {
-    local src_dir
-    if [ -d "${BASEPATH}/../../mindstudio/msaccucmp" ]; then
-        echo "msprobe using mindstudio"
-        src_dir="${BASEPATH}/../../mindstudio/msaccucmp/python/msprobe/msaccucmp"
-    else
-        local probe_dir
-        probe_dir="$(populate_submodule "msprobe" "https://gitcode.com/Ascend/msprobe.git" | tail -n1)"
-        src_dir="${probe_dir}/python/msprobe/msaccucmp"
-    fi
-    local compare_dst="${BASEPATH}/src/operator_cmp/msaccucmp/compare"
-    mkdir -p "${BASEPATH}/src/operator_cmp/msaccucmp"
-    [ -n "${compare_dst}" ] && safe_rm_dir "${compare_dst}"
-    mkdir "${compare_dst}"
-    cp -r "${src_dir}"/* "${compare_dst}/."
-}
-
 # oam_tools build start
 cmake_generate_make() {
     local build_path="$1"
@@ -282,14 +230,11 @@ REPOSITORY_NAME="oam"
 # create build path
 build_oam_tools() {
     echo "ARCH: $(arch)"
-    ARCH_LOWER=$(uname -m | tr '[:upper:]' '[:lower:]')
-    BUILD_TYPE_LOWER=$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')
     # === 新增判断逻辑 ===
     # 1. 先处理 --make_clean：清理 bundle 目录
     if [[ "${MAKE_CLEAN_ALL}" == "on" ]]; then
         echo "--make_clean: clearing bundle directory"
         safe_rm_dir "bundle"
-        [ -f ".bundle_version" ] && rm -f ".bundle_version"
     fi
 
     # 2. 处理 --make_clean：清理 submodule 目录（msprof, msprobe）
@@ -298,21 +243,10 @@ build_oam_tools() {
         safe_rm_dir "submodule"
     fi
 
-    # 3. 判断是否需要执行 install_bundle.sh
-    BUNDLE_DIR="bundle"
-    if [ -d "$BUNDLE_DIR" ]; then
-        echo "Bundle directory exists, skipping install_bundle.sh"
-    else
-        echo "Bundle directory not found, executing install_bundle.sh"
-        bash install_bundle.sh $BUILD_TYPE_LOWER $ARCH_LOWER
-        if [ 0 -ne $? ]; then
-            echo "install_bundle.sh failed, exit."
-            exit 1
-        fi
-    fi
     # === 判断逻辑结束 ===
-    build_msprof_analysis
-    build_adump_analysis
+    # bundle 闭源包拉取/解压已迁至 cmake/install_bundle.cmake；
+    # msprof wheel 构建与 msaccucmp/compare 同步已迁至 cmake/build_submodules.cmake，
+    # 均由 cmake 配置期负责，此处不再调用。
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"
     ENABLE_BINARY=TRUE
@@ -321,7 +255,6 @@ build_oam_tools() {
     CMAKE_ARGS="\
     -DCMAKE_INSTALL_PREFIX=${BUILD_PATH} \
     -DENABLE_UT=${ENABLE_UT} \
-    -DBUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG=ON \
     -DASCEND_INSTALL_PATH=${ASCEND_INSTALL_PATH} \
     -DCANN_3RD_LIB_PATH=${CANN_3RD_LIB_PATH} \
     -DDCMAKE_WGET_FLAGS='--no-check-certificate' \

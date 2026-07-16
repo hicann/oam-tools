@@ -19,9 +19,13 @@ include(cmake/fetch_cann_cmake.cmake)
 set(PKG_NAME oam)
 project(Oam-Tools)
 
-init_cann_project()
+init_cann_project(PREPEND_MODULE_PATH)
+add_cann_target_options()
+
 set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
+
+include(cmake/intf_pub.cmake)
 
 # install 参数
 set(INSTALL_LIBRARY_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging)
@@ -46,17 +50,10 @@ else()
 endif()
 set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_DIR})
 
-include(cmake/func.cmake)
 include(version.cmake)
 check_cann_pkg_build_deps("oam-tools")
 add_cann_version_info_targets()
 
-set(ASCEND_COMPUTE_UNIT
-    "ascend910b"
-    CACHE STRING "soc that need to be compiled")
-set(ASCEND_ALL_COMPUTE_UNIT
-    "ascend310p;ascend910;ascend910b;ascend910_93;ascend910_95;ascend031;ascend035;ascend310b;ascend910_55;mc62cm12a"
-    CACHE STRING "all soc list")
 
 set(CMAKE_LIBRARY_PATH ${ASCEND_CANN_PACKAGE_PATH})
 link_directories(
@@ -79,6 +76,13 @@ else()
   option(BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG "Build oam-tools with cann source" OFF)
 endif()
 set(OAM_TOOLS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# 在superbuild模式下，由CMake负责构建msprof wheel 和同步 msaccucmp/compare
+include(cmake/build_submodules.cmake)
+
+# 拉取并解压闭源包 bundle（原 install_bundle.sh）；须在下方 bundle/ 的 install() 之前。
+include(cmake/install_bundle.cmake)
+
 # protobuf — 通过 cann-cmake 的 add_cann_third_party 引入
 add_cann_third_party(protobuf)
 
@@ -89,9 +93,9 @@ message("PROTOC_PROGRAM: ${PROTOC_PROGRAM}")
 
 include(cmake/third_party/protobuf_fun.cmake)
 
+include(cmake/dependencies.cmake)
 # 外部依赖库及编译选项
 include(cmake/third_party/third_party_header_libs.cmake)
-include(cmake/intf_pub.cmake)
 
 add_subdirectory(src/asys)
 add_subdirectory(src/msaicerr)

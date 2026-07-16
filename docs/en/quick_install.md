@@ -277,8 +277,8 @@ Third-party libraries, closed-source binary packages, and subrepositories includ
 
 | Closed-source Binary | Version | Download Address |
 |---|---|---|
-|cann-oam-tools-release-x86_64.tar.gz|20260213(Stable)|[Download](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260213_newest/cann-oam-tools-release-x86_64.tar.gz)|
-|cann-oam-tools-release-aarch64.tar.gz|20260213(Stable)|[Download](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/20260213_newest/cann-oam-tools-release-aarch64.tar.gz)|
+|cann-oam-tools-release-x86_64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-x86_64.tar.gz)|
+|cann-oam-tools-release-aarch64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-aarch64.tar.gz)|
 
 | Subrepository | Version | Download Address |
 |---|---|---|

@@ -14,7 +14,11 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-protobuf_generate(profiler_proto
+# device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
+
+protobuf_generate(profiler_proto_oam
     CppPath
     HeaderPath
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/profiler.proto
@@ -128,7 +132,7 @@ target_include_directories(ascend_devprof PRIVATE
     ../streamio/common/include
     ../driver/inc
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}/proto/profiler_proto
+    ${CMAKE_BINARY_DIR}/proto/profiler_proto_oam
 )
 
 set_target_properties(ascend_devprof
@@ -181,7 +185,7 @@ target_link_options(ascend_devprof PRIVATE
 )
 
 target_link_libraries(ascend_devprof PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx11>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:adump_headers>
@@ -200,5 +204,5 @@ install(TARGETS ascend_devprof ${INSTALL_OPTIONAL}
     COMPONENT oam-tools
 )
 
-add_dependencies(ascend_devprof profiler_proto)
+add_dependencies(ascend_devprof profiler_proto_oam)
 ####################### libascend_devprof.so ###########################

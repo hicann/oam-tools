@@ -14,15 +14,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-# Ascend mode
-set(CMAKE_PREFIX_PATH ${ASCEND_DIR}/)
-
-set(CMAKE_MODULE_PATH
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
-  ${CMAKE_MODULE_PATH}
-)
-message(STATUS "CMAKE_MODULE_PATH            :${CMAKE_MODULE_PATH}")
-
 set(OAM_TOOLS_CXX_FLAGS)
 string(APPEND OAM_TOOLS_CXX_FLAGS " ${COMPILE_OP_MODE}")
 string(APPEND OAM_TOOLS_CXX_FLAGS " -Wall")
@@ -39,23 +30,21 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OAM_TOOLS_CXX_FLAGS}")
 message(STATUS "compile option:${CMAKE_CXX_FLAGS}")
 
-if(BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG)
-  if(EXISTS "${ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_PREFIX}/tikcpp/ascendc_kernel_cmake")
-    find_cann_package(ASC REQUIRED HINTS ${ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_PREFIX}/tikcpp/ascendc_kernel_cmake)
-  else()
-    find_cann_package(ASC REQUIRED HINTS ${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
-  endif()
-endif()
 find_cann_package(unified_dlog MODULE REQUIRED)
 find_cann_package(securec MODULE)
-find_cann_package(OPBASE MODULE REQUIRED)
 find_cann_package(platform MODULE REQUIRED)
 find_cann_package(metadef MODULE REQUIRED)
 find_cann_package(runtime MODULE REQUIRED)
-find_cann_package(nnopbase MODULE REQUIRED)
-find_cann_package(tilingapi MODULE REQUIRED)
-find_cann_package(aicpu MODULE REQUIRED)
+find_cann_package(ascend_hal MODULE REQUIRED)
+find_cann_package(mmpa MODULE REQUIRED)
+find_cann_package(slog MODULE REQUIRED)
+find_cann_package(adump MODULE REQUIRED)
 if(ENABLE_TEST)
   list(APPEND CMAKE_PREFIX_PATH ${ASCEND_DIR}/tools/tikicpulib/lib/cmake)
   find_cann_package(tikicpulib REQUIRED)
 endif()
+
+add_library(runtime_inc_headers INTERFACE)
+target_link_libraries(runtime_inc_headers INTERFACE 
+  runtime_headers
+)

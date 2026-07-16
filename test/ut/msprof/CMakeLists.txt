@@ -24,7 +24,7 @@ target_compile_options(intf_llt_pub INTERFACE
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>
 )
 target_link_libraries(intf_llt_pub INTERFACE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     c_sec
     dl
     GTestShared::gtest
@@ -33,9 +33,18 @@ target_link_libraries(intf_llt_pub INTERFACE
 )
 
 # 各 msprof UT target 公共扩展头文件目录
+# 原 runtime_INCLUDE_DIR / third_party_INCLUDE_DIR 变量随 third_party_header_libs.cmake
+# 精简已删除，此处直接内联当初这两个变量所含的头文件路径（src/third_party 用 TOP_DIR
+# 定位仓根，不能用 CMAKE_CURRENT_SOURCE_DIR）。
 set(LLT_EXTEND_INCLUDE_DIR
-    ${runtime_INCLUDE_DIR}
-    ${third_party_INCLUDE_DIR}
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/dump
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
+    ${TOP_DIR}/src/third_party
+    ${TOP_DIR}/src/third_party/adcore
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
 )

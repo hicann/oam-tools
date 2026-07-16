@@ -14,54 +14,9 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-# 添加头文件库slog_headers
-set(slog_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base")
-add_library(slog_headers INTERFACE IMPORTED)
-set_target_properties(slog_headers PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${slog_INCLUDE_DIR}"
-)
-
-# 添加头文件库mmpa_headers
-set(mmpa_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/pkg_inc")
-add_library(mmpa_headers INTERFACE IMPORTED)
-set_target_properties(mmpa_headers PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${mmpa_INCLUDE_DIR};${mmpa_INCLUDE_DIR}/mmpa;${mmpa_INCLUDE_DIR}/mmpa/sub_inc"
-)
-
-# 添加头文件库adump_headers
-set(adump_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/pkg_inc")
-add_library(adump_headers INTERFACE IMPORTED)
-set_target_properties(adump_headers PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${adump_INCLUDE_DIR};${adump_INCLUDE_DIR}/dump"
-)
-
-# 查找动态库libascendalog.so
-find_library(alog_SHARED_LIBRARY
-    NAMES libascendalog.so
-    PATH_SUFFIXES lib64
-    NO_CMAKE_SYSTEM_PATH
-    NO_CMAKE_FIND_ROOT_PATH)
-
-# 添加导入的共享库alog
-add_library(alog SHARED IMPORTED)
-set_target_properties(alog PROPERTIES
-    INTERFACE_COMPILE_DEFINITIONS "LOG_CPP;PROCESS_LOG"
-    INTERFACE_LINK_LIBRARIES "slog_headers"
-    IMPORTED_LOCATION "${alog_SHARED_LIBRARY}"
-)
-
-# 添加Runtime中依赖的文件地址
-set(runtime_INCLUDE_DIR
-    ${ASCEND_CANN_PACKAGE_PATH}/include
-    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/dump
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
-)
-
-# 添加Driver中依赖的文件地址
-set(third_party_INCLUDE_DIR
+# 替代 third_party_INCLUDE_DIR 的头文件目标（adcore 头文件，指向项目源树）
+add_library(stub_adcore_headers INTERFACE)
+target_include_directories(stub_adcore_headers INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party
     ${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/adcore
 )

@@ -71,7 +71,7 @@ function(pack_built_in)
       message(WARNING "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}")
   endif ()
 
-  set(script_prefix ${CMAKE_SOURCE_DIR}/scripts/package/oam_tools/scripts)
+  set(script_prefix ${OAM_TOOLS_DIR}/scripts/package/oam_tools/scripts)
   install(DIRECTORY ${script_prefix}/
       DESTINATION share/info/oam_tools/script
       FILE_PERMISSIONS

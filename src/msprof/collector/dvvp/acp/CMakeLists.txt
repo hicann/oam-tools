@@ -14,19 +14,21 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-protobuf_generate(profiler_proto
+# device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
+
+protobuf_generate(profiler_proto_oam
     CppPath
     HeaderPath
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/profiler.proto
     TARGET
 )
 
-add_dependencies(profiler_proto host_protoc ascend_protobuf_static)
+add_dependencies(profiler_proto_oam host_protoc ascend_protobuf_static)
 
 ####################### acp #######################
 set(acpBinHeader
-    ${runtime_INCLUDE_DIR}
-    ${third_party_INCLUDE_DIR}
     ${MSPROF_DIR}/inc/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     include
@@ -130,10 +132,12 @@ target_link_options(acp PRIVATE
 )
 
 target_link_libraries(acp PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:adump_headers>
     $<BUILD_INTERFACE:slog_headers>
+    runtime_inc_headers
+    stub_adcore_headers
     c_sec
     unified_dlog
     mmpa
@@ -210,15 +214,13 @@ add_library(profinj SHARED
 )
 
 target_include_directories(profinj PRIVATE
-    ${runtime_INCLUDE_DIR}
-    ${third_party_INCLUDE_DIR}
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${MSPROF_DIR}/inc/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}/proto/profiler_proto/
+    ${CMAKE_BINARY_DIR}/proto/profiler_proto_oam/
     ${PROF_BASIC_DIR}/osal
     include/
     ../
@@ -270,8 +272,8 @@ target_compile_options(profinj PRIVATE
     $<$<AND:$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>,$<STREQUAL:${CMAKE_CONFIGURATION_TYPES},Release>>:/MT>
 )
 
-set (CMAKE_CXX_FLAGS "-std=c++17" ${CMAKE_CXX_FLAGS})
-set (CMAKE_C_FLAGS "-std=c11" ${CMAKE_C_FLAGS})
+string(PREPEND CMAKE_CXX_FLAGS "-std=c++17 ")
+string(PREPEND CMAKE_C_FLAGS "-std=c11 ")
 
 target_compile_definitions(profinj PRIVATE
     MSPROF_LIB
@@ -284,10 +286,12 @@ target_link_options(profinj PRIVATE
 )
 
 target_link_libraries(profinj PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:adump_headers>
+    runtime_inc_headers
+    stub_adcore_headers
     c_sec
     mmpa
     unified_dlog
@@ -299,5 +303,5 @@ install(TARGETS profinj ${INSTALL_OPTIONAL}
     COMPONENT oam-tools
 )
 
-add_dependencies(profinj profiler_proto)
+add_dependencies(profinj profiler_proto_oam)
 ####################### libascend_profinj.so ###########################

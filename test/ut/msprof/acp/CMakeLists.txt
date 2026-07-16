@@ -176,7 +176,7 @@ target_link_options(acp_utest PRIVATE
 )
 
 target_link_libraries(acp_utest PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     GTestShared::gtest
     mockcpp
     alog

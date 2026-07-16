@@ -14,6 +14,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
+
 ####################### libmsprofiler.so #########################
 set(msprofilerCpp
     ../common/utils/utils.cpp
@@ -106,7 +110,7 @@ endif()
 
 target_link_libraries(msprofiler_fwk_share
     PRIVATE
-        intf_pub_cxx11
+        oam_intf_pub
         slog_headers
         mmpa_headers
         adump_headers
@@ -200,7 +204,7 @@ target_link_options(msprofiler_fwk_lite_share PRIVATE
 target_link_libraries(msprofiler_fwk_lite_share
     PRIVATE
         mmpa_headers
-        intf_pub_cxx11
+        oam_intf_pub
         slog_headers
         -Wl,--no-as-needed
         c_sec
@@ -270,7 +274,7 @@ target_link_options(msprofiler PRIVATE
 )
 
 target_link_libraries(msprofiler PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx11>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:msprof_headers>
     $<BUILD_INTERFACE:adump_headers>
@@ -349,7 +353,7 @@ target_compile_options(stub_msprofiler PRIVATE
 )
 
 target_link_libraries(stub_msprofiler PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx11>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:msprof_headers>
     $<BUILD_INTERFACE:adump_headers>

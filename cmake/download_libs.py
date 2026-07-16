@@ -15,25 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
-import urllib.request
 import os
 import logging
-import ssl
 import subprocess
 import shutil
 
 logging.basicConfig(level=logging.INFO)
 
 
-def create_unverified_context():
-    """创建不验证证书的SSL上下文"""
-    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
-    return ctx
-
-
-def download_single_file(url, current_dir, ctx):
+def download_single_file(url, current_dir):
     """下载单个文件"""
     actual_url = url
     custom_name = None
@@ -50,41 +40,53 @@ def download_single_file(url, current_dir, ctx):
     if actual_url.endswith(".git"):
         repo_name = actual_url.split("/")[-1].replace(".git", "")
         repo_path = os.path.join(current_dir, custom_name if custom_name else repo_name)
-        logging.info(f"Start git clone {actual_url}")
+        logging.info("Start git clone %s", actual_url)
 
         git_path = shutil.which('git')
         result = subprocess.run(
             [git_path, "clone", actual_url, repo_path],
             capture_output=True,
-            text=True
+            text=True,
+            check=False
         )
         if result.returncode != 0:
             raise RuntimeError(f"git clone failed: {result.stderr}")
-        logging.info(f"Successfully cloned to {repo_path}")
+        logging.info("Successfully cloned to %s", repo_path)
         return
 
     file_name = custom_name if custom_name else actual_url.split("/")[-1]
     if not file_name:
         file_name = "downloaded_file"
 
-    file_path = os.path.join(current_dir, file_name)
-    logging.info(f"Start download {actual_url}")
+    # 仅允许 https，杜绝 file:/ 等本地/自定义 scheme。
+    if not actual_url.startswith("https://"):
+        raise ValueError(f"only https url is allowed, got: {actual_url}")
 
-    with urllib.request.urlopen(actual_url, context=ctx) as response:
-        with open(file_path, "wb") as out_file:
-            out_file.write(response.read())
-    logging.info(f"Successfully saved to {file_path}")
+    file_path = os.path.join(current_dir, file_name)
+    logging.info("Start download %s", actual_url)
+
+    wget_path = shutil.which("wget")
+    if not wget_path:
+        raise RuntimeError("wget not found in PATH")
+    result = subprocess.run(
+        [wget_path, "--no-check-certificate", "-O", file_path, actual_url],
+        capture_output=True,
+        text=True,
+        check=False
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"wget download failed: {result.stderr}")
+    logging.info("Successfully saved to %s", file_path)
 
 
 def download_files_native(url_list):
     """下载多个文件"""
     current_dir = os.getcwd()
-    ctx = create_unverified_context()
     for url in url_list:
         try:
-            download_single_file(url, current_dir, ctx)
-        except Exception as e:
-            logging.info(f"Download file form {url} failed: {e}")
+            download_single_file(url, current_dir)
+        except (ValueError, RuntimeError, OSError) as e:
+            logging.info("Download file form %s failed: %s", url, e)
 
 
 if __name__ == "__main__":
@@ -114,12 +116,12 @@ if __name__ == "__main__":
             "/v2.7-h2/mockcpp-2.7.tar.gz",
         ),
         (
-            "https://ascend-cann.obs.cn-north-4.myhuaweicloud.com"
-            "/CANN/20260213_newest/cann-oam-tools-release-x86_64.tar.gz",
+            "https://cann-3rd.obs.cn-north-4.myhuaweicloud.com"
+            "/cann/oam-tools-diag/master/cann-oam-tools-release-x86_64.tar.gz",
         ),
         (
-            "https://ascend-cann.obs.cn-north-4.myhuaweicloud.com"
-            "/CANN/20260213_newest/cann-oam-tools-release-aarch64.tar.gz",
+            "https://cann-3rd.obs.cn-north-4.myhuaweicloud.com"
+            "/cann/oam-tools-diag/master/cann-oam-tools-release-aarch64.tar.gz",
         ),
         (
             "https://gitcode.com/Ascend/msprobe.git",

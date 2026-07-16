@@ -14,6 +14,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
+
 set(msProfHeader
     ${TOP_DIR}/metadef/inc
     ${TOP_DIR}/metadef/inc/external
@@ -91,7 +95,7 @@ target_link_options(profapi_stub PRIVATE
 )
 
 target_link_libraries(profapi_stub PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx11>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:slog_headers>
     -Wl,--no-as-needed
@@ -146,7 +150,7 @@ target_include_directories( profapi_share PRIVATE
 
 target_link_libraries(profapi_share
     PRIVATE
-        intf_pub_cxx11
+        oam_intf_pub
         mmpa_headers
         slog_headers
         -Wl,--no-as-needed
@@ -203,7 +207,7 @@ target_include_directories(profapi_lite_share PRIVATE
 
 target_link_libraries(profapi_lite_share
     PRIVATE
-        intf_pub_cxx11
+        oam_intf_pub
         slog_headers
         -Wl,--no-as-needed
         alog

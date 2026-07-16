@@ -51,7 +51,7 @@ target_compile_options(ascend_dump_parser PRIVATE
 )
 
 target_link_libraries(ascend_dump_parser PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     ascend_protobuf_static
 )
 

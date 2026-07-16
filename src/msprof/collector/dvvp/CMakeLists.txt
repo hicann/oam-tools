@@ -14,6 +14,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# device 侧联编场景守卫：本目录及各子目录均可能被 device 侧单独作为入口联编，统一 include
+include(${CMAKE_CURRENT_LIST_DIR}/msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/msprof_find_target.cmake)
+
 add_subdirectory(acp)
 add_subdirectory(adprof)
 add_subdirectory(msprof)
@@ -259,7 +263,7 @@ if (PRODUCT)
 endif()
 
 target_link_libraries(profimpl_fwk_share PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx11>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:msprof_headers>
     $<BUILD_INTERFACE:adump_headers>

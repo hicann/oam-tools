@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
+
+# device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
 protobuf_generate(msprofbin_proto
     CppPath
     HeaderPath
@@ -26,8 +30,10 @@ endif()
 
 set(msprofBinHeader
     ${SOURCE_DIR}/src
-    ${runtime_INCLUDE_DIR}
-    ${third_party_INCLUDE_DIR}
+    ${TOP_DIR}/inc
+    ${TOP_DIR}/inc/driver
+    ${TOP_DIR}/inc/aicpu
+    ${TOP_DIR}/../../metadef/inc/common/util/error_manager
     ${MSPROF_DIR}/inc/toolchain
     ${PROTOBUF_HOST_STATIC_INCLUDE}
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
@@ -216,11 +222,13 @@ target_link_options(msprofbin PRIVATE
 )
 
 target_link_libraries(msprofbin PRIVATE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     $<BUILD_INTERFACE:mmpa_headers>
     $<BUILD_INTERFACE:adump_headers>
     $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:msprofbinOnetrack_pub>
+    runtime_inc_headers
+    stub_adcore_headers    
 )
 
 set_target_properties(msprofbin
@@ -251,7 +259,7 @@ endif()
 add_library(msprofbinOnetrack_pub INTERFACE)
 
 target_link_libraries(msprofbinOnetrack_pub INTERFACE
-    $<BUILD_INTERFACE:intf_pub_cxx17>
+    $<BUILD_INTERFACE:oam_intf_pub>
     c_sec
     alog
     mmpa
