@@ -186,14 +186,6 @@ if(EXISTS "${BUNDLE_PKG}/aml")
     )
 endif()
 
-# 拷贝 include 目录
-if(EXISTS "${BUNDLE_PKG}/include")
-    install(DIRECTORY ${BUNDLE_PKG}/include
-        DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux
-        COMPONENT oam-tools
-    )
-endif()
-
 # 拷贝 built-in 目录
 # 显式指定 440 文件权限 / 555 目录权限，与主线 CANN 包对 opp/built-in/op_impl 子树的
 # 权限模型对齐。否则 cmake install(DIRECTORY) 默认会把文件重写成 644、目录 755。
