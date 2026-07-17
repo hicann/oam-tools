@@ -782,3 +782,21 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetBiuPerfChannelInfos) {
     EXPECT_TRUE(Platform::instance()->GetBiuPerfChannelInfos(groupVector, 2).empty());
     GlobalMockObject::verify();
 }
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, MdcV2PlatformL2CacheEvents) {
+    GlobalMockObject::verify();
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(PlatformType::CHIP_MDC_V2));
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    EXPECT_EQ("0x00,0x75,0x76,0x77,0x66,0x67,0x68,0x69",
+            Platform::instance()->GetL2CacheEvents());
+
+    EXPECT_EQ(MAX_DAVID_MONITOR_NUM, Platform::instance()->GetMaxMonitorNumber());
+    EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_REG));
+    EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_PMU));
+
+    Platform::instance()->Uninit();
+}

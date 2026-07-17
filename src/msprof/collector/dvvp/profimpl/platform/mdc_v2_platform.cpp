@@ -25,7 +25,7 @@ constexpr char MDC_V2_MEMORYUB[] = "0x3,0x5,0x70c,0x206,0x204,0x571,0x572";
 constexpr char MDC_V2_AIRTHMETICUTILIZATION[] = "0x323,0x324";
 constexpr char MDC_V2_RESOURCECONFLICTRATIO[] = "0x540,0x556,0x502,0x528";
 constexpr char MDC_V2_L2CACHE[] = "0x424,0x425,0x426,0x42a,0x42b,0x42c";
-constexpr char MDC_V2_L2CACHEEVENT[] = "0x00,0x75,0x76,0x77,0x64,0x65";
+constexpr char MDC_V2_L2CACHEEVENT[] = "0x00,0x75,0x76,0x77,0x66,0x67,0x68,0x69";
 constexpr uint16_t MAX_QOS_MONITOR_NUM = 8;
 // BIU perf: channelId = firstChannelId + groupNo * groupChannelNum.
 // MDC V2 only supports groups 0, 2, 3, 5 (a subset of David's sequential 0..N).
