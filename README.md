@@ -125,6 +125,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 - `--cann_3rd_lib_path`：第三方库存储目录，默认值为 `./third_party`。若本地不存在第三方库，编译脚本将自动从 gitcode 开源仓库下载各第三方库源码。
 - 编译过程中会自动下载闭源二进制包，该包含有保证功能正常运行所需的库及头文件，且仅提供 release 版本，**即使编译选项指定为 debug，也只会下载 release 版本的 tar 包**。
 - 若编译环境无法访问网络，请参考[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备)提前完成依赖包的下载与配置，并通过 `--cann_3rd_lib_path` 参数指定依赖包所在目录后再执行编译。
+- 闭源二进制包会解压到仓库根目录的 `bundle/` 下。若 `bundle/` 已存在且非空，构建会复用该目录并跳过下载；如需强制重新下载或修复残缺的 `bundle/` 目录，可执行 `bash build.sh --make_clean` 后重新编译，也可手动删除 `bundle/` 后再次执行 `bash build.sh`。
 - 更多编译参数请通过 `bash build.sh -h` 查看。
 
 编译完成后，`build_out` 目录下会生成 `cann-oam-tools_<cann_version>_linux-<arch>.run` 软件包，其中 `<cann_version>` 为版本号，`<arch>` 为操作系统架构（可选值：`x86_64` 或 `aarch64`）。
@@ -153,9 +154,23 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 # 执行所有组件测试
 bash build.sh -u
 
-# 指定单独组件测试（可选：asys / msaicerr / msprof / all）
+# 指定单独组件测试（可选：asys / msaicerr / msprof / install / upgrade / uninstall / all）
 bash build.sh -u --component msprof
 ```
+
+`--component` 与测试范围、环境准备章节的对应关系如下：
+
+| component | 测试范围 | 环境准备索引 | 示例 |
+| --- | --- | --- | --- |
+| `asys` | asys Python UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[环境变量配置](./docs/zh/quick_install.md#环境变量配置) | `bash build.sh -u --component asys` |
+| `msaicerr` | msaicerr Python UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[环境变量配置](./docs/zh/quick_install.md#环境变量配置) | `bash build.sh -u --component msaicerr` |
+| `msprof` | msprof C++ gtest UT | [源码编译](#-源码编译)、[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备) | `bash build.sh -u --component msprof --ut` |
+| `install` | 安装包安装 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component install --st` |
+| `upgrade` | 安装包升级 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component upgrade --st` |
+| `uninstall` | 安装包卸载 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component uninstall --st` |
+| `all` | 全部可用 UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[源码编译](#-源码编译) | `bash build.sh -u` |
+
+> `install`、`upgrade`、`uninstall` 仅包含 ST，用例依赖 `build_out/cann-oam-tools_<cann_version>_linux-<arch>.run`。推荐通过上表中的 `build.sh -u --component ... --st` 运行，脚本会先完成构建打包；若直接执行 `scripts/run_tests.sh`，需先确保 `build_out/` 下已有可用 `.run` 包。
 
 UT 测试用例编译输出目录为 `build`，如果想清除历史编译记录：
 

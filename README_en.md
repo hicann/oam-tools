@@ -126,6 +126,7 @@ Parameters:
 - `--cann_3rd_lib_path`: The directory for storing third-party libraries. The default value is `./third_party`. If third-party libraries do not exist locally, the build script automatically downloads the source code of each third-party library from the gitcode open source repository.
 - The build process automatically downloads closed-source binary packages that contain the libraries and header files required for normal operation. Only release versions are provided. **Even if the build option specifies debug, only the release version tar package is downloaded**.
 - If the build environment cannot access the network, refer to [Offline Build Environment Preparation](docs/en/quick_install.md#offline-build-environment-preparation) to complete the download and configuration of dependency packages in advance. Then specify the dependency package directory through the `--cann_3rd_lib_path` parameter before running the build.
+- Closed-source binary packages are extracted to `bundle/` in the repository root. If `bundle/` already exists and is non-empty, the build reuses it and skips downloading. To force a fresh download or recover from an incomplete `bundle/`, run `bash build.sh --make_clean` before rebuilding, or manually delete `bundle/` and run `bash build.sh` again.
 - For more build parameters, run `bash build.sh -h`.
 
 After the build completes, the `build_out` directory generates a `cann-oam-tools_<cann_version>_linux-<arch>.run` software package, where `<cann_version>` is the version number and `<arch>` is the operating system architecture (possible values: `x86_64` or `aarch64`).
@@ -154,9 +155,23 @@ After compilation, users can verify whether the project functions work properly.
 # Run all component tests
 bash build.sh -u
 
-# Test a specific component (options: asys / msaicerr / msprof / all)
+# Test a specific component (options: asys / msaicerr / msprof / install / upgrade / uninstall / all)
 bash build.sh -u --component msprof
 ```
+
+The `--component` options map to the test scope and setup documentation as follows:
+
+| component | Test scope | Setup reference | Example |
+| --- | --- | --- | --- |
+| `asys` | asys Python UT + ST | [Environment Preparation](docs/en/quick_install.md#environment-preparation), [Environment Variable Configuration](docs/en/quick_install.md#environment-variable-configuration) | `bash build.sh -u --component asys` |
+| `msaicerr` | msaicerr Python UT + ST | [Environment Preparation](docs/en/quick_install.md#environment-preparation), [Environment Variable Configuration](docs/en/quick_install.md#environment-variable-configuration) | `bash build.sh -u --component msaicerr` |
+| `msprof` | msprof C++ gtest UT | [Source Code Compilation](#-source-code-compilation), [Offline Build Environment Preparation](docs/en/quick_install.md#offline-build-environment-preparation) | `bash build.sh -u --component msprof --ut` |
+| `install` | Package installation ST | [Source Code Compilation](#-source-code-compilation), [Installation](#installation) | `bash build.sh -u --component install --st` |
+| `upgrade` | Package upgrade ST | [Source Code Compilation](#-source-code-compilation), [Installation](#installation) | `bash build.sh -u --component upgrade --st` |
+| `uninstall` | Package uninstallation ST | [Source Code Compilation](#-source-code-compilation), [Installation](#installation) | `bash build.sh -u --component uninstall --st` |
+| `all` | All available UT + ST | [Environment Preparation](docs/en/quick_install.md#environment-preparation), [Source Code Compilation](#-source-code-compilation) | `bash build.sh -u` |
+
+> `install`, `upgrade`, and `uninstall` contain ST only and depend on `build_out/cann-oam-tools_<cann_version>_linux-<arch>.run`. Use the `build.sh -u --component ... --st` commands in the table so the package is built first. If you run `scripts/run_tests.sh` directly, make sure a usable `.run` package already exists under `build_out/`.
 
 The UT test case compilation output directory is `build`. To clear historical build records:
 
