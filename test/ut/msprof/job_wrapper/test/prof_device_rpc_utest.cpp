@@ -82,8 +82,6 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StartProf1) {
 
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StartProf(params));
     
-    jobDeviceRpc->isStarted_ = true;
-    
     jobDeviceRpc->params_ = params;
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StartProf(params));
     MOCKER_CPP(&Analysis ::Dvvp::JobWrapper::JobDeviceRpc::SendMsgAndHandleResponse)

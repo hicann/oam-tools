@@ -122,6 +122,7 @@ add_executable(msprof_bin_utest
     test/msopprof_manager_utest.cpp
     test/running_mode_utest.cpp
     test/adx_prof_api_utest.cpp
+    ../job_wrapper/test/prof_device_rpc_utest.cpp
     ../stub/drv_stub.cpp
     ../stub/mmpa_stub.cpp
     ../stub/profile_drv_user_stub.cpp

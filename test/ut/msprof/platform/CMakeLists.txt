@@ -15,36 +15,43 @@
 # ----------------------------------------------------------------------------
 set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)
 
-set(profilerSrcFiles
-    ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dev_api.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/driver/channel/ai_drv_prof_api.cpp
+protobuf_generate(platform_utest_proto
+    CppPath
+    HeaderPath
+    ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto
+)
+
+add_executable(platform_utest
+    test/main.cpp
+    test/platform_utest.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/validation/param_validation.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/utils/utils.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log/cmd_log.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/json/json.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/common/platform/platform.cpp
-    ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
-    ${MSPROF_SOURCE_DIR}/dvvp/depend/stub/error_manager/msprof_error_manager_stub.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/config/config_manager.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/common/platform/platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/common/statistics/perf_count.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/message/codec.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/driver/devmgmt/ai_drv_dev_api.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/driver/channel/ai_drv_prof_api.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
-)
-
-set(localSrcFiles
-    test/main.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/dc_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_lite_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_lite_v2_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_mini_v3_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_platform.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mini_v3_platform.cpp
+    ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
+    ${MSPROF_SOURCE_DIR}/dvvp/depend/stub/error_manager/msprof_error_manager_stub.cpp
     ../stub/drv_stub.cpp
     ../stub/hdc-log-stub.cpp
     ../stub/mmpa_stub.cpp
     ../stub/devdrv_runtime_api_stub.cpp
     ../stub/profile_drv_user_stub.cpp
-    test/ai_drv_api_utest.cpp
-    #test/data_handle_utest.cpp
-)
-
-add_executable(driver_utest
-    ${profilerSrcFiles}
-    ${localSrcFiles}
+    ${CppPath}
 )
 
 set(libmsprofHeaderDir
@@ -53,52 +60,54 @@ set(libmsprofHeaderDir
     ${TOP_DIR}/third_party/libc_sec/include
     ${TOP_DIR}/src/dfx/error_manager
     ${TOP_DIR}/src/inc
-    ${MSPROF_SOURCE_DIR}/dvvp/msprof/msproftx/mstx/inc
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform
-    ${MSPROF_SOURCE_DIR}/dvvp/common/config
-    ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
-)
-
-target_include_directories(driver_utest PRIVATE
-    ${libmsprofHeaderDir}
-    ${PROTOBUF_HOST_INCLUDE}
     ${TOP_DIR}/src/msprof/inc
     ${TOP_DIR}/src/msprof/inc/toolchain
     ${TOP_DIR}/src/msprof/inc/external
     ${TOP_DIR}/src/msprof/inc/external/acl
+    ${PROTOBUF_HOST_INCLUDE}
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
+)
+
+target_include_directories(platform_utest PRIVATE
+    ${libmsprofHeaderDir}
     ${MSPROF_SOURCE_DIR}/dvvp
-    ${MSPROF_SOURCE_DIR}/dvvp/task_handle/include
     ${MSPROF_SOURCE_DIR}/dvvp/common
     ${MSPROF_SOURCE_DIR}/dvvp/common/utils
     ${MSPROF_SOURCE_DIR}/dvvp/common/json
+    ${MSPROF_SOURCE_DIR}/dvvp/common/config
+    ${MSPROF_SOURCE_DIR}/dvvp/common/logger
     ${MSPROF_SOURCE_DIR}/dvvp/common/validation
     ${MSPROF_SOURCE_DIR}/dvvp/common/platform
     ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log
+    ${MSPROF_SOURCE_DIR}/dvvp/common/statistics
+    ${MSPROF_SOURCE_DIR}/dvvp/common/singleton
     ${MSPROF_SOURCE_DIR}/basic/osal
+    ${MSPROF_SOURCE_DIR}/dvvp/message
     ${MSPROF_SOURCE_DIR}/dvvp/driver/inc
-    ${MSPROF_SOURCE_DIR}/dvvp/common/logger
-    ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
+    ${MSPROF_SOURCE_DIR}/dvvp/task_handle/include
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/inc
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform
+    ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
+    ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
+    ${CMAKE_BINARY_DIR}/proto/platform_utest_proto/
     ../stub/
 )
 
-target_compile_options(driver_utest PRIVATE
+target_compile_options(platform_utest PRIVATE
     -g
     -pipe
     -Wall
@@ -107,20 +116,20 @@ target_compile_options(driver_utest PRIVATE
     -Wextra
 )
 
-target_compile_definitions(driver_utest PRIVATE
+target_compile_definitions(platform_utest PRIVATE
     MSPROF_DEBUG
     google=ascend_private
 )
 
-target_link_libraries(driver_utest PRIVATE
+target_link_libraries(platform_utest PRIVATE
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static
     c_sec
 )
 
-set_target_properties(driver_utest
+set_target_properties(platform_utest
     PROPERTIES
-    OUTPUT_NAME driver_utest
+    OUTPUT_NAME platform_utest
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )

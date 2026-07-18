@@ -23,7 +23,6 @@ protobuf_generate(transport_proto
 
 set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/transport/file_transport.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profhal/adx/wrapper/adx_prof_api.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/config/config_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/utils/utils.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log/cmd_log.cpp
@@ -50,8 +49,6 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/transport/file_manager.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/transport/file_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_manager.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/acp_api_plugin.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/acp/src/op_transport.cpp
@@ -73,6 +70,8 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
     ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux.c
     ${MSPROF_SOURCE_DIR}/basic/osal/osal_linux_mem.c
+    ${MSPROF_SOURCE_DIR}/dvvp/profhal/adx/wrapper/adx_prof_api.cpp
+    ${MSPROF_SOURCE_DIR}/dvvp/transport/pipe_transport.cpp
 )
 
 set(localSrcFiles
@@ -81,9 +80,9 @@ set(localSrcFiles
     test/uploader_utest.cpp
     test/prof_channel_utest.cpp
     test/hash_data_test.cpp
-    test/file_manager_utest.cpp
     test/file_ageing_test.cpp
     test/file_slice_test.cpp
+    test/pipe_transport_utest.cpp
     ../stub/hdc-api-stub.cpp
     ../stub/hdc-log-stub.cpp
     ../stub/drv_stub.cpp

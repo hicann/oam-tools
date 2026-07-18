@@ -2043,30 +2043,6 @@ TEST_F(JOB_WRAPPER_PROF_L2_CACHE_JOB_TEST, Uninit) {
     EXPECT_EQ(PROFILING_SUCCESS, profL2CacheJob->Uninit());
 }
 
-TEST_F(JOB_WRAPPER_PROF_L2_CACHE_JOB_TEST, TaskInit) {
-    GlobalMockObject::verify();
-
-    auto param_ = std::shared_ptr<analysis::dvvp::message::ProfileParams>(
-            new analysis::dvvp::message::ProfileParams());
-    std::vector<std::string> _devices;
-     _devices.push_back("0");
-    std::shared_ptr<analysis::dvvp::host::ProfTask> task(new analysis::dvvp::host::ProfTask(_devices, param_));
-
-    MOCKER_CPP(&analysis::dvvp::transport::Uploader::Flush)
-        .stubs();
-
-    MOCKER(mmCreateTaskWithThreadAttr)
-        .stubs()
-        .will(returnValue(EN_OK));
-
-    MOCKER(pthread_create)
-        .stubs()
-        .then(returnValue(-1));
-
-    EXPECT_EQ(PROFILING_FAILED, task->Init());
-    task->isInited_ = true;
-}
-
 class JOB_WRAPPER_PROF_PERF_EXTRA_JOB_TEST: public testing::Test {
 protected:
     virtual void SetUp() {
