@@ -162,11 +162,11 @@
 - **-a \<HcclAccelerator\>或--accelerator \<HcclAccelerator\>**：可选，该参数仅支持Ascend 950PR/Ascend 950DT，用于设置加速模式。
   - default：使用默认自适应加速模式，会根据组网、数据量等情况自动选择合适的模式。
   - aicpu_ts：使用Device侧的AI CPU计算单元加速。
-  - aiv：使用Device侧的Vector Core计算单元加速。Ascend 950PR不支持此配置。
+  - aiv：使用Device侧的Vector Core计算单元加速，大数据量情况下可能会回退到其他加速模式。
   - ccu_ms：使用CCU MS（Memory Slice）模式加速。Ascend 950PR不支持此配置。
   - ccu_sched：使用CCU调度模式加速。
   - host_ts：不支持此配置。
-  - aiv_only：不支持此配置。
+  - aiv_only：使用Device侧的AI Core计算单元加速，相较于aiv加速模式，不会发生回退情况。
 
   **注：该配置的优先级高于环境变量HCCL_OP_EXPANSION_MODE。**
   <!-- end id3 -->
