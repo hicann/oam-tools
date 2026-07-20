@@ -3,14 +3,23 @@
 完成[安装perf、iotop、ltrace工具](./install_perf_iotop_ltrace.md)后，需要给用户配置依赖权限。可参见如下步骤进行配置。
 
 1. 以root用户登录环境。
-2. 执行如下命令，在/usr/bin/目录下创建文件msprof\_data\_collection.sh。
+2. 执行如下命令，将原环境perf的安全限制等级配置为0（即允许非root用户访问）。
+
+   ```sh
+   echo 0 > /proc/sys/kernel/perf_event_paranoid
+   ```
+
+   > [!NOTE]说明
+   > 执行以上命令前请先执行`cat /proc/sys/kernel/perf_event_paranoid`，查看用户原本的值，以便后续恢复环境。
+
+3. 执行如下命令，在/usr/bin/目录下创建文件msprof\_data\_collection.sh。
 
     ```sh
     cd /usr/bin
     touch msprof_data_collection.sh
     ```
 
-3. 在msprof\_data\_collection.sh文件中添加脚本内容。
+4. 在msprof\_data\_collection.sh文件中添加脚本内容。
     1. 打开msprof\_data\_collection.sh文件。
 
         ```sh
@@ -25,13 +34,13 @@
         ```bash
         #!/bin/bash
         # This script is used to run perf/iotop/ltrace by profiling.
-        
+
         command_type=$1
         command_param=$2
         script_dir="/usr/bin"
         script_name="$(basename "$0")"
         reg_int='^[1-9][0-9]{,6}$|^0$'
-        
+
         function get_version(){
             if [ "${command_param}" = "perf" ] || [ "${command_param}" = "ltrace" ] || [ "${command_param}" = "iotop" ]; then
                 "${command_param}" --version
@@ -41,7 +50,7 @@
                 exit 1
             fi
         }
-        
+
         function kill_prof_cmd(){
             if [[ ${command_param} =~ ${reg_int} ]]; then
                 ppid=`ps -o ppid= -p ${command_param}`
@@ -54,16 +63,16 @@
                 pidLine=`pstree -T -p ${command_param}`
                 pidLine=`echo $pidLine | awk 'BEGIN{ FS="(" ; RS=")" } NF>1 { print $NF }'`
                 for pid in $pidLine
-                    do 
+                    do
                         sudo kill -2 ${pid}
-                    done     
+                    done
                 exit 1
             else
                 echo "Input pid:${command_param} error"
                 exit 1
             fi
         }
-        
+
         #当前跑这个脚本的用户和pid进程所属的用户要一致
         function check_pid(){
             if [[ ! ${command_param} =~ ${reg_int} ]]; then
@@ -86,22 +95,22 @@
                 exit 1
             fi
         }
-        
+
         function run_prof_trace_cmd(){
             check_pid
             perf trace -T --syscalls -p "${command_param}"
         }
-        
+
         function run_ltrace_cmd(){
             check_pid
             ltrace -ttt -T -e pthread_attr_init -e pthread_create -e pthread_join -e pthread_mutex_init -p "${command_param}"
         }
-        
+
         function run_iotop_cmd(){
             check_pid
             iotop -b -d 0.02 -P -t -p "${command_param}"
         }
-        
+
         function check_username(){
             echo "${command_param}" | grep -q -E '^[ 0-9a-zA-Z./:]*$'
             result=$?
@@ -114,7 +123,7 @@
                 exit 1
             fi
         }
-        
+
         function get_cmd(){
             params=$(cat /proc/sys/kernel/pid_max)
             if [[ ! "$params" =~ ${reg_int} ]]; then
@@ -140,7 +149,7 @@
             cmd=$(echo -e "${cmd}\nDefaults env_reset")
             echo "${cmd}"
         }
-        
+
         function set_sudoers(){
             if [ -d "/etc/sudoers.d" ]; then
                 if [ -f "/etc/sudoers.d/${command_param}_profiling" ]; then
@@ -171,13 +180,13 @@
             chmod u-w /etc/sudoers
             echo "The user permission have been configured successfully. You can find the configuration file in the /etc/sudoers."
         }
-        
+
         function handle_sudoers(){
             check_username
             get_cmd
             set_sudoers
         }
-        
+
         function main(){
             if [ $# -ne 2 ]; then
                 echo "The number of parameters is incorrect, please enter two parameters"
@@ -207,7 +216,7 @@
                 exit 1
             fi
         }
-        
+
         main "$@"
         ```
 
@@ -223,7 +232,7 @@
         chmod o-w msprof_data_collection.sh
         ```
 
-4. 执行如下命令，给安装用户运行perf，iotop，ltrace工具添加权限（以HwHiAiUser为例）。
+5. 执行如下命令，给安装用户运行perf，iotop，ltrace工具添加权限（以HwHiAiUser为例）。
 
     ```sh
     /usr/bin/msprof_data_collection.sh set-sudoers HwHiAiUser
@@ -236,9 +245,9 @@
     ```
 
     > [!NOTE]说明
-    >msprof\_data\_collection.sh会使用户获得sudo权限，存在提权风险，请谨慎使用，配置并完成采集操作后，请执行步骤5清除sudo权限。
+    >msprof\_data\_collection.sh会使用户获得sudo权限，存在提权风险，请谨慎使用，配置并完成采集操作后，请执行步骤6清除sudo权限。
 
-5. 基于安全考虑，配置完以上权限并完成相应Profiling采集后，请进行配置清除操作。
+6. 基于安全考虑，配置完以上权限并完成相应Profiling采集后，请进行配置清除操作。
     1. 检查是否存在“/etc/sudoers.d/\{安装用户名\}\_profiling”文件，若存在则删除该文件。
     2. 检查是否存在“/etc/sudoers”文件，若存在则：
 
@@ -261,3 +270,9 @@
         ```sh
         chmod u-w /etc/sudoers
         ```
+
+    4. 执行以下命令取消非root用户的访问权限，如下以原环境perf的安全限制等级取值4为例。
+
+       ```sh
+        echo 4 > /proc/sys/kernel/perf_event_paranoid
+       ```
