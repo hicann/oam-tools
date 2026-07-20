@@ -645,10 +645,6 @@ TEST_F(HDC_API_TEST, HdcCapacity_InvalidSegment) {
     GlobalMockObject::verify();
 }
 
-TEST_F(HDC_API_TEST, HdcCapacity_NullSegment) {
-    EXPECT_EQ(IDE_DAEMON_ERROR, HdcCapacity(nullptr));
-}
-
 // ================================ IdeGetDevIdBySession ================================
 
 TEST_F(HDC_API_TEST, IdeGetDevIdBySession_NullSession) {

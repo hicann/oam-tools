@@ -937,6 +937,13 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHalHdcSessionConnect) {
     EXPECT_EQ(DRV_ERROR_NONE, AdxHalHdcSessionConnect(0, 0, 0, nullptr, nullptr));
 }
 
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxIdeGetVfIdBySession) {
+    GlobalMockObject::verify();
+
+    int32_t vfId = -1;
+    EXPECT_EQ(IDE_DAEMON_OK, AdxIdeGetVfIdBySession((HDC_SESSION)0x1, vfId));
+}
+
 TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_TLV) {
     GlobalMockObject::verify();
 
