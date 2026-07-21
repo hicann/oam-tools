@@ -20,6 +20,8 @@ set -o pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASEPATH="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_OUTPUT_DIR="${BASEPATH}/build"
+# build.sh moves generated cann-oam-tools_*.run packages to build_out/.
+BUILD_OUT_DIR="${BASEPATH}/build_out"
 
 declare -A TEST_CASES=(
     ["asys_st"]="pytest"
@@ -170,6 +172,67 @@ get_test_cases() {
     done
 
     echo "${result[@]}"
+}
+
+is_package_st_case() {
+    case "$1" in
+        install_st|upgrade_st|uninstall_st)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+find_run_package() {
+    local pkg
+    pkg=$(find "${BUILD_OUT_DIR}" -maxdepth 1 -type f -name "cann-oam-tools_*.run" 2>/dev/null \
+        | sort -V | tail -n 1)
+    if [[ -n "${pkg}" ]]; then
+        echo "${pkg}"
+        return 0
+    fi
+    return 1
+}
+
+ensure_run_package_for_st_cases() {
+    local test_cases=("$@")
+    local case_name
+    local need_package=false
+
+    for case_name in "${test_cases[@]}"; do
+        if is_package_st_case "${case_name}"; then
+            need_package=true
+            break
+        fi
+    done
+
+    if [[ "${need_package}" != "true" ]]; then
+        return 0
+    fi
+
+    local run_pkg
+    run_pkg=$(find_run_package || true)
+    if [[ -n "${run_pkg}" ]]; then
+        echo "INFO: Using run package: ${run_pkg}"
+        return 0
+    fi
+
+    echo "INFO: install/upgrade/uninstall ST requires a cann-oam-tools .run package."
+    echo "INFO: No cann-oam-tools_*.run found in ${BUILD_OUT_DIR}; building package first."
+    if ! bash "${BASEPATH}/build.sh" --noexec; then
+        echo "ERROR: Failed to build run package with bash build.sh --noexec"
+        return 1
+    fi
+
+    run_pkg=$(find_run_package || true)
+    if [[ -z "${run_pkg}" ]]; then
+        echo "ERROR: build.sh finished but no cann-oam-tools_*.run was found in ${BUILD_OUT_DIR}"
+        return 1
+    fi
+
+    echo "INFO: Prepared run package: ${run_pkg}"
 }
 
 validate_gtest_result() {
@@ -640,6 +703,7 @@ main() {
     fi
 
     echo "INFO: Running test cases: ${test_cases[*]}"
+    ensure_run_package_for_st_cases "${test_cases[@]}" || exit 1
 
     local overall_return_code=0
 
