@@ -39,6 +39,9 @@ msprof:
     release:
       - src/msprof
     unrelease:
+      - src/msprof/collector/basic/osal/osal_linux.c
+      - src/msprof/collector/basic/osal/osal_linux_mem.c
+      - src/msprof/collector/dvvp/profhal/adx/wrapper/adx_prof_api.cpp
   llt:
     ut_check: true
     st_check: false
