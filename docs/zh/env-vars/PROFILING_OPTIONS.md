@@ -25,7 +25,7 @@ Profiling采集结果文件保存路径。支持配置绝对路径或相对路�
 
 ### task\_trace、task\_time
 
-控制采集算子下发耗时和算子执行耗时的开关。涉及在task\_time、op\_summary、op\_statistic等文件中输出相关耗时数据。配置值：
+控制采集算子下发耗时、算子执行耗时和迭代轨迹数据的开关。涉及在task\_time、op\_summary、op\_statistic等文件中输出相关耗时数据。配置值：
 
 - on：开启，默认值，和配置为l1的效果一样。
 - off：关闭。
