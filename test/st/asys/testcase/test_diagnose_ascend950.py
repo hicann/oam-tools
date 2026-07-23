@@ -139,8 +139,11 @@ class TestDiagnose(AssertTest):
         )
 
     def test_diagnose_aicore_stl_loads_so(self, mocker):
-        """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl."""
-        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl.
+
+        Also passes --timeout to exercise the warn-and-ignore branch for aicore_stl_detect.
+        """
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect", "--timeout=90"]
         mock_stl = AsysStlDiagnose0()
         mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=mock_stl)
         mocker.patch("os.getuid", return_value=0)

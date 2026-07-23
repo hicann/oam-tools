@@ -103,8 +103,8 @@ class Arg(enum.Enum):
         KEY_NAME: "r", KEY_CHECKER: None, KEY_REQUIRED: True,
         KEY_CHOICES: ['stress_detect', 'hbm_detect', 'cpu_detect', 'component', 'aicore_stl_detect'],
         KEY_HELP: f"{POSITIONAL_R} Specifies the hardware detection mode. It can be set to 'stress_detect' (AI Core "
-                  "stress test), 'hbm_detect' (HBM detection),  'cpu_detect' (CPU detection), "
-                  "'component' (Operator detection) or 'aicore_stl_detect' (AICore STL self-diagnose)."
+                  "stress test), 'hbm_detect' (HBM detection),  'cpu_detect' (CPU detection), 'component' "
+                  "(Operator detection) or 'aicore_stl_detect' (AICore STL self-diagnose, support 950 only)."
     }
     TIMEOUT = {
         KEY_NAME: "timeout", KEY_TYPE: int, KEY_CHECKER: None, KEY_REQUIRED: False, KEY_METAVAR: " ",

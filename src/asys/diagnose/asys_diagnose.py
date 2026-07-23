@@ -169,7 +169,9 @@ class AsysDiagnose():
                 log_error(f"The value of timeout must be in the range of [{CPU_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}].")
                 return False
         if run_mode == AICORE_STL_MODE and timeout is not False:
+            open_log()
             log_warning("The --timeout argument is not supported in aicore_stl_detect mode and will be ignored.")
+            close_log()
         if self.devices_num == 0:
             return False
         return True
