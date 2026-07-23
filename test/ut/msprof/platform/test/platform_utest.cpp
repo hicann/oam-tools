@@ -104,7 +104,7 @@ TEST_F(PLATFORM_UTEST, DavidV121_GetL2CacheMetrics) {
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetL2CacheEvents) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x00,0x88,0x89,0x8A,0x74,0x75,0x97"),
+    EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"),
               platform->GetL2CacheEvents());
 }
 
