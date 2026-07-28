@@ -104,7 +104,7 @@ class Arg(enum.Enum):
         KEY_CHOICES: ['stress_detect', 'hbm_detect', 'cpu_detect', 'component', 'aicore_stl_detect'],
         KEY_HELP: f"{POSITIONAL_R} Specifies the hardware detection mode. It can be set to 'stress_detect' (AI Core "
                   "stress test), 'hbm_detect' (HBM detection),  'cpu_detect' (CPU detection), 'component' "
-                  "(Operator detection) or 'aicore_stl_detect' (AICore STL self-diagnose, support 950 only)."
+                  "(Operator detection) or 'aicore_stl_detect' (AICore STL self-diagnose, support Ascend950 only)."
     }
     TIMEOUT = {
         KEY_NAME: "timeout", KEY_TYPE: int, KEY_CHECKER: None, KEY_REQUIRED: False, KEY_METAVAR: " ",
@@ -227,7 +227,7 @@ class Command(enum.Enum):
         KEY_ARGS: [Arg.DIS_RUN, Arg.DEVICE, Arg.TIMEOUT, Arg.OUTPUT],
         KEY_HELP: "Diagnoses the hardware status of the device. It has diagnostic capabilities for "
                   "component, stress_detect, hbm_detect, cpu_detect and aicore_stl_detect. "
-                  "The detect diagnostic only supports [910B, 910_93, 950, 910_96]. "
+                  "The detect diagnostic only supports Ascend series chips: 910B, 910_93, 950, 910_96. "
     }
     HEALTH = {
         KEY_NAME: "health",
@@ -390,7 +390,7 @@ class CommandLineParser:
         Check args according to command type.
 
         Args:
-            args: The namesapce returned by parse_args
+            args: The namespace returned by parse_args
 
         Returns:
             RetCode: return code (SUCCESS:0, FAILED:1)

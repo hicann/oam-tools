@@ -33,7 +33,7 @@ def setup_module():
     print("TestHelp st test start.")
 
 def teardown_module():
-    print("TestHelp st test finsh.")
+    print("TestHelp st test finish.")
 
 class TestHelp(AssertTest):
 
@@ -113,7 +113,8 @@ position
     diagnose            Diagnoses the hardware status of the device. It has
                         diagnostic capabilities for component, stress_detect,
                         hbm_detect, cpu_detect and aicore_stl_detect. The detect
-                        diagnostic only supports [910B, 910_93, 950, 910_96].
+                        diagnostic only supports Ascend series chips: 910B, 
+                        910_93, 950, 910_96.
     health              Diagnoses the health status of the device.
     info                Collects the software and hardware information of the
                         host and device.
@@ -204,7 +205,7 @@ options:
                         test), 'hbm_detect' (HBM detection), 'cpu_detect' (CPU
                         detection), 'component' (Operator detection) or
                         'aicore_stl_detect' (AICore STL self-diagnose, 
-                        support 950 only).
+                        support Ascend950 only).
   -d                    <Optional> Specifies the ID of the device for
                         command execution.
   --timeout             <Optional> Specifies the detection duration,
