@@ -173,7 +173,7 @@ def collect_ops_from_dump(output_root_path):
         for file in files:
             if file.endswith(".o") or file.endswith(".json"):
                 ops_files.append(os.path.join(path, file))
-    if len(ops_files) >= 3:  # two .o, one .json
+    if ops_files:
         return collect_op_files(ops_files, target_dir, MOVE_MODE)
 
     return False

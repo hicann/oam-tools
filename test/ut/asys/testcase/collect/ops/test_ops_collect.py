@@ -34,7 +34,7 @@ def setup_module():
 
 
 def teardown_module():
-    print("TestOpsCollect ut test finsh.")
+    print("TestOpsCollect ut test finish.")
 
 
 class TestOpsCollect(AssertTest):
@@ -269,6 +269,23 @@ class TestOpsCollect(AssertTest):
 
         mocker.patch("common.FileOperate.collect_file_to_dir", return_value=True)
         self.assertTrue(collect_ops_from_dump(ut_root_path + "/data/output") is True)
+
+    def test_ops_collect_collect_ops_from_dump_only_o_files(self, mocker):
+        from collect.ops.ops_collect import collect_ops_from_dump
+
+        ret = [('data-dump/0', [], ["test_kernel.o"])]
+        mocker.patch("os.walk", return_value=ret)
+        mocker.patch("common.FileOperate.check_dir", return_value=True)
+        mocker.patch("collect.ops.ops_collect.collect_op_files", return_value=True)
+        self.assertTrue(collect_ops_from_dump(ut_root_path + "/data/output") is True)
+
+    def test_ops_collect_collect_ops_from_dump_no_ops_files(self, mocker):
+        from collect.ops.ops_collect import collect_ops_from_dump
+
+        ret = [('data-dump/0', [], ["exception_info.5.1.1706152473105513"])]
+        mocker.patch("os.walk", return_value=ret)
+        mocker.patch("common.FileOperate.check_dir", return_value=True)
+        self.assertTrue(collect_ops_from_dump(ut_root_path + "/data/output") is False)
 
     def test_collect_l0_exception_dump_cache_path(self, mocker):
         from collect.ops.ops_collect import collect_ops_files_env_var
