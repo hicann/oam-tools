@@ -35,46 +35,54 @@ using namespace Analysis::Dvvp::Common::Platform;
 
 constexpr int32_t MIN_INTERVAL = 1;
 constexpr int32_t MAX_INTERVAL = 15 * 24 * 3600 * 1000; // 15 * 24 * 3600 * 1000 = 15day's micro seconds
-constexpr int32_t MAX_PERIOD = 30 * 24 * 3600; // 30 * 24 * 3600 = 30day's seconds
-constexpr int32_t MAX_CORE_ID_SIZE = 80;  // ai core or aiv core id size
-constexpr int32_t BASE_HEX = 16;  // hex to int
+constexpr int32_t MAX_PERIOD = 30 * 24 * 3600;          // 30 * 24 * 3600 = 30day's seconds
+constexpr int32_t MAX_CORE_ID_SIZE = 80;                // ai core or aiv core id size
+constexpr int32_t BASE_HEX = 16;                        // hex to int
 const std::string SOC_PMU_HA = "HA:";
 const std::string SOC_PMU_MATA = "MATA:";
 const std::string SOC_PMU_SMMU = "SMMU:";
 const std::string SOC_PMU_NOC = "NOC:";
 
 const std::map<std::string, ProfSocPmuType> SOC_PMU_MAP = {
-    {SOC_PMU_HA, ProfSocPmuType::PMU_TYPE_HA},
+    {  SOC_PMU_HA,   ProfSocPmuType::PMU_TYPE_HA},
     {SOC_PMU_MATA, ProfSocPmuType::PMU_TYPE_MATA},
     {SOC_PMU_SMMU, ProfSocPmuType::PMU_TYPE_SMMU},
-    {SOC_PMU_NOC, ProfSocPmuType::PMU_TYPE_NOC}
+    { SOC_PMU_NOC,  ProfSocPmuType::PMU_TYPE_NOC}
 };
 
-ParamValidation::ParamValidation()
-{
+enum class ParamBasicCheckResult { SUCCESS, FAILED, CONTINUE };
+
+ParamBasicCheckResult CheckParamEmptyAndSupported(const std::string &switchName, const std::string &switchStr) {
+    if (switchStr.empty()) {
+        MSPROF_LOGI("Argument %s is empty.", switchName.c_str());
+        return ParamBasicCheckResult::SUCCESS;
+    }
+    if (!Platform::instance()->CheckIfSupport(switchName)) {
+        MSPROF_LOGE("Argument [%s] is not supported.", switchName.c_str());
+        MSPROF_INPUT_ERROR("EK0001", std::vector<std::string>({"config", "value", "reason"}),
+            std::vector<std::string>({switchName, switchStr, "Argument is not supported."}));
+        return ParamBasicCheckResult::FAILED;
+    }
+    return ParamBasicCheckResult::CONTINUE;
 }
 
-ParamValidation::~ParamValidation()
-{
-}
+ParamValidation::ParamValidation() {}
 
-int32_t ParamValidation::Init() const
-{
+ParamValidation::~ParamValidation() {}
+
+int32_t ParamValidation::Init() const {
     return PROFILING_SUCCESS;
 }
 
-int32_t ParamValidation::Uninit() const
-{
+int32_t ParamValidation::Uninit() const {
     return PROFILING_SUCCESS;
 }
 
-bool ParamValidation::CheckTsCpuEventIsValid(const std::vector<std::string> &events) const
-{
+bool ParamValidation::CheckTsCpuEventIsValid(const std::vector<std::string> &events) const {
     return CheckCtrlCpuEventIsValid(events);
 }
 
-bool ParamValidation::CheckCtrlCpuEventIsValid(const std::vector<std::string> &events) const
-{
+bool ParamValidation::CheckCtrlCpuEventIsValid(const std::vector<std::string> &events) const {
     if (!CheckPmuEventSizeIsValid(events.size())) {
         return false;
     }
@@ -87,8 +95,7 @@ bool ParamValidation::CheckCtrlCpuEventIsValid(const std::vector<std::string> &e
     return true;
 }
 
-bool ParamValidation::CheckLlcEventsIsValid(const std::string &events)
-{
+bool ParamValidation::CheckLlcEventsIsValid(const std::string &events) const {
     for (auto ch : events) {
         if (ch == '_' || ch == '/' || (ch == ',' || ch == ' ')) {
             continue;
@@ -105,8 +112,7 @@ bool ParamValidation::CheckLlcEventsIsValid(const std::string &events)
     return true;
 }
 
-bool ParamValidation::CheckHexOrDec(std::string &events, const size_t mode) const
-{
+bool ParamValidation::CheckHexOrDec(std::string &events, const size_t mode) const {
     if (events.empty()) {
         return false;
     }
@@ -147,14 +153,12 @@ bool ParamValidation::CheckHexOrDec(std::string &events, const size_t mode) cons
     return true;
 }
 
-int32_t ParamValidation::CustomHexCharConfig(std::string &aicoreEvents, const std::string &pattern) const
-{
+int32_t ParamValidation::CustomHexCharConfig(std::string &aicoreEvents, const std::string &pattern) const {
     if (aicoreEvents.empty()) {
         MSPROF_LOGE("Custom PMU event is empty.");
         return PROFILING_FAILED;
     }
-    std::vector<std::string> eventsList =
-        analysis::dvvp::common::utils::Utils::Split(aicoreEvents, false, "", pattern);
+    std::vector<std::string> eventsList = analysis::dvvp::common::utils::Utils::Split(aicoreEvents, false, "", pattern);
     aicoreEvents = "";
     if (!CheckPmuEventSizeIsValid(eventsList.size())) {
         MSPROF_LOGE("ai core events size(%zu) is invalid", eventsList.size());
@@ -164,8 +168,7 @@ int32_t ParamValidation::CustomHexCharConfig(std::string &aicoreEvents, const st
         std::string event = eventsList[i];
         if (!CheckHexOrDec(event, HEX_MODE)) {
             if (!CheckHexOrDec(event, DEC_MODE)) {
-                MSPROF_LOGE("0x%s is invalid, hexadecimal or decimal parameters are allowed.",
-                    event.c_str());
+                MSPROF_LOGE("0x%s is invalid, hexadecimal or decimal parameters are allowed.", event.c_str());
                 return PROFILING_FAILED;
             }
         }
@@ -175,8 +178,7 @@ int32_t ParamValidation::CustomHexCharConfig(std::string &aicoreEvents, const st
     return PROFILING_SUCCESS;
 }
 
-bool ParamValidation::CheckAicoreMetricsIsValid(const std::string &aicoreMetrics) const
-{
+bool ParamValidation::CheckAicoreMetricsIsValid(const std::string &aicoreMetrics) const {
     if (aicoreMetrics.empty()) {
         MSPROF_LOGI("aicoreMetrics is empty");
         return true;
@@ -206,20 +208,16 @@ bool ParamValidation::CheckAicoreMetricsIsValid(const std::string &aicoreMetrics
     return false;
 }
 
-bool ParamValidation::CheckDuplicateSocPmu(const std::string &oriStr) const
-{
-    if (!Utils::CheckDuplicateStrings(oriStr, SOC_PMU_HA) ||
-        !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_MATA) ||
-        !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_SMMU) ||
-        !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_NOC)) {
+bool ParamValidation::CheckDuplicateSocPmu(const std::string &oriStr) const {
+    if (!Utils::CheckDuplicateStrings(oriStr, SOC_PMU_HA) || !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_MATA) ||
+        !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_SMMU) || !Utils::CheckDuplicateStrings(oriStr, SOC_PMU_NOC)) {
         return false;
     }
 
     return true;
 }
 
-ProfSocPmuType ParamValidation::GetSocPmuInfo(std::string &socPmuStr, std::string &eventStr) const
-{
+ProfSocPmuType ParamValidation::GetSocPmuInfo(std::string &socPmuStr, std::string &eventStr) const {
     for (auto iter = SOC_PMU_MAP.begin(); iter != SOC_PMU_MAP.end(); ++iter) {
         if (socPmuStr.compare(0, iter->first.size(), iter->first) == 0) {
             eventStr = socPmuStr.substr(iter->first.size());
@@ -231,14 +229,11 @@ ProfSocPmuType ParamValidation::GetSocPmuInfo(std::string &socPmuStr, std::strin
     return ProfSocPmuType::PMU_TYPE_HA_NO_HEAD;
 }
 
-bool ParamValidation::CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t eventSize, int32_t &maxEvent) const
-{
-    static int32_t nocMaxEvent = 63; // noc max npu event is 0x3F
+bool ParamValidation::CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t eventSize, int32_t &maxEvent) const {
+    static int32_t nocMaxEvent = 63;    // noc max npu event is 0x3F
     static int32_t smmuMaxEvent = 2056; // smmu max npu event is 0x808
-    if (type == ProfSocPmuType::PMU_TYPE_MATA ||
-        type == ProfSocPmuType::PMU_TYPE_HA ||
-        type == ProfSocPmuType::PMU_TYPE_SMMU ||
-        type == ProfSocPmuType::PMU_TYPE_HA_NO_HEAD) {
+    if (type == ProfSocPmuType::PMU_TYPE_MATA || type == ProfSocPmuType::PMU_TYPE_HA ||
+        type == ProfSocPmuType::PMU_TYPE_SMMU || type == ProfSocPmuType::PMU_TYPE_HA_NO_HEAD) {
         static uint32_t maxSocPmuEventSize = 8;
         if (eventSize > maxSocPmuEventSize) {
             MSPROF_LOGE("Input soc pmu events size(%zu) is invalid, which should be less than %u.", eventSize,
@@ -255,8 +250,8 @@ bool ParamValidation::CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t e
         }
         static uint32_t maxNocEventSize = 4;
         if (eventSize > maxNocEventSize) {
-            MSPROF_LOGE("Input noc pmu events size(%zu) is invalid, which should be less than %u.", eventSize,
-                maxNocEventSize);
+            MSPROF_LOGE(
+                "Input noc pmu events size(%zu) is invalid, which should be less than %u.", eventSize, maxNocEventSize);
             return false;
         }
         maxEvent = nocMaxEvent;
@@ -264,10 +259,9 @@ bool ParamValidation::CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t e
     return true;
 }
 
-bool ParamValidation::CheckSocPmuEventsValid(ProfSocPmuType type, const std::vector<std::string> &events) const
-{
-    const int32_t minEvent = 0;  // min npu event is 0x0
-    int32_t maxEvent = 255;  // max npu event is 0xFF
+bool ParamValidation::CheckSocPmuEventsValid(ProfSocPmuType type, const std::vector<std::string> &events) const {
+    const int32_t minEvent = 0; // min npu event is 0x0
+    int32_t maxEvent = 255;     // max npu event is 0xFF
     if (!CheckSocPmuEventsSizeValid(type, static_cast<uint32_t>(events.size()), maxEvent)) {
         return false;
     }
@@ -282,17 +276,16 @@ bool ParamValidation::CheckSocPmuEventsValid(ProfSocPmuType type, const std::vec
     for (uint32_t i = 0; i < events.size(); ++i) {
         int32_t eventVal = strtol(events[i].c_str(), nullptr, BASE_HEX);
         if (eventVal < minEvent || eventVal > maxEvent) {
-            MSPROF_LOGE("Npu event val: %d out of range, which should be in %d-%d(0x%x-0x%x)",
-                eventVal, minEvent, maxEvent, minEvent, maxEvent);
+            MSPROF_LOGE("Npu event val: %d out of range, which should be in %d-%d(0x%x-0x%x)", eventVal, minEvent,
+                maxEvent, minEvent, maxEvent);
             return false;
         }
     }
     return true;
 }
 
-bool ParamValidation::CheckOpTypeIsValid(const std::string &opTypeInput, std::string &opType,
-    std::string &errInfo) const
-{
+bool ParamValidation::CheckOpTypeIsValid(
+    const std::string &opTypeInput, std::string &opType, std::string &errInfo) const {
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE)) {
         MSPROF_LOGE("OpType not supported on this platform.");
         return false;
@@ -310,7 +303,7 @@ bool ParamValidation::CheckOpTypeIsValid(const std::string &opTypeInput, std::st
         MSPROF_LOGE("Failed to check overflow opType: %s..., the max input size is %zu.",
             opTypeInput.substr(0, opTypePrintLen).c_str(), maxOpTypeLen);
         errInfo = "Failed to check overflow opType: " + opTypeInput.substr(0, opTypePrintLen) +
-            "..., the max input size is 256.";
+                  "..., the max input size is 256.";
         return false;
     }
 
@@ -337,8 +330,7 @@ bool ParamValidation::CheckOpTypeIsValid(const std::string &opTypeInput, std::st
 }
 
 bool ParamValidation::CheckProfilingIntervalIsValidTWO(
-    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
-{
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (params == nullptr) {
         MSPROF_LOGE("[CheckProfilingIntervalIsValidTWO]params is null");
         return false;
@@ -374,8 +366,7 @@ bool ParamValidation::CheckProfilingIntervalIsValidTWO(
 }
 
 bool ParamValidation::CheckProfilingIntervalIsValid(
-    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
-{
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (params == nullptr) {
         return false;
     }
@@ -406,8 +397,8 @@ bool ParamValidation::CheckProfilingIntervalIsValid(
     return CheckProfilingIntervalIsValidTWO(params);
 }
 
-bool ParamValidation::CheckSystemTraceSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckSystemTraceSwitchProfiling(
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (params == nullptr) {
         MSPROF_LOGE("[CheckSystemTraceSwitchProfiling]params is null");
         return false;
@@ -448,8 +439,8 @@ bool ParamValidation::CheckSystemTraceSwitchProfiling(SHARED_PTR_ALIA<analysis::
     return true;
 }
 
-bool ParamValidation::CheckProfilingSwitchIsValid(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckProfilingSwitchIsValid(
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (params == nullptr) {
         return false;
     }
@@ -468,25 +459,19 @@ bool ParamValidation::CheckProfilingSwitchIsValid(SHARED_PTR_ALIA<analysis::dvvp
     return true;
 }
 
-bool ParamValidation::IsValidSwitch(const std::string &switchStr)
-{
+bool ParamValidation::IsValidSwitch(const std::string &switchStr) const {
     if (switchStr.empty()) {
         return true;
     }
-    return switchStr.compare(MSVP_PROF_ON) == 0 ||
-        switchStr.compare(MSVP_PROF_OFF) == 0;
+    return switchStr.compare(MSVP_PROF_ON) == 0 || switchStr.compare(MSVP_PROF_OFF) == 0;
 }
 
-bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const std::string &switchStr)
-{
-    if (switchStr.empty()) {
-        MSPROF_LOGI("Argument %s is empty.", switchName.c_str());
+bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const std::string &switchStr) const {
+    const auto checkResult = CheckParamEmptyAndSupported(switchName, switchStr);
+    if (checkResult == ParamBasicCheckResult::SUCCESS) {
         return true;
     }
-    if (!Platform::instance()->CheckIfSupport(switchName)) {
-        MSPROF_LOGE("Argument [%s] is not supported.", switchName.c_str());
-        MSPROF_INPUT_ERROR("EK0001", std::vector<std::string>({"config", "value", "reason"}),
-            std::vector<std::string>({switchName, switchStr, "Argument is not supported."}));
+    if (checkResult == ParamBasicCheckResult::FAILED) {
         return false;
     }
     if (switchStr.compare(MSVP_PROF_L3) == 0 && !Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3)) {
@@ -501,13 +486,12 @@ bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const
         }
     } else if (switchName.compare("task_trace") == 0) {
         if (switchStr.compare(MSVP_PROF_L0) == 0 || switchStr.compare(MSVP_PROF_L1) == 0 ||
-            switchStr.compare(MSVP_PROF_L2) == 0 || switchStr.compare(MSVP_PROF_L3) == 0 ||
-            IsValidSwitch(switchStr)) {
+            switchStr.compare(MSVP_PROF_L2) == 0 || switchStr.compare(MSVP_PROF_L3) == 0 || IsValidSwitch(switchStr)) {
             return true;
         } else {
-            std::string task_trace_ranges = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3)
-                        ? "'on', 'off', 'l0', 'l1', 'l2' or 'l3'." 
-                        : "'on', 'off', 'l0', 'l1' or 'l2'.";
+            std::string task_trace_ranges = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3) ?
+                                                "'on', 'off', 'l0', 'l1', 'l2' or 'l3'." :
+                                                "'on', 'off', 'l0', 'l1' or 'l2'.";
             errInfo = "Please input " + task_trace_ranges;
         }
     }
@@ -515,37 +499,30 @@ bool ParamValidation::CheckParamL0L1Invalid(const std::string &switchName, const
     return false;
 }
 
-bool ParamValidation::CheckParamEmptyInvalid(const std::string &switchName, const std::string &switchStr) const
-{
-    if (switchStr.empty()) {
-        MSPROF_LOGI("Argument %s is empty.", switchName.c_str());
+bool ParamValidation::CheckParamEmptyInvalid(const std::string &switchName, const std::string &switchStr) const {
+    const auto checkResult = CheckParamEmptyAndSupported(switchName, switchStr);
+    if (checkResult == ParamBasicCheckResult::SUCCESS) {
         return true;
     }
-    if (!Platform::instance()->CheckIfSupport(switchName)) {
-        MSPROF_LOGE("Argument [%s] is not supported.", switchName.c_str());
-        MSPROF_INPUT_ERROR("EK0001", std::vector<std::string>({"config", "value", "reason"}),
-            std::vector<std::string>({switchName, switchStr, "Argument is not supported."}));
+    if (checkResult == ParamBasicCheckResult::FAILED) {
         return false;
     }
-    if (switchStr.compare(MSVP_PROF_ON) == 0 ||
-        switchStr.compare(MSVP_PROF_OFF) == 0) {
+    if (switchStr.compare(MSVP_PROF_ON) == 0 || switchStr.compare(MSVP_PROF_OFF) == 0) {
         return true;
     }
-    MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(),
-        switchStr.c_str());
+    MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(), switchStr.c_str());
     return false;
 }
 
-bool ParamValidation::CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckControlSwitchProfiling(
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (!IsValidSwitch(params->taskTsfw)) {
         MSPROF_LOGE("Control switch taskTsfw is not valid.");
     }
     return true;
 }
 
-bool ParamValidation::CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (!IsValidSwitch(params->ts_task_track)) {
         return false;
     }
@@ -579,8 +556,7 @@ bool ParamValidation::CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::mes
     return true;
 }
 
-bool ParamValidation::CheckPmuSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckPmuSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (!IsValidSwitch(params->ai_core_profiling)) {
         return false;
     }
@@ -602,15 +578,13 @@ bool ParamValidation::CheckPmuSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::me
     return true;
 }
 
-bool ParamValidation::CheckDeviceIdIsValid(const std::string &devId)
-{
+bool ParamValidation::CheckDeviceIdIsValid(const std::string &devId) const {
     if (!analysis::dvvp::common::utils::Utils::CheckStringIsNonNegativeIntNum(devId)) {
         MSPROF_LOGE("devId(%s) is not valid.", devId.c_str());
         return false;
     }
     int32_t devIdInt = 0;
-    FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(devIdInt, devId), return false, 
-        "devId %s is invalid", devId.c_str());
+    FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(devIdInt, devId), return false, "devId %s is invalid", devId.c_str());
     if (devIdInt >= 64) { // 64 : devIdMaxNum
         MSPROF_LOGW("devId(%s) is over limited.", devId.c_str());
         return false;
@@ -618,11 +592,10 @@ bool ParamValidation::CheckDeviceIdIsValid(const std::string &devId)
     return true;
 }
 
-bool ParamValidation::CheckPmuEventSizeIsValid(const size_t eventSize) const
-{
+bool ParamValidation::CheckPmuEventSizeIsValid(const size_t eventSize) const {
     if (eventSize > Platform::instance()->GetMaxMonitorNumber()) {
-        MSPROF_LOGE("check event monitor size(%zu) is bigger than %hu", eventSize,
-            Platform::instance()->GetMaxMonitorNumber());
+        MSPROF_LOGE(
+            "check event monitor size(%zu) is bigger than %hu", eventSize, Platform::instance()->GetMaxMonitorNumber());
         return false;
     }
 
@@ -630,13 +603,11 @@ bool ParamValidation::CheckPmuEventSizeIsValid(const size_t eventSize) const
     return true;
 }
 
-bool ParamValidation::CheckCoreIdSizeIsValid(const int32_t eventSize) const
-{
+bool ParamValidation::CheckCoreIdSizeIsValid(const int32_t eventSize) const {
     return eventSize <= MAX_CORE_ID_SIZE;
 }
 
-bool ParamValidation::CheckAiCoreEventCoresIsValid(const std::vector<int32_t> &coreId) const
-{
+bool ParamValidation::CheckAiCoreEventCoresIsValid(const std::vector<int32_t> &coreId) const {
     if (!CheckCoreIdSizeIsValid(coreId.size())) {
         MSPROF_LOGE("ai core events cores size(%zu) is bigger than %d", coreId.size(), MAX_CORE_ID_SIZE);
         return false;
@@ -649,13 +620,11 @@ bool ParamValidation::CheckAiCoreEventCoresIsValid(const std::vector<int32_t> &c
     return true;
 }
 
-bool ParamValidation::CheckAivEventCoresIsValid(const std::vector<int32_t> &coreId) const
-{
+bool ParamValidation::CheckAivEventCoresIsValid(const std::vector<int32_t> &coreId) const {
     return CheckAiCoreEventCoresIsValid(coreId);
 }
 
-bool ParamValidation::CheckDdrEventsIsValid(const std::vector<std::string> &events) const
-{
+bool ParamValidation::CheckDdrEventsIsValid(const std::vector<std::string> &events) const {
     if (!CheckPmuEventSizeIsValid(events.size())) {
         MSPROF_LOGE("ddr events size(%zu) is invalid.", events.size());
         return false;
@@ -665,11 +634,10 @@ bool ParamValidation::CheckDdrEventsIsValid(const std::vector<std::string> &even
             return true;
         }
     }
-    return CheckHbmEventsIsValid(events);  // same with hbm event
+    return CheckHbmEventsIsValid(events); // same with hbm event
 }
 
-bool ParamValidation::CheckHbmEventsIsValid(const std::vector<std::string> &events) const
-{
+bool ParamValidation::CheckHbmEventsIsValid(const std::vector<std::string> &events) const {
     if (!CheckPmuEventSizeIsValid(events.size())) {
         MSPROF_LOGE("hbm events size(%zu) is invalid.", events.size());
         return false;
@@ -682,13 +650,11 @@ bool ParamValidation::CheckHbmEventsIsValid(const std::vector<std::string> &even
     return true;
 }
 
-bool ParamValidation::CheckAivEventsIsValid(const std::vector<std::string> &events) const
-{
-    return CheckAiCoreEventsIsValid(events);  // same with ai core events
+bool ParamValidation::CheckAivEventsIsValid(const std::vector<std::string> &events) const {
+    return CheckAiCoreEventsIsValid(events); // same with ai core events
 }
 
-bool ParamValidation::CheckAppNameIsValid(const std::string &appName)
-{
+bool ParamValidation::CheckAppNameIsValid(const std::string &appName) const {
     if (appName.empty()) {
         MSPROF_LOGE("appName is empty");
         return false;
@@ -708,8 +674,7 @@ bool ParamValidation::CheckAppNameIsValid(const std::string &appName)
     return true;
 }
 
-bool ParamValidation::CheckDataTagIsValid(const std::string &tag) const
-{
+bool ParamValidation::CheckDataTagIsValid(const std::string &tag) const {
     if (tag.empty()) {
         MSPROF_LOGE("tag is empty");
         return false;
@@ -729,9 +694,8 @@ bool ParamValidation::CheckDataTagIsValid(const std::string &tag) const
     return true;
 }
 
-bool ParamValidation::CheckParamsDevices(const std::string &app, const std::string &paramsDevices,
-                                         const std::string &paramsHostSys)
-{
+bool ParamValidation::CheckParamsDevices(
+    const std::string &app, const std::string &paramsDevices, const std::string &paramsHostSys) const {
     if (paramsDevices.empty() && app.empty()) {
         // If only host data is collected, the device parameter is not required.
         if (!paramsHostSys.empty()) {
@@ -746,8 +710,7 @@ bool ParamValidation::CheckParamsDevices(const std::string &app, const std::stri
     }
 
     bool result = true;
-    std::vector<std::string> devices =
-        analysis::dvvp::common::utils::Utils::Split(paramsDevices, false, "", ",");
+    std::vector<std::string> devices = analysis::dvvp::common::utils::Utils::Split(paramsDevices, false, "", ",");
     for (size_t i = 0; i < devices.size(); ++i) {
         if (!ParamValidation::instance()->CheckDeviceIdIsValid(devices[i])) {
             MSPROF_LOGE("device:%s is not valid!", devices[i].c_str());
@@ -758,8 +721,7 @@ bool ParamValidation::CheckParamsDevices(const std::string &app, const std::stri
     return result;
 }
 
-bool ParamValidation::CheckParamsJobIdRegexMatch(const std::string &paramsJobId)
-{
+bool ParamValidation::CheckParamsJobIdRegexMatch(const std::string &paramsJobId) const {
     size_t jobIdStrMaxLength = 512; // 512 : max length of joid
     if (paramsJobId.empty() || paramsJobId.length() > jobIdStrMaxLength) {
         return false;
@@ -780,8 +742,7 @@ bool ParamValidation::CheckParamsJobIdRegexMatch(const std::string &paramsJobId)
     return true;
 }
 
-bool ParamValidation::CheckParamsModeRegexMatch(const std::string &paramsMode)
-{
+bool ParamValidation::CheckParamsModeRegexMatch(const std::string &paramsMode) const {
     if (paramsMode.empty()) {
         return true;
     }
@@ -799,8 +760,7 @@ bool ParamValidation::CheckParamsModeRegexMatch(const std::string &paramsMode)
     return false;
 }
 
-bool ParamValidation::CheckProfilingParams(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
-{
+bool ParamValidation::CheckProfilingParams(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     if (params == nullptr) {
         MSPROF_LOGE("[CheckProfilingParams]params is nullptr.");
         return false;
@@ -828,15 +788,13 @@ bool ParamValidation::CheckProfilingParams(SHARED_PTR_ALIA<analysis::dvvp::messa
     return true;
 }
 
-int32_t ParamValidation::CheckEventsSize(const std::string &events) const
-{
+int32_t ParamValidation::CheckEventsSize(const std::string &events) const {
     if (events.empty()) {
         MSPROF_LOGI("events is empty");
         return PROFILING_SUCCESS;
     }
-    const std::vector<std::string> eventsList =
-        analysis::dvvp::common::utils::Utils::Split(events, false, "", ",");
-    const int32_t eventsListMaxSize = 8;  // 8 is max event list len
+    const std::vector<std::string> eventsList = analysis::dvvp::common::utils::Utils::Split(events, false, "", ",");
+    const int32_t eventsListMaxSize = 8; // 8 is max event list len
     if (eventsList.size() > eventsListMaxSize) {
         MSPROF_LOGE("events Size is incorrect. %s", events.c_str());
         return PROFILING_FAILED;
@@ -844,8 +802,7 @@ int32_t ParamValidation::CheckEventsSize(const std::string &events) const
     return PROFILING_SUCCESS;
 }
 
-bool ParamValidation::IsValidInterval(const int32_t interval, const std::string &logKey) const
-{
+bool ParamValidation::IsValidInterval(const int32_t interval, const std::string &logKey) const {
     if (interval < MIN_INTERVAL || interval > MAX_INTERVAL) {
         MSPROF_LOGE("invalid %s interval: %d", logKey.c_str(), interval);
         return false;
@@ -853,8 +810,7 @@ bool ParamValidation::IsValidInterval(const int32_t interval, const std::string 
     return true;
 }
 
-bool ParamValidation::IsValidSleepPeriod(const int32_t period) const
-{
+bool ParamValidation::IsValidSleepPeriod(const int32_t period) const {
     if (period < MIN_INTERVAL || period > MAX_PERIOD) {
         MSPROF_LOGE("Invalid --sys-period: %d s", period);
         return false;
@@ -862,21 +818,14 @@ bool ParamValidation::IsValidSleepPeriod(const int32_t period) const
     return true;
 }
 
-bool ParamValidation::CheckHostSysOptionsIsValid(const std::string &hostSysOptions)
-{
+bool ParamValidation::CheckHostSysOptionsIsValid(const std::string &hostSysOptions) const {
     if (hostSysOptions.empty()) {
         MSPROF_LOGI("hostSysOptions is empty");
         return false;
     }
 
     const std::vector<std::string> hostSysWhiteList = {
-        HOST_SYS_CPU,
-        HOST_SYS_MEM,
-        HOST_SYS_DISK,
-        HOST_SYS_NETWORK,
-        HOST_SYS_OSRT,
-        HOST_SYS_NUMA
-    };
+        HOST_SYS_CPU, HOST_SYS_MEM, HOST_SYS_DISK, HOST_SYS_NETWORK, HOST_SYS_OSRT, HOST_SYS_NUMA};
 
     for (size_t j = 0; j < hostSysWhiteList.size(); j++) {
         if (hostSysOptions.compare(hostSysWhiteList[j]) == 0) {
@@ -889,8 +838,7 @@ bool ParamValidation::CheckHostSysOptionsIsValid(const std::string &hostSysOptio
     return false;
 }
 
-bool ParamValidation::CheckHostSysPidIsValid(const int32_t hostSysPid) const
-{
+bool ParamValidation::CheckHostSysPidIsValid(const int32_t hostSysPid) const {
     if (hostSysPid < 0) {
         MSPROF_LOGE("Invalid --host-sys-pid: %d", hostSysPid);
         return false;
@@ -910,8 +858,7 @@ bool ParamValidation::CheckHostSysPidIsValid(const int32_t hostSysPid) const
  * @brief  : Check host-sys-usage config is valid
  * @param  : [in] hostSysUsageOptions : host-sys-usage config string
  */
-bool ParamValidation::CheckHostSysUsageOptionsIsValid(const std::string &hostSysUsageOptions) const
-{
+bool ParamValidation::CheckHostSysUsageOptionsIsValid(const std::string &hostSysUsageOptions) const {
     if (hostSysUsageOptions.empty()) {
         MSPROF_LOGI("hostSysUsageOptions is empty.");
         return false;
@@ -927,15 +874,13 @@ bool ParamValidation::CheckHostSysUsageOptionsIsValid(const std::string &hostSys
     return false;
 }
 
-bool ParamValidation::ProfStarsAcsqParamIsValid(const std::string &param)
-{
+bool ParamValidation::ProfStarsAcsqParamIsValid(const std::string &param) const {
     if (param.empty()) {
         return true;
     }
 
     std::vector<std::string> starsAcsqParamVec = {
-        "dsa", "vdec", "jpegd", "jpege", "vpc", "topic", "pcie", "rocee", "sdma", "ctrl_task"
-    };
+        "dsa", "vdec", "jpegd", "jpege", "vpc", "topic", "pcie", "rocee", "sdma", "ctrl_task"};
 
     auto paramVec = analysis::dvvp::common::utils::Utils::Split(param, false, "", ",");
     for (size_t i = 0; i < paramVec.size(); i++) {
@@ -948,15 +893,14 @@ bool ParamValidation::ProfStarsAcsqParamIsValid(const std::string &param)
     return true;
 }
 
-bool ParamValidation::CheckStorageLimit(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const
-{
+bool ParamValidation::CheckStorageLimit(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
     const std::string &storageLimit = params->storageLimit;
     if (storageLimit.empty()) {
         MSPROF_LOGI("storage_limit is empty");
         return true;
     }
-    std::string errReason = "storage-limit should be in range [" + std::to_string(STORAGE_LIMIT_DOWN_THD) +
-        "," + std::to_string(UINT32_MAX) + "], end with MB";
+    std::string errReason = "storage-limit should be in range [" + std::to_string(STORAGE_LIMIT_DOWN_THD) + "," +
+                            std::to_string(UINT32_MAX) + "], end with MB";
 
     const uint32_t unitLen = strlen(STORAGE_LIMIT_UNIT);
     if (storageLimit.size() <= unitLen) {
@@ -1005,8 +949,7 @@ bool ParamValidation::CheckStorageLimit(SHARED_PTR_ALIA<analysis::dvvp::message:
     return true;
 }
 
-bool ParamValidation::CheckInstrProfilingFreqValid(const uint32_t instrFreq) const
-{
+bool ParamValidation::CheckInstrProfilingFreqValid(const uint32_t instrFreq) const {
     if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_INSTR_PROFILING)) {
         MSPROF_LOGW("The argument: instr_profiling_freq is useless on the platform.");
         return true;
@@ -1015,8 +958,8 @@ bool ParamValidation::CheckInstrProfilingFreqValid(const uint32_t instrFreq) con
         MSPROF_LOGE("instr_profiling_freq %u cycle is invalid (%u~%u).", instrFreq, INSTR_PROFILING_SAMPLE_FREQ_MIN,
             INSTR_PROFILING_SAMPLE_FREQ_MAX);
         std::string errReason = "instr_profiling_freq should be in range [" +
-            std::to_string(INSTR_PROFILING_SAMPLE_FREQ_MIN) +
-            "," + std::to_string(INSTR_PROFILING_SAMPLE_FREQ_MAX) + "] cycle";
+                                std::to_string(INSTR_PROFILING_SAMPLE_FREQ_MIN) + "," +
+                                std::to_string(INSTR_PROFILING_SAMPLE_FREQ_MAX) + "] cycle";
         MSPROF_INPUT_ERROR("EK0003", std::vector<std::string>({"config", "value", "reason"}),
             std::vector<std::string>({"instr_profiling_freq", std::to_string(instrFreq), errReason}));
         return false;
@@ -1031,35 +974,33 @@ bool ParamValidation::CheckInstrProfilingFreqValid(const uint32_t instrFreq) con
  * @param  : [in] min : minimum value
  * @param  : [in] max : maximum value
  */
-bool ParamValidation::CheckArgRange(const std::string &switchName, const std::string &value,
-                                    uint32_t min, uint32_t max) const
-{
+bool ParamValidation::CheckArgRange(
+    const std::string &switchName, const std::string &value, uint32_t min, uint32_t max) const {
     if (Utils::IsAllDigit(value) && value.size() <= std::to_string(max).size()) {
         uint32_t arg = std::stoul(value.c_str());
         if (arg >= min && arg <= max) {
             return true;
         }
     }
-    MSPROF_LOGE("Argument %s: invalid value: %s. Please input an integer value in %u-%u.",
-        switchName.c_str(), value.c_str(), min, max);
+    MSPROF_LOGE("Argument %s: invalid value: %s. Please input an integer value in %u-%u.", switchName.c_str(),
+        value.c_str(), min, max);
     return false;
 }
 
 /**
- * @brief  : Check frequence is in valid range
+ * @brief  : Check frequency is in valid range
  * @param  : [in] switchName : the switch name
- * @param  : [in] freq : frequence
+ * @param  : [in] freq : frequency
  */
-bool ParamValidation::CheckFreqIsValid(const std::string &switchName, uint32_t freq) const
-{
+bool ParamValidation::CheckFreqIsValid(const std::string &switchName, uint32_t freq) const {
     std::map<std::string, std::vector<uint32_t>> freqRange = {
-        {"sys_hardware_mem_freq", {1, 100}},
-        {"sys_io_sampling_freq", {1, 100}},
-        {"sys_interconnection_freq", {1, 50}},
-        {"sys_cpu_freq", {1, 50}},
-        {"dvpp_freq", {1, 100}},
-        {"host_sys_usage_freq", {1, 50}},
-        {"sys_lp_freq", {1, HZ_HUNDRED}}
+        {   "sys_hardware_mem_freq",        {1, 100}},
+        {    "sys_io_sampling_freq",        {1, 100}},
+        {"sys_interconnection_freq",         {1, 50}},
+        {            "sys_cpu_freq",         {1, 50}},
+        {               "dvpp_freq",        {1, 100}},
+        {     "host_sys_usage_freq",         {1, 50}},
+        {             "sys_lp_freq", {1, HZ_HUNDRED}}
     };
     if (Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_US)) {
         freqRange["sys_hardware_mem_freq"] = {1, HZ_TEN_THOUSAND};
@@ -1084,8 +1025,7 @@ bool ParamValidation::CheckFreqIsValid(const std::string &switchName, uint32_t f
  * @return : true
  *           false
  */
-bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, const std::string &config) const
-{
+bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, const std::string &config) const {
     FUNRET_CHECK_EXPR_ACTION(!Platform::instance()->CheckIfSupport(PLATFORM_SYS_MEM_SERVICEFLOW), return false,
         "Argument %s is not supported", switchName.c_str());
     FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
@@ -1098,8 +1038,7 @@ bool ParamValidation::CheckMemServiceflowValid(const std::string &switchName, co
  * @return : true
  *           false
  */
-bool ParamValidation::CheckDynaPidIsValid(const int32_t pid) const
-{
+bool ParamValidation::CheckDynaPidIsValid(const int32_t pid) const {
     std::string dynaSocketFilePath = Utils::IdeGetHomedir() + "/dynamic_profiling_socket_" + std::to_string(pid);
     std::string pidFilePath = "/proc/" + std::to_string(pid) + "/status";
     if (!Utils::IsFileExist(dynaSocketFilePath)) {
@@ -1115,11 +1054,10 @@ bool ParamValidation::CheckDynaPidIsValid(const int32_t pid) const
     }
 }
 
-bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &events) const
-{
+bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &events) const {
     if (events.size() > Platform::instance()->GetMaxMonitorNumber()) {
-        MSPROF_LOGE("ai core events size(%u) is bigger than %hu", events.size(),
-            Platform::instance()->GetMaxMonitorNumber());
+        MSPROF_LOGE(
+            "ai core events size(%u) is bigger than %hu", events.size(), Platform::instance()->GetMaxMonitorNumber());
         return false;
     }
     int32_t minEvent = 1;
@@ -1130,15 +1068,16 @@ bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &e
     if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
         Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
         Platform::instance()->GetPlatformType() == CHIP_MDC_V2 ||
-        Platform::instance()->GetPlatformType() == CHIP_MDC_LITE_V2) {
+        Platform::instance()->GetPlatformType() == CHIP_MDC_LITE_V2 ||
+        Platform::instance()->GetPlatformType() == CHIP_5162A) {
         minEvent = 0;
         maxEvent = ACC_MAX_PMU_EVENT;
     }
     for (uint32_t i = 0; i < events.size(); ++i) {
         const int32_t eventVal = strtol(events[i].c_str(), nullptr, BASE_HEX);
         if (eventVal < minEvent || eventVal > maxEvent) {
-            MSPROF_LOGE("ai core event[0x%x] out of range1-%d(0x1-0x%x). please check ai core pmu event.",
-                eventVal, maxEvent, maxEvent);
+            MSPROF_LOGE("ai core event[0x%x] out of range1-%d(0x1-0x%x). please check ai core pmu event.", eventVal,
+                maxEvent, maxEvent);
             return false;
         }
     }
@@ -1149,8 +1088,7 @@ bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string> &e
  * @brief  : Check LLC config is valid
  * @param  : [in] config : LLC config
  */
-bool ParamValidation::CheckLlcConfigValid(const std::string &config) const
-{
+bool ParamValidation::CheckLlcConfigValid(const std::string &config) const {
     std::vector<std::string> llcProfilingWhiteList = {LLC_PROFILING_READ, LLC_PROFILING_WRITE};
     if (Platform::instance()->GetPlatformType() == PlatformTypeEnum::CHIP_MINI) {
         MSPROF_LOGE("1910 llc is supported only in the msprof command line tool");
@@ -1172,13 +1110,11 @@ bool ParamValidation::CheckLlcConfigValid(const std::string &config) const
  * @return : true
  *           false
  */
-bool ParamValidation::CheckTaskBlockValid(const std::string &switchName, const std::string &config) const
-{
+bool ParamValidation::CheckTaskBlockValid(const std::string &switchName, const std::string &config) const {
     FUNRET_CHECK_EXPR_ACTION(!Platform::instance()->CheckIfSupport(PLATFORM_TASK_BLOCK), return false,
         "Argument %s is not supported", switchName.c_str());
     FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ALL) != 0 && 
-        config.compare(MSVP_PROF_ON) != 0) {
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ALL) != 0 && config.compare(MSVP_PROF_ON) != 0) {
         std::string taskBlockRanges;
         if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
             Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
@@ -1188,21 +1124,20 @@ bool ParamValidation::CheckTaskBlockValid(const std::string &switchName, const s
         } else {
             taskBlockRanges = "'all', 'off'.";
         }
-        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
-            switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", switchName.c_str(), config.c_str(),
+            taskBlockRanges.c_str());
         return false;
     }
-    if (config.compare(MSVP_PROF_ON) == 0 && 
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
+    if (config.compare(MSVP_PROF_ON) == 0 && Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
         Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
         Platform::instance()->GetPlatformType() != CHIP_MDC_V2 &&
- 	    Platform::instance()->GetPlatformType() != CHIP_MDC_LITE_V2) {
+        Platform::instance()->GetPlatformType() != CHIP_MDC_LITE_V2) {
         MSPROF_LOGE("The on option is not supported on this platform, please use all to collect block data.");
         return false;
     }
     return true;
 }
-}
-}
-}
-}
+} // namespace validation
+} // namespace common
+} // namespace dvvp
+} // namespace analysis

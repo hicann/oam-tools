@@ -24,18 +24,19 @@
 #include "mdc_mini_v3_platform.h"
 #include "mdc_platform.h"
 #include "mini_v3_platform.h"
+#include "modena_platform.h"
 #include "platform/platform.h"
 
 using namespace Dvvp::Collect::Platform;
 
+namespace {
+constexpr uint16_t MODENA_MAX_MONITOR_NUM = 8;
+}
+
 class PLATFORM_UTEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-        GlobalMockObject::verify();
-    }
-    virtual void TearDown() {
-        GlobalMockObject::verify();
-    }
+    virtual void SetUp() { GlobalMockObject::verify(); }
+    virtual void TearDown() { GlobalMockObject::verify(); }
 };
 
 // ================================ DavidV121Platform ================================
@@ -63,26 +64,22 @@ TEST_F(PLATFORM_UTEST, DavidV121_GetQosMonitorNumber) {
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetPipeUtilizationMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"),
-              platform->GetPipeUtilizationMetrics());
+    EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"), platform->GetPipeUtilizationMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetMemoryMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"),
-              platform->GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetMemoryL0Metrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"),
-              platform->GetMemoryL0Metrics());
+    EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"), platform->GetMemoryL0Metrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetMemoryUBMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"),
-              platform->GetMemoryUBMetrics());
+    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"), platform->GetMemoryUBMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetArithmeticUtilizationMetrics) {
@@ -92,20 +89,17 @@ TEST_F(PLATFORM_UTEST, DavidV121_GetArithmeticUtilizationMetrics) {
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetResourceConflictRatioMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"),
-              platform->GetResourceConflictRatioMetrics());
+    EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"), platform->GetResourceConflictRatioMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetL2CacheMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"),
-              platform->GetL2CacheMetrics());
+    EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"), platform->GetL2CacheMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetL2CacheEvents) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"),
-              platform->GetL2CacheEvents());
+    EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"), platform->GetL2CacheEvents());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_InitOnlineAnalyzer) {
@@ -128,8 +122,7 @@ TEST_F(PLATFORM_UTEST, Dc_FeatureIsSupport) {
 
 TEST_F(PLATFORM_UTEST, Dc_GetL2CacheEvents) {
     auto platform = std::make_shared<DcPlatform>();
-    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"),
-              platform->GetL2CacheEvents());
+    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 
 // ================================ MdcLitePlatform ================================
@@ -146,32 +139,27 @@ TEST_F(PLATFORM_UTEST, MdcLite_FeatureIsSupport) {
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetPipeUtilizationMetrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x34,0x35"),
-              platform->GetPipeUtilizationMetrics());
+    EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x34,0x35"), platform->GetPipeUtilizationMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetPipelineExecuteUtilizationMetrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x714"),
-              platform->GetPipelineExecuteUtilizationMetrics());
+    EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x714"), platform->GetPipelineExecuteUtilizationMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryMetrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x404,0x406,0x566,0x567,0x707,0x709"),
-              platform->GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x404,0x406,0x566,0x567,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryL0Metrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x304,0x702,0x306,0x703,0x712,0x30a,0x308"),
-              platform->GetMemoryL0Metrics());
+    EXPECT_EQ(std::string("0x304,0x702,0x306,0x703,0x712,0x30a,0x308"), platform->GetMemoryL0Metrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryUBMetrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x57b,0x57c"),
-              platform->GetMemoryUBMetrics());
+    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x57b,0x57c"), platform->GetMemoryUBMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetArithmeticUtilizationMetrics) {
@@ -181,14 +169,12 @@ TEST_F(PLATFORM_UTEST, MdcLite_GetArithmeticUtilizationMetrics) {
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetResourceConflictRatioMetrics) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x54f,0x551,0x552,0x561,0x563,0x564,0x557"),
-              platform->GetResourceConflictRatioMetrics());
+    EXPECT_EQ(std::string("0x54f,0x551,0x552,0x561,0x563,0x564,0x557"), platform->GetResourceConflictRatioMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLite_GetL2CacheEvents) {
     auto platform = std::make_shared<MdcLitePlatform>();
-    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"),
-              platform->GetL2CacheEvents());
+    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 
 // ================================ MdcLiteV2Platform ================================
@@ -215,26 +201,22 @@ TEST_F(PLATFORM_UTEST, MdcLiteV2_GetQosMonitorNumber) {
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetPipeUtilizationMetrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"),
-              platform->GetPipeUtilizationMetrics());
+    EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"), platform->GetPipeUtilizationMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryMetrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"),
-              platform->GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryL0Metrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"),
-              platform->GetMemoryL0Metrics());
+    EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"), platform->GetMemoryL0Metrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryUBMetrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"),
-              platform->GetMemoryUBMetrics());
+    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"), platform->GetMemoryUBMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetArithmeticUtilizationMetrics) {
@@ -244,20 +226,52 @@ TEST_F(PLATFORM_UTEST, MdcLiteV2_GetArithmeticUtilizationMetrics) {
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetResourceConflictRatioMetrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"),
-              platform->GetResourceConflictRatioMetrics());
+    EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"), platform->GetResourceConflictRatioMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetL2CacheMetrics) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"),
-              platform->GetL2CacheMetrics());
+    EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"), platform->GetL2CacheMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, MdcLiteV2_GetL2CacheEvents) {
     auto platform = std::make_shared<MdcLiteV2Platform>();
-    EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"),
-              platform->GetL2CacheEvents());
+    EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"), platform->GetL2CacheEvents());
+}
+
+// ================================ ModenaPlatform ================================
+
+TEST_F(PLATFORM_UTEST, Modena_GetMetrics) {
+    auto platform = std::make_shared<ModenaPlatform>();
+    EXPECT_EQ(std::string("0x501,0x301,0x1,0x202,0x203,0x34,0x35"), platform->GetPipeUtilizationMetrics());
+    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x570"), platform->GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x3,0x5,0x204,0x206,0x571,0x572"), platform->GetMemoryUBMetrics());
+    EXPECT_EQ(std::string("0x32c,0x32d"), platform->GetArithmeticUtilizationMetrics());
+    EXPECT_EQ(std::string("0x540,0x556"), platform->GetResourceConflictRatioMetrics());
+}
+
+TEST_F(PLATFORM_UTEST, Modena_FeatureIsSupport) {
+    auto platform = std::make_shared<ModenaPlatform>();
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AU_PMU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_PU_PMU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_MEMORY_PMU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_MEMORYUB_PMU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_RCR_PMU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_TRACE));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AIC_METRICS));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_L2_CACHE_PMU));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_MEMORYL0_PMU));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_MEMORY_ACCESS_PMU));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_PSC_PMU));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_BLOCK));
+    EXPECT_EQ(MODENA_MAX_MONITOR_NUM, platform->GetMaxMonitorNumber());
+}
+
+TEST_F(PLATFORM_UTEST, Modena_CreateByReflection) {
+    auto platform = PlatformReflection::CreatePlatformClass(CHIP_5162A);
+    ASSERT_NE(nullptr, platform);
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AIC_METRICS));
+    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_LLC));
 }
 
 // ================================ MdcMiniV3Platform ================================
@@ -294,8 +308,7 @@ TEST_F(PLATFORM_UTEST, Mdc_FeatureIsSupport) {
 
 TEST_F(PLATFORM_UTEST, Mdc_GetL2CacheEvents) {
     auto platform = std::make_shared<MdcPlatform>();
-    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"),
-              platform->GetL2CacheEvents());
+    EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 
 // ================================ MiniV3Platform ================================
@@ -324,6 +337,5 @@ TEST_F(PLATFORM_UTEST, MiniV3_FeatureIsSupport_SocSide) {
 
 TEST_F(PLATFORM_UTEST, MiniV3_GetMemoryUBMetrics) {
     auto platform = std::make_shared<MiniV3Platform>();
-    EXPECT_EQ(std::string("0x37,0x38,0x1a5,0x1a6,0x17f,0x180,0x191"),
-              platform->GetMemoryUBMetrics());
+    EXPECT_EQ(std::string("0x37,0x38,0x1a5,0x1a6,0x17f,0x180,0x191"), platform->GetMemoryUBMetrics());
 }

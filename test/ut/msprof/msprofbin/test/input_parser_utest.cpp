@@ -51,13 +51,11 @@ constexpr int32_t APP_PARAM_EXCEED_MAX_LEN = analysis::dvvp::common::config::MAX
 constexpr int32_t OP_TYPE_EXCEED_MAX_LEN = 300;
 constexpr PlatformType TARGET_CHIP_TYPE = PlatformType::CHIP_MDC_V2;
 
-void SetPlatformTypeForTest(PlatformType platformType)
-{
+void SetPlatformTypeForTest(PlatformType platformType) {
     ConfigManager::instance()->configMap_["type"] = std::to_string(static_cast<int32_t>(platformType));
 }
 
-void RefreshArgsManagerForTest()
-{
+void RefreshArgsManagerForTest() {
     ArgsManager::instance()->argsList_.clear();
     ArgsManager::instance()->AddArgs();
 }
@@ -571,6 +569,37 @@ TEST_F(INPUT_PARSER_UTEST, PrintHelpHidesNtsMetricsOnOtherPlatform) {
     EXPECT_EQ(std::string::npos, helpOutput.str().find("--nts-metrics"));
 }
 
+TEST_F(INPUT_PARSER_UTEST, CheckAiCoreMetricsValidModena) {
+    SetPlatformTypeForTest(PlatformType::CHIP_5162A);
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    InputParser parser = InputParser();
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
+
+    cmdInfo.args[ARGS_AIC_METRICS] = "PipeUtilization";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "Memory";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "MemoryUB";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "ArithmeticUtilization";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "ResourceConflictRatio";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+
+    cmdInfo.args[ARGS_AIC_METRICS] = "Custom:0x0";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "Custom:0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    cmdInfo.args[ARGS_AIC_METRICS] = "Custom:0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+
+    cmdInfo.args[ARGS_AIC_METRICS] = "L2Cache";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
+    Platform::instance()->Uninit();
+}
+
 TEST_F(INPUT_PARSER_UTEST, SetHostSysParam) {
     GlobalMockObject::verify();
     InputParser parser = InputParser();
@@ -606,7 +635,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
 
     GlobalMockObject::verify();
     InputParser parser = InputParser();
-    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
     auto configManger = Analysis::Dvvp::Common::Config::ConfigManager::instance();
 
     configManger->configMap_["type"] = "1";
@@ -623,7 +652,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
 
     cmdInfo.args[ARGS_DVPP_FREQ] = "50";
     EXPECT_EQ(PROFILING_SUCCESS, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
-    cmdInfo.args[ARGS_DVPP_FREQ] = "0"; // 超出 1~100 范围
+    cmdInfo.args[ARGS_DVPP_FREQ] = "0";   // 超出 1~100 范围
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
     cmdInfo.args[ARGS_DVPP_FREQ] = "101"; // 超出 1~100 范围
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
@@ -635,7 +664,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
     cmdInfo.args[ARGS_DVPP_PROFILING] = "invalid"; // 非法取值
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
-    cmdInfo.args[ARGS_DVPP_PROFILING] = nullptr; // 缺省值
+    cmdInfo.args[ARGS_DVPP_PROFILING] = nullptr;   // 缺省值
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
 
     MOCKER_CPP(static_cast<bool (Platform::*)(const ::Dvvp::Collect::Platform::PlatformFeature) const>(
@@ -666,7 +695,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
     GlobalMockObject::verify();
     InputParser parser = InputParser();
 
-    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
     auto configManger = Analysis::Dvvp::Common::Config::ConfigManager::instance();
     Platform::instance()->Init();
 
@@ -851,14 +880,14 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
 
     // check arg range
-    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo, ARGS_INTERCONNECTION_PROFILING, 1, 100));
 
     cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "A";
-    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo, ARGS_INTERCONNECTION_PROFILING, 1, 100));
     cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "111";
-    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgRange(cmdInfo, ARGS_INTERCONNECTION_PROFILING, 1, 100));
     cmdInfo.args[ARGS_INTERCONNECTION_PROFILING] = "1";
-    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgRange(cmdInfo,ARGS_INTERCONNECTION_PROFILING, 1, 100));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgRange(cmdInfo, ARGS_INTERCONNECTION_PROFILING, 1, 100));
 
     // check args is number
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgsIsNumber(cmdInfo, ARGS_EXPORT_ITERATION_ID));
@@ -1017,7 +1046,7 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation) {
 TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid) {
     InputParser parser = InputParser();
 
-    MOCKER_CPP(&Platform::CheckIfSupport, bool (Platform::*)(const PlatformFeature) const)
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
 
@@ -1178,7 +1207,7 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset) {
 TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
     GlobalMockObject::verify();
     InputParser parser = InputParser();
-    struct MsprofCmdInfo cmdInfo = { {nullptr} };
+    struct MsprofCmdInfo cmdInfo = {{nullptr}};
 
     cmdInfo.args[ARGS_OP_TYPE] = nullptr;
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckCmdOpTypeIsValid(cmdInfo));
@@ -1211,8 +1240,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
     EXPECT_EQ("Add,MatMul,Softmax", parser.params_->opType);
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAndmstxDomainExcludeAndMstxAllSet)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAndmstxDomainExcludeAndMstxAllSet) {
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "a";
@@ -1220,8 +1248,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAnd
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmstxDomainExcludeNotSet)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmstxDomainExcludeNotSet) {
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "";
@@ -1229,8 +1256,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmst
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSet)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSet) {
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "a";
@@ -1242,8 +1268,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSetAndMstxOff)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSetAndMstxOff) {
     InputParser parser = InputParser();
     parser.params_->msproftx = "off";
     parser.params_->mstxDomainInclude = "a";
@@ -1255,8 +1280,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeBothNotSetAndMstxOff)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeBothNotSetAndMstxOff) {
     InputParser parser = InputParser();
     parser.params_->msproftx = "off";
     parser.params_->mstxDomainInclude = "";
@@ -1264,8 +1288,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_EXPORT_TYPE] = "invalid_export_type";
@@ -1275,8 +1298,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid)
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckExportType(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_EXPORT_TYPE] = "text";
@@ -1288,16 +1310,14 @@ TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid)
     EXPECT_STREQ("db", parser.params_->exportType.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnErrorWhenReportsInvalid)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnErrorWhenReportsInvalid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_REPORTS] = nullptr;
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckReports(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
-{
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_REPORTS] = "xx";
@@ -1305,21 +1325,19 @@ TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
     EXPECT_STREQ("xx", parser.params_->reportsPath.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap)
-{
+TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap) {
     InputParser parser = InputParser();
     auto platMap = parser.GenerateChipV2PlatSwithMap();
 
-    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
-        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
+    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_AICPU,
+        ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
         ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
 
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_V2]);
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_LITE_V2]);
 }
 
-TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs)
-{
+TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs) {
     ArgsManager argsManager = ArgsManager();
 
     // Scenario 1: V2 platforms skip the hccl arg, the list stays empty

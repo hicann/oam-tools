@@ -48,20 +48,21 @@ constexpr char INTERFACE_MEMORYACCESS[] = "0x32,0x3d,0x3e,0x206,0x20c,0x50c,0x50
 constexpr char EMPTY_FREQUENCY[] = "";
 
 enum PlatformTypeEnum {
-    CHIP_MINI        = 0,
-    CHIP_CLOUD       = 1,
-    CHIP_MDC         = 2,
-    CHIP_DC          = 4,
-    CHIP_CLOUD_V2    = 5,
-    CHIP_MINI_V3     = 7,
-    CHIP_TINY_V1     = 8,
-    CHIP_NANO_V1     = 9,
+    CHIP_MINI = 0,
+    CHIP_CLOUD = 1,
+    CHIP_MDC = 2,
+    CHIP_DC = 4,
+    CHIP_CLOUD_V2 = 5,
+    CHIP_MINI_V3 = 7,
+    CHIP_TINY_V1 = 8,
+    CHIP_NANO_V1 = 9,
     CHIP_MDC_MINI_V3 = 11,
-    CHIP_MDC_LITE    = 12,
-    CHIP_CLOUD_V3    = 15,
-    CHIP_CLOUD_V4    = 16,
-    CHIP_MDC_V2      = 17,
+    CHIP_MDC_LITE = 12,
+    CHIP_CLOUD_V3 = 15,
+    CHIP_CLOUD_V4 = 16,
+    CHIP_MDC_V2 = 17,
     CHIP_MDC_LITE_V2 = 18,
+    CHIP_5162A = 21,
     CHIP_END
 };
 
@@ -170,86 +171,85 @@ struct BiuPerfChannelInfo {
     uint32_t groupNo;
     uint32_t channelId;
 
-    bool operator==(const BiuPerfChannelInfo &other) const
-    {
+    bool operator==(const BiuPerfChannelInfo &other) const {
         return groupId == other.groupId && groupType == other.groupType && groupNo == other.groupNo &&
-            channelId == other.channelId;
+               channelId == other.channelId;
     }
 };
 
 const std::map<std::string, PlatformFeature> METRIC_FEATURE_MAP = {
-    {"ArithmeticUtilization",      PLATFORM_TASK_AU_PMU},
-    {"PipeUtilization",            PLATFORM_TASK_PU_PMU},
-    {"PipeUtilizationExct",        PLATFORM_TASK_PUEXCT_PMU},
-    {"PipelineExecuteUtilization", PLATFORM_TASK_PEU_PMU},
-    {"ResourceConflictRatio",      PLATFORM_TASK_RCR_PMU},
-    {"PipeStallCycle",             PLATFORM_TASK_PSC_PMU},
-    {"Memory",                     PLATFORM_TASK_MEMORY_PMU},
-    {"MemoryL0",                   PLATFORM_TASK_MEMORYL0_PMU},
-    {"MemoryUB",                   PLATFORM_TASK_MEMORYUB_PMU},
-    {"L2Cache",                    PLATFORM_TASK_L2_CACHE_PMU},
-    {"ScalarRatio",                PLATFORM_TASK_SCALAR_RATIO_PMU},
-    {"MemoryAccess",               PLATFORM_TASK_MEMORY_ACCESS_PMU}
+    {     "ArithmeticUtilization",            PLATFORM_TASK_AU_PMU},
+    {           "PipeUtilization",            PLATFORM_TASK_PU_PMU},
+    {       "PipeUtilizationExct",        PLATFORM_TASK_PUEXCT_PMU},
+    {"PipelineExecuteUtilization",           PLATFORM_TASK_PEU_PMU},
+    {     "ResourceConflictRatio",           PLATFORM_TASK_RCR_PMU},
+    {            "PipeStallCycle",           PLATFORM_TASK_PSC_PMU},
+    {                    "Memory",        PLATFORM_TASK_MEMORY_PMU},
+    {                  "MemoryL0",      PLATFORM_TASK_MEMORYL0_PMU},
+    {                  "MemoryUB",      PLATFORM_TASK_MEMORYUB_PMU},
+    {                   "L2Cache",      PLATFORM_TASK_L2_CACHE_PMU},
+    {               "ScalarRatio",  PLATFORM_TASK_SCALAR_RATIO_PMU},
+    {              "MemoryAccess", PLATFORM_TASK_MEMORY_ACCESS_PMU}
 };
 
 const std::map<std::string, std::vector<PlatformFeature>> PLATFORM_FEATURE_MAP = {
-    {"switch",                      {PLATFORM_TASK_SWITCH}},
-    {"ge_api",                      {PLATFORM_TASK_GE_API}},
-    {"task_memory",                 {PLATFORM_TASK_MEMORY}},
-    {"task_trace",                  {PLATFORM_TASK_TRACE}},
-    {"aicpu",                       {PLATFORM_TASK_AICPU}},
-    {"l2",                          {PLATFORM_TASK_L2_CACHE_REG}},
-    {"hccl",                        {PLATFORM_TASK_HCCL}},
-    {"msproftx",                    {PLATFORM_TASK_MSPROFTX}},
-    {"instr_profiling",             {PLATFORM_SYS_DEVICE_INSTR_PROFILING, PLATFORM_TASK_INSTR_PROFILING}},
-    {"task_tsfw",                   {PLATFORM_TASK_TSFW}},
-    {"runtime_api",                 {PLATFORM_TASK_RUNTIME_API}},
-    {"ascendcl",                    {PLATFORM_TASK_ASCENDCL}},
-    {"task_block",                  {PLATFORM_TASK_BLOCK}},
-    {"sys_lp",                      {PLATFORM_SYS_DEVICE_LOW_POWER}},
-    {"sys_lp_freq",                 {PLATFORM_SYS_DEVICE_LOW_POWER}},
-    {"training_trace",              {PLATFORM_TASK_TRAINING_TRACE}},
-    {"sys_hardware_mem_freq",       {PLATFORM_SYS_DEVICE_NPU_MODULE_MEM, PLATFORM_SYS_DEVICE_LLC,
-                                     PLATFORM_SYS_DEVICE_DDR, PLATFORM_SYS_DEVICE_HBM}},
-    {"sys_mem_serviceflow",         {PLATFORM_SYS_MEM_SERVICEFLOW}},
-    {"llc_profiling",               {PLATFORM_SYS_DEVICE_LLC}},
-    {"sys_io_sampling_freq",        {PLATFORM_SYS_DEVICE_NIC, PLATFORM_SYS_DEVICE_ROCE}},
-    {"sys_interconnection_freq",    {PLATFORM_SYS_DEVICE_PCIE, PLATFORM_SYS_DEVICE_HCCS}},
-    {"sys_cpu_freq",                {PLATFORM_SYS_DEVICE_AICPU_HSCB}},
-    {"dvpp_freq",                   {PLATFORM_SYS_DEVICE_DVPP, PLATFORM_SYS_DEVICE_DVPP_EX}},
-    {"host_sys",                    {PLATFORM_SYS_HOST_SYS_CPU, PLATFORM_SYS_HOST_SYS_MEM}},
-    {"host_sys_usage",              {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}},
-    {"host_sys_usage_freq",         {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}}
+    {                  "switch",                                               {PLATFORM_TASK_SWITCH}},
+    {                  "ge_api",                                               {PLATFORM_TASK_GE_API}},
+    {             "task_memory",                                               {PLATFORM_TASK_MEMORY}},
+    {              "task_trace",                                                {PLATFORM_TASK_TRACE}},
+    {                   "aicpu",                                                {PLATFORM_TASK_AICPU}},
+    {                      "l2",                                         {PLATFORM_TASK_L2_CACHE_REG}},
+    {                    "hccl",                                                 {PLATFORM_TASK_HCCL}},
+    {                "msproftx",                                             {PLATFORM_TASK_MSPROFTX}},
+    {         "instr_profiling", {PLATFORM_SYS_DEVICE_INSTR_PROFILING, PLATFORM_TASK_INSTR_PROFILING}},
+    {               "task_tsfw",                                                 {PLATFORM_TASK_TSFW}},
+    {             "runtime_api",                                          {PLATFORM_TASK_RUNTIME_API}},
+    {                "ascendcl",                                             {PLATFORM_TASK_ASCENDCL}},
+    {              "task_block",                                                {PLATFORM_TASK_BLOCK}},
+    {                  "sys_lp",                                      {PLATFORM_SYS_DEVICE_LOW_POWER}},
+    {             "sys_lp_freq",                                      {PLATFORM_SYS_DEVICE_LOW_POWER}},
+    {          "training_trace",                                       {PLATFORM_TASK_TRAINING_TRACE}},
+    {   "sys_hardware_mem_freq",            {PLATFORM_SYS_DEVICE_NPU_MODULE_MEM, PLATFORM_SYS_DEVICE_LLC, PLATFORM_SYS_DEVICE_DDR,
+            PLATFORM_SYS_DEVICE_HBM}                                 },
+    {     "sys_mem_serviceflow",                                       {PLATFORM_SYS_MEM_SERVICEFLOW}},
+    {           "llc_profiling",                                            {PLATFORM_SYS_DEVICE_LLC}},
+    {    "sys_io_sampling_freq",                  {PLATFORM_SYS_DEVICE_NIC, PLATFORM_SYS_DEVICE_ROCE}},
+    {"sys_interconnection_freq",                 {PLATFORM_SYS_DEVICE_PCIE, PLATFORM_SYS_DEVICE_HCCS}},
+    {            "sys_cpu_freq",                                     {PLATFORM_SYS_DEVICE_AICPU_HSCB}},
+    {               "dvpp_freq",              {PLATFORM_SYS_DEVICE_DVPP, PLATFORM_SYS_DEVICE_DVPP_EX}},
+    {                "host_sys",               {PLATFORM_SYS_HOST_SYS_CPU, PLATFORM_SYS_HOST_SYS_MEM}},
+    {          "host_sys_usage",       {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}},
+    {     "host_sys_usage_freq",       {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}}
 };
 
 const std::map<uint64_t, PlatformFeature> PLATFORM_BITE_MAP = {
-    {PROF_ACL_API,         PLATFORM_TASK_ASCENDCL},
-    {PROF_TASK_TIME_L1,    PLATFORM_TASK_TRACE},
-    {PROF_TASK_TIME_L2,    PLATFORM_TASK_TRACE},
-    {PROF_TASK_TIME_L3,    PLATFORM_TASK_TRACE_L3},
-    {PROF_OP_ATTR,         PLATFORM_TASK_TRACE},
-    {PROF_AICORE_METRICS,  PLATFORM_TASK_METRICS},
-    {PROF_AICPU_TRACE,     PLATFORM_TASK_AICPU},
-    {PROF_L2CACHE,         PLATFORM_TASK_L2_CACHE_REG},
-    {PROF_HCCL_TRACE,      PLATFORM_TASK_HCCL},
-    {PROF_TRAINING_TRACE,  PLATFORM_TASK_TRAINING_TRACE},
-    {PROF_MSPROFTX,        PLATFORM_TASK_MSPROFTX},
-    {PROF_RUNTIME_API,     PLATFORM_TASK_RUNTIME_API},
-    {PROF_GE_API_L0,       PLATFORM_TASK_GE_API},
-    {PROF_TASK_TIME,       PLATFORM_TASK_TRACE},
-    {PROF_TASK_MEMORY,     PLATFORM_TASK_MEMORY},
-    {PROF_GE_API_L1,       PLATFORM_TASK_GE_API}
+    {       PROF_ACL_API,       PLATFORM_TASK_ASCENDCL},
+    {  PROF_TASK_TIME_L1,          PLATFORM_TASK_TRACE},
+    {  PROF_TASK_TIME_L2,          PLATFORM_TASK_TRACE},
+    {  PROF_TASK_TIME_L3,       PLATFORM_TASK_TRACE_L3},
+    {       PROF_OP_ATTR,          PLATFORM_TASK_TRACE},
+    {PROF_AICORE_METRICS,        PLATFORM_TASK_METRICS},
+    {   PROF_AICPU_TRACE,          PLATFORM_TASK_AICPU},
+    {       PROF_L2CACHE,   PLATFORM_TASK_L2_CACHE_REG},
+    {    PROF_HCCL_TRACE,           PLATFORM_TASK_HCCL},
+    {PROF_TRAINING_TRACE, PLATFORM_TASK_TRAINING_TRACE},
+    {      PROF_MSPROFTX,       PLATFORM_TASK_MSPROFTX},
+    {   PROF_RUNTIME_API,    PLATFORM_TASK_RUNTIME_API},
+    {     PROF_GE_API_L0,         PLATFORM_TASK_GE_API},
+    {     PROF_TASK_TIME,          PLATFORM_TASK_TRACE},
+    {   PROF_TASK_MEMORY,         PLATFORM_TASK_MEMORY},
+    {     PROF_GE_API_L1,         PLATFORM_TASK_GE_API}
 };
 
 class PlatformInterface {
 public:
-    using MetricsFunc = std::string(PlatformInterface::*)();
+    using MetricsFunc = std::string (PlatformInterface::*)();
     PlatformInterface() {}
     virtual ~PlatformInterface() {}
     virtual std::string GetDeviceOscDefaultFreq();
     virtual std::string GetAicDefaultFreq();
     virtual std::string GetAivDefaultFreq();
-    virtual int32_t GetAiPmuMetrics(const std::string &key, std::string &vaule);
+    virtual int32_t GetAiPmuMetrics(const std::string &key, std::string &value);
     virtual bool FeatureIsSupport(const PlatformFeature feature) const;
     virtual std::string GetSmmuEventStr();
     virtual uint32_t GetSmmuDFXOffset() const;
@@ -258,12 +258,12 @@ public:
     virtual PlatformFeature PmuMetricsToFeature(const std::string &key) const;
     virtual uint16_t GetMaxMonitorNumber() const;
     virtual uint16_t GetQosMonitorNumber() const;
-    virtual std::vector<BiuPerfChannelInfo> GetBiuPerfChannelInfos(const std::vector<uint32_t> &groupVector,
-        uint32_t groupNum) const;
+    virtual std::vector<BiuPerfChannelInfo> GetBiuPerfChannelInfos(
+        const std::vector<uint32_t> &groupVector, uint32_t groupNum) const;
     virtual int32_t InitOnlineAnalyzer();
     virtual uint32_t GetMetricsPmuNum(const std::string &name) const;
     virtual std::string GetMetricsTopName(const std::string &name) const;
-    virtual PmuCalculationAttr* GetMetricsFunc(const std::string &name, uint32_t index) const;
+    virtual PmuCalculationAttr *GetMetricsFunc(const std::string &name, uint32_t index) const;
     virtual float GetTotalTime(uint64_t cycle, double freq, uint16_t blockDim, int64_t coreNum) const;
     virtual void SetSubscribeFeature();
 
@@ -287,16 +287,14 @@ protected:
 
 class PlatformReflection {
 public:
-    template<typename T>
-    static void RegisterPlatformClass(PlatformTypeEnum platformType)
-    {
+    template <typename T>
+    static void RegisterPlatformClass(PlatformTypeEnum platformType) {
         platformMap_[platformType] = []() -> std::shared_ptr<PlatformInterface> {
-            return std::shared_ptr<T>(new (std::nothrow)T);
+            return std::shared_ptr<T>(new (std::nothrow) T);
         };
     }
 
-    static std::shared_ptr<PlatformInterface> CreatePlatformClass(PlatformTypeEnum platformType)
-    {
+    static std::shared_ptr<PlatformInterface> CreatePlatformClass(PlatformTypeEnum platformType) {
         auto it = platformMap_.find(platformType);
         if (it != platformMap_.end()) {
             return it->second();
@@ -308,11 +306,10 @@ private:
     static std::map<PlatformTypeEnum, std::function<std::shared_ptr<PlatformInterface>()>> platformMap_;
 };
 
-template<typename T>
+template <typename T>
 class PlatformRegister {
 public:
-    explicit PlatformRegister(PlatformTypeEnum platformType)
-    {
+    explicit PlatformRegister(PlatformTypeEnum platformType) {
         PlatformReflection::RegisterPlatformClass<T>(platformType);
     }
 };
@@ -320,7 +317,7 @@ public:
 #define PLATFORM_REGISTER(platformType, platformClass) \
     PlatformRegister<platformClass> g_spec##platformClass(platformType)
 
-}
-}
-}
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp
 #endif

@@ -30,8 +30,7 @@ using namespace analysis::dvvp::common::utils;
 namespace {
 class MSPROF_DYNAMIC_CLIENT_UTEST : public testing::Test {
 protected:
-    void TearDown() override
-    {
+    void TearDown() override {
         GlobalMockObject::verify();
         auto mgr = DynProfCliMgr::instance();
         mgr->enabled_ = false;
@@ -41,9 +40,8 @@ protected:
     }
 };
 
-void MockSuccessResponse(DynProfMsgType msgType, DynProfMsgRsqCode statusCode)
-{
-    DynProfMsg rsqMsg = { msgType, statusCode };
+void MockSuccessResponse(DynProfMsgType msgType, DynProfMsgRsqCode statusCode) {
+    DynProfMsg rsqMsg = {msgType, statusCode};
     void *rsqData = &rsqMsg;
     MOCKER(LocalSocket::Recv, int(int, void *, int, int))
         .stubs()
@@ -52,8 +50,7 @@ void MockSuccessResponse(DynProfMsgType msgType, DynProfMsgRsqCode statusCode)
 }
 } // namespace
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SetParamsChecksLengthAndContent)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SetParamsChecksLengthAndContent) {
     auto dynProfClient = std::make_shared<DynProfClient>();
 
     dynProfClient->SetParams("");
@@ -66,8 +63,7 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SetParamsChecksLengthAndContent)
     EXPECT_EQ("valid_params", dynProfClient->dynProfParams_);
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StartHandlesStartedMissingParamsAndThreadCreateResult)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StartHandlesStartedMissingParamsAndThreadCreateResult) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     dynProfClient->cliStarted_ = true;
     EXPECT_EQ(PROFILING_SUCCESS, dynProfClient->Start());
@@ -91,11 +87,7 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StartHandlesStartedMissingParamsAndThreadCre
         .then(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_FAILED, dynProfClient->Start());
 
-    MOCKER(OsalCreateTaskWithThreadAttr)
-        .stubs()
-        .will(returnValue(OSAL_EN_ERR))
-        .then(returnValue(OSAL_EN_OK));
-    MOCKER(OsalJoinTask).stubs().will(returnValue(OSAL_EN_OK));
+    MOCKER(OsalCreateTaskWithThreadAttr).stubs().will(returnValue(OSAL_EN_ERR)).then(returnValue(OSAL_EN_OK));
     EXPECT_EQ(PROFILING_FAILED, dynProfClient->Start());
     EXPECT_FALSE(dynProfClient->cliStarted_);
 
@@ -103,19 +95,16 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StartHandlesStartedMissingParamsAndThreadCre
     EXPECT_TRUE(dynProfClient->cliStarted_);
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StopReturnsSuccessWhenNotStartedAndJoinsWhenStarted)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, StopReturnsSuccessWhenNotStartedAndJoinsWhenStarted) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     EXPECT_EQ(PROFILING_SUCCESS, dynProfClient->Stop());
 
     dynProfClient->cliStarted_ = true;
-    MOCKER(OsalJoinTask).stubs().will(returnValue(OSAL_EN_OK));
     EXPECT_EQ(PROFILING_SUCCESS, dynProfClient->Stop());
     EXPECT_FALSE(dynProfClient->cliStarted_);
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, InitProcFuncRegistersHandlers)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, InitProcFuncRegistersHandlers) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     dynProfClient->DynProfCliInitProcFunc();
 
@@ -124,12 +113,11 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, InitProcFuncRegistersHandlers)
     EXPECT_NE(nullptr, dynProfClient->procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT]);
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateFailsWhenNoPidOrSocketStepsFail)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateFailsWhenNoPidOrSocketStepsFail) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     EXPECT_EQ(PROFILING_FAILED, dynProfClient->DynProfCliCreate());
 
-    DynProfCliMgr::instance()->SetKeyPid({ 100 });
+    DynProfCliMgr::instance()->SetKeyPid({100});
     MOCKER(LocalSocket::Open).stubs().will(returnValue(PROFILING_FAILED));
     EXPECT_EQ(PROFILING_FAILED, dynProfClient->DynProfCliCreate());
     GlobalMockObject::verify();
@@ -164,10 +152,9 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateFailsWhenNoPidOrSocketStepsFail)
     EXPECT_EQ(100, dynProfClient->cliSockFdMap_[13]);
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateAppModeRetriesUntilTimeout)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateAppModeRetriesUntilTimeout) {
     auto dynProfClient = std::make_shared<DynProfClient>();
-    DynProfCliMgr::instance()->SetKeyPid({ 101 });
+    DynProfCliMgr::instance()->SetKeyPid({101});
     DynProfCliMgr::instance()->SetAppMode();
 
     MOCKER(LocalSocket::Open).stubs().will(returnValue(10));
@@ -178,8 +165,7 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, CreateAppModeRetriesUntilTimeout)
     EXPECT_EQ(PROFILING_FAILED, dynProfClient->DynProfCliCreate());
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendParamsHandlesEmptySocketsAndResponses)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendParamsHandlesEmptySocketsAndResponses) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     dynProfClient->SetParams("params");
     EXPECT_EQ(PROFILING_SUCCESS, dynProfClient->DynProfCliSendParams());
@@ -192,25 +178,24 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendParamsHandlesEmptySocketsAndResponses)
     EXPECT_EQ(1U, dynProfClient->cliSockFds_.size());
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendCmdChecksSendRecvAndResponseType)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendCmdChecksSendRecvAndResponseType) {
     auto dynProfClient = std::make_shared<DynProfClient>();
 
     MOCKER(LocalSocket::Send, int(int, const void *, int, int)).stubs().will(returnValue(PROFILING_FAILED));
-    EXPECT_EQ(DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL,
-        dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
+    EXPECT_EQ(
+        DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL, dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
     GlobalMockObject::verify();
 
     MOCKER(LocalSocket::Send, int(int, const void *, int, int)).stubs().will(returnValue(PROFILING_SUCCESS));
     MOCKER(LocalSocket::Recv, int(int, void *, int, int)).stubs().will(returnValue(PROFILING_FAILED));
-    EXPECT_EQ(DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL,
-        dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
+    EXPECT_EQ(
+        DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL, dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
     GlobalMockObject::verify();
 
     MOCKER(LocalSocket::Send, int(int, const void *, int, int)).stubs().will(returnValue(PROFILING_SUCCESS));
     MockSuccessResponse(DynProfMsgType::DYN_PROF_STOP_RSQ, DynProfMsgRsqCode::DYN_PROF_RSQ_SUCCESS);
-    EXPECT_EQ(DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL,
-        dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
+    EXPECT_EQ(
+        DynProfMsgRsqCode::DYN_PROF_RSQ_FAIL, dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
     GlobalMockObject::verify();
 
     MOCKER(LocalSocket::Send, int(int, const void *, int, int)).stubs().will(returnValue(PROFILING_SUCCESS));
@@ -219,8 +204,7 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, SendCmdChecksSendRecvAndResponseType)
         dynProfClient->DynProfCliSendCmd(30, DynProfMsgType::DYN_PROF_START_REQ));
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ProcStartStopQuitHandleResponseCodes)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ProcStartStopQuitHandleResponseCodes) {
     auto dynProfClient = std::make_shared<DynProfClient>();
     dynProfClient->cliSockFds_.insert(40);
     dynProfClient->cliSockFdMap_[40] = 140;
@@ -266,16 +250,15 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ProcStartStopQuitHandleResponseCodes)
     EXPECT_EQ(1U, dynProfClient->cliSockFds_.size());
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStoresPidEnvAndState)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStoresPidEnvAndState) {
     auto mgr = DynProfCliMgr::instance();
 
     EXPECT_FALSE(mgr->IsDynProfCliEnable());
     EXPECT_EQ("", mgr->GetDynProfEnv());
     EXPECT_EQ("", mgr->GetKeyPidEnv());
 
-    mgr->SetKeyPid({ 200, 201 });
-    EXPECT_EQ(std::set<int32_t>({ 200, 201 }), mgr->GetKeyPid());
+    mgr->SetKeyPid({200, 201});
+    EXPECT_EQ(std::set<int32_t>({200, 201}), mgr->GetKeyPid());
 
     mgr->EnableDynProfCli();
     EXPECT_TRUE(mgr->IsDynProfCliEnable());
@@ -291,8 +274,7 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStoresPidEnvAndState)
     EXPECT_TRUE(mgr->IsCliStarted());
 }
 
-TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStartStopAndWaitDelegateToClient)
-{
+TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStartStopAndWaitDelegateToClient) {
     auto mgr = DynProfCliMgr::instance();
 
     EXPECT_EQ(PROFILING_FAILED, mgr->StartDynProfCli(""));
@@ -304,11 +286,9 @@ TEST_F(MSPROF_DYNAMIC_CLIENT_UTEST, ManagerStartStopAndWaitDelegateToClient)
     EXPECT_TRUE(mgr->IsCliStarted());
     GlobalMockObject::verify();
 
-    MOCKER(OsalJoinTask).stubs().will(returnValue(OSAL_EN_OK));
     mgr->StopDynProfCli();
     EXPECT_FALSE(mgr->IsCliStarted());
 
     mgr->dynProfCli_ = std::make_shared<DynProfClient>();
-    MOCKER(OsalJoinTask).stubs().will(returnValue(OSAL_EN_OK));
     mgr->WaitQuit();
 }

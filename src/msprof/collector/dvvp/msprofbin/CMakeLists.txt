@@ -139,6 +139,7 @@ set(msprofbinCpp
     ../profimpl/adapter/src/json_parser.cpp
     ../profimpl/platform/platform_interface.cpp
     ../profimpl/platform/base_analyzer.cpp
+    ../profimpl/platform/modena_platform.cpp
     ../profimpl/platform/mini_platform.cpp
     ../profimpl/platform/cloud_v2_platform.cpp
     ../profimpl/platform/david_platform.cpp

@@ -110,6 +110,7 @@ set(profimplCpp
     profimpl/aicpu/prof_hal_plugin.cpp
     profimpl/platform/platform_interface.cpp
     profimpl/platform/base_analyzer.cpp
+    profimpl/platform/modena_platform.cpp
     profimpl/platform/nano_platform.cpp
     profimpl/platform/mini_v3_platform.cpp
     profimpl/platform/mdc_mini_v3_platform.cpp
