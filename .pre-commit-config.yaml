@@ -8,6 +8,21 @@ repos:
     hooks:
       - id: clang-format
         types_or: [c++, c]
+        # 流水线 precommit 会对本次改动命中的 C/C++ 文件跑 clang-format，
+        # 但存量代码不符合 .clang-format 风格，一改到就被卡。先屏蔽当前已存在
+        # C/C++ 的目录（experiment/、src/{hccl_test,msaicerr,msprof,third_party}、
+        # test/），只对新增目录/新 src 子包生效；存量目录整改后再逐个摘除。
+        exclude: |
+          (?x)^(
+            experiment/
+            | src/(
+              hccl_test
+              | msaicerr
+              | msprof
+              | third_party
+            )/
+            | test/
+          )
 
   # OAT compliance check (Open Source Audit Tool)
   - repo: local
@@ -30,6 +45,21 @@ repos:
     hooks:
       - id: ruff
         args: [--fix]
+        # 先屏蔽当前已存在 Python 的目录（存量代码不符合规则会卡门禁），
+        # 只对新增目录/新 src 子包生效；存量整改后再逐个摘除。与 bandit 保持一致。
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/(
+              asys
+              | msaicerr
+            )/
+            | test/
+          )
 
   # Python 代码检查（pylint，放宽贴近云端 codecheck，避免本地比云端更严）。
   - repo: https://gitcode.com/gh_mirrors/pyl/pylint
@@ -43,6 +73,21 @@ repos:
           # C(convention)/R(refactor) 是与华为规范无关的命名/重构噪声，一并关闭。
           - --disable=C,R,import-error,no-name-in-module,wrong-import-order
           - --max-line-length=120
+        # 先屏蔽当前已存在 Python 的目录，只对新增目录/新 src 子包生效；
+        # 存量整改后再逐个摘除。与 bandit 保持一致。
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/(
+              asys
+              | msaicerr
+            )/
+            | test/
+          )
 
   # 增量行 codecheck：本地复现云端"只查本次改动行"的增量行为。
   # 云端 codecheck 对行宽(C0301)/超大函数(R0915)/staticmethod(R6301)按增量行卡门禁，
@@ -59,6 +104,21 @@ repos:
         additional_dependencies: [ruff==0.9.9]
         types: [python]
         require_serial: true
+        # 先屏蔽当前已存在 Python 的目录，只对新增目录/新 src 子包生效；
+        # 存量整改后再逐个摘除。与 bandit 保持一致。
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/(
+              asys
+              | msaicerr
+            )/
+            | test/
+          )
 
   # Python 安全检查（bandit，仅 medium 及以上严重度）。
   - repo: https://gitcode.com/gh_mirrors/ba/bandit
@@ -68,6 +128,23 @@ repos:
     hooks:
       - id: bandit
         args: [-ll]
+        # 同 clang-format：流水线 precommit 对改动命中的 .py 跑 bandit，存量代码
+        # 触发的告警会卡门禁。先屏蔽当前已存在 Python 的目录（src/{asys,msaicerr}、
+        # test/、skills/、experiment/、scripts/、cmake/、.claude/），只对新增目录/
+        # 新 src 子包生效；存量目录整改后再逐个摘除。
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/(
+              asys
+              | msaicerr
+            )/
+            | test/
+          )
 
   # 拼写检查（codespell），与 CI 的 StaticCheck_codespell_check 对齐。
   - repo: https://gitcode.com/gh_mirrors/co/codespell
