@@ -221,10 +221,10 @@ std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsTyp
 {
     std::vector<MsprofArgsType> mdcV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
-        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION, ARGS_INSTR_PROFILING_FREQ};
     std::vector<MsprofArgsType> mdcLiteV2BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
-        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION, ARGS_INSTR_PROFILING_FREQ};
 
     return {
         {PlatformType::CHIP_MDC_V2, mdcV2BlackSwith}, {PlatformType::CHIP_MDC_LITE_V2, mdcLiteV2BlackSwith}
@@ -268,8 +268,8 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_EXPORT, ARGS_EXPORT_ITERATION_ID, ARGS_EXPORT_MODEL_ID, ARGS_INSTR_PROFILING, ARGS_INSTR_PROFILING_FREQ,
         ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_ANALYZE, ARGS_RULE, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
         ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_MEM_SERVICEFLOW, ARGS_OP_TYPE};
-    std::vector<MsprofArgsType> davidBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
-    std::vector<MsprofArgsType> david121BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS};
+    std::vector<MsprofArgsType> davidBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
+    std::vector<MsprofArgsType> david121BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
     std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> platformArgsType = {
         {PlatformType::MINI_TYPE, miniBlackSwith}, {PlatformType::CLOUD_TYPE, cloudBlackSwith}, {PlatformType::MDC_TYPE, mdcBlackSwith},
         {PlatformType::DC_TYPE, dcBlackSwith}, {PlatformType::CHIP_V4_1_0, cloudBlackSwithV2}, {PlatformType::MINI_V3_TYPE, miniV3BlackSwith},
@@ -2305,7 +2305,7 @@ void ArgsManager::AddAnalysisArgs()
         "\t\t\t\t\t\t   the default value is communication,communication_matrix."},
     {"iteration-id", "The export iteration id, only used when argument export is on, the default value is 1.", "1"},
     {"model-id", "The export model id, only used when argument export is on, "
-        "msprof will export minium accessible model by default.",
+        "msprof will export minimum accessible model by default.",
         "-1"},
     {"summary-format", "The export summary file format, only used when argument export is on, "
         "include csv, json, the default value is csv.", "csv"},
@@ -2317,16 +2317,17 @@ void ArgsManager::AddAnalysisArgs()
 
 void ArgsManager::AddInstrArgs()
 {
-    if (!Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_INSTR_PROFILING) &&
-        !Platform::instance()->CheckIfSupport(PLATFORM_TASK_INSTR_PROFILING)) {
-        return;
+    if (Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_INSTR_PROFILING)) {
+        Args instrProfiling = {"instr-profiling", "Show instr profiling data, the default value is off.", OFF};
+        Args instrProfilingFreq = {"instr-profiling-freq", "The instr profiling sampling period in clock-cycle, "
+            "the default value is 1000 cycle, the range is 300 to 30000 cycle.",
+            "1000"};
+        argsList_.push_back(instrProfiling);
+        argsList_.push_back(instrProfilingFreq);
+    } else if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_INSTR_PROFILING)) {
+        Args instrProfiling = {"instr-profiling", "Show instr profiling data, the default value is off.", OFF};
+        argsList_.push_back(instrProfiling);
     }
-    Args instrProfiling = {"instr-profiling", "Show instr profiling data, the default value is off.", OFF};
-    Args instrProfilingFreq = {"instr-profiling-freq", "The instr profiling sampling period in clock-cycle, "
-        "the default value is 1000 cycle, the range is 300 to 30000 cycle.",
-        "1000"};
-    argsList_.push_back(instrProfiling);
-    argsList_.push_back(instrProfilingFreq);
 }
 
 void ArgsManager::AddCpuArgs()

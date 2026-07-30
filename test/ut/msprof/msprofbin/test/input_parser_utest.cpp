@@ -1329,9 +1329,9 @@ TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap) {
     InputParser parser = InputParser();
     auto platMap = parser.GenerateChipV2PlatSwithMap();
 
-    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_AICPU,
-        ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
-        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION};
+    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
+        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION, ARGS_INSTR_PROFILING_FREQ};
 
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_V2]);
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_LITE_V2]);
@@ -1356,6 +1356,86 @@ TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs) {
     argsManager.argsList_.clear();
     argsManager.AddHCCLArgs();
     EXPECT_EQ(static_cast<size_t>(1), argsManager.argsList_.size());
+}
+
+TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidIncludesInstrProfilingFreq)
+{
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
+    ConfigManager::instance()->isInit_ = true;
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    InputParser parser = InputParser();
+    auto switchList = parser.GeneratePlatSwithList();
+
+    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_INSTR_PROFILING_FREQ};
+    EXPECT_EQ(expected, switchList);
+
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V4);
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+    switchList = parser.GeneratePlatSwithList();
+    EXPECT_EQ(expected, switchList);
+}
+
+TEST_F(INPUT_PARSER_UTEST, AddInstrArgs)
+{
+    ArgsManager argsManager = ArgsManager();
+    ConfigManager::instance()->configMap_["type"] = "5";
+    ConfigManager::instance()->isInit_ = true;
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+
+    // Neither feature supported: no args added
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .will(returnValue(false));
+    argsManager.argsList_.clear();
+    argsManager.AddInstrArgs();
+    EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
+
+    // Only PLATFORM_SYS_DEVICE_INSTR_PROFILING: adds instr-profiling + freq
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_SYS_DEVICE_INSTR_PROFILING))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    argsManager.argsList_.clear();
+    argsManager.AddInstrArgs();
+    EXPECT_EQ(static_cast<size_t>(2), argsManager.argsList_.size());
+    EXPECT_EQ("instr-profiling", argsManager.argsList_[0].name_);
+    EXPECT_EQ("instr-profiling-freq", argsManager.argsList_[1].name_);
+
+    // Only PLATFORM_TASK_INSTR_PROFILING: adds only instr-profiling
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .with(eq(PLATFORM_TASK_INSTR_PROFILING))
+        .will(returnValue(true));
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .defaults()
+        .will(returnValue(false));
+    argsManager.argsList_.clear();
+    argsManager.AddInstrArgs();
+    EXPECT_EQ(static_cast<size_t>(1), argsManager.argsList_.size());
+    EXPECT_EQ("instr-profiling", argsManager.argsList_[0].name_);
+
+    // Both features supported: adds instr-profiling + freq only (no duplicate)
+    GlobalMockObject::verify();
+    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
+        .stubs()
+        .will(returnValue(true));
+    argsManager.argsList_.clear();
+    argsManager.AddInstrArgs();
+    EXPECT_EQ(static_cast<size_t>(2), argsManager.argsList_.size());
+    EXPECT_EQ("instr-profiling", argsManager.argsList_[0].name_);
+    EXPECT_EQ("instr-profiling-freq", argsManager.argsList_[1].name_);
+    GlobalMockObject::verify();
 }
 
 } // namespace
