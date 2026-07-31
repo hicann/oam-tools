@@ -126,6 +126,23 @@ set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
 
 # 拷贝 aml 目录内容
 if(EXISTS "${BUNDLE_PKG}/aml")
+    # AICore STL 形态目录(Ascend950)。目录名须与入口 so 里 SOC_PLATFORM_TABLE 的
+    # formSubDir 逐字符一致(oam-tools-diag: aml_aicore_stl_platform.cpp)，
+    # 形态 so / kernel so / 算子 .o / 算子输入数据(mx.bin)都放这里。
+    set(_aml_stl_form_rel "tools/aml/lib64/aicore_stl/ascend950_aicore_stl")
+    set(_aml_stl_form_dir "${INSTALL_LIBRARY_DIR}/${_aml_stl_form_rel}")
+    # Ascend950形态 so / kernel so / 算子 .o 都在 aml/lib64/ascend950_aicore_stl/ 下，
+    set(_aml_stl_bundle_form_dir "${BUNDLE_PKG}/aml/lib64/ascend950_aicore_stl")
+
+    # [TEMP-STL-COMPAT] 临时兼容旧版 oam-tools-diag 包(无 AICore STL 产物)。
+    # 后续改为强制校验时，删除本 set 及下面 3 处 _aml_stl_available 判断即可。
+    if(EXISTS "${BUNDLE_PKG}/aml/lib64/libaml_aicore_stl.so")
+        set(_aml_stl_available TRUE)
+    else()
+        set(_aml_stl_available FALSE)
+        message(STATUS "AICore STL libs not in bundle, skip packaging them.")
+    endif()
+
     file(COPY "${BUNDLE_PKG}/aml/lib64/plugin" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
     # 如果 plugin/bin 存在，将其内容移动到 plugin 下并删除 bin
     set(_aml_plugin_bin "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/bin")
@@ -146,6 +163,17 @@ if(EXISTS "${BUNDLE_PKG}/aml")
                 "${_aml_plugin_bin}"
                 "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin"
         )
+        # mx.bin 是 AICore STL 的算子输入，须与形态 so 同目录（入口 so 按
+        # <自身目录>/<formSubDir>/ 定位数据文件），不能留在被摊平的 plugin/ 下。
+        # 上面 copy_directory 会把它一并摊到 plugin/，此处挪到形态目录并清掉残留。
+        if(_aml_stl_available AND EXISTS "${_aml_plugin_bin}/mx.bin")  # [TEMP-STL-COMPAT]
+            file(COPY "${_aml_plugin_bin}/mx.bin"
+                DESTINATION "${_aml_stl_form_dir}")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E rm -f
+                    "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/mx.bin"
+            )
+        endif()
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E rm -rf "${_aml_plugin_bin}"
         )
@@ -184,11 +212,68 @@ if(EXISTS "${BUNDLE_PKG}/aml")
             COMPONENT oam-tools
         )
     endif()
+    # AICore STL(Ascend950)算子输入数据:与形态 so 同目录，入口 so 按
+    # <自身目录>/<formSubDir>/mx.bin 读取。与 bin/ 下的 matmul_input_*.bin 同源。
+    if(_aml_stl_available AND EXISTS "${BUNDLE_PKG}/aml/lib64/plugin/bin/mx.bin")  # [TEMP-STL-COMPAT]
+        install(FILES
+            ${BUNDLE_PKG}/aml/lib64/plugin/bin/mx.bin
+            DESTINATION ${_aml_stl_form_rel}
+            COMPONENT oam-tools
+        )
+    endif()
     install(FILES
         ${BUNDLE_PKG}/aml/lib64/plugin_v2/libascend_stress_detect.so
         DESTINATION tools/aml/lib64/plugin_v2
         COMPONENT oam-tools
     )
+
+    # AICore STL 自诊断三层框架(源自 oam-tools-diag，随 bundle 发布到 aml/lib64):
+    #   入口 libaml_aicore_stl.so → host libaml_stl_ascend950.so → kernel libaml_stl_kernel_ascend950.so
+    # 分级放置以便后续按 SoC 形态扩展:
+    #   aicore_stl/                      入口层，平台无关
+    #   aicore_stl/ascend950_aicore_stl/ 形态相关(host so + kernel so + 11 个算子 .o)
+    # 形态子目录名须与入口 so 里 SOC_PLATFORM_TABLE 的 formSubDir 逐字符一致
+    # (oam-tools-diag: aml_aicore_stl_platform.cpp)：入口 so 用 dladdr 定位自身目录后
+    # 拼 <自身目录>/<formSubDir>/ 加载形态 so，名字不一致会在运行期 dlopen 失败。
+    # 新增形态时在 aicore_stl/ 下新建对应形态子目录即可。
+    if(_aml_stl_available)  # [TEMP-STL-COMPAT]
+    # Guard：形态 so 与 kernel so 必需，缺失即在 configure 期报错，避免产出运行期才崩的残缺包。
+    foreach(_required_stl_lib
+        "${_aml_stl_bundle_form_dir}/libaml_stl_ascend950.so"
+        "${_aml_stl_bundle_form_dir}/libaml_stl_kernel_ascend950.so"
+    )
+        if(NOT EXISTS "${_required_stl_lib}")
+            message(FATAL_ERROR "Required AICore STL library not found: ${_required_stl_lib}")
+        endif()
+    endforeach()
+    # 入口层:平台无关，放 aicore_stl/
+    install(FILES
+        ${BUNDLE_PKG}/aml/lib64/libaml_aicore_stl.so
+        DESTINATION tools/aml/lib64/aicore_stl
+        COMPONENT oam-tools
+    )
+    # 形态层(Ascend950):host so + kernel so，放 aicore_stl/ascend950_aicore_stl/
+    install(FILES
+        ${_aml_stl_bundle_form_dir}/libaml_stl_ascend950.so
+        ${_aml_stl_bundle_form_dir}/libaml_stl_kernel_ascend950.so
+        DESTINATION ${_aml_stl_form_rel}
+        COMPONENT oam-tools
+    )
+    # 11 个算子 .o(算子目录名生成，随形态增删会变)，用 GLOB 全量纳入。
+    # 按形态子目录取，避免将来多形态时把别的形态的 .o 一并捞进本形态目录。
+    file(GLOB _stl_kernel_objs CONFIGURE_DEPENDS
+        "${_aml_stl_bundle_form_dir}/*.o"
+    )
+    install(FILES ${_stl_kernel_objs}
+        DESTINATION ${_aml_stl_form_rel}
+        COMPONENT oam-tools
+    )
+    unset(_stl_kernel_objs)
+    endif()  # [TEMP-STL-COMPAT]
+    unset(_aml_stl_available)
+    unset(_aml_stl_form_rel)
+    unset(_aml_stl_form_dir)
+    unset(_aml_stl_bundle_form_dir)
 endif()
 
 # 拷贝 built-in 目录

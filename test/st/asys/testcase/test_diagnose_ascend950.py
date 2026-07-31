@@ -154,3 +154,67 @@ class TestDiagnose(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
 
+    def test_diagnose_aicore_stl_so_loaded_by_absolute_path(self, mocker, monkeypatch):
+        """libaml_aicore_stl.so 装在 tools/aml/lib64/aicore_stl/,不在 LD_LIBRARY_PATH 中。
+
+        端到端看护:asys 必须按 ASCEND_HOME_PATH 拼出的绝对路径加载,而非裸 so 名。
+        裸名会让入口 so 内部的 dladdr 定位到错误目录,进而加载不到形态 so。
+        """
+        from drv import LoadSoType
+        from drv.env_type import AICORE_STL_SO_NAME, AICORE_STL_SO_SUBPATH
+
+        LoadSoType.clear()
+        # 造出安装布局:<home>/tools/aml/lib64/aicore_stl/libaml_aicore_stl.so
+        fake_home = os.path.join(test_case_tmp, "fake_ascend_home")
+        so_dir = os.path.join(fake_home, AICORE_STL_SO_SUBPATH)
+        os.makedirs(so_dir, exist_ok=True)
+        so_file = os.path.join(so_dir, AICORE_STL_SO_NAME)
+        Path(so_file).write_bytes(b"")
+        monkeypatch.setenv("ASCEND_HOME_PATH", fake_home)
+
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        load_dll = mocker.patch.object(LoadSoType, "load_dll", return_value=AsysStlDiagnose0())
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch.object(LoadSoType, "get_env_type", return_value="EP")
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+
+        self.assertTrue(asys.main())
+        # load_dll 是六个 so 共用的 staticmethod(drvdsmi/drvhal/ascend_ml/ascendcl/
+        # ascend_trace/aml_aicore_stl),故只筛 STL 那一条调用,不断言总次数。
+        stl_calls = [c for c in load_dll.call_args_list
+                     if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)]
+        self.assertTrue(len(stl_calls) == 1)
+        passed = stl_calls[0][0][0]
+        self.assertTrue(passed == os.path.realpath(so_file))
+        self.assertTrue(os.path.isabs(passed))
+        LoadSoType.clear()
+
+    def test_diagnose_aicore_stl_fails_when_so_absent(self, mocker, monkeypatch, capsys):
+        """so 未安装时 diagnose 优雅失败(而非抛异常),并给出可定位的错误。"""
+        from drv import LoadSoType
+        from drv.env_type import AICORE_STL_SO_NAME
+
+        LoadSoType.clear()
+        fake_home = os.path.join(test_case_tmp, "empty_ascend_home")
+        os.makedirs(fake_home, exist_ok=True)
+        monkeypatch.setenv("ASCEND_HOME_PATH", fake_home)
+
+        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
+        load_dll = mocker.patch.object(LoadSoType, "load_dll")
+        mocker.patch("os.getuid", return_value=0)
+        mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch.object(LoadSoType, "get_env_type", return_value="EP")
+        mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        ParamDict().set_env_type("EP")
+
+        self.assertTrue(not asys.main())
+        # 同上:只关心 STL 那条调用未发生,其余 so 的加载与本用例无关。
+        stl_calls = [c for c in load_dll.call_args_list
+                     if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)]
+        self.assertTrue(len(stl_calls) == 0)
+        LoadSoType.clear()
+

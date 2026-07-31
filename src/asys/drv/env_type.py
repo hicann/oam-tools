@@ -16,11 +16,15 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+import os
 import ctypes
 
 from common import log_error
 from common import RetCode
 from common import Singleton
+
+AICORE_STL_SO_SUBPATH = "tools/aml/lib64/aicore_stl"
+AICORE_STL_SO_NAME = "libaml_aicore_stl.so"
 
 
 class LoadSoType(metaclass=Singleton):
@@ -49,6 +53,19 @@ class LoadSoType(metaclass=Singleton):
             dlclose_func.argtypes = [ctypes.c_void_p]
             dlclose_func.restype = ctypes.c_int
             dlclose_func(lib._handle)
+    
+    @staticmethod
+    def get_aicore_stl_so_path():
+        # Resolve libaml_aicore_stl.so under ASCEND_HOME_PATH; return None if absent.
+        home_path = os.getenv("ASCEND_HOME_PATH")
+        if not home_path:
+            log_error("ASCEND_HOME_PATH is not set.")
+            return None
+        so_path = os.path.realpath(os.path.join(home_path, AICORE_STL_SO_SUBPATH,
+                                                AICORE_STL_SO_NAME))
+        if not os.path.isfile(so_path):
+            return None
+        return so_path
 
     def get_drvdsmi_env_type(self):
         if self.drvdsmi is None:
@@ -76,8 +93,13 @@ class LoadSoType(metaclass=Singleton):
         # libaml_aicore_stl.so exports AmlAicoreStlDetect (AICore STL self-diagnose).
         # Only in the toolkit run pkg, EP side.
         if self.aml_aicore_stl is None and self.get_env_type() == "EP":
-            so_name = "libaml_aicore_stl.so"
-            self.aml_aicore_stl = self.load_dll(so_name)
+            so_path = self.get_aicore_stl_so_path()
+            if so_path is None:
+                log_error(f"{AICORE_STL_SO_NAME} not found under "
+                          f"$ASCEND_HOME_PATH/{AICORE_STL_SO_SUBPATH}, "
+                          "AICore STL detect unavailable.")
+                return RetCode.FAILED
+            self.aml_aicore_stl = self.load_dll(so_path)
         return self.aml_aicore_stl
 
     def get_ascend_trace(self):
