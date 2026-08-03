@@ -28,7 +28,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "")
 include(cmake/intf_pub.cmake)
 
 # install 参数
-set(INSTALL_LIBRARY_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging)
+# OAM_STAGING_DIR：makeself 暂存绝对路径，供配置期 file() 操作用，不随包类型变化。
+set(OAM_STAGING_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging)
+# INSTALL_LIBRARY_DIR 按包类型切换：rpm/deb 用相对路径交 CPACK_PACKAGING_INSTALL_PREFIX 收，run 用绝对 staging。
+if(PACKAGE_TYPE STREQUAL "rpm" OR PACKAGE_TYPE STREQUAL "deb")
+    set(INSTALL_LIBRARY_DIR .)
+else()
+    set(INSTALL_LIBRARY_DIR ${OAM_STAGING_DIR})
+endif()
 
 # Ascend mode
 if(DEFINED ENV{ASCEND_HOME_PATH})
@@ -124,13 +131,14 @@ endif()
 # 拷贝闭源包到指定目录
 set(BUNDLE_PKG ${CMAKE_CURRENT_SOURCE_DIR}/bundle)
 
-# 拷贝 aml 目录内容
+# 拷贝 aml 目录内容（配置期 file 操作用绝对 OAM_STAGING_DIR，非相对的 INSTALL_LIBRARY_DIR）。
 if(EXISTS "${BUNDLE_PKG}/aml")
     # AICore STL 形态目录(Ascend950)。目录名须与入口 so 里 SOC_PLATFORM_TABLE 的
     # formSubDir 逐字符一致(oam-tools-diag: aml_aicore_stl_platform.cpp)，
     # 形态 so / kernel so / 算子 .o / 算子输入数据(mx.bin)都放这里。
     set(_aml_stl_form_rel "tools/aml/lib64/aicore_stl/ascend950_aicore_stl")
-    set(_aml_stl_form_dir "${INSTALL_LIBRARY_DIR}/${_aml_stl_form_rel}")
+    # 配置期 file(COPY) 目标用绝对 OAM_STAGING_DIR（rpm/deb 下 INSTALL_LIBRARY_DIR 为相对）。
+    set(_aml_stl_form_dir "${OAM_STAGING_DIR}/${_aml_stl_form_rel}")
     # Ascend950形态 so / kernel so / 算子 .o 都在 aml/lib64/ascend950_aicore_stl/ 下，
     set(_aml_stl_bundle_form_dir "${BUNDLE_PKG}/aml/lib64/ascend950_aicore_stl")
 
@@ -143,25 +151,25 @@ if(EXISTS "${BUNDLE_PKG}/aml")
         message(STATUS "AICore STL libs not in bundle, skip packaging them.")
     endif()
 
-    file(COPY "${BUNDLE_PKG}/aml/lib64/plugin" DESTINATION ${INSTALL_LIBRARY_DIR}/tools/aml/lib64)
+    file(COPY "${BUNDLE_PKG}/aml/lib64/plugin" DESTINATION ${OAM_STAGING_DIR}/tools/aml/lib64)
     # 如果 plugin/bin 存在，将其内容移动到 plugin 下并删除 bin
-    set(_aml_plugin_bin "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/bin")
+    set(_aml_plugin_bin "${OAM_STAGING_DIR}/tools/aml/lib64/plugin/bin")
     if(EXISTS "${_aml_plugin_bin}" AND IS_DIRECTORY "${_aml_plugin_bin}")
-        # 防御性检查：仅删除位于本次构建目录下的 bin，避免 INSTALL_LIBRARY_DIR
+        # 防御性检查：仅删除位于本次构建目录下的 bin，避免 OAM_STAGING_DIR
         # 为空或被异常修改时，rm -rf 落到用户文件系统的真实路径上造成数据丢失
         get_filename_component(_aml_plugin_bin_abs "${_aml_plugin_bin}" REALPATH)
         get_filename_component(_build_dir_abs "${CMAKE_BINARY_DIR}" REALPATH)
         string(FIND "${_aml_plugin_bin_abs}" "${_build_dir_abs}/" _aml_under_build)
-        if(NOT INSTALL_LIBRARY_DIR OR NOT _aml_under_build EQUAL 0)
+        if(NOT OAM_STAGING_DIR OR NOT _aml_under_build EQUAL 0)
             message(FATAL_ERROR
                 "Refusing to remove '${_aml_plugin_bin_abs}': path is not under build "
-                "directory '${_build_dir_abs}'. Check INSTALL_LIBRARY_DIR="
-                "'${INSTALL_LIBRARY_DIR}'.")
+                "directory '${_build_dir_abs}'. Check OAM_STAGING_DIR="
+                "'${OAM_STAGING_DIR}'.")
         endif()
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${_aml_plugin_bin}"
-                "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin"
+                "${OAM_STAGING_DIR}/tools/aml/lib64/plugin"
         )
         # mx.bin 是 AICore STL 的算子输入，须与形态 so 同目录（入口 so 按
         # <自身目录>/<formSubDir>/ 定位数据文件），不能留在被摊平的 plugin/ 下。
@@ -171,7 +179,7 @@ if(EXISTS "${BUNDLE_PKG}/aml")
                 DESTINATION "${_aml_stl_form_dir}")
             execute_process(
                 COMMAND ${CMAKE_COMMAND} -E rm -f
-                    "${INSTALL_LIBRARY_DIR}/tools/aml/lib64/plugin/mx.bin"
+                    "${OAM_STAGING_DIR}/tools/aml/lib64/plugin/mx.bin"
             )
         endif()
         execute_process(
@@ -297,9 +305,9 @@ if(EXISTS "${BUNDLE_PKG}/built-in")
     )
 endif()
 
-# 创建 bin pkg_inc 目录
-file(MAKE_DIRECTORY ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/bin)
-file(MAKE_DIRECTORY ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc)
+# 创建 bin pkg_inc 目录（配置期用绝对 OAM_STAGING_DIR）。
+file(MAKE_DIRECTORY ${OAM_STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/bin)
+file(MAKE_DIRECTORY ${OAM_STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc)
 
 # 打run包
 include(cmake/package.cmake)

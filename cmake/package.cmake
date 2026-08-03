@@ -141,6 +141,6 @@ function(pack_built_in)
 
   message(STATUS "current compute_unit is: ${compute_unit}")
 
-  set_cann_cpack_config(oam-tools SHARE_INFO_NAME oam_tools)
+  set_cann_cpack_config(oam-tools SHARE_INFO_NAME oam_tools PACKAGE_TYPE ${PACKAGE_TYPE})
 
 endfunction()

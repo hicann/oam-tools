@@ -37,7 +37,9 @@ usage() {
     echo "                   Make clean and delete build directory, bundle directory, and version file"
     echo "    --build-type=<TYPE>"
     echo "                   Specify build type (TYPE options: Release/Debug), default is Release"
-    echo "    --pkg          Build run package"
+    echo "    --pkg-type=<TYPE>"
+    echo "                   Specify package type (TYPE option: run/rpm/deb), Default: run"
+    echo "    --pkg          Alias for --pkg-type=run (build run package; default behavior)"
     echo "    --ascend_install_path=<PATH>"
     echo "                   Set ascend package install path, default /usr/local/Ascend/cann"
     echo "    --cann_3rd_lib_path=<PATH>"
@@ -63,6 +65,7 @@ checkopts() {
     MAKE_CLEAN_ALL="off"
     EXEC_TEST="off"
     BUILD_TYPE="Release"
+    PACKAGE_TYPE="run"
     BUILD_MODE=""
     ENABLE_COVERAGE="off"
     TEST_COMPONENT="all"
@@ -80,7 +83,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
     usage
     exit 1
     }
@@ -120,6 +123,13 @@ checkopts() {
         ;;
         --build-type)
         BUILD_TYPE=$2
+        shift 2
+        ;;
+        --pkg-type)
+        if [ "X$2" != "Xrun" ] && [ "X$2" != "Xrpm" ] && [ "X$2" != "Xdeb" ]; then
+          usage && echo "Error: Invalid value '$2' for option '$1'" && exit 1
+        fi
+        PACKAGE_TYPE="$2"
         shift 2
         ;;
         --noexec)
@@ -265,20 +275,24 @@ build_oam_tools() {
     -DENABLE_UT=${ENABLE_UT} \
     -DENABLE_SIGN=${ENABLE_SIGN} \
     -DBUILD_OPEN_PROJECT=ON\
-    -DENABLE_PACKAGE=TRUE"
+    -DENABLE_PACKAGE=TRUE \
+    -DPACKAGE_TYPE=${PACKAGE_TYPE}"
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
+    # make package 前清理历史产物，避免旧 cann*.run/rpm/deb 被误当本次产物搬走。
+    rm -f cann*.run cann*.rpm cann*.deb
     make ${VERBOSE} -j${THREAD_NUM} && clean_cpack_staging "${BUILD_PATH}" && make package
     # make package
     if [ 0 -ne $? ]; then
         echo "execute command: make ${VERBOSE} -j${THREAD_NUM} && make install failed."
         return 1
     fi
-    if [ -f cann*.run ];then
+    # 只搬本次 ${PACKAGE_TYPE} 后缀产物，不按固定顺序扫描，避免残留旧后缀先命中搬错包。
+    if compgen -G "cann*.${PACKAGE_TYPE}" > /dev/null 2>&1; then
         mkdir -pv "$BUILD_OUT_PATH"
-        mv cann*.run "$BUILD_OUT_PATH"
+        mv cann*.${PACKAGE_TYPE} "$BUILD_OUT_PATH"
     else
-        echo "package oam_tools run failed"
+        echo "package oam_tools failed: no cann*.${PACKAGE_TYPE} artifact found"
         return 1
     fi
 
