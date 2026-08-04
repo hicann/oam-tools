@@ -1,6 +1,5 @@
 # 性能数据采集
 
-<!-- @ref: oam-tools/res/docs/zh/profiling/index_res.md#id00001 -->
 - [使用前准备](./preparation/before_you_start.md)
 <!-- @ref: oam-tools/res/docs/zh/profiling/index_res.md#id00003 -->
 - [msprof采集命令](./msprof_cmd/msprof_cmd.md)

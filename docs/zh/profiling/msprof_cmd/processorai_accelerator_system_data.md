@@ -144,7 +144,6 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
 
-
 <!-- npu="950" id21 -->
 Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id21 -->

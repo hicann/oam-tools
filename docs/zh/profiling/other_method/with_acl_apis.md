@@ -42,7 +42,7 @@
 > [!NOTE]说明
 >aclprofInit接口传入的性能采集数据的落盘路径，需要确保用户进程具有读写权限。
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id23 -->
->接口详细说明，请参见[《应用开发 \(C&C++\)》](https://hiascend.com/document/redirect/cannCommunityadevguide)。
+>接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
 <!-- end id23 -->
 
 **API调用示例**
@@ -62,7 +62,7 @@ aclprofInit(aclProfPath, strlen(aclProfPath));
 // 4.进行Profiling配置
 uint32_t deviceIdList[1] = {0};    // 须根据实际环境的Device ID配置
 // 创建配置结构体
-aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION, 
+aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION,
     nullptr,ACL_PROF_ACL_API | ACL_PROF_TASK_TIME);
 const char *memFreq = "15";
 ret = aclprofSetConfig(ACL_PROF_SYS_HARDWARE_MEM_FREQ, memFreq, strlen(memFreq));
@@ -72,7 +72,7 @@ aclprofStart(config);
 // 5.模型加载，加载成功后，返回标识模型的modelId
 
 // 6.创建aclmdlDataset类型的数据，用于描述模型的输入数据input、输出数据output
- 
+
 // 7.执行模型
 ret = aclmdlExecute(modelId, input, output);
 
@@ -114,7 +114,7 @@ aclprofFinalize();
 > [!NOTE]说明
 >当只开启msproftx功能时，aclProfCreateConfig接口的deviceIdList参数值需设为空，deviceNums参数值设为0。
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id24 -->
->接口详细说明，请参见[《应用开发 \(C&C++\)》](https://hiascend.com/document/redirect/cannCommunityadevguide)。
+>接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
 <!-- end id24 -->
 
 **API调用示例**
@@ -123,54 +123,54 @@ aclprofFinalize();
 
     ```cpp
     // 1.调用aclInit初始化
-    
+
     // 2.申请运行管理资源，包括设置用于计算的Device、创建Context、创建Stream
-    
+
     // 3.Profiling初始化
     // 设置数据落盘路径
     const char *aclProfPath = "./output";
     aclprofInit(aclProfPath, strlen(aclProfPath));
-    
+
     // 4.进行Profiling配置
     uint32_t deviceIdList[1] = {0};    // 须根据实际环境的Device ID配置
     // 创建配置结构体
-    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION, 
+    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION,
         nullptr,ACL_PROF_ACL_API | ACL_PROF_TASK_TIME | ACL_PROF_MSPROFTX);
     const char *memFreq = "15";
     ret = aclprofSetConfig(ACL_PROF_SYS_HARDWARE_MEM_FREQ, memFreq, strlen(memFreq));
     aclprofStart(config);
-    
+
     aclprofStepInfo *stepInfo = aclprofCreateStepInfo();
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_START, stream_);
-    
+
     // 5.模型加载，加载成功后，返回标识模型的modelId
     stamp = aclprofCreateStamp();
     aclprofSetStampTraceMessage(stamp, "model_load_mark", strlen("model_load_mark"));
     aclprofMark(stamp);    // 标记模型加载事件
     aclprofDestroyStamp(stamp);
-    
+
     // 6.创建aclmdlDataset类型的数据，用于描述模型的输入数据input、输出数据output
-    
+
     // 7.执行模型
     stamp = aclprofCreateStamp();
     aclprofSetStampTraceMessage(stamp, "model_exec_mark", strlen("model_exec_mark"));
     aclprofMark(stamp);    // 标记模型执行事件
     aclprofDestroyStamp(stamp);
     ret = aclmdlExecute(modelId, input, output);
-    
+
     // 8.处理模型推理结果
-    
+
     // 9.释放描述模型输入/输出信息、内存等资源，卸载模型
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_END, stream_);
     aclprofDestroyStepInfo(stepInfo);
-    
+
     // 10.关闭Profiling配置,释放配置资源,释放Profiling组件资源
     aclprofStop(config);
     aclprofDestroyConfig(config);
     aclprofFinalize();
-    
+
     // 11.释放运行管理资源
-    
+
     // 12.调用aclFinalize去初始化
     //......
     ```
@@ -193,30 +193,30 @@ aclprofFinalize();
 
     ```cpp
     // 1.调用aclInit初始化
-    
+
     // 2.申请运行管理资源，包括设置用于计算的Device、创建Context、创建Stream
-    
+
     // 3.Profiling初始化
     // 设置数据落盘路径
     const char *aclProfPath = "./output";
     aclprofInit(aclProfPath, strlen(aclProfPath));
-    
+
     // 4.进行Profiling配置
     uint32_t deviceIdList[1] = {0};    // 须根据实际环境的Device ID配置
     // 创建配置结构体
-    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION, 
+    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION,
         nullptr,ACL_PROF_ACL_API | ACL_PROF_TASK_TIME | ACL_PROF_MSPROFTX);
     const char *memFreq = "15";
     ret = aclprofSetConfig(ACL_PROF_SYS_HARDWARE_MEM_FREQ, memFreq, strlen(memFreq));
     aclprofStart(config);
-    
+
     aclprofStepInfo *stepInfo = aclprofCreateStepInfo();
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_START, stream_);
-    
+
     // 5.模型加载，加载成功后，返回标识模型的modelId
-    
+
     // 6.创建aclmdlDataset类型的数据，用于描述模型的输入数据input、输出数据output
-    
+
     // 7.执行模型（模型仅在单线程执行）
     stamp = aclprofCreateStamp();
     aclprofSetStampTraceMessage(stamp, "aclmdlExecute_duration", strlen("aclmdlExecute_duration"));
@@ -224,20 +224,20 @@ aclprofFinalize();
     ret = aclmdlExecute(modelId, input, output);
     aclprofPop();
     aclprofDestroyStamp(stamp);
-    
+
     // 8.处理模型推理结果
-    
+
     // 9.释放描述模型输入/输出信息、内存等资源，卸载模型
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_END, stream_);
     aclprofDestroyStepInfo(stepInfo);
-    
+
     // 10.关闭Profiling配置,释放配置资源,释放Profiling组件资源
     aclprofStop(config);
     aclprofDestroyConfig(config);
     aclprofFinalize();
-    
+
     // 11.释放运行管理资源
-    
+
     // 12.调用aclFinalize去初始化
     //......
     ```
@@ -246,30 +246,30 @@ aclprofFinalize();
 
     ```cpp
     // 1.调用aclInit初始化
-    
+
     // 2.申请运行管理资源，包括设置用于计算的Device、创建Context、创建Stream
-    
+
     // 3.Profiling初始化
     // 设置数据落盘路径
     const char *aclProfPath = "./output";
     aclprofInit(aclProfPath, strlen(aclProfPath));
-    
+
     // 4.进行Profiling配置
     uint32_t deviceIdList[1] = {0};    // 须根据实际环境的Device ID配置
     // 创建配置结构体
-    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION, 
+    aclprofConfig *config = aclprofCreateConfig(deviceIdList, 1, ACL_AICORE_ARITHMETIC_UTILIZATION,
         nullptr,ACL_PROF_ACL_API | ACL_PROF_TASK_TIME | ACL_PROF_MSPROFTX);
     const char *memFreq = "15";
     ret = aclprofSetConfig(ACL_PROF_SYS_HARDWARE_MEM_FREQ, memFreq, strlen(memFreq));
     aclprofStart(config);
-    
+
     aclprofStepInfo *stepInfo = aclprofCreateStepInfo();
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_START, stream_);
-    
+
     // 5.模型加载，加载成功后，返回标识模型的modelId
-    
+
     // 6.创建aclmdlDataset类型的数据，用于描述模型的输入数据input、输出数据output
-    
+
     // 7.执行模型（模型在跨线程执行）
     stamp = aclprofCreateStamp();
     aclprofSetStampTraceMessage(stamp, "aclmdlExecute_duration", strlen("aclmdlExecute_duration"));
@@ -277,26 +277,45 @@ aclprofFinalize();
     ret = aclmdlExecute(modelId, input, output);
     aclprofRangeStop(rangeId);
     aclprofDestroyStamp(stamp);
-    
+
     // 8.处理模型推理结果
-    
+
     // 9.释放描述模型输入/输出信息、内存等资源，卸载模型
     int ret = aclprofGetStepTimestamp(stepInfo, ACL_STEP_END, stream_);
     aclprofDestroyStepInfo(stepInfo);
-    
+
     // 10.关闭Profiling配置,释放配置资源,释放Profiling组件资源
     aclprofStop(config);
     aclprofDestroyConfig(config);
     aclprofFinalize();
-    
+
     // 11.释放运行管理资源
-    
+
     // 12.调用aclFinalize去初始化
     //......
     ```
 
 > [!NOTE]说明
 >msproftx扩展接口在main函数内调用。
+
+## 订阅算子信息
+
+通过调用消息订阅接口实现将采集到的Profiling数据解析后写入管道，由用户读入内存，再由用户调用API获取性能数据。当前支持获取网络模型中算子的性能数据，包括算子名称、算子类型名称、算子执行时间等。
+
+**API简介**
+
+**表1**  API简介
+
+|接口|说明|
+|--|--|
+|aclprofCreateSubscribeConfig|创建aclprofSubscribeConfig类型的数据，表示创建订阅配置信息。|
+|aclprofModelSubscribe|订阅算子的基本信息，包括算子名称、算子类型、算子执行耗时等。同步接口。<br>与aclprofModelUnSubscribe成对使用。|
+|aclprofGet*|获取算子的基本信息。“*”包括：<br>OpDescSize：算子数据结构大小。<br>OpNum：算子个数。<br>OpTypeLen：算子类型的字符串长度。<br>OpType：算子类型。<br>OpNameLen：算子名称的字符串长度。<br>OpName：算子名称。<br>OpStart：算子执行开始时间。<br>OpEnd：算子执行结束时间。<br>OpDuration：算子执行耗时。<br>ModelId：算子所在模型ID。<br>以上信息通过INFO_LOG接口将Profiling结果显示在屏幕上。|
+|aclprofModelUnSubscribe|网络场景下，取消订阅算子的基本信息，包括算子名称、算子类型、算子执行耗时等。同步接口。<br>需要与aclprofModelSubscribe接口配对使用。|
+|aclprofDestroySubscribeConfig|销毁通过aclprofCreateSubscribeConfig接口创建的aclprofSubscribeConfig类型的数据。同步接口。|
+
+> [!NOTE]说明
+>接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
 
 ## 采集数据说明
 

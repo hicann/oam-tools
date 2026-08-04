@@ -3,7 +3,7 @@
 环境变量方式采集适用于TensorFlow框架训练/在线推理场景。与直接使用TensorFlow框架接口采集方式不同的是，环境变量方式是在训练/在线推理脚本中直接插入PROFILING\_OPTIONS环境变量配置性能数据采集项。
 
 > [!NOTE]说明
->--task-trace后续版本会废弃，请使用--task-time开关控制相关数据采集。
+> task_trace后续版本会废弃，请使用task_time开关控制相关数据采集。
 
 ## 前提条件
 
