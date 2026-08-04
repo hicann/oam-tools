@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-包括压力检测、HBM硬件检测、CPU检测等功能。
+包括压力检测、HBM硬件检测、CPU检测、STL硬件检测等功能。
 
 ## 注意事项
 
@@ -23,6 +23,9 @@ asys diagnose -r=hbm_detect -d=deviceId --timeout=num --output=path
 
 # CPU检测
 asys diagnose -r=cpu_detect -d=deviceId --timeout=num --output=path
+
+# AI Core STL硬件检测
+asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
 ```
 
 ## 参数说明
@@ -37,8 +40,8 @@ asys diagnose -r=cpu_detect -d=deviceId --timeout=num --output=path
         显示检测结果时：
 
         - 不指定device但device只有一个时，仅显示这个device的状态。
-        - 显示所有device的检测结果时，若所有device的状态都为Pass、Warn，则直接显示Pass - All、Warn - All。
-        - 若一个或多个device状态不一致时，则依次显示每个device的状态，例如4个device时，显示Pass, Warn, Warn, Warn。
+        - 显示所有device的检测结果时，若所有device的检测结果状态一致，直接显示汇总标签（如 Pass - All 或 Warn - All）。
+        - 若存在device状态不一致的情况，则依次列出每个device的具体状态，例如在4个device场景下显示为 Pass, Warn, Warn, Warn。
         - **若检测结果为Warn**，表示检测失败，可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log），根据关键字“\[ERROR\] AML”查看日志信息，并根据其中的错误码定位并排除问题：**1**开头的错误码表示用例执行失败、任务下发失败等；**2**开头的错误码表示精度比对失败；**3**开头的错误码表示硬件问题。
         - **若检测结果为Pass**，表示检测成功。
 
@@ -47,8 +50,8 @@ asys diagnose -r=cpu_detect -d=deviceId --timeout=num --output=path
         显示检测结果时：
 
         - 不指定device但device只有一个时，仅显示这个device的状态。
-        - 显示所有device的检测结果时，若所有device的状态都为Pass、Warn，则直接显示Pass - All、Warn - All。
-        - 若一个或多个device状态不一致时，则依次显示每个device的状态，例如4个device时，显示Pass, Warn, Warn, Warn。
+        - 显示所有device的检测结果时，若所有device的检测结果状态一致，直接显示汇总标签（如 Pass - All 或 Warn - All）。
+        - 若存在device状态不一致的情况，则依次列出每个device的具体状态，例如在4个device场景下显示为 Pass, Warn, Warn, Warn。
         - **若检测结果为Warn**，表示检测失败，可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log），根据关键字“\[ERROR\] AML”查看日志信息，并根据其中的错误码定位并排除问题：**1**开头的错误码表示用例执行失败、任务下发失败等；**4**开头的错误码表示硬件问题。
         - **若检测结果为Pass**，表示检测成功。针对hbm检测，若返回的数值\>0，该数值表示检测后新增ECC错误的个数，用于提前激发风险地址报错并隔离，保证后续业务正常运行。
 
@@ -57,8 +60,22 @@ asys diagnose -r=cpu_detect -d=deviceId --timeout=num --output=path
         显示检测结果时：
 
         - 不指定device但device只有一个时，仅显示这个device的状态。
-        - 显示所有device的检测结果时，若所有device的状态都为Pass、Warn、Fail，则直接显示Pass - All、Warn - All、Fail - All。
-        - 若一个或多个device状态不一致时，则依次显示每个device的状态，例如4个device时，显示Pass, Warn, Warn, Fail。
+        - 显示所有device的检测结果时，若所有device的检测结果状态一致，直接显示汇总标签（如 Pass - All、Warn - All 或 Fail - All）。
+        - 若存在device状态不一致的情况，则依次列出每个device的具体状态，例如在4个device场景下显示为 Pass, Warn, Warn, Fail。
+        - **若检测结果为Fail**，表示检测出硬件故障，需联系技术支持。
+        - **若检测结果为Warn**，表示检测过程中任务调度出现问题。可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log）中的详细信息定位问题，可先根据关键字“\[ERROR\] AML”筛选日志信息。
+        - **若检测结果为Pass**，表示检测成功。
+
+    - **aicore\_stl\_detect：AI Core STL硬件检测**
+
+        <!-- npu="950" id2 -->
+        仅支持在Ascend 950PR/Ascend 950DT上运行。
+        <!-- end id2 -->
+        显示检测结果时：
+
+        - 不指定device但device只有一个时，仅显示这个device的状态。
+        - 显示所有device的检测结果时，若所有device的检测结果状态一致，直接显示汇总标签（如 Pass - All、Warn - All 或 Fail - All）。
+        - 若存在device状态不一致的情况，则依次列出每个device的具体状态，例如在4个device场景下显示为 Pass, Warn, Warn, Fail。
         - **若检测结果为Fail**，表示检测出硬件故障，需联系技术支持。
         - **若检测结果为Warn**，表示检测过程中任务调度出现问题。可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log）中的详细信息定位问题，可先根据关键字“\[ERROR\] AML”筛选日志信息。
         - **若检测结果为Pass**，表示检测成功。
