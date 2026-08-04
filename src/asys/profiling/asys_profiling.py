@@ -104,7 +104,7 @@ class AsysProfiling():
         ret, _chip_info = profiling_supported.get_supported_chip_info(self.device_id)
         if not ret:
             if _chip_info == UNKNOWN:
-                log_error(f"device id {self.device_id} is invalid, please enter a vaild value.")
+                log_error(f"device id {self.device_id} is invalid, please enter a valid value.")
                 return False
             else:
                 log_error(f"The profiling command does not support {_chip_info}.")
@@ -118,6 +118,9 @@ class AsysProfiling():
         handler = ChipHandler().get_handler(_chip_info)
         if handler is None:
             log_error(f"{_chip_info} is not supported.")
+            return False
+        if 'dvpp' in self.run_modes and not getattr(handler, "support_dvpp", lambda: True)():
+            log_error(f"{_chip_info} does not support dvpp profiling.")
             return False
         if handler.need_lp_param():
             self.lp_mode = LP_MODE_LP

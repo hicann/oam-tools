@@ -191,3 +191,44 @@ class TestProfiling(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
         self.assertTrue("Failed to run profiling" in caplog.text)
+
+    def test_asys_profiling_dvpp_unsupported_91096(self, mocker, caplog):
+        """
+        异常用例：Ascend910_96 无 dvpp 硬件，-r=dvpp 应被拦截并明确报错
+        """
+        fake_run = mocker.patch("profiling.asys_profiling.subprocess.run")
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910_96")
+        sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=dvpp"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(not asys.main())
+        self.assertTrue("does not support dvpp" in caplog.text)
+        fake_run.assert_not_called()
+
+    def test_asys_profiling_dvpp_unsupported_91096_mixed(self, mocker, caplog):
+        """
+        异常用例：Ascend910_96 混合 run_mode 含 dvpp 同样被拦截
+        """
+        fake_run = mocker.patch("profiling.asys_profiling.subprocess.run")
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910_96")
+        sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=aicore,dvpp"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(not asys.main())
+        self.assertTrue("does not support dvpp" in caplog.text)
+        fake_run.assert_not_called()
+
+    def test_asys_profiling_dvpp_supported_950(self, mocker):
+        """
+        正常用例：950 芯片支持 dvpp，仍拼接 --dvpp-profiling=on
+        """
+        captured = {}
+
+        def fake_run(cmd, *args, **kwargs):
+            captured["cmd"] = cmd
+            return RunResult(returncode=0)
+
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
+        mocker.patch("profiling.asys_profiling.subprocess.run", side_effect=fake_run)
+        sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=dvpp"]
+        ParamDict().set_env_type("EP")
+        self.assertTrue(asys.main())
+        self.assertTrue("--dvpp-profiling=on" in captured["cmd"])

@@ -21,3 +21,7 @@ from common.ascend950.ascend950_handler import Ascend950Handler
 
 class Ascend91096Handler(Ascend950Handler):
     """Ascend910_96 device info, interface and implementation are consistent with Ascend950"""
+
+    @classmethod
+    def support_dvpp(cls):
+        return False

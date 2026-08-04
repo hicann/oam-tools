@@ -27,6 +27,10 @@ class Ascend910BHandler(DeviceInfo):
     @classmethod
     def need_lp_param(cls):
         return False
+
+    @classmethod
+    def support_dvpp(cls):
+        return True
  
     def run_diagnose(self, device_obj, diagnose_devices, run_mode):
         return interface.run_diagnose(device_obj, diagnose_devices, run_mode)

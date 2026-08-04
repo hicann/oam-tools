@@ -47,6 +47,10 @@ class Ascend950Handler(DeviceInfo):
     @classmethod
     def need_lp_param(cls):
         return True
+
+    @classmethod
+    def support_dvpp(cls):
+        return True
  
     def get_device_aic_info(self, device_id):
         """get aicore info, adapter to two component feature of ascend 950"""
