@@ -65,7 +65,7 @@
   HCCL Test工具支持的测试命令包括：broadcast_test，all_gather_test，all_gatherv_test，reduce_test，all_reduce_test，scatter_test，reduce_scatter_test，reduce_scatterv_test，alltoall_test，alltoallv_test，alltoallvc_test。
   
   > [!NOTE]说明
-  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0-beta.1/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-p \<npus\>或--npus \<npus\>**：可选，单个计算节点上参与训练的NPU个数。
   
@@ -101,7 +101,7 @@
   Reduce相关的执行命令有：all_reduce_test、reduce_scatter_test、reduce_scatterv_test、reduce_test。
 
   > [!NOTE]说明
-  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0-beta.1/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-r \<root\>或--root \<root\>**：可选，执行命令为broadcast_test、reduce_test、scatter_test时，需要通过此参数指定根节点的Device ID。
 
@@ -112,7 +112,7 @@
   HCCL Test支持配置的数据类型包括：int8、uint8、int16、uint16、int32、uint32、int64、uint64、fp16、fp32、fp64、bfp16、fp8e5m2、fp8e4m3、fp8e8m0、hif8。
   
   > [!NOTE]说明
-  > 各测试命令在不同产品上支持的数据类型，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上支持的数据类型，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0-beta.1/docs/zh/api_ref/comm_op_interface/README.md)。
 
   <!-- npu="A3" id1 -->
 - **-z \<0/1\>或--zero_copy \<0/1\>**：可选，是否开启零拷贝功能。
@@ -120,7 +120,7 @@
   单算子模式下由于输入输出buffer动态变化，所以HCCL会使用中间buffer进行中转完成集合通信，但会引入额外的内存拷贝开销。零拷贝功能就是降低内存拷贝开销，直接对业务传入的内存进行操作，从而进行性能提升。
 
   > [!NOTE]说明
-  > “零拷贝”为试用功能，后续可能存在变更，暂不支持应用于商用产品。
+  > “零拷贝”为试用功能，后续可能存在变更，暂不支持应用于生产环境。
 
   此参数支持如下取值：
   - 0（默认值）：不开启零拷贝功能。
