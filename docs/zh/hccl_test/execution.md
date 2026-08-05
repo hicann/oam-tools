@@ -38,7 +38,7 @@
         export LD_LIBRARY_PATH=/usr/local/openmpi/lib:${INSTALL_DIR}/lib64:$LD_LIBRARY_PATH
         ```
 
-    “INSTALL_DIR”是CANN软件安装后文件存储路径，其中“/usr/local/Ascend”为root用户的默认安装路径，如果使用普通用户安装，或指定路径安装，请自行替换。
+    “INSTALL_DIR”是CANN软件安装后文件存储路径，其中“/usr/local/Ascend/cann”为root用户的默认安装路径，如果使用普通用户安装，或指定路径安装，请自行替换。
 
     “/usr/local/mpich”以及“/usr/local/openmpi”为MPI安装路径，请根据实际情况替换。
 
