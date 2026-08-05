@@ -23,7 +23,7 @@ import sys
 import threading
 from datetime import datetime, timezone
 
-from common import log_error, log_warning, log_info, open_log, close_log, log_debug
+from common import log_error, log_warning, log_info, log_debug
 from common.const import RetCode, UNKNOWN, ScreenResult
 from common.const import HBM_MIN_TIMEOUT, CPU_MIN_TIMEOUT, DETECT_MAX_TIMEOUT
 from common.cmd_run import run_linux_cmd, run_cmd_output
@@ -130,9 +130,7 @@ class AsysDiagnose():
                 output_file = os.path.join(ParamDict().get_arg("output"), f"diagnose_result_{dir_name}.txt")
                 with open(output_file, "w", encoding="utf8") as file:
                     file.write(ret_str)
-                open_log()
-                log_info(f"output file: {os.path.abspath(output_file)}")
-                close_log()
+                log_info(f"output file: {os.path.abspath(output_file)}", force=True)
             except Exception as e:
                 log_error(f"Failed to save result: {e}.")
 
@@ -169,9 +167,10 @@ class AsysDiagnose():
                 log_error(f"The value of timeout must be in the range of [{CPU_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}].")
                 return False
         if run_mode == AICORE_STL_MODE and timeout is not False:
-            open_log()
-            log_warning("The --timeout argument is not supported in aicore_stl_detect mode and will be ignored.")
-            close_log()
+            log_warning(
+                "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored.",
+                force=True
+            )
         if self.devices_num == 0:
             return False
         return True
@@ -285,9 +284,7 @@ class AsysDiagnose():
             debug_info_path = Path(os.getcwd(), 'debug_info.txt')
             if not f.check_access(os.getcwd(), os.W_OK) or (debug_info_path.exists() and
                                                             not f.check_access(debug_info_path, os.W_OK)):
-                open_log()
                 log_error("The current directory or debug_info.txt is immutable, Please check.")
-                close_log()
 
             else:
                 sys.stdout.write(output)

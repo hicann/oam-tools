@@ -17,35 +17,53 @@
 # ----------------------------------------------------------------------------
 
 import logging
+import threading
 
 
 __all__ = ["log_debug", "log_info", "log_warning", "log_error", "close_log", "open_log"]
 
 LOG_FORMAT = "%(asctime)s [ASYS] [%(levelname)s]: %(message)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+_LOG_LOCK = threading.RLock()
+
+
+def _log(log_func, log_str, force=False):
+    with _LOG_LOCK:
+        if not force:
+            log_func(log_str)
+            return
+
+        disable_level = logging.getLogger().manager.disable
+        logging.disable(logging.NOTSET)
+        try:
+            log_func(log_str)
+        finally:
+            logging.disable(disable_level)
 
 
 def log_debug(log_str):
-    logging.debug(log_str)
+    _log(logging.debug, log_str)
 
 
-def log_info(log_str):
-    logging.info(log_str)
+def log_info(log_str, force=False):
+    _log(logging.info, log_str, force)
 
 
-def log_warning(log_str):
-    logging.warning(log_str)
+def log_warning(log_str, force=False):
+    _log(logging.warning, log_str, force)
 
 
 def log_error(log_str):
-    logging.error(log_str)
+    _log(logging.error, log_str)
 
 
 def open_log():
-    logging.disable(logging.NOTSET)
+    with _LOG_LOCK:
+        logging.disable(logging.NOTSET)
 
 
 def close_log():
-    logging.disable(logging.INFO)
-    logging.disable(logging.DEBUG)
-    logging.disable(logging.WARNING)
+    with _LOG_LOCK:
+        logging.disable(logging.INFO)
+        logging.disable(logging.DEBUG)
+        logging.disable(logging.WARNING)

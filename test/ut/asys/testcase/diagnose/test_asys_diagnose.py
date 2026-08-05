@@ -27,6 +27,7 @@ from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH
 sys.path.insert(0, ASYS_SRC_PATH)
 
 from common.const import RetCode
+import diagnose.asys_diagnose as asys_diagnose
 from diagnose import AsysDiagnose
 from params import ParamDict
 from ..conftest import AssertTest
@@ -148,14 +149,14 @@ class TestAsysDiagnose(AssertTest):
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is False)
 
-    def test_diagnose_1p(self, mocker):
+    def test_diagnose_1p(self, mocker, tmp_path):
         self.assertTrue(True)
 
         class Args:
             subparser_name = "diagnose"
             r = "stress_detect"
             d = None
-            output = "./"
+            output = str(tmp_path)
             timeout = None
 
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
@@ -164,12 +165,13 @@ class TestAsysDiagnose(AssertTest):
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B3 V1")
         mocker.patch("os.path.isfile", return_value=True)
         mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        info_log = mocker.spy(asys_diagnose, "log_info")
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
-        ret_file = [f for f in os.listdir("./") if f.startswith("diagnose_result")][0]
-        self.assertTrue(os.path.isfile(ret_file))
-        os.remove(ret_file)
+        ret_file = next(tmp_path.glob("diagnose_result_*.txt"))
+        self.assertTrue(ret_file.is_file())
+        info_log.assert_any_call(f"output file: {ret_file.resolve()}", force=True)
 
     def test_diagnose_hbm_1p(self, mocker):
         self.assertTrue(True)
@@ -914,12 +916,15 @@ class TestAsysDiagnose(AssertTest):
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
         mocker.patch("os.path.isfile", return_value=True)
         mocker.patch("diagnose.asys_diagnose.run_linux_cmd", return_value=True)
+        warning_log = mocker.spy(asys_diagnose, "log_warning")
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(AsysDiagnose().run() is True)
-        self.assertTrue(
-            "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored."
-            in caplog.text
+        warning_msg = "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored."
+        self.assertTrue(warning_msg in caplog.text)
+        warning_log.assert_any_call(
+            warning_msg,
+            force=True,
         )
 
     def test_diagnose_aicore_stl_loads_so(self, mocker):
@@ -1002,12 +1007,16 @@ class TestAsysDiagnose(AssertTest):
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(FileOperate, "check_access", return_value=False)
         mocker.patch.object(Path, "exists", return_value=True)
+        open_log = mocker.patch.object(asys_diagnose, "open_log", create=True)
+        close_log = mocker.patch.object(asys_diagnose, "close_log", create=True)
         diagnose = AsysDiagnose()
         self.assertTrue(not diagnose.env_detect("component"))
         self.assertTrue(
             "The current directory or debug_info.txt is immutable, Please check"
             in caplog.text
         )
+        open_log.assert_not_called()
+        close_log.assert_not_called()
 
     def test_diagnose_env_detect_device_eq_zero(self, mocker, caplog, capsys):
         fake_ret = subprocess.Popen(
