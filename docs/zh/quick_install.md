@@ -255,6 +255,15 @@ git clone -b ${branch} https://gitcode.com/cann/oam-tools.git
 python cmake/download_libs.py
 ```
 
+闭源二进制包按分支拉取，脚本默认根据当前 git 提交自动探测所属发布分支（探测不出时回退 `master`），与联编时 `build.sh` / `install_bundle.cmake` 的分支解析规则一致。如需预置指定分支的包，用 `--bundle_branch` 显式指定（当前可选 `master`、`9.1.0`，其它值会报错）：
+
+```bash
+# 显式预置 9.1.0 分支的闭源包；须与后续联编时 build.sh --bundle_branch=9.1.0 保持一致
+python cmake/download_libs.py --bundle_branch=9.1.0
+```
+
+> 注意：离线预置的 bundle 分支须与目标环境联编时解析出的分支一致，否则联编阶段会因本地缺对应分支的包而失败。个人分支探测可能不准，建议下载与联编都显式指定 `--bundle_branch`。
+
 ### 上传依赖包
 
 在编译环境中新建一个`third_party_path`目录来存放第三方开源软件和闭源软件
@@ -277,7 +286,9 @@ mkdir -p ${third_party_path}
 |mockcpp-patch|2.7-h2|[mockcpp-2.7_py3.patch](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7_py3.patch)|
 |mockcpp|2.7-h2|[mockcpp-2.7.tar.gz](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7.tar.gz)|
 
-| 闭源二进制 | 版本 | 下载地址 |
+闭源二进制包按分支拉取，下表以默认的 `master` 分支为例；预置其它分支时把地址中的 `master` 替换为对应分支名（如 `9.1.0`），或直接用 `python cmake/download_libs.py --bundle_branch=<分支>` 自动下载对应分支的包。
+
+| 闭源二进制 | 分支 | 下载地址 |
 |---|---|---|
 |cann-oam-tools-release-x86_64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-x86_64.tar.gz)|
 |cann-oam-tools-release-aarch64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-aarch64.tar.gz)|

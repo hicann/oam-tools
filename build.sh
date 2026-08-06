@@ -44,6 +44,9 @@ usage() {
     echo "                   Set ascend package install path, default /usr/local/Ascend/cann"
     echo "    --cann_3rd_lib_path=<PATH>"
     echo "                   Set ascend third_party package install path, default ./third_party"
+    echo "    --bundle_branch=<NAME>"
+    echo "                   Set the branch whose closed-source bundle to download (e.g. master, 9.1.0)."
+    echo "                   Default: auto-detected from git; falls back to master."
     echo "Test Options:"
     echo $dotted_line
     echo "    -u             Build and run all unit tests"
@@ -71,6 +74,9 @@ checkopts() {
     TEST_COMPONENT="all"
     RUN_UT_ONLY="off"
     RUN_ST_ONLY="off"
+    # 必须显式清空：否则环境里同名变量会被当成"用户显式指定"透传给 CMake，
+    # 既盖掉配置期的 git 探测，又绕过下方 --bundle_branch 解析处的字符校验。
+    BUNDLE_BRANCH=""
 
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
@@ -83,7 +89,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,component:,ut,st -- "$@") || {
     usage
     exit 1
     }
@@ -142,6 +148,17 @@ checkopts() {
         ;;
         --cann_3rd_lib_path)
         CANN_3RD_LIB_PATH="$(realpath $2)"
+        shift 2
+        ;;
+        --bundle_branch)
+        BUNDLE_BRANCH="$2"
+        # 只允许 git ref 常见字符：CMAKE_ARGS 在 cmake ${cmake_args} .. 处是非引号展开，
+        # 分支名若含空格/引号/shell 元字符会被二次解析。此处拒绝而非加引号包裹，
+        # 因为包裹后引号会作为字面量传给 CMake（见下方拼装处注释）。
+        if [[ ! "${BUNDLE_BRANCH}" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "ERROR: invalid --bundle_branch '${BUNDLE_BRANCH}': only [A-Za-z0-9._/-] allowed."
+            exit 1
+        fi
         shift 2
         ;;
         --asan)
@@ -277,6 +294,13 @@ build_oam_tools() {
     -DBUILD_OPEN_PROJECT=ON\
     -DENABLE_PACKAGE=TRUE \
     -DPACKAGE_TYPE=${PACKAGE_TYPE}"
+    # 仅在用户显式指定 --bundle_branch 时透传；不传则由 cmake 配置期 git 探测决定。
+    # 不给取值加引号：CMAKE_ARGS 在 cmake_generate_make 里是 cmake ${cmake_args} .. 非引号展开，
+    # 引号会作为字面量进入 CMake（OAM_BUNDLE_BRANCH 变成 "9.1.0" 而非 9.1.0），白名单校验必然失配。
+    # 取值合法性已在 --bundle_branch 解析处校验，此处无需再防 shell 元字符。
+    if [ -n "${BUNDLE_BRANCH}" ]; then
+        CMAKE_ARGS="${CMAKE_ARGS} -DOAM_BUNDLE_BRANCH=${BUNDLE_BRANCH}"
+    fi
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
     # make package 前清理历史产物，避免旧 cann*.run/rpm/deb 被误当本次产物搬走。

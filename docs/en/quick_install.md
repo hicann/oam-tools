@@ -253,6 +253,16 @@ Run the download script in a networked environment. This script directly downloa
 python cmake/download_libs.py
 ```
 
+Closed-source binary packages are fetched per branch. By default the script detects the release branch the current git commit belongs to (falling back to `master` when detection fails), using the same branch resolution rules as `build.sh` / `install_bundle.cmake` at build time. To prestage a specific branch, specify it explicitly with `--bundle_branch` (currently `master` or `9.1.0`; any other value fails):
+
+```bash
+# Explicitly prestage the closed-source package for the 9.1.0 branch;
+# must match the later build with bash build.sh --bundle_branch=9.1.0
+python cmake/download_libs.py --bundle_branch=9.1.0
+```
+
+> Note: The prestaged bundle branch must match the branch resolved at build time in the target environment; otherwise the build fails because the package for that branch is missing locally. Detection may be inaccurate for personal branches, so specifying `--bundle_branch` explicitly for both download and build is recommended.
+
 ### Upload Dependency Packages
 
 Create a new `third_party_path` directory in the build environment to store third-party open source software and closed-source software
@@ -275,7 +285,9 @@ Third-party libraries, closed-source binary packages, and subrepositories includ
 |mockcpp-patch|2.7-h2|[mockcpp-2.7_py3.patch](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7_py3.patch)|
 |mockcpp|2.7-h2|[mockcpp-2.7.tar.gz](https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h2/mockcpp-2.7.tar.gz)|
 
-| Closed-source Binary | Version | Download Address |
+Closed-source binary packages are fetched per branch. The table below uses the default `master` branch as an example; to prestage another branch, replace `master` in the address with the corresponding branch name (for example `9.1.0`), or run `python cmake/download_libs.py --bundle_branch=<branch>` to download the package for that branch automatically.
+
+| Closed-source Binary | Branch | Download Address |
 |---|---|---|
 |cann-oam-tools-release-x86_64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-x86_64.tar.gz)|
 |cann-oam-tools-release-aarch64.tar.gz|master|[Download](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag/master/cann-oam-tools-release-aarch64.tar.gz)|

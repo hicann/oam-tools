@@ -124,8 +124,9 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 
 - `--cann_3rd_lib_path`：第三方库存储目录，默认值为 `./third_party`。若本地不存在第三方库，编译脚本将自动从 gitcode 开源仓库下载各第三方库源码。
 - 编译过程中会自动下载闭源二进制包，该包含有保证功能正常运行所需的库及头文件，且仅提供 release 版本，**即使编译选项指定为 debug，也只会下载 release 版本的 tar 包**。
+- 闭源二进制包按分支拉取：不指定时，编译脚本会依据当前 git 提交自动探测所属发布分支（从 `master` 拉出的分支拉 master 包，从 9.1.0 线拉出的分支拉 9.1.0 包），探测不出时回退 `master`。也可通过 `--bundle_branch=<NAME>` 显式指定分支，个人分支探测不准时建议显式指定。当前 OBS 上提供包的分支为 `master` 与 `9.1.0`；指定其它分支会在配置阶段报错。
 - 编译过程中会通过 `git clone` 拉取 `msprof` 和 `msprobe` 子仓（分别用于构建 msprof 分析 wheel 和同步 msaccucmp 工具）。子仓源码位于 gitcode，使用 HTTPS 协议克隆前需[配置 gitcode 个人访问令牌](https://gitcode.com/setting/token-classic)以替代登录密码，否则克隆会失败。
-- 若编译环境无法访问网络，请参考[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备)提前完成依赖包的下载与配置，并通过 `--cann_3rd_lib_path` 参数指定依赖包所在目录后再执行编译。
+- 若编译环境无法访问网络，请参考[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备)提前完成依赖包的下载与配置，并通过 `--cann_3rd_lib_path` 参数指定依赖包所在目录后再执行编译。离线预置脚本 `cmake/download_libs.py` 同样支持 `--bundle_branch` 指定要预置的闭源包分支（默认自动探测），须与联编时的分支保持一致。
 - 闭源二进制包会解压到仓库根目录的 `bundle/` 下。若 `bundle/` 已存在且非空，构建会复用该目录并跳过下载；如需强制重新下载或修复残缺的 `bundle/` 目录，可执行 `bash build.sh --make_clean` 后重新编译，也可手动删除 `bundle/` 后再次执行 `bash build.sh`。
 - 更多编译参数请通过 `bash build.sh -h` 查看。
 
