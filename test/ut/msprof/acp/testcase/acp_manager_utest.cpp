@@ -481,6 +481,7 @@ TEST_F(ACP_MANAGER_UTEST, AcpManagerTest)
     AcpManager::instance()->SetKernelReplayMetrics(2);
     EXPECT_EQ(PROFILING_FAILED, AcpManager::instance()->TaskStart());
     EXPECT_EQ(PROFILING_SUCCESS, AcpManager::instance()->TaskStart());
+    EXPECT_EQ(PROFILING_SUCCESS, AcpManager::instance()->TaskStart());
 
     EXPECT_EQ(PROFILING_SUCCESS, AcpManager::instance()->TaskStop());
 }

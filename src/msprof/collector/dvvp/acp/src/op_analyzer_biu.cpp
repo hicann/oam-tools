@@ -53,7 +53,7 @@ void OpAnalyzerBiu::SetDeviceInfo(uint32_t deviceId, double freq, double aicFreq
     frequency_ = freq; // 1 / GHZ = ns
     FUNRET_CHECK_EXPR_ACTION(frequency_ <= 0, return, "The frequency %lf is less than or equal to 0.", frequency_);
     aicFreq_ = aicFreq; // 1 / MHZ = us
-    FUNRET_CHECK_EXPR_ACTION(aicFreq_ <= 0, return, "The aic freq %lf is less than or equal to 0. %s", aicFreq_);
+    FUNRET_CHECK_EXPR_ACTION(aicFreq_ <= 0, return, "The aic freq %lf is less than or equal to 0. ", aicFreq_);
     std::string aivFreq = DrvGeAivFrq(static_cast<int32_t>(deviceId));
     FUNRET_CHECK_EXPR_ACTION(!Utils::StrToDouble(aivFreq_, aivFreq) || aivFreq_ <= 0, return,
         "Convert aivFreq failed or aiv freq equal to 0, value is %s", aivFreq.c_str());

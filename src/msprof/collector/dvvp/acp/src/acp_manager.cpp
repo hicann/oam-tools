@@ -95,7 +95,7 @@ int32_t AcpManager::InitAcpUploader()
     SHARED_PTR_ALIA<Uploader> uploader = nullptr;
     UploaderMgr::instance()->GetUploader(params_->devices, uploader);
     if (uploader != nullptr) {
-        MSPROF_LOGI("Device %d has already created uploader.", params_->devices.c_str());
+        MSPROF_LOGI("Device %s has already created uploader.", params_->devices.c_str());
         return PROFILING_SUCCESS;
     }
 

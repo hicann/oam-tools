@@ -91,10 +91,10 @@ TEST_F(OP_ANALYZER_BIU_UTEST, SetDeviceInfo_FreqInvalid)
 
 TEST_F(OP_ANALYZER_BIU_UTEST, SetDeviceInfo_AicFreqInvalid)
 {
-    // NOTE: source uses MSPROF_LOGE("... %s", aicFreq_) which would segfault on log emission.
-    // We rely on the MSPROF log level filtering this out, so only smoke-test that the function returns.
     OpAnalyzerBiu biu;
-    // Skip explicit invocation to avoid the buggy %s vs double printf path.
+    biu.SetDeviceInfo(0, 1.0, 0.0);
+    EXPECT_FALSE(biu.inited_);
+    biu.SetDeviceInfo(0, 1.0, -1.0);
     EXPECT_FALSE(biu.inited_);
 }
 
