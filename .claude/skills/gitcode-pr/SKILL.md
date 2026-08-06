@@ -20,7 +20,7 @@ description: |
 
 ## 强制约定：一律走脚本，禁止手写 curl/jq
 
-**所有读写 PR 的操作必须调用 `scripts/pr_ops.py` 对应子命令，禁止手写 curl/jq。** 脚本已固化分页(per_page=100)、流水线终态筛选(排除"触发成功")、引用回复、v4→v5 回退、fork 来源校验等踩坑逻辑；手写 curl 会重新引入这些错误（漏分页、误判流水线结果、回复发错位置等本 skill 历史反复踩过的坑）。创建 PR 用 `scripts/create_pr.py`。
+**所有读写 PR 的操作必须调用 `scripts/pr_ops.py` 对应子命令，禁止手写 curl/jq。** 脚本已固化分页(per_page=100)、流水线终态筛选(排除"触发成功")、引用回复、v5 接口选择与 v4 写接口禁用后的替代指引、fork 来源校验等踩坑逻辑；手写 curl 会重新引入这些错误（漏分页、误判流水线结果、回复发错位置等本 skill 历史反复踩过的坑）。创建 PR 用 `scripts/create_pr.py`。
 
 脚本能力速查（`--owner/--repo` 传 PR 目标仓，即 `resolve-repo` 输出的 `parent_owner/parent_repo`；token 取 `GITCODE_API_TOKEN`）：
 
@@ -33,13 +33,20 @@ description: |
 | `get-reviews` | 列出人类评审意见(排除 robot/自己/lgtm) | `pr_ops.py get-reviews --pr N --owner O --repo R --me ME` |
 | `get-files` | 取 PR 文件变更 | `pr_ops.py get-files --pr N --owner O --repo R` |
 | `reply` | 引用回复评审(普通评论) | `pr_ops.py reply --pr N --owner O --repo R --body-file F` |
-| `review` | 发行内评审意见(绑定 文件:行号) | `pr_ops.py review --pr N --owner O --repo R --path P --line L --body-file F` |
+| `reply-review` | 回复进已有评论线程(行内首选) | `pr_ops.py reply-review --pr N --owner O --repo R --discussion-id D --body-file F` |
+| `review` | 发行内评审意见(绑定 文件:行号)，**当前不可用**(依赖已禁用的 v4 写接口) | `pr_ops.py review --pr N --owner O --repo R --path P --line L --body-file F` |
 | `update-pr` | 更新 PR 描述/标题 | `pr_ops.py update-pr --pr N --owner O --repo R --body-file F` |
 | `trigger` | 触发 compile 流水线 | `pr_ops.py trigger --pr N --owner O --repo R` |
 | `delete-comment` | 删除指定评论 | `pr_ops.py delete-comment --owner O --repo R --comment-id ID` |
 | `issue-prs` | 查 issue 关联的 PR | `pr_ops.py issue-prs --owner O --repo R --issue N` |
 
 脚本路径前缀 `python3 .claude/skills/gitcode-pr/scripts/`。`poll_pipeline.sh` 后台轮询见第 12 节。下文各节给出对应脚本调用；原始 API 细节见 `references/gitcode_api.md`，仅供排查/扩展脚本时查阅，日常操作不直接用。
+
+改动 `pr_ops.py` 后跑一次回归测试（覆盖 `reply-review` 的落点判定与 v4 403 指引；本目录不在云端 `UT_Test` 范围，需手动跑）：
+
+```bash
+python3 -m pytest .claude/skills/gitcode-pr/scripts/test_pr_ops.py -q
+```
 
 ## 工作流程
 
@@ -184,15 +191,23 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py get-files \
 ### 5. 回复评审意见 / 发表行内评审意见
 
 三种场景，**按评论类型选子命令**：
-- **回复 `pr_comment`（总结/独立评论，挂不上线程）** → 用 `reply`（引用回复，见 5.1）。
-- **作为评审者新发起行内意见**（绑定 diff 某一行）→ 用 `review`（见 5.2）。
-- **回复 `diff_comment`（已有行内评论，可挂线程）** → 用 `reply-review`（见 5.3）。
+
+- **回复 `diff_comment`（已有行内评论）** → 用 `reply-review`，回复挂进该行内线程（见 5.3）。**这是回复行内意见的首选**。
+- **回复 `pr_comment`（总结/独立评论）** → 用 `reply`（引用回复，见 5.1）。
+- **作为评审者新发起行内意见**（绑定 diff 某一行）→ 用 `review`（见 5.2；依赖已禁用的 v4 写接口，当前不可用，脚本会给替代指引）。
 
 #### 5.1 回复评审意见（引用回复，reply）
 
-**适用对象：`pr_comment` 类型的总结/独立评论**（含机器人 `cann-tool-pr-reviewer` 的整轮结论）。这类评论**无法线程回复**——往其 discussion 回复会另起独立评论、不挂线程，故用引用回复：发一条普通 PR 评论，正文 `@评审者` 并用引用块（`>`）逐条摘录每条意见的 `文件:行号` + 原文，紧跟处理说明（已采纳/commit、替代方案、或不成立的理由），一一对应。
+**适用对象：`pr_comment` 类型的总结/独立评论**（含机器人 `cann-tool-pr-reviewer` 的整轮结论）。这类评论的内容通常是"一轮多条意见的汇总"，逐条对应关系需要自己在正文里建立，故用引用回复：发一条普通 PR 评论，正文 `@评审者` 并用引用块（`>`）逐条摘录每条意见的 `文件:行号` + 原文，紧跟处理说明（已采纳/commit、替代方案、或不成立的理由），一一对应。
 
-> 实测边界（按评论类型，不按是否机器人）：`diff_comment`（行内）**可线程回复**，用 5.3 `reply-review`（`in_thread=true` 已实测，机器人发起的行内评论同样可挂）；`pr_comment`（总结/独立）挂不上线程，用本节引用回复。
+> 实测边界（2026-08-01 复测）：v5 `discussions/<id>/comments` 对 `diff_comment` 与 `pr_comment` **都能挂进线程**（两者回查 `discussion_id` 均与目标一致）。既然两类都能挂，选哪种就不看"能不能"，而按下面的判据看"哪种读起来对得上"：
+>
+> | 目标评论 | 该评论承载的意见数 | 选择 | 理由 |
+> | --- | --- | --- | --- |
+> | `diff_comment`（行内） | 1 条，已绑定 `文件:行号` | `reply-review`（5.3） | 回复落在该代码行旁，与意见天然一对一 |
+> | `pr_comment`（总结） | 一轮多条，未绑定行号 | `reply` 引用回复（本节） | 挂进线程只是一条长回复跟在一条长意见后，逐条对应关系全靠读者自己对齐；引用块能把每条意见的 `文件:行号` + 原文与处理说明并排摆出 |
+>
+> 即**判据是"一条评论对应几条意见"**：一对一走线程回复，一对多走引用回复。`pr_comment` 能挂线程但仍不首选，原因只是落点不直观、非接口不支持。
 
 **用脚本发引用回复**（已固化 v5 普通评论 + 发后回查确认可见）：
 
@@ -216,6 +231,10 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py reply \
 
 作为评审者给 PR 提意见、且要让意见**挂在 diff 的具体代码行旁**时，用 `review`。脚本自动从 `files.json` 取 `diff_refs`(base/start/head sha) 拼 position，再 POST v4 discussions，无需手动取 sha：
 
+> **当前不可用**：v4 **写接口**已被服务端禁用（POST 恒 403 `当前 /api/v4 接口已禁用`；**读接口 GET 仍返回 200**，故"v4 全废"的说法不准确），且 v5 无等价接口——v5 发评论虽接受 `path/line` 却静默忽略、落成普通评论。故**新发起**行内评论暂无可用接口。已有行内评论的**回复**不受影响（走 5.3 `reply-review`，v5 可用）。需要新提行内意见时，改用 `reply` 发普通评论、正文内注明 `文件:行号`。
+>
+> 脚本已把该 403 映射为替代指引（不再抛原始 403），直接跑 `review` 会得到：`发行内评论失败 (HTTP 403): v4 写接口已被服务端禁用…替代：回复已有评论用 reply-review；新提意见用 reply…`。**禁用是服务端状态而非本仓决定**，故实现保留未删——v4 写接口若恢复，本命令无需改动即可自愈。
+
 ```bash
 python3 .claude/skills/gitcode-pr/scripts/pr_ops.py review \
   --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo> \
@@ -238,9 +257,13 @@ python3 .claude/skills/gitcode-pr/scripts/pr_ops.py reply-review \
   --discussion-id <目标行内评论的 discussion_id> --body-file /tmp/reply.md
 ```
 
-脚本经 v4 `discussions/<id>/notes` 回复后，用 v5 单条评论接口回查，返回 `{posted, note_id, discussion_id, in_thread}`。**`in_thread=true` 才表示回复确实落在该行内线程里**（GET discussion 接口不可用、v5 列表不收行内回复，故 `in_thread` 由单条接口核对 discussion_id 得出，是权威判据）。`in_thread=false`/`null` 说明没挂上（如对机器人评审），应改用 5.1 引用回复。
+脚本走 v5 `POST /repos/O/R/pulls/<pr>/discussions/<discussion_id>/comments` 回复后，用 v5 单条评论接口回查，返回 `{posted, note_id, discussion_id, comment_type, in_thread}`。**`in_thread=true` 才表示回复确实落在该线程里**（GET discussion 接口不可用、v5 列表不收线程回复，故 `in_thread` 由单条接口核对 discussion_id 得出，是权威判据）。回复行内评论时 `comment_type=DiffNote`。
 
-> 三者区别：`reply` 发**不绑定行**的独立评论（回复机器人评审/汇总）；`review` **新发起**绑定 diff 某行的行内评论（逐行提意见）；`reply-review` 把回复**挂进别人已有的行内评论线程**（顺着某条行内意见往下答）。
+> **`in_thread` 为 `null` 时看 `warn` 字段**：落点判不出来时脚本会多输出一个 `warn`，说明是"响应缺 `note_id`（附实际响应 keys）"还是"回查失败（附 HTTP 码）"——`posted:true` 只代表 POST 成功，**不代表落点已确认**，见到 `warn` 要人工到 PR 页面核对回复位置。
+>
+> **ID 语义（易错）**：该接口响应里 `id` 是 **discussion_id(hex)**、`note_id` 是**数字评论 id**。回查（`/pulls/comments/<X>`）与 `delete-comment` 都必须传**数字 `note_id`**，传 hex 会 400。脚本已按此取值，手动排查时注意别取错。
+>
+> 三者区别：`reply` 发**不绑定行**的独立评论（回复总结类评审/汇总，v5 可用）；`reply-review` 把回复**挂进别人已有的评论线程**（顺着某条行内意见往下答，v5 可用，回复行内意见首选）；`review` **新发起**绑定 diff 某行的行内评论（逐行提意见，依赖已禁用的 v4 写接口，当前不可用）。
 
 ### 6. 删除 PR 评论
 
@@ -301,7 +324,93 @@ git push origin <新分支名> -u
 > 2. **保持 diff 精准**：本仓配置已不启用 `ruff-format`（本仓存量代码不符合其风格，它会重排被碰到的整个文件、把存量代码写进 diff，既污染改动又触发云端增量 codecheck 误报）。提交前用 `git diff --cached` 核对暂存内容，确认只含本次意图改动、无任何工具自动重排混入。
 > 3. **增量门禁本地预演**：`.pre-commit-config.yaml` 的 `incremental-codecheck` 钩子用 ruff 只对**本次改动行**跑云端关注的规则（行宽 E501、超大函数 PLR0915、staticmethod PLR6301、print→logging T201、外部程序绝对路径 S607、裸 sys.exit PLR1722），复现云端"只查增量行"的行为——push 前预警自己引入的违规，又不被存量违规淹没。
 > 4. **以云端为准**：本地与云端 codecheck 存在粒度错配（云端按 PR 增量行、本地 pylint/ruff 按整文件，故本仓为避免被存量淹没用 `--disable=C,R`，这几类只能靠上面的增量钩子补回）；ruff 不查的跨文件规则（如重复代码 R0801）及其他华为专有规则仍以云端结果为准。
-> 5. **push 前必跑全量 UT（强制，无论创建 PR 还是后续修改）**：云端 `UT_Test` 跑**全部组件**（`asys`/`msaicerr`/`msprof` 等），任一用例失败即 FAILED 阻断。**只跑自己改动相关的测试不够**——改动可能被其他组件的测试间接依赖（例如改 `build.sh` 会让 `test/ut/asys/testcase/common/test_build_script.py` 这种"校验脚本写法"的测试失败）。因此每次 push 前在仓库根目录跑：
+> 5. **改动文档必须中英文同步（强制）**：本仓文档成对维护（中文 + `_en` 英文版）。**每改一个文档，先查它有无对应语言版本，有则在同一个 commit 里一并改**——只改单语会让两版内容长期背离，评审会要求补齐。
+>
+>    改完中文（或英文）后，用下面命令列出本次改动文档的对应版本，逐个同步。判据是**整个 PR 范围**（已提交 + 暂存 + 工作区），而非只看暂存区——否则先提交的那一版会被误报成"未同步"：
+>
+>    ```bash
+>    # <source_remote>/<base_branch> 同"控制 commit 数量"一节, 通常 upstream/master
+>    BASE=upstream/master
+>    # 本 PR 内改动过的全部 .md（已提交 + 暂存 + 工作区）
+>    changed=$( { git diff --name-only "$BASE"...HEAD -- '*.md'; git diff --name-only -- '*.md'; \
+>                 git diff --cached --name-only -- '*.md'; } | sort -u )
+>    for f in $changed; do
+>      case "$f" in
+>        *_en.md) peer="${f%_en.md}.md" ;;
+>        */en/*)  peer="${f/\/en\//\/zh\/}" ;;
+>        */zh/*)  peer="${f/\/zh\//\/en\/}" ;;
+>        *)       peer="${f%.md}_en.md" ;;
+>      esac
+>      if [ ! -f "$peer" ]; then
+>        echo "NONE 无对应版本(无需同步): $f"
+>      elif printf '%s\n' "$changed" | grep -qx "$peer"; then
+>        echo "OK   已同步: $f + $peer"
+>      else
+>        echo "TODO 需同步: $f -> $peer"
+>      fi
+>    done
+>    ```
+>
+>    本仓已知成对文档：`README.md`↔`README_en.md`、`examples/README.md`↔`examples/README_en.md`、`AGENTS.md`↔`AGENTS_en.md`、`CONTRIBUTING.md`↔`CONTRIBUTING_en.md`、`SECURITY.md`↔`SECURITY_en.md`、`src/hccl_test/README.md`↔`src/hccl_test/README_en.md`、`docs/zh/**`↔`docs/en/**`。
+>
+>    同步的是**结构与事实**：章节增删、表格列增删、链接目标、命令与环境变量（如 `${ASCEND_HOME_PATH}`）、锚点，两版都要一致；英文版按英文标题重算锚点（`## 🔧 Source Code Compilation` → `#source-code-compilation`，见下方「锚点按 GitCode 规则生成」）。若对应语言的下游文档尚未翻译（如组件指南仅有 `docs/zh/`），英文版链接指向中文文档并加一句说明，不要留死链。
+>
+>    上面命令输出 `TODO 需同步` 时，补齐后再进入下一步；`NONE` 表示该文档无对应版本，跳过即可。
+>
+>    **锚点只指向"两套规则一致"的标题**。本仓锚点要同时满足两个互不相让的判定方，二者对同一标题给出的 slug 可能不同：
+>
+>    | 判定方 | 作用 | 不满足的后果 |
+>    | --- | --- | --- |
+>    | GitCode 渲染器 | 决定网页上点击能否跳转 | 链接点不动（人工可见，评审会提） |
+>    | 流水线 `StaticCheck_link_validity` | 决定门禁过不过 | 报「锚点无法访问」→ **FAILED 阻断合入** |
+>
+>    **两者只在两类标题上分歧**（实测于 PR #443）：
+>
+>    | 标题形态 | GitCode 渲染 | 流水线期望 | 结论 |
+>    | --- | --- | --- | --- |
+>    | `## 🔧 源码编译`（含 emoji） | `#源码编译` | `#-源码编译` | ⚠️ 冲突，无两边皆可的写法 |
+>    | `## asys（故障信息收集 / 诊断）`（含 ` / `） | `#asys故障信息收集-诊断` | `#asys故障信息收集--诊断` | ⚠️ 冲突 |
+>    | `### 安装`、`## 环境准备`（纯文字） | `#安装` | `#安装` | ✅ 一致，安全 |
+>    | `## msprof（性能调优）`（含括号，无 emoji 无 `/`） | `#msprof性能调优` | 同 | ✅ 一致，括号删除且不补 `-` |
+>
+>    因此**写锚点前先看目标标题属于哪类**，按下面两条处理：
+>
+>    1. **目标标题是纯文字或仅含括号** → 直接写锚点，两边都过。
+>    2. **目标标题含 ` / `** → 分隔符改为「与」/`and`（`asys（故障信息收集 / 诊断）` → `asys（故障信息收集与诊断）`），标题即脱离冲突形态，深链照常写。
+>    3. **目标标题含 emoji（本仓 `README*.md` 的 h2 全部如此）** → **保留 h2 的 emoji 不动，在其下按内容拆出无 emoji 的 h3，锚点指向 h3**。这样既不动仓库既有观感，又能让链接精确落到子章节、比链到整个大节更有用：
+>
+>       ```markdown
+>       ## 🔧 源码编译          ← h2 保留 emoji, 不作为锚点目标
+>       ### 加载环境变量         ← 无 emoji, 可作锚点
+>       ### 执行编译             ← [源码编译](#执行编译) 指向这里
+>       ### 编译参数与依赖说明
+>
+>       ## 📦 安装与验证         ← h2 保留 emoji
+>       ### 安装                 ← [安装](#安装)
+>       ### 验证                 ← [验证](#验证)
+>       ```
+>
+>       链接指向语义最贴近的那个 h3，而非笼统指向大节：正文「按 `[源码编译](#执行编译)` 构建」落在「执行编译」、「参考 `[安装](#安装)` 与 `[验证](#验证)`」分别落在两个子节。跨文件同理（`[编译](../README.md#执行编译)`）。
+>
+>       原 h2 下若没有子标题可指，就按内容拆出来——拆分本身也让长章节更易读。仅当章节内容确实无法再分时，才退化为不写锚点（同文件内改纯文字「见下方「X」章节」，跨文件只链到文件）。
+>
+>    **本仓现状**：`README.md`/`README_en.md` 的 h2 全带 emoji，其下已拆出无 emoji 的 h3（`加载环境变量`/`执行编译`/`编译参数与依赖说明`、`安装`/`验证`，英文对应 `Loading Environment Variables`/`Running the Build`/`Build Parameters and Dependencies`、`Installation`/`Verification`），锚点一律指向这些 h3；`examples/README*.md` 的组件标题无 emoji，可直接深链。
+>
+>    改完后用流水线产物自查（该 CSV 公开、无需 token，逐条列出被拒锚点）：
+>
+>    ```bash
+>    curl -sL "https://ascend-ci.obs.cn-north-4.myhuaweicloud.com/<repo>/package/<PR>/link_validity_check.csv"
+>    ```
+>
+>    需要确认 GitCode 侧真实 `id` 时（仅在源仓 + 不含 `/` 的分支名上返回服务端渲染结果；fork 仓或分支名带 `/` 时是客户端渲染、grep 不到）：
+>
+>    ```bash
+>    curl -sL "https://gitcode.com/<owner>/<repo>/blob/<branch>/README.md" \
+>      | grep -oE '<h[123][^>]*id="[^"]*"' | sed 's/.*id="/id="/'
+>    ```
+>
+>    **判断锚点是否有效只看这两个来源的实际输出**：仓内已有同样写法只说明该写法被重复过，不构成它能跳转的证据——本仓 `#-源码编译` 这类 GitHub 式写法曾在十余处并存，在 GitCode 上全部失效。
+> 6. **push 前必跑全量 UT（强制，无论创建 PR 还是后续修改）**：云端 `UT_Test` 跑**全部组件**（`asys`/`msaicerr`/`msprof` 等），任一用例失败即 FAILED 阻断。**只跑自己改动相关的测试不够**——改动可能被其他组件的测试间接依赖（例如改 `build.sh` 会让 `test/ut/asys/testcase/common/test_build_script.py` 这种"校验脚本写法"的测试失败）。因此每次 push 前在仓库根目录跑：
 >    ```bash
 >    bash build.sh -u --ut --noexec 2>/dev/null  # 若已 build 过, 可直接复用下面 pytest
 >    # 或直接对各组件 pytest（已 build 过、环境就绪时更快）：
@@ -413,18 +522,18 @@ https://gitcode.com/${parent_owner}/${parent_repo}/pull/<PR_NUMBER>
 
 ### 10. 触发构建流水线
 
-PR 创建后，通过在 PR 评论区发布 `compile`（纯文本，不带斜杠）触发流水线。**用脚本触发，不要现写 curl**——脚本已固化 v4 notes 优先、返回 `{id:null}` 自动回退 v5 的逻辑：
+PR 创建后，通过在 PR 评论区发布 `compile`（纯文本，不带斜杠）触发流水线。**用脚本触发，不要现写 curl**——脚本已固化评论正文与接口选择：
 
 ```bash
 python3 .claude/skills/gitcode-pr/scripts/pr_ops.py trigger \
   --pr <PR_NUMBER> --owner <parent_owner> --repo <parent_repo>
 ```
 
-返回 `{"triggered": true, "via": "v4"|"v5"}`。
+返回 `{"triggered": true, "via": "v5", "ts": "<触发时刻>"}`。
 
 **原理参考**（脚本内已实现，无需手动操作）：
 - 触发指令必须是 `compile` 纯文本；`/build`、`/compile`（带斜杠）无效。
-- 走 v4 `merge_requests/<PR>/notes` 让评论进入 PR 普通评论区被机器人监听；v4 返回 `{id:null}`（发长文本时可能发生）则回退 v5 `/pulls/<PR>/comments` 重发。
+- 直接 POST v5 `/pulls/<PR>/comments`。早期实现先试 v4 `merge_requests/<PR>/notes`（为绕开 v4 长文本返回 `{id:null}`）再回退 v5；**v4 写接口已被服务端禁用（POST 恒 403），该尝试是每次调用都白跑一次的往返，已去掉**，`via` 恒为 `"v5"`。
 - fork 场景 PR 位于源仓，`--owner/--repo` 传源仓（即 `resolve-repo` 输出的 `parent_owner/parent_repo`）。
 
 ### 11. CLA 与审批门禁

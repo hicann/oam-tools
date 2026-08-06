@@ -52,7 +52,15 @@ CI_RESULT_URL = (
 REQUEST_TIMEOUT_SEC = 30
 HTTP_OK = 200
 HTTP_CREATED = 201
+HTTP_FORBIDDEN = 403
 PER_PAGE = 100
+# v4 写接口(POST)已被服务端禁用，恒 403（读接口 GET 仍可用）。命中时给替代指引
+# 而非原始 403；禁用是服务端状态，日后若恢复，相关命令无需改动即可自愈。
+V4_DISABLED_HINT = (
+    "v4 写接口已被服务端禁用，v5 无等价接口(发评论虽接受 path/line 但静默忽略、"
+    "落成普通评论)。替代：回复已有评论用 reply-review；新提意见用 reply 发普通"
+    "评论、正文内注明 文件:行号"
+)
 # 流水线完成结果的终态特征；含其一且非"仅触发成功"才算完成结果。
 PIPELINE_TERMINAL_RE = re.compile(r"SUCCESS|FAILED|FAILURE|WARNING|ERROR")
 TRIGGER_ONLY_RE = re.compile(r"触发成功")
@@ -140,24 +148,6 @@ def v5_patch(path, token, body):
         return r.status_code, r.json()
     except ValueError:
         return r.status_code, r.text
-
-
-def v4_post_note(encoded_repo, pr, token, body):
-    """v4 merge_requests notes POST（用于触发 compile）。"""
-    url = f"{GITCODE_V4_API}/projects/{encoded_repo}/merge_requests/{pr}/notes"
-    try:
-        r = requests.post(
-            url,
-            headers={"PRIVATE-TOKEN": token, "Content-Type": "application/json"},
-            json={"body": body},
-            timeout=REQUEST_TIMEOUT_SEC,
-        )
-    except requests.exceptions.RequestException:
-        return None
-    try:
-        return r.json()
-    except ValueError:
-        return None
 
 
 def v4_post_discussion(encoded_repo, pr, token, body):
@@ -520,6 +510,9 @@ def cmd_review(args):
 
     用 files.json 的 diff_refs 拼 position，POST v4 discussions。
     单行评论 start_line 省略时与 line 相同。
+    当前不可用：v4 写接口已被服务端禁用（POST 恒 403）。403 不直接抛原始错误，
+    而是映射为替代指引（见 V4_DISABLED_HINT）；禁用是服务端状态、日后若恢复本
+    命令可自愈，故保留实现而非删除。
     """
     token = get_token(args)
     body = read_body(args)
@@ -545,6 +538,8 @@ def cmd_review(args):
         "severity": args.severity,
     }
     code, data = v4_post_discussion(enc, args.pr, token, payload)
+    if code == HTTP_FORBIDDEN:
+        fail(f"发行内评论失败 (HTTP {code}): {V4_DISABLED_HINT}", detail=data)
     if code not in (HTTP_OK, HTTP_CREATED):
         fail(f"发行内评论失败 (HTTP {code})", detail=data)
     disc_id = data.get("id") if isinstance(data, dict) else None
@@ -561,69 +556,71 @@ def cmd_review(args):
 def cmd_reply_review(args):
     """回复到已有行内评论的线程里（落在对应 discussion，而非另起独立评论）。
 
-    用 v4 discussions/<discussion_id>/notes 回复；再用 v5 单条评论接口回查，
-    确认回复的 discussion_id 与目标一致（这是"落在同一行内线程"的权威证据，
-    GET discussion 接口不可用、v5 列表不收行内回复，故必须用单条接口核对）。
+    走 v5 discussions/<discussion_id>/comments（v4 已被服务端禁用，全部 403）。
+    响应中 id 是 discussion_id(hex)、note_id 是数字评论 id；回查与删除都必须用
+    数字 note_id（传 hex 会 400）。再用 v5 单条评论接口核对 discussion_id 与目标
+    一致，这是"落在同一线程"的权威证据（GET discussion 接口不可用、v5 列表不收
+    线程回复）。行内评论的回复 comment_type=DiffNote。
+    响应缺 note_id 或回查失败时 in_thread 无法判定，输出附 warn 字段说明原因
+    （缺字段时附实际响应 keys），避免"看似成功、落点未知"被静默忽略。
     """
     token = get_token(args)
     body = read_body(args)
-    enc = args.encoded_repo or f"{args.owner}%2F{args.repo}"
-    url = (
-        f"{GITCODE_V4_API}/projects/{enc}/merge_requests/{args.pr}"
-        f"/discussions/{args.discussion_id}/notes"
+    code, data = v5_post(
+        f"/repos/{args.owner}/{args.repo}/pulls/{args.pr}"
+        f"/discussions/{args.discussion_id}/comments",
+        token,
+        {"body": body},
     )
-    try:
-        r = requests.post(
-            url,
-            headers={"PRIVATE-TOKEN": token, "Content-Type": "application/json"},
-            json={"body": body},
-            timeout=REQUEST_TIMEOUT_SEC,
-        )
-    except requests.exceptions.RequestException as exc:
-        fail(f"请求失败: {exc}")
-    if r.status_code not in (HTTP_OK, HTTP_CREATED):
-        fail(f"回复行内评论失败 (HTTP {r.status_code})", detail=r.text[:200])
-    try:
-        note = r.json()
-    except ValueError:
-        note = {}
-    note_id = note.get("id")
+    if code not in (HTTP_OK, HTTP_CREATED):
+        fail(f"回复评论失败 (HTTP {code})", detail=data)
+    note = data if isinstance(data, dict) else {}
+    note_id = note.get("note_id")
     # 回查：单条评论接口确认 discussion_id 与目标一致
     in_thread = None
+    comment_type = None
+    warn = None
     if note_id:
-        code, detail = v5_get(
+        vcode, detail = v5_get(
             f"/repos/{args.owner}/{args.repo}/pulls/comments/{note_id}", token
         )
-        if code == HTTP_OK and isinstance(detail, dict):
+        if vcode == HTTP_OK and isinstance(detail, dict):
             in_thread = detail.get("discussion_id") == args.discussion_id
-    emit(
-        {
-            "posted": True,
-            "note_id": note_id,
-            "discussion_id": args.discussion_id,
-            "in_thread": in_thread,
-        }
-    )
+            comment_type = detail.get("comment_type")
+        else:
+            warn = f"回查失败 (HTTP {vcode})，in_thread 无法判定，需人工确认回复落点"
+    else:
+        # 响应缺 note_id：评论可能已发出，但无法回查落点，必须显式告警而非静默
+        warn = f"响应缺 note_id 字段，无法回查落点；实际响应 keys={sorted(note)}"
+    out = {
+        "posted": True,
+        "note_id": note_id,
+        "discussion_id": args.discussion_id,
+        "comment_type": comment_type,
+        "in_thread": in_thread,
+    }
+    if warn:
+        out["warn"] = warn
+    emit(out)
 
 
 def cmd_trigger(args):
-    """触发 compile：先 v4 notes，返回 {id:null} 则回退 v5 comments。"""
+    """触发 compile：POST v5 comments 发一条 "compile" 评论。
+
+    原先先试 v4 notes 再回退 v5（为绕开 v4 长文本返回 {id:null}）；v4 写接口已被
+    服务端禁用（恒 403），该尝试纯属无用往返，故直接走 v5。输出保留 via 字段。
+    """
     token = get_token(args)
     # 记录触发时刻（GitCode 评论时间带 +08:00，这里用本地时区对齐便于比较）
     trigger_ts = time.strftime("%Y-%m-%dT%H:%M:%S+08:00", time.localtime())
-    enc = args.encoded_repo or f"{args.owner}%2F{args.repo}"
-    via = "v4"
-    r = v4_post_note(enc, args.pr, token, "compile")
-    if not (isinstance(r, dict) and r.get("id")):
-        via = "v5"
-        code, data = v5_post(
-            f"/repos/{args.owner}/{args.repo}/pulls/{args.pr}/comments",
-            token,
-            {"body": "compile"},
-        )
-        if code not in (HTTP_OK, HTTP_CREATED):
-            fail(f"触发 compile 失败 (HTTP {code})", detail=data)
-    emit({"triggered": True, "via": via, "ts": trigger_ts})
+    code, data = v5_post(
+        f"/repos/{args.owner}/{args.repo}/pulls/{args.pr}/comments",
+        token,
+        {"body": "compile"},
+    )
+    if code not in (HTTP_OK, HTTP_CREATED):
+        fail(f"触发 compile 失败 (HTTP {code})", detail=data)
+    emit({"triggered": True, "via": "v5", "ts": trigger_ts})
 
 
 def cmd_delete_comment(args):
