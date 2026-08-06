@@ -65,12 +65,12 @@ class TestCommon(AssertTest):
         if test_fun == 'write_file':
             mocker.patch('os.path.exists', return_value=False)
             mocker.patch.object(FileOperate, 'create_dir', return_value=False)
-            FileOperate.write_file('file_path', 'info')
+            FileOperate.write_file(os.path.join('some_dir', 'file_path'), 'info')
             self.assertTrue(check_res in caplog.text)
         if test_fun == 'append_write_file':
             mocker.patch('os.path.exists', return_value=False)
             mocker.patch.object(FileOperate, 'create_dir', return_value=False)
-            FileOperate.append_write_file('file_path', 'info')
+            FileOperate.append_write_file(os.path.join('some_dir', 'file_path'), 'info')
             self.assertTrue(check_res in caplog.text)
         if test_fun == "delete_dirs":
             mocker.patch('os.path.exists', return_value=True)
@@ -91,6 +91,10 @@ class TestCommon(AssertTest):
         if test_fun == "collect_dir":
             FileOperate.collect_dir('dir1', 'dir2', 'l')
             self.assertTrue(check_res in caplog.text)
+
+    @pytest.mark.parametrize('file_path', [None, ''])
+    def test_append_write_file_invalid_path(self, file_path):
+        self.assertTrue(FileOperate.append_write_file(file_path, 'info') is None)
 
     def test_create_out_dir_no_write_permission(self, mocker, caplog):
         mocker.patch.object(ParamDict, "get_command", return_value='collect')

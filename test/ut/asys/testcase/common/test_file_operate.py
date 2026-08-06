@@ -38,7 +38,7 @@ def setup_module():
 
 
 def teardown_module():
-    print("TestFileOperate ut test finsh.")
+    logging.info("TestFileOperate ut test finish.")
 
 
 class TestFileOperate(AssertTest):
@@ -217,6 +217,27 @@ class TestFileOperate(AssertTest):
         mocker.patch("common.FileOperate.create_dir", return_value=False)
         f.write_file(self.test_file_path, "test_info")
 
+    def test_write_file_current_dir(self, tmp_path):
+        cur_dir = os.getcwd()
+        os.chdir(tmp_path)
+        try:
+            f.write_file("test_file", "test_info")
+            self.assertTrue(os.path.isfile("test_file"))
+            self.assertTrue(f.read_file("test_file") == "test_info")
+        finally:
+            os.chdir(cur_dir)
+
+    def test_append_write_file_current_dir(self, tmp_path):
+        cur_dir = os.getcwd()
+        os.chdir(tmp_path)
+        try:
+            f.append_write_file("test_file", "test_info")
+            f.append_write_file("test_file", "_append")
+            self.assertTrue(os.path.isfile("test_file"))
+            self.assertTrue(f.read_file("test_file") == "test_info_append")
+        finally:
+            os.chdir(cur_dir)
+
     def test_read_plain_file(self, mocker):
         mocker.patch("builtins.open")
         self.assertTrue(f.read_file(self.test_file_path))
@@ -291,6 +312,10 @@ class TestFileOperate(AssertTest):
         mocker.patch.object(f, "create_dir", return_value=False)
         f.append_write_file(self.test_file_path, "test_info")
         self.assertTrue("failed in write file" in caplog.text)
+
+    @pytest.mark.parametrize("file_path", [None, ""])
+    def test_append_write_file_invalid_path(self, file_path):
+        self.assertTrue(f.append_write_file(file_path, "test_info") is None)
 
     @pytest.mark.parametrize("mode, res", [("m", True), ("c", True), ("b", False)])
     def test_collect_file_to_dir(self, mode, res, mocker, caplog):

@@ -109,7 +109,7 @@ class FileOperate:
         if not file_path:
             return
         file_dir = os.path.split(file_path)[0]
-        if not os.path.exists(file_dir) and not FileOperate.create_dir(file_dir):
+        if file_dir and not os.path.exists(file_dir) and not FileOperate.create_dir(file_dir):
             log_error("Create path directory: \"{}\" failed in write file.".format(file_dir))
             return
         with open(file_path, mode="w", encoding=ENCODE_UTF_8) as f:
@@ -117,8 +117,10 @@ class FileOperate:
 
     @staticmethod
     def append_write_file(file_path, info):
+        if not file_path:
+            return
         file_dir = os.path.split(file_path)[0]
-        if not os.path.exists(file_dir) and not FileOperate.create_dir(file_dir):
+        if file_dir and not os.path.exists(file_dir) and not FileOperate.create_dir(file_dir):
             log_error("Create path directory: \"{}\" failed in write file.".format(file_dir))
             return
         with open(file_path, mode="a", encoding=ENCODE_UTF_8) as f:
