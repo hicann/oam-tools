@@ -268,8 +268,10 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_EXPORT, ARGS_EXPORT_ITERATION_ID, ARGS_EXPORT_MODEL_ID, ARGS_INSTR_PROFILING, ARGS_INSTR_PROFILING_FREQ,
         ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_ANALYZE, ARGS_RULE, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
         ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_MEM_SERVICEFLOW, ARGS_OP_TYPE};
-    std::vector<MsprofArgsType> davidBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
-    std::vector<MsprofArgsType> david121BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
+    std::vector<MsprofArgsType> davidBlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_INSTR_PROFILING_FREQ};
+    std::vector<MsprofArgsType> david121BlackSwith = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ};
     std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> platformArgsType = {
         {PlatformType::MINI_TYPE, miniBlackSwith}, {PlatformType::CLOUD_TYPE, cloudBlackSwith}, {PlatformType::MDC_TYPE, mdcBlackSwith},
         {PlatformType::DC_TYPE, dcBlackSwith}, {PlatformType::CHIP_V4_1_0, cloudBlackSwithV2}, {PlatformType::MINI_V3_TYPE, miniV3BlackSwith},
@@ -426,7 +428,7 @@ int32_t InputParser::CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t 
             const std::vector<std::string> cmpCode = {OFF, L0, L2, L3, L1, ON};
             std::string msgEnd = supportL3 ? ", 'l2' or 'l3'" : " or 'l2'.";
             std::string errorMsg = "Argument --%s: invalid value: %s. Please input 'on', 'off', 'l0', 'l1'" + msgEnd;
-            
+
             if (compareSwitchStr(cmpCode, switchStr, errorMsg, opt, cmdInfo) != MSPROF_DAEMON_OK) {
                 return MSPROF_DAEMON_ERROR;
             }
@@ -686,7 +688,7 @@ int32_t InputParser::MsprofFreqCheckValidTwo(const struct MsprofCmdInfo &cmdInfo
 void InputParser::MsprofFreqTransferParams(const struct MsprofCmdInfo &cmdInfo, int32_t opt)
 {
     int32_t interval = 0;
-    FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(interval, cmdInfo.args[opt]), return, 
+    FUNRET_CHECK_EXPR_ACTION(!Utils::StrToInt32(interval, cmdInfo.args[opt]), return,
         "interval %s is invalid", cmdInfo.args[opt]);
     if (interval < 1) {
         return;
@@ -921,8 +923,8 @@ int32_t InputParser::ParamsCheck() const
     }
 
     if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE) &&
-        params_->taskBlock == "on" && 
-        params_->taskBlockShink == "off" && 
+        params_->taskBlock == "on" &&
+        params_->taskBlockShink == "off" &&
         params_->opType.empty()) {
         CmdLog::CmdErrorLog("Argument --task-block: when set to 'all', --optype must not be empty.");
         return MSPROF_DAEMON_ERROR;
@@ -1913,7 +1915,7 @@ int32_t InputParser::CheckTaskBlockValid(const std::string &switchName, const st
         return MSPROF_DAEMON_ERROR;
     }
 
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 && 
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 &&
         config.compare(MSVP_PROF_ALL) != 0) {
         std::string taskBlockRanges;
         if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
@@ -1923,13 +1925,13 @@ int32_t InputParser::CheckTaskBlockValid(const std::string &switchName, const st
         } else {
             taskBlockRanges = "'all', 'off'.";
         }
-        CmdLog::CmdErrorLog("Argument %s: invalid value: %s. Please input %s", 
+        CmdLog::CmdErrorLog("Argument %s: invalid value: %s. Please input %s",
             switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
-        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s", 
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input %s",
             switchName.c_str(), config.c_str(), taskBlockRanges.c_str());
         return MSPROF_DAEMON_ERROR;
     }
-    if (config.compare(MSVP_PROF_ON) == 0 && 
+    if (config.compare(MSVP_PROF_ON) == 0 &&
         Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
         Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
         Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
@@ -2528,7 +2530,7 @@ void ArgsManager::AddHardWareMemArgs()
 ArgsManager::ArgsManager()
 {
     std::string task_trace_ranges = Platform::instance()->CheckIfSupport(PLATFORM_TASK_TRACE_L3)
-                ? "'l0', 'l1', 'l2', 'l3', 'on' or 'off'." 
+                ? "'l0', 'l1', 'l2', 'l3', 'on' or 'off'."
                 : "'l0', 'l1', 'l2', 'on' or 'off'.";
     argsList_ = {
     {"output", "Specify the directory that is used for storing data results."},

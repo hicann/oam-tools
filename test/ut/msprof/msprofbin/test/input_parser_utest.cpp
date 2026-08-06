@@ -978,6 +978,22 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform) {
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
+TEST_F(INPUT_PARSER_UTEST, PreCheckPlatformRejectsDavid121UnsupportedDvppArgs) {
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V4);
+    Platform::instance()->runSide_ = SysPlatformType::HOST;
+    InputParser parser = InputParser();
+
+    optind = 1;
+    const char *dvppProfilingArgv[] = {"--dvpp-profiling=on"};
+    EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_DVPP_PROFILING, dvppProfilingArgv));
+
+    optind = 1;
+    const char *dvppFreqArgv[] = {"--dvpp-freq=50"};
+    EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_DVPP_FREQ, dvppFreqArgv));
+
+    Platform::instance()->runSide_ = SysPlatformType::INVALID;
+}
+
 TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -1358,7 +1374,7 @@ TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs) {
     EXPECT_EQ(static_cast<size_t>(1), argsManager.argsList_.size());
 }
 
-TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidIncludesInstrProfilingFreq)
+TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidAndDavid121BlackSwitches)
 {
     SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
     ConfigManager::instance()->isInit_ = true;
@@ -1368,15 +1384,18 @@ TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidIncludesInstrProfilingFreq
     InputParser parser = InputParser();
     auto switchList = parser.GeneratePlatSwithList();
 
-    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+    const std::vector<MsprofArgsType> davidExpected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
         ARGS_INSTR_PROFILING_FREQ};
-    EXPECT_EQ(expected, switchList);
+    EXPECT_EQ(davidExpected, switchList);
 
     SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V4);
     Platform::instance()->Uninit();
     Platform::instance()->Init();
     switchList = parser.GeneratePlatSwithList();
-    EXPECT_EQ(expected, switchList);
+
+    const std::vector<MsprofArgsType> david121Expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
+        ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ};
+    EXPECT_EQ(david121Expected, switchList);
 }
 
 TEST_F(INPUT_PARSER_UTEST, AddInstrArgs)
