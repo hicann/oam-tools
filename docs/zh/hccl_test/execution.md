@@ -198,7 +198,7 @@
         命令示例如下：
 
         ```bash
-        mpirun --prefix /usr/local/openmpi -hostfile hostfile -x LD_LIBRARY_PATH -x HCCL_SOCKET_FAMILY -x HCCL_SOCKET_IFNAME -x HCCL_CONNECT_TIMEOUT -x HCCL_BUFFSIZE --allow-run-as-root --mca btl_tcp_if_include eth0 --mca opal_set_max_sys_limits 1 -n 16 ./bin/all_reduce_test -p 16 -b 8K -e 64M -i 0 -o sum -d fp32 -w 3 -n 3
+        mpirun --prefix /usr/local/openmpi -hostfile hostfile -x ASCEND_HOME_PATH -x LD_LIBRARY_PATH -x HCCL_SOCKET_FAMILY -x HCCL_SOCKET_IFNAME -x HCCL_CONNECT_TIMEOUT -x HCCL_BUFFSIZE --allow-run-as-root --mca btl_tcp_if_include eth0 --mca opal_set_max_sys_limits 1 -n 16 ./bin/all_reduce_test -p 16 -b 8K -e 64M -i 0 -o sum -d fp32 -w 3 -n 3
         ```
 
         - mpirun后跟随的是MPI命令相关参数。
