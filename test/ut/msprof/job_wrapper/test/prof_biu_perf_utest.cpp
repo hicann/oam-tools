@@ -25,6 +25,7 @@
 #include "thread/thread.h"
 #include "thread/thread.h"
 #include "prof_biu_perf_job.h"
+#include "prof_instr_perf_job.h"
 #include "file_transport.h"
 #include "prof_inner_api.h"
 #include "ai_drv_dev_api.h"
@@ -199,4 +200,54 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2GetBiuPerfChannelInfosReturnsWhi
     for (size_t i = 0; i < infos.size(); i++) {
         EXPECT_EQ(static_cast<int32_t>(infos[i].channelId), expectedChannelIds[i]);
     }
+}
+
+// ============ ProfInstrPerfJob tests ============
+// Coverage target: prof_instr_perf_job.cpp:71 (MSPROF_LOGI "Begin to start biu profile buffer")
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_InitFailed_WhenHostProfiling)
+{
+    auto job = std::make_shared<Analysis::Dvvp::JobWrapper::ProfInstrPerfJob>();
+    ASSERT_NE(job, nullptr);
+    collectionJobCfg_->comParams->params->instrProfiling = "on";
+    collectionJobCfg_->comParams->params->hostProfiling = true;
+    EXPECT_EQ(PROFILING_FAILED, job->Init(collectionJobCfg_));
+}
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_InitFailed_WhenNotEnabled)
+{
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+        .stubs()
+        .will(returnValue(false));
+    auto job = std::make_shared<Analysis::Dvvp::JobWrapper::ProfInstrPerfJob>();
+    ASSERT_NE(job, nullptr);
+    collectionJobCfg_->comParams->params->instrProfiling = "on";
+    collectionJobCfg_->comParams->params->hostProfiling = false;
+    EXPECT_EQ(PROFILING_FAILED, job->Init(collectionJobCfg_));
+}
+
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_ProcessCoversStartBufferLog)
+{
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
+        .stubs()
+        .will(returnValue(PROFILING_SUCCESS));
+    MOCKER(prof_stop)
+        .stubs()
+        .will(returnValue(PROFILING_SUCCESS));
+
+    auto job = std::make_shared<Analysis::Dvvp::JobWrapper::ProfInstrPerfJob>();
+    ASSERT_NE(job, nullptr);
+    collectionJobCfg_->comParams->params->instrProfiling = "on";
+    collectionJobCfg_->comParams->params->hostProfiling = false;
+    EXPECT_EQ(PROFILING_SUCCESS, job->Init(collectionJobCfg_));
+    EXPECT_EQ(PROFILING_SUCCESS, job->Process());
+    EXPECT_EQ(PROFILING_SUCCESS, job->Uninit());
 }

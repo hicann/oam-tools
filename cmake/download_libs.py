@@ -201,7 +201,7 @@ def download_files_native(url_list):
         try:
             downloaded.add(download_single_file(url, current_dir))
         except (ValueError, RuntimeError, OSError) as e:
-            logging.info("Download file form %s failed: %s", url, e)
+            logging.info("Download file from %s failed: %s", url, e)
     return downloaded
 
 

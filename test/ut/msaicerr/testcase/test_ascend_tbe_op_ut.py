@@ -604,6 +604,15 @@ def test_run_failed_ret(mocker):
     assert 'failed' in result
 
 
+def test_run_success_with_memory_status(mocker):
+    runner, _ = make_runner(mocker)
+    mocker.patch.object(runner, 'exec_single_case', side_effect=[[None, [0, 0, 0]], [None, [0, 0, 2]]])
+    param = _exec_param()
+    result = runner.run(param)
+    assert 'success' in result
+    assert 'memory status check result : 2.' in result
+
+
 def test_run_exception(mocker):
     runner, _ = make_runner(mocker)
     mocker.patch.object(runner, 'exec_single_case', side_effect=RuntimeError('boom'))

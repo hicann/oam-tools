@@ -28,7 +28,7 @@ int32_t OpAnalyzerBase::InitFrequency(uint32_t deviceId)
         deviceId, DEFAULT_FREQ);
     frequency_ = std::stod(freq) / MHZ_CONVERT_GHZ;
     if (frequency_ <= 0) {
-        MSPROF_LOGE("Failed to init Op analyzer freqency: %f ghz, get freq %s mhz.", frequency_, freq.c_str());
+        MSPROF_LOGE("Failed to init Op analyzer frequency: %f ghz, get freq %s mhz.", frequency_, freq.c_str());
         return PROFILING_FAILED;
     } else {
         MSPROF_EVENT("Success to init Op analyzer frequency: %f.", frequency_);

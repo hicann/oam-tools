@@ -143,7 +143,7 @@ class AscendOpKernelParam:
             self._is_const = True
             self.shape = np_data.shape
             if str(np_data.dtype) == "|V2":
-                logger.log_info(f"self.dtype is None, MayBe bloat16, same size with float16")
+                logger.log_info(f"self.dtype is None, MayBe bfloat16, same size with float16")
                 self.dtype = "float16"
             else:
                 self.dtype = dtype_trans.np_dtype_to_str(np_data.dtype)
@@ -672,12 +672,12 @@ class AscendOpKernelRunner:
             aic_info = f"{aic_info}exec single op case failed.\r\n"
             aic_info = f"{aic_info}launch kernel result : {launch_ret}.\r\n"
             aic_info = f"{aic_info}execute result : {sync_ret}.\r\n"
-            aic_info = f"{aic_info}memery status check result : {magic_ret}.\r\n"
+            aic_info = f"{aic_info}memory status check result : {magic_ret}.\r\n"
             utils.print_error_log(aic_info)
         else:
             aic_info = f"{aic_info}exec single op case success.\r\n"
             if magic_ret != 0:
-                aic_info = f"{aic_info}memery status check result : {magic_ret}.\r\n"
+                aic_info = f"{aic_info}memory status check result : {magic_ret}.\r\n"
 
             utils.print_debug_log(aic_info)
         return aic_info

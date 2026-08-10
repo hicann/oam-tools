@@ -29,7 +29,7 @@
 const std::map<int, std::string> LOG_LEVEL_INFO = {
     {DLOG_DEBUG, "DEBUG"},
     {DLOG_INFO,  "INFO"},
-    {DLOG_WARN,  "WARING"},
+    {DLOG_WARN,  "WARNING"},
     {DLOG_ERROR, "ERROR"},
     {DLOG_EVENT, "EVENT"}
 };

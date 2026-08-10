@@ -68,7 +68,7 @@ int32_t ProfInstrPerfJob::Process()
                 MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", devId, channelId);
                 continue;
             }
-            MSPROF_LOGI("Begin to start bui profile buffer, devId:%d, channelId:%d", devId, channelId);
+            MSPROF_LOGI("Begin to start biu profile buffer, devId:%d, channelId:%d", devId, channelId);
             std::string filePath = collectionJobCfg_->jobParams.dataPath +
                                 ".group_" + std::to_string(groupId) + "_" + coreName[i];
             AddReader(collectionJobCfg_->comParams->params->job_id, devId, channelId, filePath);

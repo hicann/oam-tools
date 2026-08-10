@@ -30,11 +30,6 @@ import numpy as np
 import pytest
 
 s = np.array([1, 2, 3, 4, 5])
-
-
-te = Mock(name="te")
-te.__name__ = "te"
-sys.modules['te'] = te
 sys.path.append(MSAICERR_PATH)
 
 
@@ -271,6 +266,12 @@ class TestClassAscendOpKernelRunner(CommonAssert):
             AscendOpKernelParam.build_op_param_by_data_file(
                 'xxx', 'int8', [1, 1])
 
+    def test_ascend_op_kernel_param_v2_dtype(self):
+        np_data = np.zeros((2, 3), dtype="V2")
+        param = AscendOpKernelParam(np_data=np_data)
+        self.assertEqual(param.dtype, "float16")
+        self.assertEqual(param.shape, (2, 3))
+
     def test_hbm_pointer_case(self, mocker):
         c_memory_p = ctypes.c_void_p(None)
         kernel = AscendRTSApi()
@@ -328,11 +329,32 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         mocker.patch.object(AscendOpKernelRunner,
                             'exec_single_case', return_value=[0, [0, 0, 1]])
         ret_value = runner.run(kernel)
-        self.assertEqual(True, "memery status check" in ret_value)
+        self.assertEqual(True, "memory status check" in ret_value)
         mocker.patch.object(AscendOpKernelRunner,
                             'exec_single_case', return_value=[0, [0, 0, 2]])
         ret_value = runner.run(kernel)
-        self.assertEqual(True, "memery status check" in ret_value)
+        self.assertEqual(True, "memory status check" in ret_value)
+
+    def test_run_exec_failed_with_memory_status(self, mocker):
+        mocker.patch.object(
+            AscendOpKernelRunner,
+            '__init__',
+            return_value=None
+        )
+        runner = AscendOpKernelRunner()
+        mocker.patch.object(
+            runner,
+            'exec_single_case',
+            side_effect=[
+                [None, [1, 0, 0]],
+                [None, [0, 0, 2]],  
+            ]
+        )
+        ret_value = runner.run(Mock())
+        self.assertEqual(True, "exec single op case failed." in ret_value)
+        self.assertEqual(True, "launch kernel result : 1." in ret_value)
+        self.assertEqual(True, "execute result : 0." in ret_value)
+        self.assertEqual(True, "memory status check result : 2." in ret_value)
 
     def test_fill_binary(self, mocker):
         mocker.patch.object(ascend_tbe_op.DSMIInterface,

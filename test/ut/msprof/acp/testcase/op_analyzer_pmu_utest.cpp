@@ -420,3 +420,23 @@ TEST_F(OP_ANALYZER_PMU_UTEST, HandleBlockPmu_MixButNotSlave)
     pmu.HandleBlockPmu(&data);
     EXPECT_TRUE(pmu.blockInfo_.empty());
 }
+
+TEST_F(OP_ANALYZER_PMU_UTEST, InitFrequency_FreqZero_ReturnsFailed)
+{
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformGetDeviceOscFreq)
+        .stubs()
+        .will(returnValue(std::string("0")));
+    OpAnalyzerPmu pmu;
+    EXPECT_EQ(PROFILING_FAILED, pmu.InitFrequency(0));
+    EXPECT_DOUBLE_EQ(0.0, pmu.frequency_);
+}
+
+TEST_F(OP_ANALYZER_PMU_UTEST, InitFrequency_FreqValid_ReturnsSuccess)
+{
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformGetDeviceOscFreq)
+        .stubs()
+        .will(returnValue(std::string("1000")));
+    OpAnalyzerPmu pmu;
+    EXPECT_EQ(PROFILING_SUCCESS, pmu.InitFrequency(0));
+    EXPECT_DOUBLE_EQ(1.0, pmu.frequency_);
+}
