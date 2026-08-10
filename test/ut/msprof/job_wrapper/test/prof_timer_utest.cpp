@@ -779,7 +779,7 @@ TEST_F(PROF_TIMER_TEST, Start) {
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.Start());
     //start succ
     EXPECT_EQ(PROFILING_FAILED, timerHandler.Start());
-    //stop faile setitimer failed
+    //stop failed setitimer failed
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.Stop());
     //stop succ
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0,
@@ -849,6 +849,7 @@ static int g_dcmi_card_list_zero_stub(int *cardNum, int *, int) { if (cardNum) *
 static int g_dcmi_card_list_fail_stub(int *, int *, int) { return -1; }
 static int g_dcmi_dev_num_stub(int, int *) { return 0; }
 static int g_dcmi_pkt_stub(int, int, int, struct dcmi_network_pkt_stats_info *) { return 0; }
+static int g_dcmi_v2_pkt_fail_stub(int, int, struct dcmi_network_pkt_stats_info *) { return -1; }
 
 TEST_F(PROF_NET_DEV_STATS_TEST, Init_LoadDcmiFails)
 {
@@ -916,4 +917,23 @@ TEST_F(PROF_NET_DEV_STATS_TEST, Init_DoubleInit_Fails)
     EXPECT_EQ(PROFILING_SUCCESS, h.Init());
     // Re-init after isInited_ is true -> FAILED
     EXPECT_EQ(PROFILING_FAILED, h.Init());
+}
+
+TEST_F(PROF_NET_DEV_STATS_TEST, Execute_V2GetNetdevPktStatsInfo_Fails)
+{
+    // V2 path: OsalDlopen succeeds, dcmiv2_get_dcmi_version non-null (isDcmiV2Supported_=true),
+    // dcmiv2_init succeeds, RegisterDevTask succeeds (v2 uses devId directly),
+    // Execute() calls dcmiV2GetNetdevPktStatsInfo_ which returns failure -> covers line 943.
+    MOCKER(OsalDlopen).stubs().will(returnValue((void *)0x12345678));
+    MOCKER(OsalDlsym)
+        .stubs()
+        .will(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))      // dcmiv2_get_dcmi_version (non-null)
+        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))      // dcmiv2_init (returns 0)
+        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_v2_pkt_fail_stub))); // dcmiv2_get_netdev_pkt_stats_info (returns -1)
+
+    NetDevStatsHandler h(64, 1000, "0", jobCtx);
+    EXPECT_EQ(PROFILING_SUCCESS, h.Init());
+    EXPECT_EQ(PROFILING_SUCCESS, h.RegisterDevTask(0));
+    EXPECT_EQ(PROFILING_SUCCESS, h.Execute());
+    EXPECT_EQ(PROFILING_SUCCESS, h.Uinit());
 }

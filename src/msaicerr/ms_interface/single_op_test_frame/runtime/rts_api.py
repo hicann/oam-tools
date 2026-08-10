@@ -782,7 +782,7 @@ class AscendRTSApi:
             utils.print_error_log("Received invalid runtime error type: " + hex(rt_error) + extra_info)
             return
         rt_error_code = rt_error & 0x0000FFFF
-        utils.print_error_log("Runtime API call " + "() failed:"
+        utils.print_error_log("Runtime API call " + rt_api_name + "() failed:"
                               + self._parse_error_code(rt_error_type, rt_error_code) + extra_info)
         return
 

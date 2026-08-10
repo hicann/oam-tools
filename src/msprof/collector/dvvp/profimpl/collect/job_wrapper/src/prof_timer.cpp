@@ -940,7 +940,7 @@ int32_t NetDevStatsHandler::Execute()
         if (isDcmiV2Supported_) {
            auto ret = dcmiV2GetNetdevPktStatsInfo_(devId, NETDEV_STATS_DEFAULT_PORT_ID, &statsInfo);
            if (ret != PROFILING_SUCCESS) {
-               MSPROF_LOGW("NetDevStatsHandler get netdev pkt stats info failed devId %u, ret=%d", ret);
+               MSPROF_LOGW("NetDevStatsHandler get netdev pkt stats info failed devId %u, ret=%d", devId, ret);
                break;
            }
         } else {

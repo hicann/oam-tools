@@ -44,6 +44,13 @@ def mdata():
 
 
 class TestClassAscendOpKernelRunner:
+    @staticmethod
+    def test_parse_error_includes_api_name_in_error_log(mocker, rts_api):
+        mock_print_error = mocker.patch('ms_interface.utils.print_error_log')
+        rts_api.parse_error(0x07010000, 'rtStreamDestroy')
+        mock_print_error.assert_called_once()
+        assert 'rtStreamDestroy' in mock_print_error.call_args[0][0]
+
     def test_api_call(self, mocker):
         mocker.patch.object(AscendRTSApi, '__init__', return_value=None)
         rtsapi = AscendRTSApi()
