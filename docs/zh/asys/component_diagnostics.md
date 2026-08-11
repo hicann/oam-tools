@@ -21,7 +21,7 @@ asys diagnose -r=component -d=deviceId --output=path
     - 若一个或多个device状态不一致时，则依次显示每个device的状态，例如4个device时，显示Pass, Pass, Fail, Fail。
     - **若检测结果为Fail**，可查看debug\_info.txt日志定位问题。
 
-- **d**：可选参数，指定待检测的deviceId。不设置该参数，默认显示所有device的检测结果。Pass表示正常，Warn表示异常。
+- **d**：可选参数，指定待检测的deviceId。不设置该参数，默认显示所有device的检测结果。Pass表示正常，Fail表示异常。
 - **output**：可选参数，其值作为检测结果文件diagnose\_result\_\{time\_stamp\}.txt的保存目录。命令行中不带output参数时，输出结果不落盘仅在终端屏幕显示；若output指定值为空、无效字符串、或指定路径目录无写权限、或创建目录失败，则asys工具退出执行并报错。
 
 ## 使用示例和输出说明
