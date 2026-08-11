@@ -41,21 +41,59 @@ class ConstManager:
     DATA_TYPE_TO_DTYPE_MAP = {
         '1': 'float32',
         '2': 'float16',
-        '12': 'float64',
         '3': 'int8',
+        '4': 'uint8',
         '5': 'int16',
+        '6': 'uint16',
         '7': 'int32',
         '8': 'int64',
-        '4': 'uint8',
-        '6': 'uint16',
         '9': 'uint32',
         '10': 'uint64',
         '11': 'bool',
-        '27': 'bfloat16',  # bfloat16 is not supported in numpy
+        '12': 'float64',
+        '16': 'complex64',
+        '17': 'complex128',
+        # below dtype is not supported in native numpy
+        '0': 'undefined',
+        '13': 'string',
+        '14': 'dual_sub_int8',
+        '15': 'dual_sub_uint8',
+        '18': 'qint8',
+        '19': 'qint16',
+        '20': 'qint32',
+        '21': 'quint8',
+        '22': 'quint16',
+        '23': 'resource',
+        '24': 'string_ref',
+        '25': 'dual',
+        '26': 'variant',
+        '27': 'bfloat16',
+        '28': 'int4',
+        '29': 'uint1',
+        '30': 'int2',
+        '31': 'uint2',
+        '32': 'complex32',
+        '33': 'hifloat8',
+        '34': 'float8_e5m2',
+        '35': 'float8_e4m3fn',
+        '36': 'float8_e8m0',
+        '37': 'float6_e3m2',
+        '38': 'float6_e2m3',
+        '39': 'float4_e2m1',
+        '40': 'float4_e1m2',
+        '41': 'hifloat4',
+        '42': 'hifloat4_scale'
     }
 
     COMMON_DTYPE = ["float32", "float16", "bfloat16", "int32", "int64"]
     VALID_DTYPES = list(DATA_TYPE_TO_DTYPE_MAP.values())
+    # dtypes numpy can represent by itself, data of these dtypes is saved as .npy
+    NUMPY_NATIVE_DTYPES = {
+        'float32', 'float16', 'float64', 'int8', 'uint8', 'int16', 'uint16',
+        'int32', 'uint32', 'int64', 'uint64', 'bool', 'complex64', 'complex128'
+    }
+    # dtypes numpy can represent once the third party extension is imported
+    NUMPY_EXT_DTYPES = {'bfloat16'}
 
 
 class DumpDataParser:
@@ -91,11 +129,33 @@ class DumpDataParser:
         return self.dfx_message
 
     @staticmethod
-    def _check_tensor_data(parse_type, index, array, dtype):
+    def _to_numpy_dtype(dtype):
+        """
+        Convert a dump dtype name to the matching numpy dtype.
+        @param dtype: the dtype name, may be None or a dtype numpy does not support
+        @return: the numpy dtype, or None when numpy can not represent it
+        """
+        if not dtype:
+            return None
+        if dtype in ConstManager.NUMPY_EXT_DTYPES:
+            try:
+                import bfloat16ext  # noqa: F401  register the dtype in numpy
+            except ImportError:
+                return None
+        elif dtype not in ConstManager.NUMPY_NATIVE_DTYPES:
+            return None
         try:
-            data_dtype = np.float32 if dtype == "bfloat16" else np.dtype(dtype)
+            return np.dtype(dtype)
         except TypeError:
+            return None
+
+    @staticmethod
+    def _check_tensor_data(parse_type, index, array, dtype):
+        np_dtype = DumpDataParser._to_numpy_dtype(dtype)
+        if np_dtype is None:
             return f"Can not read with dtype {dtype}!\n"
+        # bfloat16 has no finfo, check its value range as float32
+        data_dtype = np.float32 if dtype == "bfloat16" else np_dtype
         result_info = ""
         if (np.isinf(array).any() or np.isnan(array).any()):
             result_info = f'{parse_type}[{index}] NaN/INF. Input data invalid. Please check!\n'
@@ -142,9 +202,31 @@ class DumpDataParser:
                     mean_val = np.mean(arr, dtype=np.float64)
                     std_val = np.std(arr, dtype=np.float64)
                     result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {mean_val}, Std: {std_val}\n"
-            except BaseException:
+            except Exception:
                 result_info += f"Can not read with dtype {dtype}!\n"
         return result_info
+
+    @staticmethod
+    def _summary_tensor_array(array, dtype):
+        """
+        Build the summary of an array whose dtype is already known.
+        @param array: the typed numpy array
+        @param dtype: the dtype name
+        @return: the summary text
+        """
+        result_info = " " * 4 + f"If dtype is {dtype}, summary is: "
+        try:
+            if array.size == 0:
+                return result_info + "Max: N/A, Min: N/A, Mean: N/A, Std: N/A\n"
+            # complex data can not be accumulated as float64 without losing the imaginary part
+            acc_dtype = np.complex128 if np.iscomplexobj(array) else np.float64
+            mean_val = np.mean(array, dtype=acc_dtype)
+            std_val = np.std(array, dtype=acc_dtype)
+            return result_info + (f"Max: {np.max(array)}, Min: {np.min(array)}, "
+                                  f"Mean: {mean_val}, Std: {std_val}\n")
+        except Exception:
+            # only swallow normal errors here, KeyboardInterrupt/SystemExit must propagate
+            return result_info + f"Can not read with dtype {dtype}!\n"
 
     def _save_dfx_message(self, dump_json_data):
         self.dfx_message = dump_json_data.get("dfx_message", "")
@@ -183,53 +265,107 @@ class DumpDataParser:
             self._collect_dtype_get_json_dtypes(outputs_data, json_dtypes['output'])
         return json_dtypes
 
+    @staticmethod
+    def _get_item_dtype(item, parse_type, json_dtype, index):
+        """
+        Get the dtype name of one dump item.
+        @return: the dtype name, or the raw data_type enum value when it is unknown
+        """
+        if parse_type == "workspace":
+            return "int8"
+        data_type = str(item.get('data_type', '0'))
+        dtype = ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(data_type)
+        # "undefined" carries no dtype, the json dtype is more accurate than it
+        if dtype and dtype != 'undefined':
+            return dtype
+        # fall back to the json dtype, else keep the mapped name or the raw enum value
+        return json_dtype.get(parse_type, {}).get(index) or dtype or data_type
+
+    @staticmethod
+    def _build_typed_array(raw_data, dtype, shape):
+        """
+        Build the numpy array of the dump data.
+        @return: (array, numpy dtype). The numpy dtype is None when the data can only
+                 be read as raw bytes, in that case the array is an int8 array.
+        """
+        array = np.frombuffer(raw_data or b'', dtype=np.int8)
+        np_dtype = DumpDataParser._to_numpy_dtype(dtype)
+        if np_dtype is None or array.nbytes % np_dtype.itemsize != 0:
+            return array, None
+        array = array.view(np_dtype)
+        if shape and array.size == int(np.prod(shape)):
+            array = array.reshape(shape)
+        return array, np_dtype
+
+    def _build_dst_file_name(self, dump_file_path, parse_type, index, dtype, np_dtype):
+        name_parts = [self.info.kernel_name, parse_type, str(index)]
+        if dtype:
+            name_parts.append(dtype)
+        # numpy supported dtype is saved as npy, others keep the raw bin format
+        name_parts.append("npy" if np_dtype is not None else "bin")
+        return os.path.join(dump_file_path, ".".join(name_parts))
+
+    def _save_array(self, array, dst_file_name, parse_type, np_dtype):
+        if np_dtype is not None:
+            # the name built by _build_dst_file_name already ends with .npy
+            np.save(dst_file_name, array)
+        else:
+            array.tofile(dst_file_name)
+        if parse_type == "workspace":
+            self.workspace_data_list.append(dst_file_name)
+        else:
+            self.bin_data_list.append(dst_file_name)
+        return dst_file_name
+
+    def _parse_one_item(self, item, parse_type, json_dtype, index, dump_file_path):
+        dtype = self._get_item_dtype(item, parse_type, json_dtype, index)
+        shape = [int(i) for i in item.get('shape', {}).get('dim', [])]
+        result_info = (f"shape: {tuple(shape)} size: {item.get('size', 0)} "
+                       f"dtype: {dtype if dtype else 'unknown'}\n")
+
+        array, np_dtype = self._build_typed_array(item.get('data'), dtype, shape)
+        dst_file_name = self._build_dst_file_name(dump_file_path, parse_type, index, dtype, np_dtype)
+        dst_file_name = self._save_array(array, dst_file_name, parse_type, np_dtype)
+        result_info += f'{dst_file_name}\n'
+
+        if np_dtype is not None:
+            result_info += self._check_tensor_data(parse_type, index, array, dtype)
+            result_info += self._summary_tensor_array(array, dtype)
+        elif self._to_numpy_dtype(dtype) is not None:
+            # numpy knows the dtype but the byte count is not aligned to its itemsize,
+            # read the raw bin with that dtype as before
+            result_info += self._summary_tensor_without_dtype(dst_file_name, dtype)
+        else:
+            # keep the "Can not read with dtype x" hint carrying the real dtype, users
+            # rely on it to know which third party library to install
+            if dtype and dtype != 'undefined':
+                result_info += self._summary_tensor_without_dtype(dst_file_name, dtype)
+            # then guess the summary by the common dtypes
+            result_info += self._summary_tensor_without_dtype(dst_file_name, None)
+        return result_info
+
     def _save_data_to_bin_file(self, dump_json_data, parse_type, json_dtype, dump_file):
-        result_info = ''
         dump_file_path, dump_file_name = os.path.split(dump_file)
         dump_file_path = self.output_path or dump_file_path
-        if not dump_json_data.get(parse_type):
+        items = dump_json_data.get(parse_type)
+        if not items:
             utils.print_warn_log(f'There is no {parse_type} in {dump_file_name}.')
-            return result_info
+            return ''
 
         if not self.info.kernel_name:
             self.info.kernel_name = dump_file_name
+        # "space" is dumped as the workspace of the kernel
+        parse_type = "workspace" if parse_type == "space" else parse_type
 
-        for index, item in enumerate(dump_json_data.get(parse_type)):
+        result_info_list = []
+        for index, item in enumerate(items):
             try:
-                if parse_type == "space":
-                    dtype = "int8"
-                    parse_type = "workspace"
-                else:
-                    dtype = (ConstManager.DATA_TYPE_TO_DTYPE_MAP.get(str(item.get('data_type', '0'))) or	 
-                              json_dtype.get(parse_type, {}).get(index))
-
-                shape = [int(i) for i in item.get('shape', {}).get('dim', [])]
-                result_info += (f"shape: {tuple(shape)} size: {item.get('size', 0)} "
-                                f"dtype: {dtype if dtype else 'unknown'}\n")
-                array = np.frombuffer(item.get('data'), dtype=np.int8)
-                if dtype:
-                    file_name = ".".join([self.info.kernel_name, parse_type, str(index),
-                                          dtype, "bin" if parse_type != "workspace" else "npy"])
-                else:
-                    file_name = ".".join([self.info.kernel_name, parse_type, str(index), "bin"])
-                dst_file_name = os.path.join(dump_file_path, file_name)
-
-                if parse_type == "workspace":  # workspace save as npy
-                    np.save(dst_file_name, array)
-                    self.workspace_data_list.append(dst_file_name)
-                else:
-                    array.tofile(dst_file_name)
-                    self.bin_data_list.append(dst_file_name)
-
-                result_info += f'{dst_file_name}\n'
-                if dtype:
-                    result_info += self._check_tensor_data(parse_type, index, array, dtype)
-
-                result_info += self._summary_tensor_without_dtype(dst_file_name, dtype)
-            except (ValueError, IOError, OSError, MemoryError) as error:
+                result_info_list.append(
+                    self._parse_one_item(item, parse_type, json_dtype, index, dump_file_path))
+            except (TypeError, ValueError, IOError, OSError, MemoryError) as error:
                 utils.print_error_log(f'Failed to parse the data of {parse_type}:{index} of "{dump_file}". {error}')
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
-        return result_info
+        return "".join(result_info_list)
 
     def convert_bin_file_to_npy(self):
         result_info = ''
@@ -306,7 +442,7 @@ class DumpDataParser:
             for parse_type in self.parse_types:
                 result_info += self._save_data_to_bin_file(dump_json_data, parse_type, json_dtype, dump_file)
             self._save_dfx_message(dump_json_data)
-        except BaseException as e:
+        except Exception as e:
             utils.print_debug_log(traceback.format_exc())
             if str(e) == str(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR):
                 e = "invalid dump file"

@@ -18,6 +18,8 @@
 
 import json
 import struct
+import warnings
+import importlib.util
 
 from conftest import MSAICERR_PATH, RES_PATH, CommonAssert
 import os
@@ -159,6 +161,7 @@ class TestUtilsMethods(CommonAssert):
         info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
         dump_data_parser = DumpDataParser(dump_file, info)
         dump_data_parser.parse()
+        # the payload is 10 bytes, not a whole number of float32 elements, keep the raw bin
         self.assertIn(info.dump_info, "exception_info.2.1.20250609144925349.input.0.float32.bin")
         self.assertIn(info.dump_info, "shape: (10240, 2048) size: 10 dtype: float32")
 
@@ -167,7 +170,7 @@ class TestUtilsMethods(CommonAssert):
 
         self.assertEqual(dump_data_parser.get_input_data(), [])
         self.assertEqual(dump_data_parser.get_output_data(), [])
-        self.assertIn(dump_data_parser.get_bin_data(), "exception_info.2.1.20250609144925349.input.1.int64.bin")
+        self.assertIn(dump_data_parser.get_bin_data(), "exception_info.2.1.20250609144925349.input.1.int64.npy")
         self.assertIn(dump_data_parser.get_workspace_data(), 'exception_info.2.1.20250609144925349.workspace.0.int8.npy')
         self.assertIn(dump_data_parser.get_dfx_message(), "[AIC_INFO] args(20 to 39)")
 
@@ -248,7 +251,217 @@ class TestUtilsMethods(CommonAssert):
     def test_save_data_to_bin_file_parse_type_not_dtype(self):
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
         res = dump_data_parser._save_data_to_bin_file({'input': [{'shape': {'dim':['1', '2']}, 'size':'2', 'data': struct.pack('Q', 10)}]}, 'input', {'input': {}}, dump_file)
-        self.assertIn(res, 'shape: (1, 2) size: 2 dtype: unknown')
+        # data_type is absent, it defaults to enum 0 which maps to undefined
+        self.assertIn(res, 'shape: (1, 2) size: 2 dtype: undefined')
+
+    def test_save_data_to_bin_file_dtype_not_in_map(self):
+        """the dtype enum is not in the map, the raw enum value is recorded"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 99, 'shape': {'dim': ['8']}, 'size': '8', 'data': struct.pack('Q', 10)}]},
+            'input', {'input': {}}, dump_file)
+        self.assertIn(res, 'shape: (8,) size: 8 dtype: 99')
+        self.assertIn(res, 'input.0.99.bin')
+
+    def test_save_data_to_bin_file_numpy_dtype_saved_as_npy(self):
+        """numpy supported dtype is saved as npy with the right dtype and shape"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        raw = np.arange(6, dtype=np.float32).tobytes()
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 1, 'shape': {'dim': ['2', '3']}, 'size': '24', 'data': raw}]},
+            'input', {'input': {}}, dump_file)
+        self.assertIn(res, 'shape: (2, 3) size: 24 dtype: float32')
+        npy_file = dump_data_parser.get_bin_data()[0]
+        assert npy_file.endswith('input.0.float32.npy')
+        array = np.load(npy_file)
+        self.assertEqual(str(array.dtype), 'float32')
+        self.assertEqual(array.shape, (2, 3))
+
+    def test_save_data_to_bin_file_json_dtype_fallback(self):
+        """data_type为0(undefined)时回退到json中的dtype"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        raw = np.arange(4, dtype=np.int64).tobytes()
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 0, 'shape': {'dim': ['4']}, 'size': '32', 'data': raw}]},
+            'input', {'input': {0: 'int64'}}, dump_file)
+        self.assertIn(res, 'dtype: int64')
+        assert dump_data_parser.get_bin_data()[0].endswith('input.0.int64.npy')
+
+    def test_save_data_to_bin_file_size_not_aligned_keep_bin(self):
+        """字节数不是itemsize整数倍时无法按该dtype解析，保留原始bin"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 1, 'shape': {'dim': ['1']}, 'size': '3', 'data': b'\x01\x02\x03'}]},
+            'input', {'input': {}}, dump_file)
+        self.assertIn(res, 'dtype: float32')
+        assert dump_data_parser.get_bin_data()[0].endswith('input.0.float32.bin')
+
+    def test_save_data_to_bin_file_non_numpy_dtype_keep_bin(self):
+        """numpy不支持的dtype(int4)保存为bin，先给出真实dtype的提示再按常用dtype猜测"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 28, 'shape': {'dim': ['8']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
+            'input', {'input': {}}, dump_file)
+        self.assertIn(res, 'dtype: int4')
+        self.assertIn(res, 'If dtype is int4, summary is: ')
+        self.assertIn(res, 'If dtype is float32')
+        assert dump_data_parser.get_bin_data()[0].endswith('input.0.int4.bin')
+
+    def test_save_data_to_bin_file_non_numpy_dtype_hint_when_unreadable(self, mocker):
+        """numpy无法解析该dtype时，提示中必须带真实dtype名，用户据此安装第三方库"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        # 固定np.dtype对int4抛异常，不依赖环境是否装了注册int4的第三方库
+        real_dtype = np.dtype
+        mocker.patch('numpy.dtype',
+                     side_effect=lambda x: (_ for _ in ()).throw(TypeError()) if x == 'int4' else real_dtype(x))
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 28, 'shape': {'dim': ['8']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
+            'input', {'input': {}}, dump_file)
+        self.assertIn(res, 'If dtype is int4, summary is: Can not read with dtype int4!')
+
+    def test_save_data_to_bin_file_undefined_no_named_hint(self):
+        """undefined并非真实dtype，不输出带undefined的提示，只做常用dtype猜测"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 0, 'shape': {'dim': ['4']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
+            'input', {'input': {}}, dump_file)
+        self.assertNotIn(res, 'Can not read with dtype undefined')
+        self.assertIn(res, 'If dtype is float32')
+
+    def test_save_data_to_bin_file_not_aligned_no_duplicate_summary(self):
+        """字节未对齐但numpy认识该dtype时，只按该dtype给一行summary，不重复猜测"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        res = dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 1, 'shape': {'dim': ['1']}, 'size': '3', 'data': b'\x01\x02\x03'}]},
+            'input', {'input': {}}, dump_file)
+        self.assertEqual(res.count('If dtype is float32'), 1)
+        self.assertNotIn(res, 'If dtype is int64')
+
+    def test_save_data_to_bin_file_space_multi_items(self):
+        """space有多个item时全部按workspace的int8 npy落盘"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        item = {'size': '4', 'data': b'\x01\x02\x03\x04'}
+        res = dump_data_parser._save_data_to_bin_file(
+            {'space': [dict(item), dict(item)]}, 'space', {'input': {}}, dump_file)
+        self.assertIn(res, 'dtype: int8')
+        workspaces = dump_data_parser.get_workspace_data()
+        self.assertEqual(len(workspaces), 2)
+        assert workspaces[0].endswith('workspace.0.int8.npy')
+        assert workspaces[1].endswith('workspace.1.int8.npy')
+        self.assertEqual(dump_data_parser.get_bin_data(), [])
+
+    def test_save_data_to_bin_file_bool_and_complex(self):
+        """bool与complex同为numpy支持的dtype，落盘为npy且可正常load"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 11, 'shape': {'dim': ['2']}, 'size': '2',
+                        'data': np.array([True, False]).tobytes()},
+                       {'data_type': 16, 'shape': {'dim': ['1']}, 'size': '8',
+                        'data': np.array([1 + 2j], dtype=np.complex64).tobytes()}]},
+            'input', {'input': {}}, dump_file)
+        bool_file, complex_file = dump_data_parser.get_bin_data()
+        assert bool_file.endswith('input.0.bool.npy')
+        assert complex_file.endswith('input.1.complex64.npy')
+        self.assertEqual(np.load(bool_file).tolist(), [True, False])
+        self.assertEqual(np.load(complex_file).tolist(), [1 + 2j])
+
+    def test_save_data_to_bin_file_shape_mismatch_keeps_flat(self):
+        """元素个数与shape不一致时不做reshape，保持一维"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        raw = np.arange(4, dtype=np.float32).tobytes()
+        dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 1, 'shape': {'dim': ['100', '100']}, 'size': '16', 'data': raw}]},
+            'input', {'input': {}}, dump_file)
+        array = np.load(dump_data_parser.get_bin_data()[0])
+        self.assertEqual(array.shape, (4,))
+
+    def test_to_numpy_dtype(self):
+        """numpy原生dtype可解析，非numpy dtype与空值返回None"""
+        self.assertEqual(DumpDataParser._to_numpy_dtype('float32'), np.dtype('float32'))
+        self.assertEqual(DumpDataParser._to_numpy_dtype('int4'), None)
+        self.assertEqual(DumpDataParser._to_numpy_dtype('string'), None)
+        self.assertEqual(DumpDataParser._to_numpy_dtype('99'), None)
+        self.assertEqual(DumpDataParser._to_numpy_dtype(None), None)
+        self.assertEqual(DumpDataParser._to_numpy_dtype(''), None)
+
+    def test_to_numpy_dtype_bfloat16_without_ext(self):
+        """bfloat16ext缺失(或装了但numpy仍不认识)时，bfloat16按非numpy dtype处理，落盘为bin"""
+        if importlib.util.find_spec('bfloat16ext') is not None:
+            pytest.skip('bfloat16ext已安装，该分支不适用')
+        self.assertEqual(DumpDataParser._to_numpy_dtype('bfloat16'), None)
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        dump_data_parser._save_data_to_bin_file(
+            {'input': [{'data_type': 27, 'shape': {'dim': ['2']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
+            'input', {'input': {}}, dump_file)
+        assert dump_data_parser.get_bin_data()[0].endswith('input.0.bfloat16.bin')
+
+    def test_to_numpy_dtype_bfloat16_with_ext(self, mocker):
+        """bfloat16ext可用时bfloat16视为numpy支持的dtype"""
+        bf16_dtype = np.dtype('int16')
+        mocker.patch.dict(sys.modules, {'bfloat16ext': Mock()})
+        # 桩掉np.dtype模拟扩展注册后numpy可识别bfloat16
+        mocker.patch('numpy.dtype', return_value=bf16_dtype)
+        self.assertEqual(DumpDataParser._to_numpy_dtype('bfloat16'), bf16_dtype)
+
+    def test_to_numpy_dtype_ext_imported_but_dtype_unregistered(self, mocker):
+        """bfloat16ext导入成功但numpy仍未注册该dtype时安全返回None"""
+        mocker.patch.dict(sys.modules, {'bfloat16ext': Mock()})
+        mocker.patch('numpy.dtype', side_effect=TypeError('not understood'))
+        self.assertEqual(DumpDataParser._to_numpy_dtype('bfloat16'), None)
+
+    def test_get_item_dtype(self):
+        """dtype取值优先级: 枚举映射 > json > 原始枚举值"""
+        self.assertEqual(DumpDataParser._get_item_dtype({'data_type': 2}, 'input', {}, 0), 'float16')
+        # workspace固定int8
+        self.assertEqual(DumpDataParser._get_item_dtype({}, 'workspace', {}, 0), 'int8')
+        # 枚举不在映射表中，直接记录枚举值
+        self.assertEqual(DumpDataParser._get_item_dtype({'data_type': 77}, 'input', {'input': {}}, 0), '77')
+        # 枚举不在映射表但json有dtype，优先json
+        self.assertEqual(
+            DumpDataParser._get_item_dtype({'data_type': 77}, 'input', {'input': {0: 'float16'}}, 0), 'float16')
+        # undefined不作为有效dtype，回退json
+        self.assertEqual(
+            DumpDataParser._get_item_dtype({'data_type': 0}, 'input', {'input': {0: 'int32'}}, 0), 'int32')
+        self.assertEqual(DumpDataParser._get_item_dtype({'data_type': 0}, 'input', {'input': {}}, 0), 'undefined')
+
+    def test_build_typed_array(self):
+        """字节数据按dtype视图化并reshape，无法解析时退化为int8"""
+        raw = np.arange(6, dtype=np.float32).tobytes()
+        array, np_dtype = DumpDataParser._build_typed_array(raw, 'float32', [2, 3])
+        self.assertEqual(np_dtype, np.dtype('float32'))
+        self.assertEqual(array.shape, (2, 3))
+        # 非numpy dtype
+        array, np_dtype = DumpDataParser._build_typed_array(raw, 'int4', [6])
+        self.assertEqual(np_dtype, None)
+        self.assertEqual(str(array.dtype), 'int8')
+        # 字节数未对齐
+        array, np_dtype = DumpDataParser._build_typed_array(b'\x01\x02\x03', 'float32', [1])
+        self.assertEqual(np_dtype, None)
+        # data为None时按空数组处理
+        array, np_dtype = DumpDataParser._build_typed_array(None, 'float32', [1])
+        self.assertEqual(array.size, 0)
+
+    def test_summary_tensor_array(self):
+        """已知dtype的数组直接由内存计算summary"""
+        res = DumpDataParser._summary_tensor_array(np.array([1, 3], dtype=np.int32), 'int32')
+        self.assertIn(res, 'If dtype is int32, summary is: Max: 3, Min: 1, Mean: 2.0, Std: 1.0')
+
+    def test_summary_tensor_array_empty(self):
+        res = DumpDataParser._summary_tensor_array(np.array([], dtype=np.float32), 'float32')
+        self.assertIn(res, 'Max: N/A, Min: N/A, Mean: N/A, Std: N/A')
+
+    def test_summary_tensor_array_complex_no_warning(self):
+        """complex数组按complex128累加，不产生丢弃虚部的告警"""
+        with warnings.catch_warnings():
+            warnings.simplefilter('error')
+            res = DumpDataParser._summary_tensor_array(
+                np.array([1 + 2j, 3 + 4j], dtype=np.complex64), 'complex64')
+        self.assertIn(res, 'If dtype is complex64')
+
+    def test_summary_tensor_array_error(self, mocker):
+        mocker.patch('numpy.mean', side_effect=ValueError('test'))
+        res = DumpDataParser._summary_tensor_array(np.array([1, 2], dtype=np.int32), 'int32')
+        self.assertIn(res, 'Can not read with dtype int32!')
 
     def test_save_data_to_bin_file_parse_type_error(self, mocker):
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())

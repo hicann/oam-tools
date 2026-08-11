@@ -38,7 +38,18 @@ from ms_interface.single_op_test_frame.common import dtype_trans
 from ms_interface.single_op_test_frame.utils import shape_utils
 from ms_interface.single_op_test_frame.common import logger
 from ms_interface import utils
+from ms_interface.constant import Constant
 from ms_interface.dsmi_interface import DSMIInterface
+
+# parse_type words written into dump file names by DumpDataParser, used to locate the
+# tensor index in the name. "space" is normalized to "workspace" before the name is built.
+_DUMP_PARSE_TYPES = ('input', 'output', 'workspace')
+
+# npy file layout, used to read the data bytes without parsing the dtype
+_NPY_MAGIC_PREFIX = b'\x93NUMPY'
+_NPY_MAGIC_LEN = 8
+_NPY_HEADER_LEN_SIZE_V1 = 2
+_NPY_HEADER_LEN_SIZE_V2 = 4
 
 
 # 'pylint: disable=too-many-locals,too-many-arguments,too-few-public-methods
@@ -477,6 +488,66 @@ class AscendOpKernelRunner:
         tiling_hbm.append(hbm_pointer)
         kernel_args.append(hbm_pointer)
 
+    @staticmethod
+    def _read_tensor_bytes(tensor_file: str) -> bytes:
+        """
+        Read the raw device bytes of a dumped tensor file.
+        The dump parser saves numpy supported dtypes as .npy, the npy header must not
+        be copied to the device, so such files are loaded by numpy instead of read raw.
+        """
+        if not tensor_file.endswith(".npy"):
+            with open(tensor_file, 'rb') as bin_f:
+                return bin_f.read()
+        try:
+            import bfloat16ext  # noqa: F401  register bfloat16 in numpy if available
+        except ImportError:
+            pass
+        try:
+            return np.load(tensor_file, allow_pickle=False).tobytes()
+        except (ValueError, TypeError):
+            # the dtype in the npy header is not registered in this environment, e.g. the
+            # dump env has bfloat16ext but this one does not. The payload after the header
+            # is the device bytes as is, so skip the header instead of failing.
+            return AscendOpKernelRunner._read_npy_payload(tensor_file)
+
+    @staticmethod
+    def _read_npy_payload(tensor_file: str) -> bytes:
+        """
+        Read the data bytes of a npy file by skipping its header, without letting numpy
+        parse the dtype. The npy layout is:
+        6 bytes magic + 2 bytes version + header length (2 bytes for v1, 4 for v2+) + header.
+        The dump parser only writes C contiguous arrays, so the rest is the device bytes.
+        """
+        with open(tensor_file, 'rb') as npy_f:
+            magic = npy_f.read(_NPY_MAGIC_LEN)
+            if magic[:len(_NPY_MAGIC_PREFIX)] != _NPY_MAGIC_PREFIX:
+                utils.print_error_log(f'{tensor_file} is not a valid npy file.')
+                raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
+            major = magic[-2]
+            len_size = _NPY_HEADER_LEN_SIZE_V1 if major == 1 else _NPY_HEADER_LEN_SIZE_V2
+            header_len = int.from_bytes(npy_f.read(len_size), byteorder='little')
+            npy_f.seek(header_len, os.SEEK_CUR)
+            return npy_f.read()
+
+    @staticmethod
+    def _get_tensor_index(tensor_file: str) -> int:
+        """
+        Get the tensor index from a dumped tensor file name.
+        The name is {kernel_name}.{parse_type}.{index}[.{dtype}].{npy|bin}
+        The index is located by the parse_type token rather than by scanning for digits:
+        the dtype segment is the raw dtype enum value when the enum is unknown to the
+        dump parser (e.g. kernel.input.0.99.bin), and the kernel name itself may contain
+        numeric segments (e.g. exception_info.2.1.20250609144925349).
+        @return: the tensor index, or -1 when it can not be resolved
+        """
+        segments = os.path.basename(tensor_file).split(".")
+        # the kernel name may also contain a parse_type word, take the last one
+        for pos in range(len(segments) - 1, -1, -1):
+            if segments[pos] in _DUMP_PARSE_TYPES:
+                index = segments[pos + 1] if pos + 1 < len(segments) else ''
+                return int(index) if index.isdigit() else -1
+        return -1
+
     def _fill_binary(self, bin_files: List, hbm_list: List, kernel_args: List, sub_ptr_addrs: dict, mode):
         sub_ptr_idx = [int(idx) for idx in list(sub_ptr_addrs.keys())]
         if len(sub_ptr_idx) > 0:
@@ -493,14 +564,14 @@ class AscendOpKernelRunner:
                     utils.print_warn_log(f"The current dump tensor index is {idx} \
                                          and no pointer tensor is obtained, please check plogs.")
                 current_idx = idx + dynamic_tensor_count
-                endwith_files_list = [f'.{i}.bin' for i in range(idx, current_idx)]
-                bin_files_list = [file_name for file_name in bin_files if file_name.endswith(tuple(endwith_files_list))]
+                sub_ptr_indexes = set(range(idx, current_idx))
+                bin_files_list = [file_name for file_name in bin_files
+                                  if self._get_tensor_index(file_name) in sub_ptr_indexes]
                 self._fill_binary_subptr(bin_files_list, dynamic_tensor_count, kernel_args,
                                          sub_ptr_addrs.get(str(idx)), mode)
             else:
                 # idx is normal tensor
-                with open(bin_file, 'rb') as f:
-                    data = f.read()
+                data = self._read_tensor_bytes(bin_file)
                 soc_version = DSMIInterface().get_chip_info(0).get_complete_platform()
                 if soc_version.find("Ascend310") >= 0:
                     if len(data) % self._bit32_size != 0:
@@ -533,8 +604,7 @@ class AscendOpKernelRunner:
             self.ascend_device.memcpy(pointer_tmp, 8, np.array(int(shape_info, 16)).tobytes(), 8,
                                        "RT_MEMCPY_HOST_TO_DEVICE")
         for idx, bin_file in enumerate(bin_files):
-            with open(bin_file, 'rb') as f:
-                data = f.read()
+            data = self._read_tensor_bytes(bin_file)
             kernel_param = AscendOpKernelParam.build_op_param_by_np_data(np_data=data)
             kernel_param.sync_to_device(self.ascend_device, mode=mode)
             self._kernel_params.append(kernel_param)

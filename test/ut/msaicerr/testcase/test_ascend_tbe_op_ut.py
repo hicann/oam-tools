@@ -25,6 +25,7 @@ import numpy as np
 import pytest
 
 from conftest import MSAICERR_PATH
+from ms_interface import utils
 from ms_interface.single_op_test_frame.common import ascend_tbe_op
 from ms_interface.single_op_test_frame.common.ascend_tbe_op import (
     AscendOpKernel,
@@ -514,6 +515,133 @@ def test_fill_binary_subptr_empty_args(mocker):
     kernel_args = []
     getattr(runner, '_fill_binary_subptr')([], 1, kernel_args, {'args_list': []}, 'magic')
     assert kernel_args == []
+
+
+def test_read_tensor_bytes_bin(tmp_path):
+    """bin文件按原始字节读取"""
+    bin_file = tmp_path.joinpath('a.input.0.int4.bin')
+    bin_file.write_bytes(b'\x01\x02\x03\x04')
+    assert AscendOpKernelRunner._read_tensor_bytes(str(bin_file)) == b'\x01\x02\x03\x04'
+
+
+def test_read_tensor_bytes_npy_strips_header(tmp_path):
+    """npy文件需经numpy加载，不能把npy头当作tensor数据下发到device"""
+    array = np.arange(6, dtype=np.float32).reshape(2, 3)
+    npy_file = tmp_path.joinpath('a.input.0.float32.npy')
+    np.save(str(npy_file), array)
+    data = AscendOpKernelRunner._read_tensor_bytes(str(npy_file))
+    assert data == array.tobytes()
+    # 直接读原始字节会多出npy头
+    assert len(npy_file.read_bytes()) > len(data)
+
+
+def _forge_npy_with_unknown_dtype(path, array, fake_dtype=b'bfloat16'):
+    """生成header中dtype为本环境未注册类型、且header长度字段合法的npy"""
+    np.save(str(path), array)
+    raw = bytearray(open(str(path), 'rb').read())
+    header_len = int.from_bytes(raw[8:10], 'little')
+    header = bytes(raw[10:10 + header_len])
+    body = bytes(raw[10 + header_len:])
+    real_descr = header.split(b"'descr': ")[1].split(b',')[0]
+    new_header = header.replace(real_descr, b"'" + fake_dtype + b"'").rstrip(b' \n')
+    # header需以\n结尾且总长保持不变
+    new_header = new_header + b' ' * (header_len - len(new_header) - 1) + b'\n'
+    open(str(path), 'wb').write(bytes(raw[:10]) + new_header + body)
+
+
+@pytest.mark.parametrize('dtype', [np.int16, np.float32])
+def test_read_tensor_bytes_npy_unregistered_dtype(tmp_path, dtype):
+    """落盘环境有bfloat16ext而回放环境没有时，跳过npy头取原始数据而非直接失败"""
+    array = np.arange(4, dtype=dtype)
+    npy_file = tmp_path.joinpath('k.input.0.bfloat16.npy')
+    _forge_npy_with_unknown_dtype(npy_file, array)
+    assert AscendOpKernelRunner._read_tensor_bytes(str(npy_file)) == array.tobytes()
+
+
+def test_read_npy_payload_invalid_magic(tmp_path):
+    """magic不合法时报错，不把非npy内容当作tensor下发"""
+    bad = tmp_path.joinpath('bad.npy')
+    bad.write_bytes(b'NOTANPY!' + b'\x00' * 16)
+    with pytest.raises(utils.AicErrException):
+        AscendOpKernelRunner._read_npy_payload(str(bad))
+
+
+@pytest.mark.parametrize('name, expected', [
+    ('k.input.0.float32.npy', 0),
+    ('k.input.12.int64.npy', 12),
+    ('k.input.3.int4.bin', 3),
+    ('k.input.2.bin', 2),
+    ('k.workspace.1.int8.npy', 1),
+    ('k.output.3.float16.npy', 3),
+    # dtype段为原始枚举值(纯数字)，不能被当成下标
+    ('k.input.0.99.bin', 0),
+    ('k.input.1.77.bin', 1),
+    ('k.input.0.undefined.bin', 0),
+    # kernel名自身含数字段
+    ('exception_info.2.1.20250609144925349.input.0.99.bin', 0),
+    ('exception_info.2.1.20250609144925349.input.0.float32.bin', 0),
+    # kernel名自身含parse_type词，取最后一个
+    ('my.input.k.input.5.99.bin', 5),
+    ('no_index.npy', -1),
+    ('k.input.bin', -1),
+])
+def test_get_tensor_index(name, expected):
+    """从dump文件名解析tensor下标，兼容带dtype/不带dtype/dtype为纯数字枚举等命名"""
+    assert AscendOpKernelRunner._get_tensor_index(name) == expected
+
+
+def test_fill_binary_npy_input(mocker, tmp_path):
+    """bin_list中为npy时按numpy加载后下发，下发字节数与数组一致"""
+    runner, _ = make_runner(mocker)
+    array = np.arange(4, dtype=np.float32)
+    npy_file = tmp_path.joinpath('a.input.0.float32.npy')
+    np.save(str(npy_file), array)
+    chip = Mock()
+    chip.get_complete_platform.return_value = 'Ascend910B'
+    dsmi = Mock()
+    dsmi.get_chip_info.return_value = chip
+    mocker.patch.object(ascend_tbe_op, 'DSMIInterface', return_value=dsmi)
+    build = mocker.patch.object(
+        ascend_tbe_op.AscendOpKernelParam, 'build_op_param_by_np_data', return_value=Mock())
+    hbm_list, kernel_args = ([], [])
+    getattr(runner, '_fill_binary')([str(npy_file)], hbm_list, kernel_args, {}, 'magic')
+    assert len(kernel_args) == 1
+    assert build.call_args.kwargs['np_data'] == array.tobytes()
+
+
+def test_fill_binary_subptr_matches_npy_by_index(mocker, tmp_path):
+    """subptr场景下按文件名中的下标匹配，带dtype的npy也能被选中"""
+    runner, _ = make_runner(mocker)
+    files = []
+    for idx in range(2):
+        npy_file = tmp_path.joinpath(f'k.input.{idx}.float32.npy')
+        np.save(str(npy_file), np.zeros(2, dtype=np.float32))
+        files.append(str(npy_file))
+    mocker.patch.object(ascend_tbe_op.utils, 'get_hexstr_value', return_value=16)
+    mocker.patch.object(
+        ascend_tbe_op.AscendOpKernelParam, 'build_op_param_by_np_data', return_value=Mock())
+    subptr = mocker.patch.object(runner, '_fill_binary_subptr')
+    sub_ptr = {'0': {'dynamic_tensor_count': 2, 'args_list': ['0x10']}}
+    getattr(runner, '_fill_binary')(files, [], [], sub_ptr, 'magic')
+    # 两个npy均按下标0、1被匹配进subptr列表
+    assert subptr.call_args[0][0] == files
+
+
+def test_fill_binary_subptr_matches_numeric_dtype_name(mocker, tmp_path):
+    """dtype枚举未知时文件名形如 k.input.0.99.bin，dtype段不能被当成下标导致漏匹配"""
+    runner, _ = make_runner(mocker)
+    files = []
+    for idx in range(2):
+        bin_file = tmp_path.joinpath(f'k.input.{idx}.99.bin')
+        bin_file.write_bytes(b'\x01\x02\x03\x04')
+        files.append(str(bin_file))
+    mocker.patch.object(ascend_tbe_op.utils, 'get_hexstr_value', return_value=16)
+    mocker.patch.object(
+        ascend_tbe_op.AscendOpKernelParam, 'build_op_param_by_np_data', return_value=Mock())
+    subptr = mocker.patch.object(runner, '_fill_binary_subptr')
+    sub_ptr = {'0': {'dynamic_tensor_count': 2, 'args_list': ['0x10']}}
+    getattr(runner, '_fill_binary')(files, [], [], sub_ptr, 'magic')
+    assert subptr.call_args[0][0] == files
 
 
 def test_execute_kernel_register_kernel0(mocker):

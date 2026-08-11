@@ -19,6 +19,8 @@
 import json
 import struct
 
+import numpy as np
+
 from conftest import MSAICERR_PATH, RES_PATH, CommonAssert
 import os
 import sys
@@ -66,6 +68,24 @@ class TestUtilsMethods(CommonAssert):
         with open(f"{dump_file}.json", "w") as f:
             f.write(json.dumps(dump_json))
 
+    @staticmethod
+    def _make_dump_json(output_data_type=0, output_size='10', output_dim=None):
+        """构造仅output的dtype/size/shape可变的dump json，用于dtype落盘相关用例"""
+        return {
+            'version': '2.0',
+            'dump_time': '1749451765349986',
+            'output': [{'data_type': output_data_type, 'format': 0,
+                        'shape': {'dim': output_dim or ['2', '2048']}, 'data': '',
+                        'size': output_size, 'sub_format': 0, 'address': '0',
+                        'dim_range': [], 'offset': '3'}],
+            'input': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['10240', '2048']},
+                       'data': '', 'size': '10', 'sub_format': 0, 'address': '0',
+                       'offset': '0', 'arg_index': 0, 'input_type': 2}],
+            'buffer': [], 'op_name': '', 'attr': [],
+            'space': [{'type': 0, 'data': '', 'size': '10'}],
+            'dfx_message': '[AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, \n'
+        }
+
     def test_parser_dump_file(self, mocker):
         dump_json = {'version': '2.0', 'dump_time': '1749451765349986', 'output': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['2', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'dim_range': [], 'offset': '3'}], 'input': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['10240', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 0, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['2']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 1, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['1']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 2, 'input_type': 2}, {'data_type': 0, 'format': 0, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 5, 'input_type': 7}], 'buffer': [], 'op_name': '', 'attr': [], 'space': [{'type': 0, 'data': '', 'size': '10'}], 'dfx_message': '[AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, 0x12c1c0000518, 0x12d340000200, 0x12d340004400, 0x12c1c0000438, 0x12c100011000, 0x285a, 0x2, 0x1, 0, 0x2000, 0x8, 0x1, 0x1, 0x2800, 0x2, 0x800, 0x1, 0x1, \n[AIC_INFO] args(20 to 39) after execute:0x2, 0x1, 0x1, 0x1, 0x1, 0x800, 0x1, 0x1, 0x2, 0x1, 0x2, 0xa5a5a5a500000000, 0, 0, 0, 0, 0, 0, 0, \n[Dump][Exception] begin to load normal tensor, index:0\n[Dump][Exception] exception info dump args data, addr:0x12c200000000; size:83886080 bytes\n[Dump][Exception] end to load normal tensor, index:0\n[Dump][Exception] begin to load normal tensor, index:1\n[Dump][Exception] exception info dump args data, addr:0x12d340000000; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:1\n[Dump][Exception] begin to load normal tensor, index:2\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000518; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:2\n[Dump][Exception] begin to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340000200; size:16384 bytes\n[Dump][Exception] end to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340004400; size:76832 bytes\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000438; size:200 bytes\n'}
         self.common_mock(mocker, dump_json)
@@ -75,6 +95,7 @@ class TestUtilsMethods(CommonAssert):
         dump_data_parser = DumpDataParser(dump_file, info)
         dump_data_parser.parse()
         # info.result_info
+        # 该tensor实际数据为10字节，不是float32 itemsize的整数倍，保持原始bin
         self.assertIn(info.dump_info, "exception_info.2.1.20250609144925349.input.0.float32.bin")
         self.assertIn(info.dump_info, "shape: (10240, 2048) size: 10 dtype: float32")
 
@@ -83,7 +104,8 @@ class TestUtilsMethods(CommonAssert):
 
         self.assertEqual(dump_data_parser.get_input_data(), [])
         self.assertEqual(dump_data_parser.get_output_data(), [])
-        self.assertIn(dump_data_parser.get_bin_data(), "exception_info.2.1.20250609144925349.input.1.int64.bin")
+        # int64的32字节数据可被itemsize整除，保存为npy
+        self.assertIn(dump_data_parser.get_bin_data(), "exception_info.2.1.20250609144925349.input.1.int64.npy")
         self.assertIn(dump_data_parser.get_workspace_data(), 'exception_info.2.1.20250609144925349.workspace.0.int8.npy')
         self.assertIn(dump_data_parser.get_dfx_message(), "[AIC_INFO] args(20 to 39)")
 
@@ -155,7 +177,8 @@ class TestUtilsMethods(CommonAssert):
         create_dump_file(dump_file, 10, 200)
         info = AicErrorInfo()
         DumpDataParser(dump_file, info).parse()
-        self.assertIn(info.dump_info, "shape: () size: 10 dtype: unknown")
+        # 未指定json文件时无dtype回退来源，data_type=0映射为undefined
+        self.assertIn(info.dump_info, "shape: () size: 10 dtype: undefined")
         self.assertIn(info.dump_info, "If dtype is float32")
         self.assertIn(info.dump_info, "If dtype is float16")
         self.assertIn(info.dump_info, "If dtype is bfloat16")
@@ -169,6 +192,55 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         DumpDataParser(dump_file, info).parse()
         self.assertNotIn(info.dump_info, "exception_info.2.1.20250609144925349.output")
+
+    def test_parser_dump_file_dtype_not_in_map(self, mocker):
+        """需求1: dtype枚举值不在映射表中且json无该dtype时，直接记录枚举值"""
+        dump_json = self._make_dump_json(output_data_type=88, output_size='8')
+        self.common_mock(mocker, dump_json)
+        create_dump_file(dump_file, 10, 200)
+        info = AicErrorInfo()
+        # 不指定json文件，无dtype回退来源
+        DumpDataParser(dump_file, info).parse()
+        self.assertIn(info.dump_info, "dtype: 88")
+        self.assertIn(info.dump_info, "exception_info.2.1.20250609144925349.output.0.88.bin")
+        self.assertNotIn(info.dump_info, "dtype: unknown")
+
+    def test_parser_dump_file_dtype_not_in_map_json_first(self, mocker):
+        """需求1: 枚举值不在映射表但json中有dtype时，以json的dtype为准"""
+        dump_json = self._make_dump_json(output_data_type=88, output_size='8', output_dim=['2'])
+        self.common_mock(mocker, dump_json)
+        create_dump_file(dump_file, 10, 200)
+        info = AicErrorInfo()
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))
+        DumpDataParser(dump_file, info).parse()
+        self.assertIn(info.dump_info, "exception_info.2.1.20250609144925349.output.0.float32.npy")
+        self.assertNotIn(info.dump_info, "dtype: 88")
+
+    def test_parser_dump_file_numpy_dtype_saved_as_npy(self, mocker):
+        """需求2: numpy支持的dtype直接保存为npy，可按dtype和shape回读"""
+        dump_json = self._make_dump_json(output_data_type=1, output_size='8', output_dim=['2'])
+        self.common_mock(mocker, dump_json)
+        create_dump_file(dump_file, 10, 200)
+        info = AicErrorInfo()
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))
+        parser = DumpDataParser(dump_file, info)
+        parser.parse()
+        self.assertIn(info.dump_info, "exception_info.2.1.20250609144925349.output.0.float32.npy")
+        npy_files = [f for f in parser.get_bin_data() if f.endswith("output.0.float32.npy")]
+        self.assertEqual(len(npy_files), 1)
+        array = np.load(npy_files[0])
+        self.assertEqual(str(array.dtype), "float32")
+        self.assertEqual(array.shape, (2,))
+
+    def test_parser_dump_file_non_numpy_dtype_keep_bin(self):
+        """需求2: numpy不支持的dtype仍保存为bin，且保留带真实dtype名的提示"""
+        info = AicErrorInfo()
+        parser = DumpDataParser(dump_file, info)
+        res = parser._save_data_to_bin_file(
+            {'input': [{'data_type': 33, 'shape': {'dim': ['4']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
+            'input', {'input': {}}, dump_file)
+        assert parser.get_bin_data()[0].endswith("input.0.hifloat8.bin")
+        self.assertIn(res, "If dtype is hifloat8, summary is: ")
 
     def test_parser_dump_file_bfloat16_dtype_success(self, mocker):
         dump_json = {'version': '2.0', 'dump_time': '1749451765349986', 'output': [{'data_type': 27, 'format': 0, 'shape': {'dim': ['2', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'dim_range': [], 'offset': '3'}], 'input': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['10240', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 0, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['2']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 1, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['1']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 2, 'input_type': 2}, {'data_type': 0, 'format': 0, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 5, 'input_type': 7}], 'buffer': [], 'op_name': '', 'attr': [], 'space': [{'type': 0, 'data': '', 'size': '10'}], 'dfx_message': '[AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, 0x12c1c0000518, 0x12d340000200, 0x12d340004400, 0x12c1c0000438, 0x12c100011000, 0x285a, 0x2, 0x1, 0, 0x2000, 0x8, 0x1, 0x1, 0x2800, 0x2, 0x800, 0x1, 0x1, \n[AIC_INFO] args(20 to 39) after execute:0x2, 0x1, 0x1, 0x1, 0x1, 0x800, 0x1, 0x1, 0x2, 0x1, 0x2, 0xa5a5a5a500000000, 0, 0, 0, 0, 0, 0, 0, \n[Dump][Exception] begin to load normal tensor, index:0\n[Dump][Exception] exception info dump args data, addr:0x12c200000000; size:83886080 bytes\n[Dump][Exception] end to load normal tensor, index:0\n[Dump][Exception] begin to load normal tensor, index:1\n[Dump][Exception] exception info dump args data, addr:0x12d340000000; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:1\n[Dump][Exception] begin to load normal tensor, index:2\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000518; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:2\n[Dump][Exception] begin to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340000200; size:16384 bytes\n[Dump][Exception] end to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340004400; size:76832 bytes\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000438; size:200 bytes\n'}

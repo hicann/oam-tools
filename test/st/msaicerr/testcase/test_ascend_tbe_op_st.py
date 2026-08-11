@@ -376,3 +376,45 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         mocker.patch.object(runner1, 'sync_to_device', return_value=None)
         res1 = runner._fill_binary("./", [], [], {}, "")
         self.assertEqual(res1, None)
+
+    def test_read_tensor_bytes(self, tmp_path):
+        """dump解析出的npy需经numpy加载，bin按原始字节读取"""
+        bin_file = tmp_path.joinpath("k.input.0.int4.bin")
+        bin_file.write_bytes(b'\x01\x02\x03\x04')
+        self.assertEqual(AscendOpKernelRunner._read_tensor_bytes(str(bin_file)), b'\x01\x02\x03\x04')
+
+        array = np.arange(4, dtype=np.float32)
+        npy_file = tmp_path.joinpath("k.input.1.float32.npy")
+        np.save(str(npy_file), array)
+        data = AscendOpKernelRunner._read_tensor_bytes(str(npy_file))
+        self.assertEqual(data, array.tobytes())
+        # npy头不能被当作tensor数据
+        assert len(npy_file.read_bytes()) > len(data)
+
+    def test_read_tensor_bytes_npy_unregistered_dtype(self, tmp_path):
+        """回放环境缺失dtype扩展时跳过npy头取原始数据，不直接失败"""
+        array = np.arange(4, dtype=np.int16)
+        npy_file = tmp_path.joinpath("k.input.0.bfloat16.npy")
+        np.save(str(npy_file), array)
+        raw = bytearray(npy_file.read_bytes())
+        header_len = int.from_bytes(raw[8:10], 'little')
+        header = bytes(raw[10:10 + header_len])
+        body = bytes(raw[10 + header_len:])
+        real_descr = header.split(b"'descr': ")[1].split(b',')[0]
+        new_header = header.replace(real_descr, b"'bfloat16'").rstrip(b' \n')
+        new_header = new_header + b' ' * (header_len - len(new_header) - 1) + b'\n'
+        npy_file.write_bytes(bytes(raw[:10]) + new_header + body)
+        self.assertEqual(AscendOpKernelRunner._read_tensor_bytes(str(npy_file)), array.tobytes())
+
+    def test_get_tensor_index(self):
+        """从dump文件名解析tensor下标"""
+        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.0.float32.npy"), 0)
+        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.11.int4.bin"), 11)
+        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.2.bin"), 2)
+        self.assertEqual(AscendOpKernelRunner._get_tensor_index("no_index.npy"), -1)
+        # dtype枚举未知时dtype段为纯数字，不能被当成下标
+        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.0.99.bin"), 0)
+        # kernel名自身含数字段
+        self.assertEqual(
+            AscendOpKernelRunner._get_tensor_index(
+                "exception_info.2.1.20250609144925349.input.0.99.bin"), 0)
