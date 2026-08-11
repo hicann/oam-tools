@@ -1,4 +1,4 @@
-  --check-path=<path>               Specific the path of fwkacllib or atc to verify the relationships.
+  --check-path=<path>               Specify the path of fwkacllib or atc to verify the relationships.
   --version                         Query the package version
   --pre-check                       Package installation/running pre-dependency check
   --run | --full | --devel          Install run | full | devel mode
