@@ -470,3 +470,107 @@ class TestUtilsMethods(CommonAssert):
             dump_data_parser._save_data_to_bin_file({'input': [{'shape': {'dim':['1', '2']}, 'size':'2', 'data': struct.pack('Q', 10)}]}, 'input', {'input': {}}, dump_file)
         except Exception as e:
             self.assertEqual(str(e), '4')
+
+    def test_build_dst_file_name_normal_len(self):
+        """不超长的解析结果文件名原样返回，不生成mapping.csv"""
+        info = AicErrorInfo()
+        info.kernel_name = 'GatherV2'
+        dump_data_parser = DumpDataParser(str(self.temp), info)
+        res = dump_data_parser._build_dst_file_name(str(self.temp), 'input', 0, 'float32', np.dtype('float32'))
+        self.assertEqual(res, os.path.join(str(self.temp), 'GatherV2.input.0.float32.npy'))
+        self.assertEqual(self.temp.joinpath(Constant.MAPPING_CSV_FILE).exists(), False)
+
+    def test_build_dst_file_name_oversize_renamed(self):
+        """超长的解析结果文件名被重命名为随机数字串，并记录到同级mapping.csv"""
+        info = AicErrorInfo()
+        info.kernel_name = 'a' * 260
+        dump_data_parser = DumpDataParser(str(self.temp), info)
+        res = dump_data_parser._build_dst_file_name(str(self.temp), 'input', 0, 'float32', np.dtype('float32'))
+        file_name = os.path.basename(res)
+        # 重命名后为随机数字串 + 原后缀，落盘不会超过NAME_MAX
+        assert len(file_name) <= Constant.MAX_FILE_NAME_LEN
+        assert file_name.endswith('.npy')
+        assert file_name[:-len('.npy')].isdigit()
+        # 回读mapping.csv，确认记录了 {映射后},{映射前}
+        mapping_text = self.temp.joinpath(Constant.MAPPING_CSV_FILE).read_text()
+        self.assertIn(mapping_text, f'{file_name},{info.kernel_name}.input.0.float32.npy')
+        # 重命名后的文件名可以正常落盘
+        np.save(res, np.zeros(2, dtype=np.float32))
+        self.assertEqual(os.path.isfile(res), True)
+
+    def test_build_dst_file_name_oversize_multi_byte(self):
+        """多字节kernel_name按字节数判超长，字符数未超但字节数已超时同样重命名"""
+        info = AicErrorInfo()
+        info.kernel_name = '算' * 100    # 100个字符，UTF-8编码为300字节
+        dump_data_parser = DumpDataParser(str(self.temp), info)
+        res = dump_data_parser._build_dst_file_name(str(self.temp), 'input', 0, 'float32', np.dtype('float32'))
+        file_name = os.path.basename(res)
+        assert len(os.fsencode(file_name)) <= Constant.MAX_FILE_NAME_LEN
+        assert file_name[:-len('.npy')].isdigit()
+        np.save(res, np.zeros(2, dtype=np.float32))
+        self.assertEqual(os.path.isfile(res), True)
+
+    def test_build_dst_file_name_oversize_bin_keeps_suffix(self):
+        """超长的bin结果同样保留.bin后缀，保证下游按裸字节读取"""
+        info = AicErrorInfo()
+        info.kernel_name = 'a' * 260
+        dump_data_parser = DumpDataParser(str(self.temp), info)
+        res = dump_data_parser._build_dst_file_name(str(self.temp), 'input', 0, 'hifloat8', None)
+        assert os.path.basename(res).endswith('.bin')
+
+    def test_gen_random_numeric_name(self, mocker):
+        """随机数字串与已有文件冲突时重新生成"""
+        dump_data_parser = DumpDataParser(str(self.temp), AicErrorInfo())
+        self.temp.joinpath('1111111111111111.npy').touch()
+        mocker.patch('random.randint', side_effect=[1111111111111111, 2222222222222222])
+        res = dump_data_parser._gen_random_numeric_name(str(self.temp), '.npy')
+        self.assertEqual(res, '2222222222222222.npy')
+
+    def test_record_mapping_append(self):
+        """多条映射追加写入同一份mapping.csv"""
+        dump_data_parser = DumpDataParser(str(self.temp), AicErrorInfo())
+        dump_data_parser._record_mapping(str(self.temp), '1111111111111111.npy', 'long_name_a.npy')
+        dump_data_parser._record_mapping(str(self.temp), '2222222222222222.bin', 'long_name_b.bin')
+        mapping_text = self.temp.joinpath(Constant.MAPPING_CSV_FILE).read_text()
+        self.assertIn(mapping_text, '1111111111111111.npy,long_name_a.npy')
+        self.assertIn(mapping_text, '2222222222222222.bin,long_name_b.bin')
+
+    def test_load_name_mapping(self):
+        """读取dump目录下的mapping.csv，构造 原名 -> 映射名 的查找字典"""
+        dump_data_parser = DumpDataParser(str(self.temp), AicErrorInfo())
+        self.temp.joinpath(Constant.MAPPING_CSV_FILE).write_text(
+            '1234567890123456,long_name_a\nbad_line\n')
+        self.assertEqual(dump_data_parser._load_name_mapping(), {'long_name_a': '1234567890123456'})
+
+    def test_load_name_mapping_not_exist(self):
+        dump_data_parser = DumpDataParser(str(self.temp), AicErrorInfo())
+        self.assertEqual(dump_data_parser._load_name_mapping(), {})
+
+    def test_parse_matches_by_mapped_name(self, mocker):
+        """dump目录下只有随机名文件 + mapping.csv时，按data_name反查映射名命中"""
+        data_name = 'a' * 250 + '.42.1.1726159207469285'
+        rename = '1234567890123456'
+        dump_dir = self.temp.joinpath('dump')
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath(rename).touch()
+        dump_dir.joinpath(Constant.MAPPING_CSV_FILE).write_text(f'{rename},{data_name}\n')
+        info = AicErrorInfo()
+        info.node_name = 'GatherV2'
+        info.data_name = data_name
+        dump_data_parser = DumpDataParser(str(dump_dir), info)
+        mocker.patch.object(dump_data_parser, 'parse_dump_data', return_value='')
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [str(dump_dir.joinpath(rename))])
+
+    def test_parse_skips_mapping_csv(self, mocker):
+        """mapping.csv不会被当成dump文件解析"""
+        dump_dir = self.temp.joinpath('dump')
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath('GatherV2.1.1.123').touch()
+        dump_dir.joinpath(Constant.MAPPING_CSV_FILE).write_text('1234,GatherV2.mapping\n')
+        info = AicErrorInfo()
+        info.node_name = 'GatherV2'
+        dump_data_parser = DumpDataParser(str(dump_dir), info)
+        mocker.patch.object(dump_data_parser, 'parse_dump_data', return_value='')
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [str(dump_dir.joinpath('GatherV2.1.1.123'))])

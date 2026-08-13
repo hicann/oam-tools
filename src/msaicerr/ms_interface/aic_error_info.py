@@ -33,6 +33,7 @@ class AicErrorInfo:
         self.task_id = ""
         self.stream_id = ""
         self.node_name = ""
+        self.data_name = ""  # plog解析出的原始data_name，可能超过NAME_MAX
         self.kernel_name = ""
         self.flip_num = ""
         self.instr = ""

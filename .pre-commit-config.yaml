@@ -155,4 +155,4 @@ repos:
         # 后续遇新误判词追加即可（codespell 按小写匹配）。
         args:
           - --skip=*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules
-          - --ignore-words-list=cann,oam,msprof,aicerr,hccl,tbe,te,nin,fo,optin,alog,abl,OpEnd,mata
+          - --ignore-words-list=cann,oam,msprof,aicerr,hccl,tbe,te,nin,fo,optin,alog,abl,OpEnd,mata,VALU

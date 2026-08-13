@@ -67,6 +67,9 @@ class Constant:
     MAX_READ_FILE_BYTES = 1024 * 1024  # 1M
     MAX_TAR_SIZE = 1 * 1024 * 1024 * 1024  # 1G
 
+    MAX_FILE_NAME_LEN = 255  # Linux NAME_MAX，单文件名上限
+    MAPPING_CSV_FILE = "mapping.csv"  # 超长文件名映射表，每行 {映射后},{映射前}
+
     DIR_PLOG = 'plog'
 
     AIC_ERROR_TUPLE_LEN = 9

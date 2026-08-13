@@ -388,6 +388,8 @@ class AicoreErrorParser:
         info.extra_info = self._get_extra_info(aic_err_ret.pop('extra_info'))
         info.aic_error_info = aic_err_ret
 
+        info.data_name = data_name
+
         # 此处附加判断是L0还是L1
         error_info = self._get_node_and_kernel_name(data_name)
         # 访问具名元组的属性

@@ -21,8 +21,10 @@ DumpDataParser class. This class mainly involves the parser_dump_data function.
 Copyright Information:
 Huawei Technologies Co., Ltd. All Rights Reserved © 2020
 """
+import csv
 import json
 import os
+import random
 import struct
 import ctypes
 import traceback
@@ -297,13 +299,46 @@ class DumpDataParser:
             array = array.reshape(shape)
         return array, np_dtype
 
+    def _load_name_mapping(self):
+        """
+        Load the {original name: renamed name} mapping written by the dump framework.
+        @return: the mapping, empty when there is no mapping.csv beside the dump files
+        """
+        return utils.parse_name_mapping_csv(os.path.join(self.dump_path, Constant.MAPPING_CSV_FILE))
+
+    @staticmethod
+    def _gen_random_numeric_name(file_dir, suffix):
+        # 与异常dump框架一致，用随机数字串命名，保留后缀以便下游按扩展名读取
+        while True:
+            name = str(random.randint(10 ** 15, 10 ** 16 - 1)) + suffix
+            if not os.path.exists(os.path.join(file_dir, name)):
+                return name
+
+    @staticmethod
+    def _record_mapping(file_dir, renamed, original_name):
+        # 追加一行 {映射后随机数字串},{映射前文件名} 到同级mapping.csv
+        mapping_csv = os.path.join(file_dir, Constant.MAPPING_CSV_FILE)
+        with open(mapping_csv, 'a', newline='') as csv_file:
+            csv.writer(csv_file).writerow([renamed, original_name])
+
+    def _check_file_name_len(self, dst_file_name):
+        # NAME_MAX是字节上限，多字节文件名下需按编码后的字节数判断
+        if len(os.fsencode(os.path.basename(dst_file_name))) <= Constant.MAX_FILE_NAME_LEN:
+            return dst_file_name
+        file_dir, file_name = os.path.split(dst_file_name)
+        _, suffix = os.path.splitext(file_name)
+        renamed = self._gen_random_numeric_name(file_dir, suffix)
+        self._record_mapping(file_dir, renamed, file_name)
+        utils.print_warn_log(f"The output file name is too long, rename {file_name} to {renamed}.")
+        return os.path.join(file_dir, renamed)
+
     def _build_dst_file_name(self, dump_file_path, parse_type, index, dtype, np_dtype):
         name_parts = [self.info.kernel_name, parse_type, str(index)]
         if dtype:
             name_parts.append(dtype)
         # numpy supported dtype is saved as npy, others keep the raw bin format
         name_parts.append("npy" if np_dtype is not None else "bin")
-        return os.path.join(dump_file_path, ".".join(name_parts))
+        return self._check_file_name_len(os.path.join(dump_file_path, ".".join(name_parts)))
 
     def _save_array(self, array, dst_file_name, parse_type, np_dtype):
         if np_dtype is not None:
@@ -469,8 +504,14 @@ class DumpDataParser:
         else:
             match_dump_list = []
             match_name = self.info.node_name
+            name_mapping = self._load_name_mapping()
+            if name_mapping:
+                # 超长场景下落盘文件已被重命名，按原始data_name反查随机数字串
+                match_name = name_mapping.get(self.info.data_name or self.info.node_name, match_name)
             for top, _, files in os.walk(self.dump_path):
                 for name in files:
+                    if name == Constant.MAPPING_CSV_FILE:
+                        continue
                     if match_name in name:
                         match_dump_list.append(os.path.join(top, name))
 

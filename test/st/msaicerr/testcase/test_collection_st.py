@@ -18,6 +18,7 @@
 
 from ms_interface import utils
 from ms_interface.collection import Collection
+from ms_interface.constant import Constant
 import os
 import sys
 import pytest
@@ -330,6 +331,57 @@ class TestUtilsMethods(CommonAssert):
         collection.collect()
         self.assertIn(utils.ExceptionRootCause().format_causes(),
                       """Failed to get node name in plog. Cannot run L1 test""")
+
+    def test_run_collect_oversize_data_name(self):
+        """
+        测试超长算子名场景：dump文件被框架重命名为随机数字串，
+        collect通过mapping.csv找到实际落盘文件，并把mapping.csv一并收集
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        input_path.mkdir(parents=True, exist_ok=True)
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath("te_gatherv2.o").touch()
+        dump_path.joinpath("te_gatherv2_host.o").touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        write_log_keyword_to_file(input_path, [
+            DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA, AICORE_KERNEL_EXECUTE_FAILED,
+            '[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]'
+            '[tid:1592077] [1] dump exception to file, file: '
+            f'./new/extra-info/data-dump/0/{data_name}'])
+        collection = Collection(input_path, output_path)
+        res = collection.collect()
+        self.assertEqual(res, True)
+        self.assertEqual(collection.dump_file_rename, rename)
+        self.assertEqual(bool(list(output_path.rglob(f"collection/dump/{rename}"))), True)
+        self.assertEqual(
+            bool(list(output_path.rglob(f"collection/dump/{Constant.MAPPING_CSV_FILE}"))), True)
+        self.assertIn(self.debug_info.read_text(encoding="utf-8"),
+                      f"use mapped name {rename} instead of")
+
+    def test_run_collect_oversize_data_name_no_mapping(self):
+        """
+        测试超长算子名但缺失mapping.csv：退化为按原始名查找，报dump文件找不到
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        input_path.mkdir(parents=True, exist_ok=True)
+        write_log_keyword_to_file(input_path, [
+            DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA,
+            '[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]'
+            '[tid:1592077] [1] dump exception to file, file: '
+            f'./new/extra-info/data-dump/0/{data_name}'])
+        collection = Collection(input_path, output_path)
+        res = collection.collect()
+        self.assertEqual(res, False)
+        self.assertEqual(collection.dump_file_rename, "")
+        self.assertIn(self.debug_info.read_text(encoding="utf-8"),
+                      f"Cannot find dump file {data_name}")
 
     def test_get_node_and_kernel_name_l1_get_node_name_have_multiple_dump(self):
         """

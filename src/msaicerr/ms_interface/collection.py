@@ -37,6 +37,9 @@ class Collection:
         self.collect_level = 0
         self.ffts_flag = False
         self.is_sk = False
+        # 超长文件名场景：dump文件被框架重命名为随机数字串
+        self.dump_file_rename = ""    # 映射后的实际文件名
+        self._mapping_csv_path = ""   # mapping.csv路径，首次解析后缓存，避免重复find
 
     @staticmethod
     def get_sk_kernel_name(plog_dir) -> str:
@@ -156,6 +159,50 @@ class Collection:
             err_time, device_id, data_name = dump_data_ret[0]
             return err_time, device_id, data_name
 
+    @staticmethod
+    def _is_oversize_name(data_name: str) -> bool:
+        # 超过NAME_MAX的算子名，异常dump框架会将落盘文件重命名为随机数字串
+        # NAME_MAX是字节上限，多字节文件名下需按编码后的字节数判断
+        return len(os.fsencode(data_name)) > Constant.MAX_FILE_NAME_LEN
+
+    def _get_dump_mapping_csv_path(self, device_id) -> str:
+        find_mapping_cmd = ['find', self.report_path, '-name', Constant.MAPPING_CSV_FILE]
+        regexp = r"[_\.\-/0-9a-zA-Z.]{1,}"
+        mapping_csv_list = utils.get_inquire_result(find_mapping_cmd, regexp)
+        if not mapping_csv_list:
+            return ""
+        # mapping.csv与dump文件同级，只取报错device对应的那一份。
+        # 此处匹配到目录分隔符与文件名，避免device_id为0时误命中data-dump/01/
+        device_dump_suffix = os.path.join("data-dump", str(device_id), Constant.MAPPING_CSV_FILE)
+        for mapping_csv in mapping_csv_list:
+            if mapping_csv.endswith(device_dump_suffix):
+                return mapping_csv
+        # 不回退到其它device的映射表：各device的随机名互不相通，用错会静默收集到别的卡的dump
+        utils.print_warn_log(
+            f"{Constant.MAPPING_CSV_FILE} of device {device_id} cannot be found in {self.report_path}, "
+            f"{len(mapping_csv_list)} {Constant.MAPPING_CSV_FILE} of other devices are ignored.")
+        return ""
+
+    def _resolve_dump_file_rename(self, device_id, data_name) -> str:
+        # 长度未超限时不查mapping.csv，避免大目录下不必要的全盘扫描
+        if not self._is_oversize_name(data_name):
+            return ""
+        mapping_csv_path = self._get_dump_mapping_csv_path(device_id)
+        self._mapping_csv_path = mapping_csv_path
+        dump_name_mapping = utils.parse_name_mapping_csv(mapping_csv_path)
+        rename = dump_name_mapping.get(data_name, "")
+        if rename:
+            utils.print_info_log(f"The dump file name exceeds {Constant.MAX_FILE_NAME_LEN}, "
+                                 f"use mapped name {rename} instead of {data_name}.")
+        elif not mapping_csv_path:
+            utils.print_warn_log(f"The dump file name {data_name} exceeds {Constant.MAX_FILE_NAME_LEN}, "
+                                 f"but {Constant.MAPPING_CSV_FILE} cannot be found in {self.report_path}.")
+        else:
+            utils.print_warn_log(f"The dump file name {data_name} exceeds {Constant.MAX_FILE_NAME_LEN}, "
+                                 f"but it is not recorded in {mapping_csv_path}.")
+        self.dump_file_rename = rename
+        return rename
+
     def collect_plog_file(self):
         find_path_cmd = ['grep', r'\[Dump\]\[Exception\]', '-inrE', self.report_path]
         find_path_regexp = r"(/[_\-/0-9a-zA-Z.]{1,}.[log|txt]):"
@@ -257,10 +304,11 @@ class Collection:
         utils.copy_src_to_dest(original_files, dest_path)
         return dest_path
 
-    def collect_data_dump(self, device_id, data_name):
+    def collect_data_dump(self, device_id, data_name, rename=""):
         dest_path = os.path.join(self.output_path, "collection", "dump")
+        find_name = rename or data_name
         find_path_cmd = ['find', self.report_path, '-name',
-                         f"{data_name}"]
+                         f"{find_name}"]
         regexp = r"[_\.\-/0-9a-zA-Z.]{1,}"
         original_files = utils.get_inquire_result(find_path_cmd, regexp)
         if not original_files:
@@ -269,24 +317,28 @@ class Collection:
             )
             return ''
 
-        # 如果找到大于1个data, 则匹配日志中的data_dump和device_id
+        # 如果找到大于1个data, 则按文件自身所在的data-dump/<device_id>/目录取报错device的那一份。
+        # 此处匹配完整目录段，避免device_id为0时误命中data-dump/01/
         if len(original_files) > 1:
-            plog_dir = os.path.join(self.output_path, 'collection', 'plog')
-            for file in original_files:
-                data_dump_cmd = ['grep', os.path.basename(file), '-nr', plog_dir]
-                dump_data_regexp = r".*?extra-info\/data-dump\/(\d+)\/[\w.]+"
-                data_dump_ret = utils.get_inquire_result(data_dump_cmd, dump_data_regexp)
-                if (device_id != data_dump_ret[0]):
-                    continue
-                utils.print_info_log(f"Find dump file {os.path.basename(file)}.")
-                original_files = [file]
+            device_dump_dir = os.path.join("data-dump", str(device_id))
+            matched_files = [file for file in original_files
+                             if os.path.dirname(file).endswith(device_dump_dir)]
+            if matched_files:
+                utils.print_info_log(f"Find dump file {os.path.basename(matched_files[0])}.")
+                original_files = matched_files[:1]
 
         utils.check_path_valid(dest_path, isdir=True, output=True)
         utils.copy_src_to_dest(original_files, dest_path)
+        if rename:
+            # 超长场景下dump文件保持随机名，需一并收集mapping.csv供解析侧还原
+            # 复用_resolve_dump_file_rename中已解析的路径，避免重复find
+            mapping_csv_path = self._mapping_csv_path or self._get_dump_mapping_csv_path(device_id)
+            if mapping_csv_path:
+                utils.copy_src_to_dest([mapping_csv_path], dest_path)
         return dest_path
 
-    def check_dump_data_is_valid(self, err_time, data_name):
-        find_dump_data_cmd = ['find', self.report_path, '-name', data_name]
+    def check_dump_data_is_valid(self, err_time, data_name, rename=""):
+        find_dump_data_cmd = ['find', self.report_path, '-name', rename or data_name]
         regexp = r".*?\/data-dump\/\d+\/([\w.]+)"
         dump_data_file_list = utils.get_inquire_result(find_dump_data_cmd, regexp)
         home = os.environ.get("HOME")
@@ -305,13 +357,14 @@ class Collection:
             )
             raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
 
-    def check_host_and_device_kernel_name(self, data_name):
+    def check_host_and_device_kernel_name(self, data_name, rename=""):
         if self.is_sk:
             # SK场景下没有device .o，跳过host/device一致性检查
             return True
-        kernel_cmd = ['find', self.report_path, '-name', data_name]
+        find_name = rename or data_name
+        kernel_cmd = ['find', self.report_path, '-name', find_name]
         _, kernel_info = utils.execute_command(kernel_cmd)
-        kernel_path = kernel_info.split(data_name)[0]
+        kernel_path = kernel_info.split(find_name)[0]
         res = os.listdir(kernel_path)
         host_kernel_name = ''
         device_kernel_name = ''
@@ -345,8 +398,9 @@ class Collection:
         utils.print_info_log('Step 2. Obtain the name and path of the flushed data file from the log.')
         try:
             err_time, device_id, data_name = self.get_dump_data_info()
-            self.check_dump_data_is_valid(err_time, data_name)
-            check_result = self.check_host_and_device_kernel_name(data_name)
+            rename = self._resolve_dump_file_rename(device_id, data_name)
+            self.check_dump_data_is_valid(err_time, data_name, rename)
+            check_result = self.check_host_and_device_kernel_name(data_name, rename)
             if not check_result:
                 utils.print_error_log(f"The kernel load on the host is different from the device.")
                 return False
@@ -355,7 +409,7 @@ class Collection:
 
         # collect dump
         utils.print_info_log('Step 3. Obtain the operator name from the log.')
-        self.collect_data_dump(device_id, data_name)
+        self.collect_data_dump(device_id, data_name, rename)
 
         # get kernel_name
         utils.print_info_log('Step 4. Obtain the compilation file based on the operator name.')

@@ -566,6 +566,375 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual('', res)
 
     @pytest.mark.parametrize(
+        "name_len, expected",
+        [
+            (Constant.MAX_FILE_NAME_LEN, False),      # 等于上限，不算超长
+            (Constant.MAX_FILE_NAME_LEN + 1, True)    # 超过上限
+        ]
+    )
+    def test_is_oversize_name(self, name_len, expected):
+        """
+        测试超长名字长度初判的边界
+        """
+        collection = Collection(self.temp, self.temp)
+        self.assertEqual(collection._is_oversize_name("a" * name_len), expected)
+
+    def test_get_dump_mapping_csv_path(self):
+        """
+        测试按device_id定位data-dump目录下的mapping.csv
+        """
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("0", "1"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+        collection = Collection(input_path, output_path)
+        res = collection._get_dump_mapping_csv_path("1")
+        self.assertIn(res, "data-dump/1/mapping.csv")
+
+    def test_get_dump_mapping_csv_path_device_id_prefix(self):
+        """
+        测试device_id为0时不会误命中data-dump/01/下的mapping.csv
+        """
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("01", "0"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+        collection = Collection(input_path, output_path)
+        res = collection._get_dump_mapping_csv_path("0")
+        self.assertIn(res, "data-dump/0/mapping.csv")
+        self.assertNotIn(res, "data-dump/01/mapping.csv")
+
+    def test_get_dump_mapping_csv_path_not_exist(self):
+        """
+        测试report_path下没有mapping.csv时返回空
+        """
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        input_path.mkdir(parents=True, exist_ok=True)
+        collection = Collection(input_path, output_path)
+        self.assertEqual(collection._get_dump_mapping_csv_path("0"), "")
+
+    def test_get_dump_mapping_csv_path_other_device_only(self):
+        """
+        测试只有其它device的mapping.csv时返回空，不回退使用别的卡的映射表
+        """
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("1", "2"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+        collection = Collection(input_path, output_path)
+        self.assertEqual(collection._get_dump_mapping_csv_path("0"), "")
+        self.assertIn(self.debug_info.read_text(),
+                      f"{Constant.MAPPING_CSV_FILE} of device 0 cannot be found in")
+
+    def test_collect_oversize_scene_other_device_mapping_only(self):
+        """
+        测试报错device无mapping.csv、其它device有时，不会误用其映射名收集到别的卡的dump。
+        退化为按原始名查找，dump文件找不到时collect返回False
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        # 报错device为0，但只有device1落了随机名dump和mapping.csv
+        dump_path = input_path.joinpath("extra-info/data-dump/1")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        input_path.joinpath("plog.txt").write_text(
+            "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
+            "[tid:1592077] [Dump][Exception] dump exception to file, file: "
+            f"./new/extra-info/data-dump/0/{data_name}")
+        collection = Collection(input_path, output_path)
+        self.assertEqual(collection.collect(), False)
+        self.assertEqual(collection.dump_file_rename, "")
+        # device1的dump文件没有被误收集
+        self.assertEqual(bool(list(output_path.rglob(f'collection/dump/{rename}'))), False)
+
+    def test_resolve_dump_file_rename_normal_name(self, mocker):
+        """
+        测试普通名字走快路径，不触发find mapping.csv
+        """
+        collection = Collection(self.temp, self.temp)
+        get_csv = mocker.patch.object(collection, "_get_dump_mapping_csv_path")
+        self.assertEqual(collection._resolve_dump_file_rename("0", "short_name"), "")
+        self.assertEqual(get_csv.called, False)
+
+    def test_resolve_dump_file_rename_oversize_matched(self, mocker):
+        """
+        测试超长名字命中映射，返回映射后的随机数字串
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        collection = Collection(self.temp, self.temp)
+        mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="mapping.csv")
+        mocker.patch.object(utils, "parse_name_mapping_csv",
+                            return_value={data_name: "1234567890123456"})
+        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "1234567890123456")
+        self.assertEqual(collection.dump_file_rename, "1234567890123456")
+
+    def test_is_oversize_name_multi_byte(self):
+        """
+        测试多字节文件名按字节数判定，字符数未超但字节数已超
+        """
+        collection = Collection(self.temp, self.temp)
+        name = "算" * 100   # 100个字符，UTF-8编码为300字节
+        self.assertEqual(len(name) > Constant.MAX_FILE_NAME_LEN, False)
+        self.assertEqual(collection._is_oversize_name(name), True)
+
+    def test_resolve_dump_file_rename_oversize_not_matched(self, mocker):
+        """
+        测试超长名字未命中映射，返回空串退化为原始名，并打印未命中原因
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        collection = Collection(self.temp, self.temp)
+        mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="mapping.csv")
+        mocker.patch.object(utils, "parse_name_mapping_csv", return_value={"other": "1234"})
+        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "")
+        self.assertIn(self.debug_info.read_text(), "it is not recorded in mapping.csv")
+
+    def test_resolve_dump_file_rename_oversize_no_mapping_csv(self, mocker):
+        """
+        测试超长名字但mapping.csv缺失，日志可区分于"有mapping.csv但未命中"
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        collection = Collection(self.temp, self.temp)
+        mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="")
+        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "")
+        self.assertIn(self.debug_info.read_text(),
+                      f"but {Constant.MAPPING_CSV_FILE} cannot be found in")
+
+    def test_check_dump_data_is_valid_with_rename(self):
+        """
+        测试超长场景下按映射名校验dump文件存在性
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        collection = Collection(input_path, output_path)
+        # 按映射名可以找到，不抛异常
+        collection.check_dump_data_is_valid("2024-09-12-16:40:08.360.226", data_name, rename)
+        # 不传rename时按原始名查找，找不到
+        with pytest.raises(utils.AicErrException) as e:
+            collection.check_dump_data_is_valid("2024-09-12-16:40:08.360.226", data_name)
+            self.assertEqual(str(e), str(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR))
+
+    def test_check_host_and_device_kernel_name_with_rename(self):
+        """
+        测试超长场景下用映射名定位dump文件所在目录，目录内.o校验逻辑不变
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}/dump")
+        input_path.mkdir(parents=True, exist_ok=True)
+        input_path.joinpath(rename).touch()
+        input_path.joinpath("te_gatherv2.o").touch()
+        input_path.joinpath("te_gatherv2_host.o").touch()
+        collection = Collection(input_path, output_path)
+        self.assertEqual(collection.check_host_and_device_kernel_name(data_name, rename), True)
+
+    def test_collect_data_dump_with_rename(self):
+        """
+        测试超长场景下按映射名收集dump文件，并一并收集mapping.csv
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        collection = Collection(input_path, output_path)
+        collection.collect_data_dump("0", data_name, rename)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{rename}'))), True)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{Constant.MAPPING_CSV_FILE}'))), True)
+
+    def test_collect_data_dump_with_rename_multiple(self, mocker):
+        """
+        测试超长场景下找到多个dump文件时，回查plog的grep关键字用原始名
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection_plog_path.joinpath("dump.log").write_text(
+            f"extra-info/data-dump/0/{data_name}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("0", "1"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(rename).touch()
+        collection = Collection(input_path, output_path)
+        collection.collect_data_dump("0", data_name, rename)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{rename}'))), True)
+        self.assertIn(self.debug_info.read_text(), f"Find dump file {rename}.")
+
+    def test_collect_data_dump_multiple_no_plog_match(self):
+        """
+        测试找到多个dump文件但plog中查不到data-dump记录时不抛IndexError
+        """
+        data_name = "GatherV2.GatherV21.1.1733469426252033"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection_plog_path.joinpath("dump.log").write_text("no data-dump record here")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("0", "1"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(data_name).touch()
+        collection = Collection(input_path, output_path)
+        res = collection.collect_data_dump("0", data_name)
+        self.assertEqual(res, os.path.join(str(output_path), "collection", "dump"))
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{data_name}'))), True)
+
+    @pytest.mark.parametrize("target_device", ["0", "1"])
+    def test_collect_data_dump_multiple_picks_target_device(self, target_device):
+        """
+        测试多个device目录下存在同名dump文件时，按报错device筛选。
+        两个device各跑一次，结果必须各自命中，不能受目录遍历顺序影响
+        """
+        data_name = "GatherV2.GatherV21.1.1733469426252033"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}_{target_device}")
+        collection_plog_path = output_path.joinpath('collection/plog')
+        collection_plog_path.mkdir(parents=True, exist_ok=True)
+        collection_plog_path.joinpath("dump.log").write_text(
+            f"extra-info/data-dump/{target_device}/{data_name}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("0", "1"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(data_name).write_text(f"device{device_id}")
+        collection = Collection(input_path, output_path)
+        collection.collect_data_dump(target_device, data_name)
+        collected = list(output_path.rglob(f'collection/dump/{data_name}'))
+        # 只收集报错device的那一份
+        self.assertEqual(len(collected), 1)
+        self.assertEqual(collected[0].read_text(), f"device{target_device}")
+
+    def test_collect_data_dump_multiple_device_id_prefix(self):
+        """
+        测试device_id为0时不会误命中data-dump/01/下的同名dump文件
+        """
+        data_name = "GatherV2.GatherV21.1.1733469426252033"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("01", "0"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(data_name).write_text(f"device{device_id}")
+        collection = Collection(input_path, output_path)
+        collection.collect_data_dump("0", data_name)
+        collected = list(output_path.rglob(f'collection/dump/{data_name}'))
+        self.assertEqual(len(collected), 1)
+        self.assertEqual(collected[0].read_text(), "device0")
+
+    @pytest.mark.parametrize("target_device", ["0", "1"])
+    def test_collect_data_dump_with_rename_multiple_device(self, target_device):
+        """
+        测试超长场景下多个device目录存在相同映射名时，只收集报错device的那一份。
+        映射名在plog中不存在，无法靠回查plog区分，必须按文件所在目录筛选
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}_{target_device}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        for device_id in ("0", "1"):
+            dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
+            dump_path.mkdir(parents=True, exist_ok=True)
+            dump_path.joinpath(rename).write_text(f"device{device_id}")
+        collection = Collection(input_path, output_path)
+        collection.collect_data_dump(target_device, data_name, rename)
+        collected = list(output_path.rglob(f'collection/dump/{rename}'))
+        self.assertEqual(len(collected), 1)
+        self.assertEqual(collected[0].read_text(), f"device{target_device}")
+
+    def test_collect_oversize_scene(self):
+        """
+        测试超长名字场景走完整collect流程：按映射名收集dump文件并带上mapping.csv
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        input_path.joinpath("plog.txt").write_text(
+            "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
+            "[tid:1592077] [Dump][Exception] dump exception to file, file: "
+            f"./new/extra-info/data-dump/0/{data_name}")
+        collection = Collection(input_path, output_path)
+        res = collection.collect()
+        self.assertEqual(res, True)
+        self.assertEqual(collection.dump_file_rename, rename)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{rename}'))), True)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{Constant.MAPPING_CSV_FILE}'))), True)
+
+    def test_collect_oversize_scene_mapping_csv_found_once(self, mocker):
+        """
+        测试超长名字场景下mapping.csv只解析一次，collect_data_dump复用缓存不再重复find
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        input_path.joinpath("plog.txt").write_text(
+            "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
+            "[tid:1592077] [Dump][Exception] dump exception to file, file: "
+            f"./new/extra-info/data-dump/0/{data_name}")
+        collection = Collection(input_path, output_path)
+        get_csv = mocker.spy(collection, "_get_dump_mapping_csv_path")
+        self.assertEqual(collection.collect(), True)
+        self.assertEqual(get_csv.call_count, 1)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{Constant.MAPPING_CSV_FILE}'))), True)
+
+    def test_collect_data_dump_with_rename_no_cache(self, mocker):
+        """
+        测试直接调用collect_data_dump（未经_resolve_dump_file_rename）时缓存为空，
+        仍会按需解析mapping.csv
+        """
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
+        input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
+        dump_path = input_path.joinpath("extra-info/data-dump/0")
+        dump_path.mkdir(parents=True, exist_ok=True)
+        dump_path.joinpath(rename).touch()
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        collection = Collection(input_path, output_path)
+        self.assertEqual(collection._mapping_csv_path, "")
+        get_csv = mocker.spy(collection, "_get_dump_mapping_csv_path")
+        collection.collect_data_dump("0", data_name, rename)
+        self.assertEqual(get_csv.call_count, 1)
+        self.assertEqual(
+            bool(list(output_path.rglob(f'collection/dump/{Constant.MAPPING_CSV_FILE}'))), True)
+
+    @pytest.mark.parametrize(
         "graph_name, expected",
         [
             ("ge_proto_1_Build.txt", True),

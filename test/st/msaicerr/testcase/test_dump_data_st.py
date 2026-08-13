@@ -29,6 +29,7 @@ import pytest
 sys.path.append(MSAICERR_PATH)
 
 from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.constant import Constant
 from ms_interface.dump_data_parser import DumpDataParser, BigDumpDataParser
 
 dump_file = "exception_info.2.1.20250609144925349"
@@ -49,6 +50,18 @@ class Selflib():
 class Selfliberr():
     def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
         return 1
+
+
+class SelflibWriteJson():
+    """在被调用时才生成json，模拟解析so的落盘时机"""
+
+    def __init__(self, dump_json):
+        self.dump_json = dump_json
+
+    def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
+        with open(path_ptr.decode('utf-8'), 'w') as json_file:
+            json_file.write(json.dumps(self.dump_json))
+        return 0
 
 
 class TestUtilsMethods(CommonAssert):
@@ -241,6 +254,49 @@ class TestUtilsMethods(CommonAssert):
             'input', {'input': {}}, dump_file)
         assert parser.get_bin_data()[0].endswith("input.0.hifloat8.bin")
         self.assertIn(res, "If dtype is hifloat8, summary is: ")
+
+    def test_parser_dump_file_by_mapped_name(self, mocker):
+        """超长场景: dump目录下只有随机名文件和mapping.csv，按原始data_name反查映射名完成解析"""
+        data_name = "a" * 250 + ".42.1.1726159207469285"
+        rename = "1234567890123456"
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_json = self._make_dump_json(output_data_type=1, output_size='8', output_dim=['2'])
+        # 解析so会在dump文件同级生成json，此处在调用时写入，避免提前污染待匹配目录
+        mocker.patch('ctypes.CDLL', return_value=SelflibWriteJson(dump_json))
+        create_dump_file(str(dump_dir.joinpath(rename)), 10, 200)
+        dump_dir.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"     # L1场景下node_name是plog中的短名，与映射key不同
+        info.data_name = data_name
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))
+        parser = DumpDataParser(str(dump_dir), info)
+        parser.parse()
+        # 命中随机名文件，且mapping.csv没有被当成dump文件解析
+        self.assertEqual(info.dump_file, [str(dump_dir.joinpath(rename))])
+        self.assertIn(info.dump_info, f"{rename}.output.0.float32.npy")
+
+    def test_parser_dump_file_oversize_result_renamed(self, mocker):
+        """超长场景: 解析结果文件名超过NAME_MAX时重命名为随机数字串，并记录到同级mapping.csv"""
+        dump_json = self._make_dump_json(output_data_type=1, output_size='8', output_dim=['2'])
+        self.common_mock(mocker, dump_json)
+        create_dump_file(dump_file, 10, 200)
+        info = AicErrorInfo()
+        info.kernel_name = "a" * 260    # 拼装后的结果文件名必然超长
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))
+        parser = DumpDataParser(dump_file, info)
+        parser.parse()
+        npy_files = [f for f in parser.get_bin_data() if f.endswith(".npy")]
+        self.assertEqual(len(npy_files), 1)
+        file_name = os.path.basename(npy_files[0])
+        # 落盘成功，文件名为随机数字串 + 原后缀
+        assert len(file_name) <= Constant.MAX_FILE_NAME_LEN
+        assert file_name[:-len(".npy")].isdigit()
+        self.assertEqual(os.path.isfile(npy_files[0]), True)
+        self.assertEqual(str(np.load(npy_files[0]).dtype), "float32")
+        # mapping.csv中记录了 {映射后},{映射前}
+        mapping_text = self.temp.joinpath(Constant.MAPPING_CSV_FILE).read_text()
+        self.assertIn(mapping_text, f"{file_name},{info.kernel_name}.output.0.float32.npy")
 
     def test_parser_dump_file_bfloat16_dtype_success(self, mocker):
         dump_json = {'version': '2.0', 'dump_time': '1749451765349986', 'output': [{'data_type': 27, 'format': 0, 'shape': {'dim': ['2', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'dim_range': [], 'offset': '3'}], 'input': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['10240', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 0, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['2']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 1, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['1']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 2, 'input_type': 2}, {'data_type': 0, 'format': 0, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 5, 'input_type': 7}], 'buffer': [], 'op_name': '', 'attr': [], 'space': [{'type': 0, 'data': '', 'size': '10'}], 'dfx_message': '[AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, 0x12c1c0000518, 0x12d340000200, 0x12d340004400, 0x12c1c0000438, 0x12c100011000, 0x285a, 0x2, 0x1, 0, 0x2000, 0x8, 0x1, 0x1, 0x2800, 0x2, 0x800, 0x1, 0x1, \n[AIC_INFO] args(20 to 39) after execute:0x2, 0x1, 0x1, 0x1, 0x1, 0x800, 0x1, 0x1, 0x2, 0x1, 0x2, 0xa5a5a5a500000000, 0, 0, 0, 0, 0, 0, 0, \n[Dump][Exception] begin to load normal tensor, index:0\n[Dump][Exception] exception info dump args data, addr:0x12c200000000; size:83886080 bytes\n[Dump][Exception] end to load normal tensor, index:0\n[Dump][Exception] begin to load normal tensor, index:1\n[Dump][Exception] exception info dump args data, addr:0x12d340000000; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:1\n[Dump][Exception] begin to load normal tensor, index:2\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000518; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:2\n[Dump][Exception] begin to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340000200; size:16384 bytes\n[Dump][Exception] end to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340004400; size:76832 bytes\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000438; size:200 bytes\n'}

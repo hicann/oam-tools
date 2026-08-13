@@ -21,6 +21,7 @@ This file mainly involves the common function.
 Copyright Information:
 Huawei Technologies Co., Ltd. All Rights Reserved © 2020
 """
+import csv
 import inspect
 import os
 import os.path
@@ -295,6 +296,35 @@ def copy_src_to_dest(src_file_list: list, dest_path: str):
                 __copy_file(file, dest_file)
             except (OSError, IOError) as error:
                 print_warn_log(f"Failed to copy {file} to {dest_file}. {error}.")
+
+
+def _iter_csv_rows(csv_path: str):
+    """
+    yield the rows of a csv file one by one
+    :param csv_path: the csv path
+    """
+    # 显式指定utf-8，避免受locale影响；算子名可能含非utf-8字节，需兜住解码失败
+    with open(csv_path, 'r', encoding='utf-8') as csv_file:
+        yield from csv.reader(csv_file)
+
+
+def parse_name_mapping_csv(csv_path: str) -> dict:
+    """
+    parse the mapping.csv generated when a file name exceeds NAME_MAX,
+    each line of which is {renamed random digits},{original file name}
+    :param csv_path: the mapping.csv path
+    :return: {original file name: renamed random digits}, empty when the csv is absent
+    """
+    mapping = {}
+    if not csv_path or not os.path.isfile(csv_path):
+        return mapping
+    try:
+        for row in _iter_csv_rows(csv_path):
+            if len(row) == 2:
+                mapping[row[1].strip()] = row[0].strip()
+    except (OSError, IOError, csv.Error, UnicodeDecodeError) as error:
+        print_warn_log(f"Failed to read {csv_path}. {error}.")
+    return mapping
 
 
 def write_file(output_path: str, file_content: str, write_mode="w") -> None:

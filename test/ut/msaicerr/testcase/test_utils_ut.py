@@ -16,6 +16,16 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+import csv
+import os
+import pytest
+import sys
+import shutil
+import subprocess
+from unittest import mock
+from unittest.mock import Mock
+from pathlib import Path
+
 from ms_interface import utils
 from ms_interface.constant import Constant
 from ms_interface.constant import ModeCustom
@@ -26,17 +36,6 @@ from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKerne
 from ms_interface.run_dirty_ub import run_dirty_ub_tik
 
 from conftest import MSAICERR_PATH, CommonAssert
-import os
-import pytest
-import sys
-import shutil
-from unittest import mock
-from unittest.mock import Mock
-from pathlib import Path
-import subprocess
-te = Mock(name="te")
-te.__name__ = "te"
-sys.modules['te'] = te
 sys.path.append(MSAICERR_PATH)
 
 cur_abspath = os.path.dirname(__file__)
@@ -141,6 +140,50 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('ms_interface.utils.execute_command', return_value=(0, ''))
         res = utils.get_inquire_result(['xxx'], 'asfdd', match_dict=True)
         assert res == []
+
+    def test_parse_name_mapping_csv(self, tmp_path):
+        """
+        测试超长文件名的mapping.csv解析为 原名 -> 映射名，非法行被忽略
+        """
+        csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
+        csv_path.write_text("1234567890123456,long_name_a\n"
+                            "6543210987654321,long_name_b\n"
+                            "invalid_line_without_comma\n")
+        res = utils.parse_name_mapping_csv(str(csv_path))
+        self.assertEqual(res, {"long_name_a": "1234567890123456",
+                               "long_name_b": "6543210987654321"})
+
+    def test_parse_name_mapping_csv_not_exist(self, tmp_path):
+        self.assertEqual(utils.parse_name_mapping_csv(""), {})
+        self.assertEqual(utils.parse_name_mapping_csv(
+            str(tmp_path.joinpath("not_exist.csv"))), {})
+
+    def test_parse_name_mapping_csv_read_failed(self, tmp_path, mocker):
+        """
+        测试mapping.csv读取异常时返回空字典而非向上抛异常
+        """
+        csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
+        csv_path.write_text("1234567890123456,long_name_a\n")
+        mocker.patch("csv.reader", side_effect=csv.Error("line contains NUL"))
+        self.assertEqual(utils.parse_name_mapping_csv(str(csv_path)), {})
+
+    def test_parse_name_mapping_csv_invalid_encoding(self, tmp_path):
+        """
+        测试mapping.csv含非utf-8字节时返回空字典而非抛UnicodeDecodeError
+        """
+        csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
+        csv_path.write_bytes(b"1234567890123456,long_name_a\n"
+                             b"6543210987654321,long_name_\xff\xfe\n")
+        self.assertEqual(utils.parse_name_mapping_csv(str(csv_path)), {})
+
+    def test_parse_name_mapping_csv_utf8_name(self, tmp_path):
+        """
+        测试多字节算子名不受locale影响，按utf-8解析成功
+        """
+        csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
+        csv_path.write_bytes("1234567890123456,算子名称\n".encode("utf-8"))
+        self.assertEqual(utils.parse_name_mapping_csv(str(csv_path)),
+                         {"算子名称": "1234567890123456"})
 
     @pytest.mark.skip
     def test_run_dirty_ub(self, mocker):
