@@ -2,7 +2,7 @@
 
 ## 功能说明
 
-包括压力检测、HBM硬件检测、CPU检测、STL硬件检测等功能。
+包括压力检测、HBM硬件检测、CPU检测、AI Core STL硬件检测等功能。
 
 ## 注意事项
 
@@ -77,7 +77,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
         - 显示所有device的检测结果时，若所有device的检测结果状态一致，直接显示汇总标签（如 Pass - All、Warn - All 或 Fail - All）。
         - 若存在device状态不一致的情况，则依次列出每个device的具体状态，例如在4个device场景下显示为 Pass, Warn, Warn, Fail。
         - **若检测结果为Fail**，表示检测出硬件故障，需联系技术支持。
-        - **若检测结果为Warn**，表示检测过程中任务调度出现问题。可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log）中的详细信息定位问题，可先根据关键字“\[ERROR\] AML”筛选日志信息。
+        - **若检测结果为Warn**，表示检测过程中任务调度出现问题，可能是硬件故障或软件问题。可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log）中的详细信息定位问题，可先根据关键字“\[ERROR\] AML”筛选日志信息。
         - **若检测结果为Pass**，表示检测成功。
 
 - **d**：可选参数，指定待检测的deviceId，不设置该参数，默认显示所有device的检测结果。Pass表示正常，Warn表示异常。
@@ -111,6 +111,13 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      +--- Hardware -----------+------------------------+
      | CPU Detect             | Pass - All             |
      +------------------------+------------------------+
+    asys diagnose -r=aicore_stl_detect
+     +------------------------+------------------------+ 
+     | Group of 4 Device      | Diagnostic Result      | 
+     +========================+ =======================+ 
+     +--- Hardware -----------+------------------------+ 
+     | AICore STL Detect      | Pass - All             | 
+     +------------------------+------------------------+ 
     ```
 
 - 不指定device，部分device正常，此处以四卡为例：
@@ -138,6 +145,13 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      +--- Hardware -----------+------------------------+
      | CPU Detect             | Pass, Warn, Pass, Fail |
      +------------------------+------------------------+
+    asys diagnose -r=aicore_stl_detect
+     +------------------------+------------------------+ 
+     | Group of 4 Device      | Diagnostic Result      | 
+     +========================+ =======================+ 
+     +--- Hardware -----------+------------------------+ 
+     | AICore STL Detect      | Pass, Warn, Pass, Fail | 
+     +------------------------+------------------------+ 
     ```
 
 - 指定device，此处以device 0为例：
@@ -164,4 +178,11 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      +--- Hardware -----------+------------------------+
      | CPU Detect             | Pass                   |
      +------------------------+------------------------+
+    asys diagnose -r=aicore_stl_detect
+     +------------------------+------------------------+ 
+     | Device ID: 0           | Diagnostic Result      | 
+     +========================+ =======================+ 
+     +--- Hardware -----------+------------------------+ 
+     | AICore STL Detect      | Pass                   | 
+     +------------------------+------------------------+ 
     ```

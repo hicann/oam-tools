@@ -10,7 +10,7 @@
 - **[业务复跑+故障信息收集](rerun_fault_information_collection.md)**：复跑业务后再收集故障信息，例如软硬件信息、日志等。
 - **[软硬件、Device状态信息展示](software_hardware_device_status_info_display.md)**：收集安装包版本信息、Device温度、功率等。
 - **[健康检查](health_check.md)**：检查所有Device或指定Device的健康状态（若不健康，会展示报错信息）。
-- **[综合检测](comprehensive_detection.md)**：涉及压力检测、HBM硬件检测、CPU检测等功能。
+- **[综合检测](comprehensive_detection.md)**：涉及压力检测、HBM硬件检测、CPU检测、AI Core STL硬件检测等功能。
 - **[组件检测](component_diagnostics.md)**：当前只支持AI Vector组件检测，不支持并行执行 。
 - **[trace文件解析](trace_files_parsing.md)/[coredump文件解析](coredump_files_parsing.md)/[stackcore文件解析](stackcore_files_parsing.md)/[coretrace文件解析](coretrace_files_parsing.md)/[UB文件解析](UB_files_parsing.md)**：解析各类文件，以便后续定位问题。
 - **[实时堆栈导出](stack_export.md)**：该功能适用于业务进程卡住场景，以便导出堆栈信息定位问题。

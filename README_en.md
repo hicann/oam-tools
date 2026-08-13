@@ -191,49 +191,49 @@ source /usr/local/Ascend/cann/set_env.sh
 # For a custom install path: source ${install_path}/cann/set_env.sh
 ```
 
-> `set_env.sh` sets `${ASCEND_INSTALL_PATH}` to the CANN installation directory (e.g. `/usr/local/Ascend/cann`). All commands below use this variable.
-
-In the examples below, text inside angle brackets `<...>` is a **placeholder you must replace** (input path, output path, device id, etc.); everything else can be copied verbatim.
+> After running the commands above, `${ASCEND_INSTALL_PATH}` is set to the CANN installation directory:
+>
+> - Root user default: `/usr/local/Ascend/cann`
+> - Non-root user default: `${HOME}/Ascend/cann`
+> - Custom installation path: `${install_path}/cann`
 
 ### asys (Fault Information Collection / Diagnosis)
 
-The `src/asys/` directory contains both `asys.py` and a symlink `asys` pointing to it. After installation, both forms work directly:
+The `src/asys/` directory contains both `asys.py` and a symlink `asys` pointing to it (`src/asys/asys -> ./asys.py`). CMake copies the whole directory as-is via `install(DIRECTORY ${ASYS_DIR} ...)`, so the symlink is preserved. After installation, both forms work directly:
 
 ```bash
-# Form 1: explicit python3 call
+# Form 1: explicit python3 call on the .py file
 python3 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys.py -h
 
-# Form 2: call the symlink directly (asys.py has a #!/usr/bin/env python3 shebang)
+# Form 2: call the symlink asys directly (asys.py has a #!/usr/bin/env python3 shebang)
 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys -h
 ```
 
-Common commands (using `<asys_bin>` as shorthand for `${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys`):
+The asys subcommands are defined in the `Command` enum in `src/asys/cmdline/cmd_parser.py`, and include `info / health / collect / launch / diagnose / analyze / config / profiling`. Once the environment variables have taken effect, you can call asys directly:
 
 ```bash
-# Collect host and device software/hardware info (environment self-check)
-<asys_bin> info -r="status" -d=0
+# Collect host and device software/hardware info (does not depend on the task under diagnosis; usually used as an environment self-check)
+asys info -r="status" -d=0
 
 # Check device health status
-<asys_bin> health
+asys health
 
-# Collect existing O&M information and package it to the specified output directory
-<asys_bin> collect --output <output_dir>
+# Collect existing O&M information in the environment and package it to the specified output directory
+asys collect --output <output_dir>
 ```
-
-Add `<asys_bin>` to `PATH` to use `asys info -r="status"` / `asys health` directly. For full parameters, run `<asys_bin> -h`.
 
 ### msaicerr (AI Core Error Analysis)
 
-The msaicerr entry point is installed at `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`.
+The msaicerr entry point is `src/msaicerr/msaicerr.py`, installed at `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`.
 
 ```bash
-# Parse an existing AI Core Error report, output results to <output_dir>
+# 1) Parse an existing AI Core Error report path, output results to <output_dir>
 python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
 
-# Parse a single dump file (dtype values: see -h output)
+# 2) Parse a single dump file (dtype values: see -h output)
 python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
 
-# Check whether the environment meets msaicerr requirements
+# 3) Check whether the current environment meets the requirements for running msaicerr (only depends on the device id)
 python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -e -dev 0
 
 # Full parameter description
@@ -242,11 +242,15 @@ python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -h
 
 ### msprof (Performance Tuning)
 
-After installation, the msprof analysis script is located at `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/`. It is called internally by the CANN profiler pipeline; to run it manually:
+msprof consists of the C++ side collectors (`basic`, `dvvp`) and the `msprof` Python wheel (analysis scripts). After `bash build.sh` completes, the wheel (`msprof-0.0.1-py3-none-any.whl`) is copied to `src/msprof/collector/dvvp/msprofbin/` and packaged into the `.run` installation package. It is automatically unpacked to `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/` during installation, so no manual `pip install` is required.
+
+The analysis scripts are called internally by the msprof collector pipeline (entry point: `profiler_tool/analysis/msprof/msprof.py`) and do not register a standalone command-line command in `PATH`. To run the analysis script manually, call the entry point in the installation directory with python3:
 
 ```bash
 python3 ${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/analysis/msprof/msprof.py -h
 ```
+
+The C++ side collectors are generally invoked as built-in components of the CANN profiler pipeline, so developers do not need to execute them directly. For regression, run the gtest cases via `bash build.sh -u --component msprof` (output artifact: `build/test/ut/msprof/msprofbin/msprof_bin_utest`).
 
 ## 🅿️ Pre-commit
 
@@ -260,7 +264,7 @@ This repository has configured pre-commit. Users can refer to [Chapter 3 of the 
 
 | Component | Documentation Link | Description |
 | --- | --- | --- |
-| asys | [asys Tool User Guide](https://hiascend.com/document/redirect/CannCommunityasys) | Fault information collection, business rerun with fault information collection, software/hardware and Device status information display, health check, comprehensive detection, component detection, trace/coredump/stackcore/coretrace file parsing, real-time stack export, environment configuration, AI Core Error fault information parsing |
+| asys | [asys Tool User Guide](https://hiascend.com/document/redirect/CannCommunityasys) | Fault information collection, business rerun with fault information collection, software/hardware and Device status information display, health check, comprehensive detection, component detection, trace/coredump/stackcore/coretrace/UB file parsing, real-time stack export, environment configuration, AI Core Error fault information parsing |
 | msaicerr | [msaicerr Tool User Guide](https://hiascend.com/document/redirect/CannCommunitymsaicerr) | Analyzing AI Core Error issues, parsing Dump files, checking environments |
 | msprof | [Performance Tuning Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolProfiling) | Collect and analyze key performance indicators of AI tasks running on Ascend AI processors at various running stages, enabling quick identification of software and hardware performance bottlenecks |
 | hccl_test | [HCCL Performance Test Tool User Guide](https://www.hiascend.com/document/redirect/CannCommunityToolHcclTest) | Testing collective communication functionality and performance in distributed training or inference scenarios |

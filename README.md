@@ -156,7 +156,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 # 执行所有组件测试
 bash build.sh -u
 
-# 指定单独组件测试（可选：asys / msaicerr / msprof / install / upgrade / uninstall / all）
+# 指定单独组件测试（可选：asys / msaicerr / msprof / install / upgrade / uninstall / all） 
 bash build.sh -u --component msprof
 ```
 
