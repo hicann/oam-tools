@@ -16,25 +16,47 @@
 #ifndef MSPROF_ERROR_MANAGER_H
 #define MSPROF_ERROR_MANAGER_H
 
-#include "error_manager.h"
+#include <string>
+#include <vector>
+#include "base/err_mgr.h"
 #include "common/singleton/singleton.h"
 
-#define MSPROF_INPUT_ERROR REPORT_INPUT_ERROR
-#define MSPROF_ENV_ERROR REPORT_ENV_ERROR
-#define MSPROF_INNER_ERROR REPORT_INNER_ERROR
-#define MSPROF_CALL_ERROR REPORT_CALL_ERROR
+// 谓词类宏：新接口要求 std::vector<const char *>，业务侧传的是 std::vector<std::string>。
+// 先把入参具化为具名局部变量，再取 c_str()，把临时 vector 的生命周期绑定到 do/while 块。
+#define MSPROF_INPUT_ERROR(errorCode, key, value)                            \
+    do {                                                                     \
+        const std::vector<std::string> msprofErrKeys__ = (key);              \
+        const std::vector<std::string> msprofErrValues__ = (value);          \
+        REPORT_PREDEFINED_ERR_MSG((errorCode),                               \
+            Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrKeys__),        \
+            Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrValues__));     \
+    } while (false)
+
+#define MSPROF_ENV_ERROR MSPROF_INPUT_ERROR
+#define MSPROF_INNER_ERROR REPORT_INNER_ERR_MSG
+#define MSPROF_CALL_ERROR REPORT_INNER_ERR_MSG
 namespace Analysis {
 namespace Dvvp {
 namespace MsprofErrMgr {
 
+inline std::vector<const char *> ToCStrVec(const std::vector<std::string> &in)
+{
+    std::vector<const char *> out;
+    out.reserve(in.size());
+    for (const auto &item : in) {
+        out.emplace_back(item.c_str());
+    }
+    return out;
+}
+
 class MsprofErrorManager : public analysis::dvvp::common::singleton::Singleton<MsprofErrorManager> {
 public:
-    error_message::Context &GetErrorManagerContext() const;
-    void SetErrorContext(const error_message::Context errorContext) const;
+    error_message::ErrorManagerContext &GetErrorManagerContext() const;
+    void SetErrorContext(const error_message::ErrorManagerContext errorContext) const;
     MsprofErrorManager() {}
     ~MsprofErrorManager() override {}
 private:
-    static error_message::Context errorContext_;
+    static error_message::ErrorManagerContext errorContext_;
 };
 
 }  // ErrorManager

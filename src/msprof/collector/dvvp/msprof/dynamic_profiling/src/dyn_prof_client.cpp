@@ -145,7 +145,7 @@ void DynProfClient::SetSocketTimeout()
     }
 }
 
-void DynProfClient::Run(const struct error_message::Context &errorContext)
+void DynProfClient::Run(const error_message::ErrorManagerContext &errorContext)
 {
     MsprofErrorManager::instance()->SetErrorContext(errorContext);
 
@@ -294,12 +294,12 @@ int32_t DynProfClient::DynProfCliSendParams()
         DynProfMsg rsqMsg;
         auto ret = LocalSocket::Recv(cliSockFd, &rsqMsg, sizeof(rsqMsg), 0);
         if (ret == SOCKET_ERR_EAGAIN) {
-            CmdLog::CmdErrorLog("recv parmas timeout, server for pid %d has been connected to another client.", pid);
-            MSPROF_LOGE("recv parmas timeout, server for pid %d has been connected to another client.", pid);
+            CmdLog::CmdErrorLog("recv params timeout, server for pid %d has been connected to another client.", pid);
+            MSPROF_LOGE("recv params timeout, server for pid %d has been connected to another client.", pid);
             DynProfCliStopSocket(cliSockFd);
             continue;
         } else if (ret != sizeof(rsqMsg)) {
-            MSPROF_LOGE("recv parmas rsq failed for pid %d", pid);
+            MSPROF_LOGE("recv params rsq failed for pid %d", pid);
             DynProfCliStopSocket(cliSockFd);
             continue;
         }

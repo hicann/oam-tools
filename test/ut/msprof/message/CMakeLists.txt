@@ -75,7 +75,6 @@ target_include_directories(message_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
@@ -107,6 +106,7 @@ target_compile_definitions(message_utest PRIVATE
 )
 
 target_link_libraries(message_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static

@@ -51,7 +51,7 @@ public:
 #endif
 
 protected:
-    void Run(const struct error_message::Context &errorContext) override;
+    void Run(const error_message::ErrorManagerContext &errorContext) override;
 
 private:
     int32_t RegisterDrvChannel(uint32_t devId, uint32_t channelId);

@@ -47,7 +47,6 @@ target_include_directories(osal_linux_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -76,6 +75,7 @@ target_link_options(osal_linux_utest PRIVATE
 )
 
 target_link_libraries(osal_linux_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     c_sec
 )
@@ -104,7 +104,6 @@ target_include_directories(osal_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -133,6 +132,7 @@ target_link_options(osal_utest PRIVATE
 )
 
 target_link_libraries(osal_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     c_sec
 )
@@ -164,7 +164,6 @@ target_include_directories(local_socket_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -193,6 +192,7 @@ target_compile_definitions(local_socket_utest PRIVATE
 )
 
 target_link_libraries(local_socket_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     c_sec
 )
@@ -224,7 +224,6 @@ target_include_directories(chunk_pool_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
@@ -253,6 +252,7 @@ target_compile_definitions(chunk_pool_utest PRIVATE
 )
 
 target_link_libraries(chunk_pool_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     c_sec
 )
@@ -315,7 +315,6 @@ target_include_directories(param_validation_utest PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
@@ -363,6 +362,7 @@ target_compile_definitions(param_validation_utest PRIVATE
 )
 
 target_link_libraries(param_validation_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static

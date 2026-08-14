@@ -107,7 +107,6 @@ set(localSrcFiles
     ../stub/mmpa_stub.cpp
     ../stub/devdrv_runtime_api_stub.cpp
     ../stub/profile_drv_user_stub.cpp
-    ../stub/error_manager_stub2.cpp
     ../stub/tsd_stub.cpp
     test/prof_job_utest.cpp
     test/prof_job_ccu_utest.cpp
@@ -226,7 +225,6 @@ target_include_directories(job_wrapper PRIVATE
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/collect/channel
     ../stub/
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${TOP_DIR}/llt/abl/msprof/st/stub
     ${TOP_DIR}/llt/abl/msprof/ut/stub
     ${CMAKE_BINARY_DIR}/proto/job_wrapper_proto/
@@ -249,6 +247,7 @@ target_compile_definitions(job_wrapper PRIVATE
 )
 
 target_link_libraries(job_wrapper PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static

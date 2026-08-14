@@ -39,7 +39,7 @@ public:
     int32_t SendMessage(SHARED_PTR_ALIA<google::protobuf::Message> message);
     void SetDevIdOnHost(int32_t devIdOnHost);
 protected:
-    void Run(const struct error_message::Context &errorContext);
+    void Run(const error_message::ErrorManagerContext &errorContext);
 
 private:
     SHARED_PTR_ALIA<analysis::dvvp::message::MsgDispatcher> dispatcher_;

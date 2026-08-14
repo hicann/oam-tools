@@ -33,7 +33,7 @@ Thread::Thread()
      quit_(false),
      isStarted_(false),
      threadName_(MSVP_PROFILER_THREADNAME_MAXNUM, 0),
-     errorContext_({0UL, "", "", ""})
+     errorContext_{}
 {
 }
 

@@ -16,39 +16,32 @@
 #ifndef C_BASE_MSPROF_ERROR_MANAGER_H
 #define C_BASE_MSPROF_ERROR_MANAGER_H
 #include <vector>
-#include "error_manager.h"
+#include <string>
+#include "base/err_mgr.h"
 #include "common/singleton/singleton.h"
 
-namespace error_message {
-struct Context {
-    uint64_t workStreamId;
-    std::string firstStage;
-    std::string secondStage;
-    std::string logHeader;
-};
-}
 namespace Analysis {
 namespace Dvvp {
 namespace MsprofErrMgr {
 
 class MsprofErrorManager : public analysis::dvvp::common::singleton::Singleton<MsprofErrorManager> {
 public:
-    error_message::Context &GetErrorManagerContext() const;
-    void SetErrorContext(const error_message::Context errorContext) const;
+    error_message::ErrorManagerContext &GetErrorManagerContext() const;
+    void SetErrorContext(const error_message::ErrorManagerContext errorContext) const;
     MsprofErrorManager() {}
     ~MsprofErrorManager() override {}
     void ReportErrorMessage(const std::string errorCode, const std::vector<std::string> &keys = {},
         const std::vector<std::string> &values = {}) const;
 
 private:
-    static error_message::Context errorContext_;
+    static error_message::ErrorManagerContext errorContext_;
 };
 
 #define MSPROF_INPUT_ERROR(errorCode, key, value) \
     Analysis::Dvvp::MsprofErrMgr::MsprofErrorManager::instance()->ReportErrorMessage(errorCode, key, value)
 
 #define MSPROF_ENV_ERROR MSPROF_INPUT_ERROR
-#define MSPROF_INNER_ERROR REPORT_INNER_ERROR
+#define MSPROF_INNER_ERROR REPORT_INNER_ERR_MSG
 #define MSPROF_CALL_ERROR MSPROF_INNER_ERROR
 }  // ErrorManager
 }  // Dvvp

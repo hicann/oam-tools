@@ -33,10 +33,8 @@ set(msprofBinHeader
     ${TOP_DIR}/inc
     ${TOP_DIR}/inc/driver
     ${TOP_DIR}/inc/aicpu
-    ${TOP_DIR}/../../metadef/inc/common/util/error_manager
     ${MSPROF_DIR}/inc/toolchain
     ${PROTOBUF_HOST_STATIC_INCLUDE}
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     include
     ../
     ../app
@@ -229,7 +227,8 @@ target_link_libraries(msprofbin PRIVATE
     $<BUILD_INTERFACE:slog_headers>
     $<BUILD_INTERFACE:msprofbinOnetrack_pub>
     runtime_inc_headers
-    stub_adcore_headers    
+    stub_adcore_headers
+    error_manager_headers
 )
 
 set_target_properties(msprofbin

@@ -70,7 +70,6 @@ set(libmsprofHeaderDir
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/driver
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
     ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
@@ -123,6 +122,7 @@ target_compile_definitions(platform_utest PRIVATE
 )
 
 target_link_libraries(platform_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static

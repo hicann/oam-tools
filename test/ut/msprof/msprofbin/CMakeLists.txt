@@ -166,7 +166,6 @@ set(libmsprofHeaderDir
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
 )
 
 target_include_directories(msprof_bin_utest PRIVATE
@@ -231,6 +230,7 @@ target_compile_definitions(msprof_bin_utest PRIVATE
 )
 
 target_link_libraries(msprof_bin_utest PRIVATE
+    error_manager_headers
     $<BUILD_INTERFACE:intf_llt_pub>
     alog
     ascend_protobuf_static

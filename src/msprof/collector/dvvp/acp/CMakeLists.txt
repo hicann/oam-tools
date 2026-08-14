@@ -30,7 +30,6 @@ add_dependencies(profiler_proto_oam host_protoc ascend_protobuf_static)
 ####################### acp #######################
 set(acpBinHeader
     ${MSPROF_DIR}/inc/toolchain
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     include
     ../
     ../app
@@ -138,6 +137,7 @@ target_link_libraries(acp PRIVATE
     $<BUILD_INTERFACE:slog_headers>
     runtime_inc_headers
     stub_adcore_headers
+    error_manager_headers
     c_sec
     unified_dlog
     mmpa
@@ -217,7 +217,6 @@ target_include_directories(profinj PRIVATE
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef/common/util/error_manager
     ${MSPROF_DIR}/inc/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}/proto/profiler_proto_oam/
@@ -292,6 +291,7 @@ target_link_libraries(profinj PRIVATE
     $<BUILD_INTERFACE:adump_headers>
     runtime_inc_headers
     stub_adcore_headers
+    error_manager_headers
     c_sec
     mmpa
     unified_dlog

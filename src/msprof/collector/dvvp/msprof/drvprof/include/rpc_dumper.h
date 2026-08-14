@@ -56,7 +56,7 @@ public:
     int32_t Stop() override;
 
     /**
-    * @brief Flush: wait all datas to be send to remove host
+    * @brief Flush: wait all data to be send to remove host
     *               then send a FileChunkFlushReq data to remote host tell it data report finished
     * @return : success return PROFILING_SUCCESS, failed return PROFIING_FAILED
     */
@@ -69,7 +69,7 @@ protected:
     /**
      * @brief Run: the thread function for deal with user data
      */
-    void Run(const struct error_message::Context &errorContext) override;
+    void Run(const error_message::ErrorManagerContext &errorContext) override;
 private:
     /**
     * @brief Dump: transfer FileChunkReq
