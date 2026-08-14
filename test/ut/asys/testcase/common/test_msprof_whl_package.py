@@ -19,13 +19,14 @@
 """msprofbin/CMakeLists.txt 中 msprof whl 预解包进包方式的看护。
 
 背景：whl 预解包由旧的 install(CODE ...)（安装期 pip + chmod 555）改为构建期
-add_custom_command 解包 + install(DIRECTORY ...) 声明进包。install(DIRECTORY) 默认
-用 644/755，会覆盖构建期 chmod 555 的结果——若不显式声明权限，--noexec --extract
-（仅解压、不跑 msprof_install.sh）路径下解出的文件是 644/755，与 --full 安装
-（msprof_install.sh 结尾统一 chmod 555）不一致，且偏离旧 install(CODE) 的 555 行为。
+add_custom_command 解包 + install(DIRECTORY ...) 声明进包。
 
-本用例参照 test_build_script.py 从源文件抽取声明做断言，锁定这些正确性约束，
-防止后续无意改回默认权限或漏掉进包声明造成回归。
+打包期不再显式声明权限，交回 cmake install() 的默认值（文件 644 / 目录 755）；
+profiler_tool 子树的权限终态由运行期 msprof_install.sh 末尾的 change_dir_mode /
+change_file_mode 555 收口，打包期不重复声明。
+
+本用例参照 test_build_script.py 从源文件抽取声明做断言，锁定解包方式与进包声明，
+防止后续无意改回安装期 install(CODE) 或漏掉进包声明造成回归。
 """
 
 import re
@@ -73,20 +74,25 @@ def test_extracted_dir_installed_via_install_directory():
     assert "COMPONENT oam-tools" in block
 
 
-def test_install_directory_declares_555_permissions():
-    # 关键回归看护：必须显式声明 555（r-xr-xr-x）文件/目录权限，
-    # 否则 install(DIRECTORY) 默认 644/755，导致 --extract 与 --full 权限不一致。
+def test_install_directory_declares_file_555_but_no_dir_perms():
+    # 文件权限显式 555：与运行期 msprof_install.sh 的 change_file_mode 555 一致，
+    # 使 --noexec --extract 旁路（不跑安装脚本）下的文件权限不退回 644。
+    # 目录权限不声明：交回 cmake 默认的 755。unlink 只看父目录写位，目录必须带
+    # owner 写位，否则 build/_CPack_Packages/ 下的产物无法 rm -rf（CI 随机失败）。
     block = get_install_directory_block()
     file_perm = re.search(r"FILE_PERMISSIONS\s+(.*?)(?:DIRECTORY_PERMISSIONS|PATTERN|\))", block, re.S)
+    assert file_perm is not None, "install(DIRECTORY) 应显式声明 FILE_PERMISSIONS 555"
+    perms = file_perm.group(1)
+    # 555 = READ + EXECUTE for OWNER/GROUP/WORLD，且不含任何 WRITE。
+    assert "OWNER_READ" in perms and "OWNER_EXECUTE" in perms
+    assert "GROUP_READ" in perms and "GROUP_EXECUTE" in perms
+    assert "WORLD_READ" in perms and "WORLD_EXECUTE" in perms
+    assert "WRITE" not in perms, "文件 555 权限不应含任何 WRITE 位"
+    # 目录权限一律不得摘掉 owner 写位：要么不声明，要么声明里必须含 OWNER_WRITE。
     dir_perm = re.search(r"DIRECTORY_PERMISSIONS\s+(.*?)(?:PATTERN|\))", block, re.S)
-    assert file_perm is not None, "install(DIRECTORY) 缺少 FILE_PERMISSIONS 声明"
-    assert dir_perm is not None, "install(DIRECTORY) 缺少 DIRECTORY_PERMISSIONS 声明"
-    for perms in (file_perm.group(1), dir_perm.group(1)):
-        # 555 = READ + EXECUTE for OWNER/GROUP/WORLD，且不含任何 WRITE。
-        assert "OWNER_READ" in perms and "OWNER_EXECUTE" in perms
-        assert "GROUP_READ" in perms and "GROUP_EXECUTE" in perms
-        assert "WORLD_READ" in perms and "WORLD_EXECUTE" in perms
-        assert "WRITE" not in perms, "555 权限不应含任何 WRITE 位"
+    if dir_perm is not None:
+        assert "OWNER_WRITE" in dir_perm.group(1), \
+            "若声明 DIRECTORY_PERMISSIONS，必须含 OWNER_WRITE，否则产物目录无法删除"
 
 
 def test_sentinel_file_excluded_from_package():
@@ -145,13 +151,11 @@ def get_install_programs_whl_block():
 
 
 def test_install_programs_whl_declares_555_permissions():
-    # whl 随包分发、install.sh 靠它判断是否跑 msprof_install，其包内权限属"两种
-    # 安装文件树一致"目标范围。旧 install(CODE) 的 chmod -R 555 连带把 whl 刷 555，
-    # 故 install(PROGRAMS) 须显式声明 555（安装期终态动作），否则 --noexec --extract
-    # 路径下 whl 停在默认 755，与旧行为不一致。
+    # whl 自身保留显式 555：它是文件，无写位不影响目录可删除性，
+    # 故与历史终态保持一致（旧 install(CODE) 的 chmod -R 555 连带刷过 whl）。
     block = get_install_programs_whl_block()
     perm = re.search(r"PERMISSIONS\s+(.*?)\)", block, re.S)
-    assert perm is not None, "install(PROGRAMS) 缺少 PERMISSIONS 声明"
+    assert perm is not None, "install(PROGRAMS) 应显式声明 PERMISSIONS 555"
     perms = perm.group(1)
     assert "OWNER_READ" in perms and "OWNER_EXECUTE" in perms
     assert "GROUP_READ" in perms and "GROUP_EXECUTE" in perms

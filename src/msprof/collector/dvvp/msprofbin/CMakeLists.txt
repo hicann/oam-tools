@@ -275,7 +275,7 @@ add_dependencies(msprofbin msprofbin_proto)
 set(msprof_whl
     ${CMAKE_CURRENT_SOURCE_DIR}/msprof-0.0.1-py3-none-any.whl
 )
-# whl 进包权限 555，等价旧 install(CODE) 的 chmod -R 555（安装期终态，不影响重解包）。
+# whl 自身保留显式 555（文件权限，不影响目录可删除性），与历史终态一致。
 install(PROGRAMS ${msprof_whl}
     DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool
     ${INSTALL_OPTIONAL}
@@ -305,13 +305,15 @@ if(EXISTS "${msprof_whl}")
     # 绑定主构建目标，保证 install 依赖的解包产物在构建后就绪。
     add_dependencies(msprofbin msprof_whl_extract)
 
-    # 权限仅在安装期声明 555，等价旧 install(CODE) 的安装期 chmod 555。
+    # 文件权限保留显式 555，与运行期 msprof_install.sh 的 change_file_mode 555 一致，
+    # 使 --noexec --extract 旁路（不跑安装脚本）下的文件权限不退回 644。
+    # 目录权限不声明，交回 cmake 默认的 755：unlink 只看父目录写位，目录带 owner
+    # 写位才能让 build/ 被 rm -rf 删除（文件无写位不阻塞删除）。
     install(DIRECTORY "${_msprof_extracted_dir}/"
         DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool
         ${INSTALL_OPTIONAL}
         COMPONENT oam-tools
         FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-        DIRECTORY_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         PATTERN ".extracted" EXCLUDE
     )
 endif()
