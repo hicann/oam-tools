@@ -271,9 +271,15 @@ target_link_libraries(msprofbinOnetrack_pub INTERFACE
 
 add_dependencies(msprofbin msprofbin_proto)
 
-set(msprof_whl
-    ${CMAKE_CURRENT_SOURCE_DIR}/msprof-0.0.1-py3-none-any.whl
+# CMake 不感知 whl 来源，在当前目录中匹配唯一 msprof-*-py3-none-any.whl 并安装/打包。
+# build.sh 负责确保该路径下的 whl 已替换为产品每日构建产物（版本字段可变，故用 glob）。
+file(GLOB msprof_whl
+    "${CMAKE_CURRENT_SOURCE_DIR}/msprof-*-py3-none-any.whl"
 )
+list(LENGTH msprof_whl _msprof_whl_count)
+if(_msprof_whl_count GREATER 1)
+    message(FATAL_ERROR "multiple msprof whl found, expected exactly one: ${msprof_whl}")
+endif()
 # whl 自身保留显式 555（文件权限，不影响目录可删除性），与历史终态一致。
 install(PROGRAMS ${msprof_whl}
     DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool
@@ -283,11 +289,11 @@ install(PROGRAMS ${msprof_whl}
 )
 
 # 构建期解包 whl 进包，等价旧 install(CODE)；if(EXISTS) 守卫单独联编无 whl 的场景。
-if(EXISTS "${msprof_whl}")
+if(msprof_whl)
     set(_msprof_extracted_dir "${CMAKE_CURRENT_BINARY_DIR}/msprof_whl_extracted")
     add_custom_command(
         OUTPUT "${_msprof_extracted_dir}/.extracted"
-        # 先删后建：whl 版本恒定，pip 无 --force-reinstall 会判 already satisfied 跳过、残留旧代码。
+        # 先删后建：pip 无 --force-reinstall 会判 already satisfied 跳过、残留旧代码。
         COMMAND ${CMAKE_COMMAND} -E remove_directory "${_msprof_extracted_dir}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_msprof_extracted_dir}"
         COMMAND pip3 install --no-deps --disable-pip-version-check

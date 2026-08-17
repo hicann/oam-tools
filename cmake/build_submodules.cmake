@@ -76,40 +76,165 @@ function(oam_populate_submodule NAME GIT_URL RESULT_VAR)
     set(${RESULT_VAR} "${_dest}" PARENT_SCOPE)
 endfunction()
 
-# --- build msprof analysis：构建 wheel 并同步到 msprofbin 源码目录 ---
-# 优先用兄弟目录 mindstudio/msprof，否则填充 submodule/msprof。
+# --- msprof analysis：取 profiler run 包，提取 analysis whl 并同步到 msprofbin 源码目录 ---
 function(oam_build_msprof_analysis)
-    if(EXISTS "${OAM_TOOLS_DIR}/../../mindstudio/msprof")
-        message(STATUS "msprof using mindstudio")
-        set(_msprof_build_path "${OAM_TOOLS_DIR}/../../mindstudio/msprof")
+    # 1. 获取目标架构：优先 MSPROF_DAILY_ARCH，否则按 host 架构
+    if(DEFINED ENV{MSPROF_DAILY_ARCH})
+        set(_machine "$ENV{MSPROF_DAILY_ARCH}")
+        message(STATUS "msprof analysis: arch overridden by MSPROF_DAILY_ARCH=${_machine}")
     else()
-        oam_populate_submodule("msprof" "https://gitcode.com/Ascend/msprof.git"
-            _msprof_build_path)
+        execute_process(
+            COMMAND uname -m
+            OUTPUT_VARIABLE _machine
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
     endif()
 
+    # 2. 架构映射。_local_arch 用于匹配 run 包名（x86_64），_pkg_arch 用于 so 架构
+    #    校验的期望值（x86），两者命名不同故分开取值。
+    if(_machine STREQUAL "aarch64" OR _machine STREQUAL "arm64")
+        set(_pkg_arch "aarch64")
+        set(_local_arch "aarch64")
+    elseif(_machine STREQUAL "x86_64" OR _machine STREQUAL "amd64")
+        set(_pkg_arch "x86")
+        set(_local_arch "x86_64")
+    else()
+        message(FATAL_ERROR "unsupported host arch: ${_machine}")
+    endif()
+
+    # 3. 临时目录（每次构建前清理）
+    set(_daily_root "${CMAKE_BINARY_DIR}/msprof_analysis_daily")
+    set(_pkg_dir "${_daily_root}/package")
+    set(_extract_dir "${_daily_root}/extract")
+    set(_whl_extract_dir "${_daily_root}/whl_extract")
+    file(REMOVE_RECURSE "${_daily_root}")
+    file(MAKE_DIRECTORY "${_pkg_dir}")
+
+    # 4~5. 取 run 包：本地包目录存在则用其中的包，否则从每日构建下载。
+    #       两条分支都把 run 包落到 ${_pkg_dir}/，之后的解压、取 whl、校验、拷贝链路共用。
+    if(EXISTS "${OAM_TOOLS_DIR}/../../build/platform/mindstudio")
+        # 匹配到多个无法判定用哪个，直接报错而非随意取一。
+        set(_local_pkg_dir "${OAM_TOOLS_DIR}/../../build/platform/mindstudio")
+        file(GLOB _local_run_pkgs
+            "${_local_pkg_dir}/mindstudio-profiler_*_${_local_arch}.run")
+        list(LENGTH _local_run_pkgs _local_run_count)
+        if(_local_run_count GREATER 1)
+            message(FATAL_ERROR
+                "msprof analysis: multiple run packages found in ${_local_pkg_dir}, "
+                "cannot determine uniquely:\n${_local_run_pkgs}")
+        endif()
+
+        # 缺本架构 run 包时打印失败日志后跳过，不阻断构建：msprofbin/CMakeLists.txt
+        # 的 if(msprof_whl) 会因目标目录无 whl 而跳过解包与进包声明。必须 return()——
+        # 继续往下走会在解压/找 whl 处以 FATAL_ERROR 中止，那就不是"跳过"了。
+        if(_local_run_count EQUAL 0)
+            message(WARNING
+                "msprof analysis: no mindstudio-profiler_*_${_local_arch}.run found in "
+                "${_local_pkg_dir}, skip msprof analysis whl preparation")
+            return()
+        endif()
+
+        # 拷进构建目录再改权限：buildplatform 是只读输入，不应在原地 chmod（第 7 步需 755）。
+        list(GET _local_run_pkgs 0 _local_run_src)
+        message(STATUS "msprof analysis: using local package: ${_local_run_src}")
+        file(COPY "${_local_run_src}" DESTINATION "${_pkg_dir}")
+        get_filename_component(_run_pkg_name "${_local_run_src}" NAME)
+        set(_run_pkg "${_pkg_dir}/${_run_pkg_name}")
+    else()
+        message(STATUS "msprof analysis: local package dir not found, downloading daily package")
+        set(_run_url
+            "https://ascend-package.obs.cn-north-4.myhuaweicloud.com/msprof_daily/mindstudio-profiler_1.0.0_${_pkg_arch}.run")
+        message(STATUS "msprof analysis: daily package URL: ${_run_url}")
+        # 本地文件名从 URL 推导，避免版本号在 URL 和文件名两处硬编码、改一处漏一处。
+        get_filename_component(_run_pkg_name "${_run_url}" NAME)
+        set(_run_pkg "${_pkg_dir}/${_run_pkg_name}")
+        file(DOWNLOAD "${_run_url}" "${_run_pkg}" STATUS _dl_status SHOW_PROGRESS TIMEOUT 600)
+        list(GET _dl_status 0 _dl_rc)
+        if(NOT _dl_rc EQUAL 0)
+            list(GET _dl_status 1 _dl_msg)
+            message(FATAL_ERROR "msprof analysis: download failed (rc=${_dl_rc}): ${_dl_msg}")
+        endif()
+    endif()
+
+    # 6. 校验 run 包存在且大小 > 0
+    if(NOT EXISTS "${_run_pkg}")
+        message(FATAL_ERROR "msprof analysis: run package not found: ${_run_pkg}")
+    endif()
+    file(SIZE "${_run_pkg}" _pkg_size)
+    if(_pkg_size EQUAL 0)
+        message(FATAL_ERROR "msprof analysis: run package size is 0: ${_run_pkg}")
+    endif()
+    message(STATUS "msprof analysis: run package ${_pkg_size} bytes")
+
+    # 7. 解压 run 包
+    execute_process(COMMAND chmod 755 "${_run_pkg}")
     execute_process(
-        COMMAND ${Python3_EXECUTABLE} "${_msprof_build_path}/build/setup.py"
-                bdist_wheel --python-tag=py3 --py-limited-api=cp37
-        WORKING_DIRECTORY "${_msprof_build_path}"
-        RESULT_VARIABLE _msprof_rc
+        COMMAND "${_run_pkg}" --noexec --extract=${_extract_dir}
+        RESULT_VARIABLE _extract_rc
+        OUTPUT_VARIABLE _extract_out
+        ERROR_VARIABLE _extract_err
     )
-    if(NOT _msprof_rc EQUAL 0)
-        message(FATAL_ERROR "build msprof wheel failed (rc=${_msprof_rc})")
+    if(NOT _extract_rc EQUAL 0)
+        message(FATAL_ERROR "msprof analysis: run package extract failed (rc=${_extract_rc}):\n${_extract_err}")
     endif()
 
-    set(_msprof_whl_dst "${OAM_TOOLS_DIR}/src/msprof/collector/dvvp/msprofbin")
-    set(_msprof_whl_src "${_msprof_build_path}/dist/msprof-0.0.1-py3-none-any.whl")
-    # bdist_wheel 即使 rc=0 也可能因产物名变化而拿不到期望的 whl；file(COPY) 对不存在的
-    # 源会静默跳过，导致后续 msprofbin 打包缺 whl。显式校验后再拷。
-    if(NOT EXISTS "${_msprof_whl_src}")
-        message(FATAL_ERROR "msprof wheel not found after build: ${_msprof_whl_src}")
+    # 8. 查找 analysis whl（GLOB_RECURSE 自动递归子目录）
+    file(GLOB_RECURSE _whl_candidates "${_extract_dir}/msprof-*-py3-none-any.whl")
+    list(LENGTH _whl_candidates _whl_count)
+    if(_whl_count EQUAL 0)
+        message(FATAL_ERROR "msprof analysis: no msprof-*-py3-none-any.whl found in ${_extract_dir}")
     endif()
-    # 先删后拷：旧 whl 可能是只读（源自只读 third_party 或上一轮规范化），直接覆盖会失败。
-    file(REMOVE "${_msprof_whl_dst}/msprof-0.0.1-py3-none-any.whl")
-    file(COPY "${_msprof_whl_src}"
+    if(_whl_count GREATER 1)
+        message(FATAL_ERROR "msprof analysis: multiple whl candidates found, cannot determine uniquely:\n${_whl_candidates}")
+    endif()
+    list(GET _whl_candidates 0 _whl_src)
+    message(STATUS "msprof analysis: found whl: ${_whl_src}")
+
+    # 9. 解压 whl 到临时目录，校验 msprof_analysis.so 存在
+    file(MAKE_DIRECTORY "${_whl_extract_dir}")
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m zipfile -e "${_whl_src}" "${_whl_extract_dir}"
+        RESULT_VARIABLE _whl_unzip_rc
+    )
+    if(NOT _whl_unzip_rc EQUAL 0)
+        message(FATAL_ERROR "msprof analysis: whl unzip failed (rc=${_whl_unzip_rc})")
+    endif()
+    file(GLOB_RECURSE _so_candidates "${_whl_extract_dir}/**/msprof_analysis.so")
+    list(LENGTH _so_candidates _so_count)
+    if(_so_count EQUAL 0)
+        message(FATAL_ERROR "msprof analysis: msprof_analysis.so not found in whl: ${_whl_src}")
+    endif()
+    list(GET _so_candidates 0 _so_path)
+    message(STATUS "msprof analysis: found msprof_analysis.so: ${_so_path}")
+
+    # 10. native so 架构校验
+    find_program(FILE_CMD file)
+    if(FILE_CMD)
+        execute_process(
+            COMMAND ${FILE_CMD} "${_so_path}"
+            OUTPUT_VARIABLE _so_file_out
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        message(STATUS "msprof analysis: so file type: ${_so_file_out}")
+        if(_pkg_arch STREQUAL "aarch64" AND NOT _so_file_out MATCHES "aarch64")
+            message(FATAL_ERROR "msprof analysis: msprof_analysis.so arch mismatch (expected aarch64): ${_so_file_out}")
+        endif()
+        if(_pkg_arch STREQUAL "x86" AND NOT _so_file_out MATCHES "x86-64")
+            message(FATAL_ERROR "msprof analysis: msprof_analysis.so arch mismatch (expected x86-64): ${_so_file_out}")
+        endif()
+    endif()
+
+    # 11. 拷贝 whl 到 msprofbin 源码目录（先删旧 whl，版本字段可变）
+    set(_msprof_whl_dst "${OAM_TOOLS_DIR}/src/msprof/collector/dvvp/msprofbin")
+    file(GLOB _old_whls "${_msprof_whl_dst}/msprof-*-py3-none-any.whl")
+    foreach(_old ${_old_whls})
+        file(REMOVE "${_old}")
+    endforeach()
+    file(COPY "${_whl_src}"
         DESTINATION "${_msprof_whl_dst}"
         FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
     )
+    message(STATUS "msprof analysis: whl copied to ${_msprof_whl_dst}")
 endfunction()
 
 # --- build adump analysis：同步 msaccucmp 到 operator_cmp/msaccucmp/compare ---

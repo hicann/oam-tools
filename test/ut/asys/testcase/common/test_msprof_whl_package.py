@@ -118,16 +118,19 @@ def test_no_chmod_at_build_time():
 
 
 def test_extraction_guarded_by_whl_existence():
-    # whl 由 configure 期生成，本目录单独联编时不生成。解包段必须用
-    # if(EXISTS "${msprof_whl}") 守卫，等价旧 install(CODE) 的 if(EXISTS)——
-    # 缺失时静默跳过、不报错。
+    # whl 由 configure 期生成，本目录单独联编时不生成。解包段必须有守卫，
+    # 等价旧 install(CODE) 的 if(EXISTS)——缺失时静默跳过、不报错。
+    # msprof_whl 现由 file(GLOB) 得到（版本字段可变），是列表而非单一路径，
+    # 故用 if(msprof_whl) 判空：空列表为假，与 if(EXISTS) 在 0/1 个 whl 时
+    # 等价；多个 whl 时 if(EXISTS) 会因列表拼成分号串而误判为假、静默跳过
+    # 解包，if(msprof_whl) 无此问题（多 whl 另由前置 FATAL_ERROR 拦住）。
     content = get_cmake_content()
-    assert 'if(EXISTS "${msprof_whl}")' in content, \
-        "解包段应由 if(EXISTS \"${msprof_whl}\") 守卫，缺失 whl 时静默跳过"
+    assert "if(msprof_whl)" in content, \
+        "解包段应由 if(msprof_whl) 守卫，缺失 whl 时静默跳过"
 
 
 def test_extracted_dir_cleaned_before_pip():
-    # whl 版本恒为 0.0.1，pip 无 --force-reinstall 时对已存在包判 already satisfied
+    # pip 无 --force-reinstall 时对已存在包判 already satisfied
     # 而跳过、残留旧代码。解包前必须先 remove_directory 清空，保证重解包树完全来自
     # 当前 whl（等价旧 install(CODE) 解到每次被 clean_cpack_staging 清空的目录）。
     content = get_cmake_content()
