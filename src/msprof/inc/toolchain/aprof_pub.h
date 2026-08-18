@@ -152,6 +152,7 @@ typedef void* VOID_PTR;
 #define PROF_TASK_TIME_L2_MASK         0x00002000ULL
 #define PROF_OP_ATTR_MASK              0x00004000ULL
 #define PROF_TASK_TIME_L3_MASK         0x00008000ULL
+#define PROF_AICORE_SHAPE_MASK         0x800000000ULL
 
 // system profiling mask
 #define PROF_CPU_MASK                  0x00010000ULL
@@ -342,7 +343,7 @@ struct MsprofAicTimeStampInfo {
     uint64_t syscyc;   // dotting timestamp with system cycle
     uint32_t blockId;  // core block id
     uint32_t descId;   // dot Id for description
-    uint64_t curPc;   // currrent pc for source line
+    uint64_t curPc;   // current pc for source line
 };
 
 struct MsprofRuntimeTrack {  // for MsprofReportCompactInfo buffer data
@@ -525,9 +526,9 @@ MSVP_PROF_API int32_t MsprofReportEvent(uint32_t nonPersistantFlag, const struct
 /**
  * @ingroup libprofapi
  * @name  MsprofReportCompactInfo
- * @brief report profiling compact infomation
+ * @brief report profiling compact information
  * @param[in] nonPersistantFlag  0 isn't aging, !0 is aging
- * @param[in] data               profiling data of compact infomation
+ * @param[in] data               profiling data of compact information
  * @param[in] length             length of profiling data
  * @return 0:SUCCESS, !0:FAILED
  */
@@ -536,9 +537,9 @@ MSVP_PROF_API int32_t MsprofReportCompactInfo(uint32_t nonPersistantFlag, const 
 /**
  * @ingroup libprofapi
  * @name  MsprofReportAdditionalInfo
- * @brief report profiling additional infomation
+ * @brief report profiling additional information
  * @param[in] nonPersistantFlag  0 isn't aging, !0 is aging
- * @param[in] data               profiling data of additional infomation
+ * @param[in] data               profiling data of additional information
  * @param[in] length             length of profiling data
  * @return 0:SUCCESS, !0:FAILED
  */
@@ -547,9 +548,9 @@ MSVP_PROF_API int32_t MsprofReportAdditionalInfo(uint32_t nonPersistantFlag, con
 /**
  * @ingroup libprofapi
  * @name  MsprofReportAdditionalInfo
- * @brief report profiling additional infomation
+ * @brief report profiling additional information
  * @param[in] nonPersistantFlag  0 isn't aging, !0 is aging
- * @param[in] data               profiling data of additional infomation
+ * @param[in] data               profiling data of additional information
  * @param[in] length             length of profiling data
  * @return 0:SUCCESS, !0:FAILED
  */
@@ -590,8 +591,8 @@ MSVP_PROF_API int32_t MsprofRegDataFormat(uint16_t level, uint32_t typeId, const
  * @ingroup libprofapi
  * @name  MsprofGetHashId
  * @brief return hash id of hash info
- * @param[in] hashInfo  infomation to be hashed
- * @param[in] length    the length of infomation to be hashed
+ * @param[in] hashInfo  information to be hashed
+ * @param[in] length    the length of information to be hashed
  * @return hash id
  */
 MSVP_PROF_API uint64_t MsprofGetHashId(const char *hashInfo, size_t length);
@@ -600,8 +601,8 @@ MSVP_PROF_API uint64_t MsprofGetHashId(const char *hashInfo, size_t length);
  * @ingroup libprofapi
  * @name  MsprofStr2Id
  * @brief Return the corresponding hash id code of the input string.
- * @param[in] hashInfo  string infomation to be hashed
- * @param[in] length    the length of string infomation
+ * @param[in] hashInfo  string information to be hashed
+ * @param[in] length    the length of string information
  * @return hash id
  */
 MSVP_PROF_API uint64_t MsprofStr2Id(const char *hashInfo, size_t length);

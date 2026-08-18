@@ -45,6 +45,7 @@ extern "C" {
 #define ACL_PROF_TASK_TIME_L2           0x2000ULL
 #define ACL_PROF_OP_ATTR                0x4000ULL
 #define ACL_PROF_TASK_TIME_L3           0x8000ULL
+#define ACL_PROF_AICORE_SHAPE           0x800000000ULL
 
 /**
  * @deprecated please use aclprofGetOpTypeLen and aclprofGetOpTNameLen instead
@@ -371,7 +372,7 @@ MSVP_PROF_API uint64_t aclprofGetOpEnd(const void *opInfo, size_t opInfoLen, uin
 
 /**
  * @ingroup AscendCL
- * @brief get excution time of specified op from subscription data
+ * @brief get execution time of specified op from subscription data
  *
  * @param  opInfo [IN]     pointer to subscription data
  * @param  opInfoLen [IN]  memory size of subscription data

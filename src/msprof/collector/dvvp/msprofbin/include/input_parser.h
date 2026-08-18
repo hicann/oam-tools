@@ -69,6 +69,7 @@ enum MsprofArgsType {
     ARGS_RUNTIME_API,
     ARGS_TASK_TSFW,
     ARGS_TASK_TIME,
+    ARGS_AICORE_SHAPE,
     ARGS_GE_API,
     ARGS_TASK_MEMORY,
     ARGS_AICPU,
@@ -102,8 +103,8 @@ enum MsprofArgsType {
     ARGS_HARDWARE_MEM_SAMPLING_FREQ, // 50 1-10000 hz
     ARGS_IO_SAMPLING_FREQ,           // 100 1-100 hz
     ARGS_DVPP_FREQ,                  // 50 1-100 hz
-    ARGS_CPU_SAMPLING_FREQ,          // 50 1-50 hz
     ARGS_INVALID = 63,               // OsalGetOptLong will return opt = 63 for invalid argument
+    ARGS_CPU_SAMPLING_FREQ,          // 50 1-50 hz
     ARGS_INTERCONNECTION_FREQ,       // 50 1-50 hz
     ARGS_HOST_SYS_USAGE_FREQ,        // 50 1-50 hz
     ARGS_SYS_LOW_POWER_FREQ,         // 10000 1-10000hz
@@ -155,6 +156,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"runtime-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_RUNTIME_API},         // the default value is off
     {"task-tsfw", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TSFW},             // the default value is off
     {"task-time", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TIME},             // the default value is on
+    {"aicore-shape", OSAL_REQUIRED_ARG, nullptr, ARGS_AICORE_SHAPE},
     {"ge-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_GE_API},
     {"task-memory", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_MEMORY},         // the default value is off
     {"aicpu", OSAL_OPTIONAL_ARG, nullptr, ARGS_AICPU},
@@ -188,8 +190,8 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"sys-hardware-mem-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HARDWARE_MEM_SAMPLING_FREQ},
     {"sys-io-sampling-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_IO_SAMPLING_FREQ},
     {"dvpp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_FREQ},
-    {"sys-cpu-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_CPU_SAMPLING_FREQ},
     {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
+    {"sys-cpu-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_CPU_SAMPLING_FREQ},
     {"sys-interconnection-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_INTERCONNECTION_FREQ},
     {"host-sys-usage-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE_FREQ},
     {"sys-lp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_LOW_POWER_FREQ},

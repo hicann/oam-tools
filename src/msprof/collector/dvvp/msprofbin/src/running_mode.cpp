@@ -102,7 +102,7 @@ int32_t RunningMode::CheckNeccessaryParams() const
                    inserter(moreReqParams, moreReqParams.begin()));
     if (!moreReqParams.empty()) {
         std::string reqParams = ConvertParamsSetToString(moreReqParams);
-        CmdLog::CmdErrorLog("The argument %s is neccessary when --%s is not empty", reqParams.c_str(),
+        CmdLog::CmdErrorLog("The argument %s is necessary when --%s is not empty", reqParams.c_str(),
                             preCheckParams_.c_str());
         return PROFILING_FAILED;
     }
@@ -476,7 +476,7 @@ int32_t RunningMode::StartExportTask()
 
 void RunningMode::StopNoWait()
 {
-    CmdLog::CmdWarningLog("Receive stop singal.");
+    CmdLog::CmdWarningLog("Receive stop signal.");
     DynProfCliMgr::instance()->StopDynProfCli();
     StopRunningTasks();
     UpdateOutputDirInfo();
@@ -635,7 +635,8 @@ AppMode::AppMode(std::string preCheckParams, SHARED_PTR_ALIA<ProfileParams> para
         ARGS_SYS_SAMPLING_FREQ, ARGS_PID_SAMPLING_FREQ, ARGS_HARDWARE_MEM_SAMPLING_FREQ, ARGS_MEM_SERVICEFLOW,
         ARGS_IO_SAMPLING_FREQ, ARGS_DVPP_FREQ,  ARGS_CPU_SAMPLING_FREQ, ARGS_INTERCONNECTION_FREQ,
         ARGS_HOST_SYS, ARGS_PYTHON_PATH, ARGS_MSPROFTX, ARGS_DELAY_PROF, ARGS_DURATION_PROF, ARGS_OP_TYPE,
-        ARGS_EXPORT_TYPE, ARGS_MSTX_DOMAIN_INCLUDE, ARGS_MSTX_DOMAIN_EXCLUDE, ARGS_NTS_METRICS
+        ARGS_EXPORT_TYPE, ARGS_MSTX_DOMAIN_INCLUDE, ARGS_MSTX_DOMAIN_EXCLUDE, ARGS_NTS_METRICS,
+        ARGS_AICORE_SHAPE
     };
 }
 
@@ -944,7 +945,7 @@ int32_t SystemMode::ModeParamsCheck()
     }
 
     if (CheckNeccessaryParams() != PROFILING_SUCCESS) {
-        MSPROF_LOGE("[System Mode] Check neccessary params failed!");
+        MSPROF_LOGE("[System Mode] Check necessary params failed!");
         return PROFILING_FAILED;
     }
     if (!DataWillBeCollected()) {

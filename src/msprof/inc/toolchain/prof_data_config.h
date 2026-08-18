@@ -36,6 +36,7 @@
 #define PROF_TASK_TIME_L2         0x00002000ULL
 #define PROF_OP_ATTR              0x00004000ULL
 #define PROF_TASK_TIME_L3         0x00008000ULL
+#define PROF_AICORE_SHAPE         0x800000000ULL
 
 // system profilinig switch
 #define PROF_CPU                  0x00010000ULL

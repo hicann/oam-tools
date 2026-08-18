@@ -43,10 +43,10 @@ constexpr int32_t CPU_SAMPLING_INTERVAL_FOR_FREQ_TEN = 100;
 constexpr int32_t INVALID_FREQ_OPTION = 100;
 constexpr int32_t DYNAMIC_OUTPUT_ARG_INDEX = 2;
 constexpr int32_t DYNAMIC_APP_ARG_INDEX = 3;
-constexpr int32_t DVPP_FREQ_ARG_INDEX = 61;
-constexpr int32_t CPU_SAMPLING_FREQ_ARG_INDEX = 62;
+constexpr int32_t DVPP_FREQ_ARG_INDEX = 62;
 constexpr int32_t INVALID_ARG_INDEX = 63;
-constexpr int32_t INTERCONNECTION_FREQ_ARG_INDEX = 64;
+constexpr int32_t CPU_SAMPLING_FREQ_ARG_INDEX = 64;
+constexpr int32_t INTERCONNECTION_FREQ_ARG_INDEX = 65;
 constexpr int32_t APP_PARAM_EXCEED_MAX_LEN = analysis::dvvp::common::config::MAX_APP_LEN + 1;
 constexpr int32_t OP_TYPE_EXCEED_MAX_LEN = 300;
 constexpr PlatformType TARGET_CHIP_TYPE = PlatformType::CHIP_MDC_V2;
@@ -78,6 +78,8 @@ TEST_F(INPUT_PARSER_UTEST, ProcessOptions) {
     optarg = onArgs.data();
     EXPECT_EQ(PROFILING_SUCCESS, parser.ProcessOptions(ARGS_OUTPUT, cmdInfo));
     EXPECT_EQ(PROFILING_SUCCESS, parser.ProcessOptions(ARGS_ASCENDCL, cmdInfo));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ProcessOptions(ARGS_AICORE_SHAPE, cmdInfo));
+    EXPECT_EQ("on", parser.params_->aicoreShape);
     optarg = freqArgs.data();
     EXPECT_EQ(PROFILING_SUCCESS, parser.ProcessOptions(ARGS_AIC_FREQ, cmdInfo));
     optarg = hostArgs.data();
@@ -569,6 +571,17 @@ TEST_F(INPUT_PARSER_UTEST, PrintHelpHidesNtsMetricsOnOtherPlatform) {
     EXPECT_EQ(std::string::npos, helpOutput.str().find("--nts-metrics"));
 }
 
+TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsAicoreShape) {
+    testing::internal::CaptureStdout();
+    ArgsManager argsManager;
+    argsManager.PrintHelp();
+    const std::string help = testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(std::string::npos, help.find("--aicore-shape"));
+    EXPECT_NE(std::string::npos, help.find("takes effect only when task-time is l0"));
+    EXPECT_NE(std::string::npos, help.find("default value is off"));
+}
+
 TEST_F(INPUT_PARSER_UTEST, CheckAiCoreMetricsValidModena) {
     SetPlatformTypeForTest(PlatformType::CHIP_5162A);
     Platform::instance()->Uninit();
@@ -866,6 +879,12 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
     cmdInfo.args[ARGS_TASK_TIME] = "l1";
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_TASK_TIME));
+    cmdInfo.args[ARGS_AICORE_SHAPE] = "on";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_AICORE_SHAPE));
+    cmdInfo.args[ARGS_AICORE_SHAPE] = "off";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_AICORE_SHAPE));
+    cmdInfo.args[ARGS_AICORE_SHAPE] = "invalid";
+    EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_AICORE_SHAPE));
     cmdInfo.args[ARGS_GE_API] = "fwk";
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_GE_API));
     cmdInfo.args[ARGS_GE_API] = "off";
@@ -1214,11 +1233,12 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset) {
     EXPECT_EQ(CPU_SAMPLING_FREQ_ARG_INDEX, ARGS_CPU_SAMPLING_FREQ);
     EXPECT_EQ(INVALID_ARG_INDEX, ARGS_INVALID);
     EXPECT_EQ(INTERCONNECTION_FREQ_ARG_INDEX, ARGS_INTERCONNECTION_FREQ);
-    EXPECT_EQ("dvpp-freq", LONG_OPTIONS[ARGS_DVPP_FREQ].name);                           // 61
-    EXPECT_EQ("sys-cpu-freq", LONG_OPTIONS[ARGS_CPU_SAMPLING_FREQ].name);                // 62
+    EXPECT_EQ("dvpp-freq", LONG_OPTIONS[ARGS_DVPP_FREQ].name);                           // 62
     EXPECT_EQ("invalid", LONG_OPTIONS[ARGS_INVALID].name);                               // 63
-    EXPECT_EQ("sys-interconnection-freq", LONG_OPTIONS[ARGS_INTERCONNECTION_FREQ].name); // 64
+    EXPECT_EQ("sys-cpu-freq", LONG_OPTIONS[ARGS_CPU_SAMPLING_FREQ].name);                // 64
+    EXPECT_EQ("sys-interconnection-freq", LONG_OPTIONS[ARGS_INTERCONNECTION_FREQ].name); // 65
     EXPECT_EQ("nts-metrics", LONG_OPTIONS[ARGS_NTS_METRICS].name);
+    EXPECT_EQ("aicore-shape", LONG_OPTIONS[ARGS_AICORE_SHAPE].name);
 }
 TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
     GlobalMockObject::verify();

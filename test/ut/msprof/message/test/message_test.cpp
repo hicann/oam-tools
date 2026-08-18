@@ -170,6 +170,7 @@ TEST_F(MESSAGE_MESSAGE_PROFILEPARAMS_TEST, FromObject) {
     GlobalMockObject::verify();
 
     ProfileParams params;
+    params.aicoreShape = "on";
 
     NanoJson::Json object;
     params.ToObject(object);
@@ -192,6 +193,7 @@ TEST_F(MESSAGE_MESSAGE_PROFILEPARAMS_TEST, FromObject) {
     EXPECT_EQ(params1.hccsInterval, params.hccsInterval);
     EXPECT_EQ(params1.pcieInterval, params.pcieInterval);
     EXPECT_EQ(params1.dvpp_sampling_interval, params.dvpp_sampling_interval);
+    EXPECT_EQ(params1.aicoreShape, params.aicoreShape);
 }
 
 TEST_F(MESSAGE_MESSAGE_PROFILEPARAMS_TEST, DISABLED_ToString) {

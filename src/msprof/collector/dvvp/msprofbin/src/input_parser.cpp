@@ -982,6 +982,9 @@ bool InputParser::SetBasicSwitchParam(const struct MsprofCmdInfo &cmdInfo, int32
             params_->taskTime = cmdInfo.args[opt];
             SetTaskTimeSwitch(cmdInfo.args[opt]);
             return true;
+        case ARGS_AICORE_SHAPE:
+            params_->aicoreShape = cmdInfo.args[opt];
+            return true;
         case ARGS_TASK_MEMORY:
             params_->taskMemory = cmdInfo.args[opt];
             return true;
@@ -2544,6 +2547,8 @@ ArgsManager::ArgsManager()
     {"runtime-api", "Show runtime api profiling data, the default value is off.", OFF},
     {"task-time", "Show task profiling data, the default value is on. "
         "The possible parameters are " + task_trace_ranges, ON},
+    {"aicore-shape", "Collect AI Core operator shape data. This option takes effect only when task-time is l0. "
+        "The possible values are 'on' and 'off', and the default value is off.", OFF},
     {"task-tsfw", "Specify the start of collection of ts management data, the default value is off.", OFF},
     {"task-memory", "Show the memory usage of the operator, the default value is off. "
         "The possible parameters are 'on' or 'off'.", ON},

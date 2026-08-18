@@ -132,7 +132,7 @@ TEST_F(MSPROF_MANAGER_UTEST, NotifyStop) {
     EXPECT_TRUE(msprofManager->rMode_->isQuit_);
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, NtsMetricsOnlyAllowedInAppMode)
+TEST_F(MSPROF_MANAGER_UTEST, AppOnlyOptionsAreInAppModeWhitelist)
 {
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);
@@ -141,6 +141,8 @@ TEST_F(MSPROF_MANAGER_UTEST, NtsMetricsOnlyAllowedInAppMode)
 
     EXPECT_TRUE(appMode.whiteSet_.find(ARGS_NTS_METRICS) != appMode.whiteSet_.end());
     EXPECT_TRUE(systemMode.whiteSet_.find(ARGS_NTS_METRICS) == systemMode.whiteSet_.end());
+    EXPECT_TRUE(appMode.whiteSet_.find(ARGS_AICORE_SHAPE) != appMode.whiteSet_.end());
+    EXPECT_TRUE(systemMode.whiteSet_.find(ARGS_AICORE_SHAPE) == systemMode.whiteSet_.end());
 }
 
 TEST_F(MSPROF_MANAGER_UTEST, MsProcessCmd) {
