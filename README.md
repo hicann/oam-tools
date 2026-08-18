@@ -22,12 +22,12 @@ OAM-Tools（Operations, Administration, and Maintenance）是华为 CANN 的开�
 
 OAM-Tools 包含四大核心组件，协同覆盖昇腾 AI 处理器的运维全场景：
 
-| 组件 | 功能定位 | 核心能力 |
-| --- | --- | --- |
-| **asys**（故障信息收集） | 一键式故障信息采集与诊断 | 故障信息收集、业务复跑+信息收集、软硬件/Device 状态展示、健康检查、综合检测、组件检测、trace/coredump/stackcore/coretrace/UB 文件解析、实时堆栈导出、AI Core Error 故障信息解析、性能数据采集 |
-| **msaicerr**（AI Core Error 分析） | AI Core Error 问题定位 | AI Core Error 问题分析、Dump 文件解析与数据类型转换、运行环境检查 |
-| **msprof**（性能调优） | AI 任务性能采集与分析 | 采集 AI 任务运行性能数据、AI 处理器系统数据、Host 侧系统数据、msproftx 数据；支持动态/延迟采集；提供 ACL/Ascend Graph/acl.json/环境变量多种采集方式 |
-| **hccl_test**（HCCL 性能测试） | 集合通信功能与性能测试 | 分布式训练/推理场景下，基于 HCCL 单算子 API 测试集合通信的功能正确性与性能 |
+| 组件 | 功能定位 | 核心能力 | 文档 | 运行示例 |
+| --- | --- | --- | --- | --- |
+| **asys**（故障信息收集） | 一键式故障信息采集与诊断 | 故障信息收集、业务复跑+信息收集、软硬件/Device 状态展示、健康检查、综合检测、组件检测、trace/coredump/stackcore/coretrace/UB 文件解析、实时堆栈导出、AI Core Error 故障信息解析、性能数据采集 | [用户指南](./docs/zh/asys/README.md) | [示例](./examples/README.md#asys故障信息收集与诊断) |
+| **msaicerr**（AI Core Error 分析） | AI Core Error 问题定位 | AI Core Error 问题分析、Dump 文件解析与数据类型转换、运行环境检查 | [用户指南](./docs/zh/msaicerr/README.md) | [示例](./examples/README.md#msaicerrai-core-error-分析) |
+| **msprof**（性能调优） | AI 任务性能采集与分析 | 采集 AI 任务运行性能数据、AI 处理器系统数据、Host 侧系统数据、msproftx 数据；支持动态/延迟采集；提供 ACL/Ascend Graph/acl.json/环境变量多种采集方式 | [用户指南](./docs/zh/profiling/README.md) | [示例](./examples/README.md#msprof性能调优) |
+| **hccl_test**（HCCL 性能测试） | 集合通信功能与性能测试 | 分布式训练/推理场景下，基于 HCCL 单算子 API 测试集合通信的功能正确性与性能 | [用户指南](./docs/zh/hccl_test/README.md) | — |
 
 ## 🏗️ 项目架构
 
@@ -57,32 +57,6 @@ oam-tools/
 └── version.cmake               # 版本与依赖声明
 ```
 
-## 🚀 快速开始
-
-### 1. 环境安装
-
-请先参考[快速安装指南](./docs/zh/quick_install.md)完成 CANN 软件包与编译依赖的安装。
-
-### 2. 编译构建
-
-编译前请先根据 CANN 安装路径加载环境变量：
-
-```bash
-source <CANN安装路径>/set_env.sh
-```
-
-> root 用户默认路径为 `/usr/local/Ascend/cann`；非 root 用户默认为 `${HOME}/Ascend/cann`；指定路径安装时为 `${install_path}/cann`。
-
-```bash
-bash build.sh
-```
-
-### 3. 安装到 CANN 目录
-
-```bash
-./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full
-```
-
 ## 🧩 支持的硬件环境
 
 在搭建环境之前，请先确认硬件在本工具的支持范围内，若无昇腾设备也可以通过 docker 方式编译构建（详见[快速安装](./docs/zh/quick_install.md#方式2docker部署)）。
@@ -100,7 +74,44 @@ bash build.sh
   > - "910C"是商用别称。自 CANN 8.5.0 起，ops 包统一命名为 `Ascend-cann-A3-ops_*`，请勿在包名中拼写为 `910c`、`910_c`、`910_93` 等形式。
   > - 其它芯片暂不支持，欢迎提交 issue 反馈。CANN ops 包名拼接规则与下载详见[快速安装](./docs/zh/quick_install.md#方式3手动安装)。
 
+## 🚀 快速开始：从零编译到验证
+
+以下为 root 用户默认安装路径下从零跑通的最短路径，四步即可得到可用的工具。第三方库定制、离线编译、调试构建等完整参数，以及分组件的测试验证方式，见后续的「源码编译」与「安装与验证」章节。
+
+### 1. 安装依赖
+
+参考[快速安装指南](./docs/zh/quick_install.md)完成 CANN 软件包与编译依赖的安装。
+
+### 2. 编译
+
+```bash
+# 非 root 用户将 /usr/local 替换为 ${HOME}
+source /usr/local/Ascend/cann/set_env.sh
+bash build.sh
+```
+
+编译产物为 `build_out/cann-oam-tools_<cann_version>_linux-<arch>.run`（`<arch>` 为 `x86_64` 或 `aarch64`）。
+
+### 3. 安装
+
+```bash
+./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full
+```
+
+### 4. 验证
+
+重新加载环境变量后调用 asys，能正常打印帮助信息即表示安装成功：
+
+```bash
+source /usr/local/Ascend/cann/set_env.sh
+asys -h
+```
+
+需要在真实环境中跑通各组件功能，见[运行示例](./examples/README.md)。
+
 ## 🔧 源码编译
+
+### 加载环境变量
 
 编译前请先根据 CANN 安装路径加载环境变量：
 
@@ -109,6 +120,8 @@ source <CANN安装路径>/set_env.sh
 ```
 
 > root 用户默认路径为 `/usr/local/Ascend/cann`；非 root 用户默认为 `${HOME}/Ascend/cann`；指定路径安装时为 `${install_path}/cann`。
+
+### 执行编译
 
 执行以下命令进行编译：
 
@@ -121,6 +134,8 @@ bash build.sh
 ```bash
 bash build.sh --cann_3rd_lib_path=${third_party_path}
 ```
+
+### 编译参数与依赖说明
 
 - `--cann_3rd_lib_path`：第三方库存储目录，默认值为 `./third_party`。若本地不存在第三方库，编译脚本将自动从 gitcode 开源仓库下载各第三方库源码。
 - 编译过程中会自动下载闭源二进制包，该包含有保证功能正常运行所需的库及头文件，且仅提供 release 版本，**即使编译选项指定为 debug，也只会下载 release 版本的 tar 包**。
@@ -166,11 +181,11 @@ bash build.sh -u --component msprof
 | --- | --- | --- | --- |
 | `asys` | asys Python UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[环境变量配置](./docs/zh/quick_install.md#环境变量配置) | `bash build.sh -u --component asys` |
 | `msaicerr` | msaicerr Python UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[环境变量配置](./docs/zh/quick_install.md#环境变量配置) | `bash build.sh -u --component msaicerr` |
-| `msprof` | msprof C++ gtest UT | [源码编译](#-源码编译)、[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备) | `bash build.sh -u --component msprof --ut` |
-| `install` | 安装包安装 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component install --st` |
-| `upgrade` | 安装包升级 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component upgrade --st` |
-| `uninstall` | 安装包卸载 ST | [源码编译](#-源码编译)、[安装](#安装) | `bash build.sh -u --component uninstall --st` |
-| `all` | 全部可用 UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[源码编译](#-源码编译) | `bash build.sh -u` |
+| `msprof` | msprof C++ gtest UT | [源码编译](#执行编译)、[离线编译环境准备](./docs/zh/quick_install.md#离线编译环境准备) | `bash build.sh -u --component msprof --ut` |
+| `install` | 安装包安装 ST | [源码编译](#执行编译)、[安装](#安装) | `bash build.sh -u --component install --st` |
+| `upgrade` | 安装包升级 ST | [源码编译](#执行编译)、[安装](#安装) | `bash build.sh -u --component upgrade --st` |
+| `uninstall` | 安装包卸载 ST | [源码编译](#执行编译)、[安装](#安装) | `bash build.sh -u --component uninstall --st` |
+| `all` | 全部可用 UT + ST | [环境准备](./docs/zh/quick_install.md#环境准备)、[源码编译](#执行编译) | `bash build.sh -u` |
 
 > `install`、`upgrade`、`uninstall` 仅包含 ST，用例依赖 `build_out/cann-oam-tools_<cann_version>_linux-<arch>.run`。推荐通过上表中的 `build.sh -u --component ... --st` 运行，脚本会先完成构建打包；若直接执行 `scripts/run_tests.sh`，需先确保 `build_out/` 下已有可用 `.run` 包。
 
@@ -180,100 +195,15 @@ UT 测试用例编译输出目录为 `build`，如果想清除历史编译记录
 rm -rf build_out/ build/
 ```
 
-## ▶️ 功能运行示例
-
-完成安装后，工具会被释放到 CANN 安装目录下的 `tools/` 子目录（root 用户默认在 `/usr/local/Ascend/cann/tools/`）。运行示例前请先加载环境变量：
-
-```bash
-# root 用户默认路径；非 root 用户将 /usr/local 替换为 ${HOME}
-source /usr/local/Ascend/cann/set_env.sh
-# 指定路径安装时：source ${install_path}/cann/set_env.sh
-```
-
-> 执行上方命令后，`${ASCEND_INSTALL_PATH}` 即为 CANN 安装目录：
->
-> - root 用户默认：`/usr/local/Ascend/cann`
-> - 非 root 用户默认：`${HOME}/Ascend/cann`
-> - 指定路径安装：`${install_path}/cann`
-
-### asys（故障信息收集 / 诊断）
-
-`src/asys/` 目录下同时存在 `asys.py` 和指向它的软链接 `asys`（`src/asys/asys -> ./asys.py`），CMake 通过 `install(DIRECTORY ${ASYS_DIR} ...)` 将整个目录原样拷贝，软链接也会保留。因此安装后两种调用都能直接用：
-
-```bash
-# 形式一：显式 python3 调用 .py
-python3 ${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys.py -h
-
-# 形式二：直接调用软链接 asys（asys.py 自带 #!/usr/bin/env python3 shebang）
-${ASCEND_INSTALL_PATH}/tools/ascend_system_advisor/asys/asys -h
-```
-
-asys 的子命令在 `src/asys/cmdline/cmd_parser.py` 的 `Command` 枚举中定义，包含 `info / health / collect / launch / diagnose / analyze / config / profiling`。在环境变量加载生效后，可以直接以 asys 调用：
-
-```bash
-# 采集主机与 device 的软硬件信息（不依赖待诊断任务，通常作为环境自检）
-asys info -r="status" -d=0
-
-# 体检 device 健康状态
-asys health
-
-# 采集环境中已存在的运维信息并打包到指定输出目录
-asys collect --output <output_dir>
-```
-
-### msaicerr（AI Core Error 分析）
-
-msaicerr 入口为 `src/msaicerr/msaicerr.py`，安装后位于 `${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py`。
-
-```bash
-# 1) 解析一个已有的 AI Core Error 报告路径，结果输出到 <output_dir>
-python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -p <report_dir> -out <output_dir> -dev 0
-
-# 2) 解析单个 dump 文件（dtype 取值参见 -h 输出）
-python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -d <dump_file> -out <output_dir> -dtype float16
-
-# 3) 检测当前环境是否具备运行 msaicerr 所需的条件（仅依赖 device 编号）
-python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -e -dev 0
-
-# 完整参数说明
-python3 ${ASCEND_INSTALL_PATH}/tools/msaicerr/msaicerr.py -h
-```
-
-### msprof（性能调优）
-
-msprof 由 C++ 侧 collector（`basic`、`dvvp`）和 `msprof` Python wheel（分析脚本）组成。`bash build.sh` 完成后，wheel（`msprof-0.0.1-py3-none-any.whl`）会被拷贝到 `src/msprof/collector/dvvp/msprofbin/` 并打包进 `.run` 安装包；安装时自动解包到 `${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/` 目录下，无需手动 `pip install`。
-
-分析脚本由 msprof collector 流水线内部调用（入口为 `profiler_tool/analysis/msprof/msprof.py`），不会在 `PATH` 中注册独立的命令行命令。如需手动运行分析脚本，可直接以 python3 调用安装目录下的入口：
-
-```bash
-python3 ${ASCEND_INSTALL_PATH}/tools/profiler/profiler_tool/analysis/msprof/msprof.py -h
-```
-
-C++ 侧 collector 一般作为 CANN profiler 流水线的内置组件被调用，开发者无需直接执行；回归通过 `bash build.sh -u --component msprof` 运行 gtest 用例（产物 `build/test/ut/msprof/msprofbin/msprof_bin_utest`）。
-
 ## 🅿️ Pre-commit
 
 pre-commit 是一个用于管理和维护 Git 预提交钩子（hooks）的框架，通过在代码提交前自动化执行代码检查、格式化和安全扫描，确保代码质量并统一团队规范，显著减少 CI/CD 流水线失败并提升协作效率。
 本仓已配置 pre-commit，用户可以参考 CANN 社区的[pre-commit 配置指导书中第 3 章节](https://gitcode.com/cann/infrastructure/blob/main/docs/SC/pre-commit/pre-commit%E9%85%8D%E7%BD%AE%E6%8C%87%E5%AF%BC%E4%B9%A6.md#3-%E7%A4%BE%E5%8C%BA%E8%B4%A1%E7%8C%AE%E8%80%85%E4%BD%BF%E7%94%A8pre-commit%E8%83%BD%E5%8A%9B)安装 pre-commit。OAT 检查工具已改用 Python 版本 oat-py（通过 `pip install oat-py>=1.0.0` 安装），无需配置 Java/Maven 环境；首次运行时 pre-commit 会为各 hook 创建隔离的虚拟环境，耗时稍长。
 
-## 📚 相关文档
-
-### 组件用户指南
-
-| 组件 | 文档链接 | 说明 |
-| --- | --- | --- |
-| asys | [asys 工具用户指南](https://hiascend.com/document/redirect/CannCommunityasys) | 故障信息收集、业务复跑+故障信息收集、软硬件和 Device 状态信息展示、健康检查、综合检测、组件检测、trace/coredump/stackcore/coretrace/UB 文件解析、实时堆栈导出、环境配置、AI Core Error 故障信息解析等 |
-| msaicerr | [msaicerr 工具用户指南](https://hiascend.com/document/redirect/CannCommunitymsaicerr) | 分析 AI Core Error 问题、解析 Dump 文件、检查环境等 |
-| msprof | [性能调优工具用户指南](https://www.hiascend.com/document/redirect/CannCommunityToolProfiling) | 采集和分析昇腾 AI 处理器上 AI 任务各运行阶段的关键性能指标，定位软、硬件性能瓶颈 |
-| hccl_test | [HCCL 性能测试工具用户指南](https://www.hiascend.com/document/redirect/CannCommunityToolHcclTest) | 分布式训练或推理场景下，测试集合通信的功能与性能 |
-
-### 其他文档
-
-- [快速安装指南](./docs/zh/quick_install.md)
-- [环境变量参考](https://hiascend.com/document/redirect/CannCommunityEnvRef)
-
 ## ℹ️ 相关信息
 
+- [快速安装指南](./docs/zh/quick_install.md)：CANN 软件包与编译依赖的安装
+- [环境变量参考](https://hiascend.com/document/redirect/CannCommunityEnvRef)
 - [贡献指南](CONTRIBUTING.md)：社区贡献流程与规范
 - [安全声明](SECURITY.md)
 - [许可证](LICENSE)
