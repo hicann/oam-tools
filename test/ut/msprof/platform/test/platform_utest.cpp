@@ -69,7 +69,7 @@ TEST_F(PLATFORM_UTEST, DavidV121_GetPipeUtilizationMetrics) {
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetMemoryMetrics) {
     auto platform = std::make_shared<DavidV121Platform>();
-    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"), platform->GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x422,0x423,0x56f,0x571,0x570,0x572,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
 TEST_F(PLATFORM_UTEST, DavidV121_GetMemoryL0Metrics) {
