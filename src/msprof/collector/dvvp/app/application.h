@@ -48,7 +48,6 @@ private:
     static void SetAppEnv(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
         std::vector<std::string> &envsV);
     static void SourceEnv(std::vector<std::string> &argsVec);
-    static std::string GetAppPath(std::vector<std::string> paramsCmd);
     static std::string GetCmdString(const std::string paramsName);
 };
 }  // namespace app

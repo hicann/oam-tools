@@ -169,10 +169,6 @@ TEST_F(PROF_APPLICATION_TEST, LaunchApp) {
         .stubs()
         .will(returnValue(true));
 
-    MOCKER(analysis::dvvp::common::utils::Utils::IsSoftLink)
-        .stubs()
-        .will(returnValue(false));
-
 	EXPECT_EQ(PROFILING_FAILED, analysis::dvvp::app::Application::LaunchApp(nullptr, app_process));
 	EXPECT_EQ(PROFILING_FAILED, analysis::dvvp::app::Application::LaunchApp(params, app_process));
 
@@ -228,20 +224,6 @@ TEST_F(PROF_APPLICATION_TEST, SetGlobalEnv) {
 	if (envs.size() == 1) {
 		EXPECT_EQ(envList[0], envs[0]);
 	}
-}
-
-TEST_F(PROF_APPLICATION_TEST, GetAppPath) {
-	GlobalMockObject::verify();
-	std::vector<std::string> paramsCmd;
-	EXPECT_EQ("", analysis::dvvp::app::Application::GetAppPath(paramsCmd));
-
-	paramsCmd.push_back("first");
-	paramsCmd.push_back("second");
-	paramsCmd.push_back("third");
-	EXPECT_EQ("first", analysis::dvvp::app::Application::GetAppPath(paramsCmd));
-
-    paramsCmd[0] = "bash";
-    EXPECT_EQ("second", analysis::dvvp::app::Application::GetAppPath(paramsCmd));
 }
 
 TEST_F(PROF_APPLICATION_TEST, GetCmdString) {

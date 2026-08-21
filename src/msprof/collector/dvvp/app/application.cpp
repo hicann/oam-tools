@@ -57,20 +57,6 @@ int32_t Application::PrepareLaunchAppCmd(std::stringstream &ssCmdApp,
     return PROFILING_SUCCESS;
 }
 
-std::string Application::GetAppPath(std::vector<std::string> paramsCmd)
-{
-    if (paramsCmd.empty()) {
-        return "";
-    }
-    std::string ret = "";
-    if (analysis::dvvp::common::utils::Utils::IsAppName(paramsCmd[0])) {
-        ret = paramsCmd[0];
-    } else if (paramsCmd.size() > 1) {
-        ret = paramsCmd[1];
-    }
-    return ret;
-}
-
 std::string Application::GetCmdString(const std::string paramsName)
 {
     if (paramsName.empty()) {
@@ -123,15 +109,6 @@ int32_t Application::ResolveAppCmd(SHARED_PTR_ALIA<analysis::dvvp::message::Prof
     paramsCmd = analysis::dvvp::common::utils::Utils::Split(ssCmdApp.str());
     if (paramsCmd.empty()) {
         MSPROF_LOGE("[LaunchApp]paramsCmd is empty.");
-        return PROFILING_FAILED;
-    }
-    std::string appPath = GetAppPath(paramsCmd);
-    if (appPath.empty()) {
-        MSPROF_LOGE("app_dir is empty.");
-        return PROFILING_FAILED;
-    }
-    if (analysis::dvvp::common::utils::Utils::IsSoftLink(appPath)) {
-        MSPROF_LOGE("app_dir(%s) is soft link.", Utils::BaseName(appPath).c_str());
         return PROFILING_FAILED;
     }
     cmd = GetCmdString(paramsCmd[0]);
