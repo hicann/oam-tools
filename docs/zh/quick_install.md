@@ -297,7 +297,7 @@ mkdir -p ${third_party_path}
 |---|---|---|
 |msprobe|master|https://gitcode.com/Ascend/msprobe|
 |msprof|master|https://gitcode.com/Ascend/msprof|
-|cann-cmake|master-002|[cmake-master-002.tar.gz](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cmake/cmake-master-002.tar.gz) |
+|cann-cmake|master-049|[cmake-master-049.tar.gz](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cmake/cmake-master-049.tar.gz) |
 
 ## 环境验证
 
