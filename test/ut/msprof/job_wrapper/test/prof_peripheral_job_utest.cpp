@@ -569,6 +569,42 @@ TEST_F(JOB_WRAPPER_PROF_AI_STACK_MEM_JOB_UTEST, Init) {
     EXPECT_EQ(PROFILING_FAILED, profMemJob->Init(collectionJobCfg_));
 }
 
+TEST_F(JOB_WRAPPER_PROF_AI_STACK_MEM_JOB_UTEST, SetPeripheralConfigWillSetConfigToOneWhenPlatformHostFreqIsEnable) {
+    GlobalMockObject::verify();
+    unsigned char tmp[100] = {0};
+    auto profMemJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfAiStackMemJob>();
+    analysis::dvvp::driver::DrvPeripheralProfileCfg peripheralCfg;
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformHostFreqIsEnable)
+        .stubs()
+        .will(returnValue(true));
+
+    profMemJob->Init(collectionJobCfg_);
+    profMemJob->peripheralCfg_ = peripheralCfg;
+    // running success
+    EXPECT_EQ(PROFILING_SUCCESS, profMemJob->SetPeripheralConfig());
+    EXPECT_EQ(1, static_cast<TagMemProfileConfig *>(profMemJob->peripheralCfg_.configP)->res1);
+
+    Utils::ProfFree(profMemJob->peripheralCfg_.configP);
+}
+
+TEST_F(JOB_WRAPPER_PROF_AI_STACK_MEM_JOB_UTEST, SetPeripheralConfigWillSetConfigToZeroWhenPlatformHostFreqIsDisable) {
+    GlobalMockObject::verify();
+    unsigned char tmp[100] = {0};
+    auto profMemJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfAiStackMemJob>();
+    analysis::dvvp::driver::DrvPeripheralProfileCfg peripheralCfg;
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::PlatformHostFreqIsEnable)
+        .stubs()
+        .will(returnValue(false));
+
+    profMemJob->Init(collectionJobCfg_);
+    profMemJob->peripheralCfg_ = peripheralCfg;
+    // running success
+    EXPECT_EQ(PROFILING_SUCCESS, profMemJob->SetPeripheralConfig());
+    EXPECT_EQ(0, static_cast<TagMemProfileConfig *>(profMemJob->peripheralCfg_.configP)->res1);
+
+    Utils::ProfFree(profMemJob->peripheralCfg_.configP);
+}
+
 TEST_F(JOB_WRAPPER_PROF_AI_STACK_MEM_JOB_UTEST, Process) {
     GlobalMockObject::verify();
 
