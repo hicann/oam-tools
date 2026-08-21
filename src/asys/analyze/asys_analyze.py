@@ -17,6 +17,7 @@
 # ----------------------------------------------------------------------------
 
 import os
+import shlex
 import stat
 import time
 import sys
@@ -422,7 +423,8 @@ class AsysAnalyze:
             return False
         if self.path:
             log_debug(f"msaicerr analyze path {self.path}")
-            cmd = f"{sys.executable} {msaicerr_path} -p {self.path} -dev {self.device_id} -out {output_path}"
+            cmd = (f"{sys.executable} {msaicerr_path} -p {shlex.quote(self.path)} "
+                   f"-dev {self.device_id} -out {shlex.quote(output_path)}")
         else:
             asys_collector = AsysCollect()
             task_res = AsysCollect().run()
@@ -430,8 +432,8 @@ class AsysAnalyze:
             if not task_res:
                 log_error(f"Asys collect log failed")
                 return False
-            cmd = (f"{sys.executable} {msaicerr_path} -p {asys_collector.output_root_path}  -dev {self.device_id}"
-                   f" -out {output_path}")
+            cmd = (f"{sys.executable} {msaicerr_path} -p {shlex.quote(str(asys_collector.output_root_path))} "
+                   f"-dev {self.device_id} -out {shlex.quote(output_path)}")
         log_debug(f"Start run: {cmd}")
         res = real_time_output(cmd)
         self.clean_output()

@@ -17,6 +17,7 @@
 # ----------------------------------------------------------------------------
 
 import os.path
+import shlex
 import threading
 
 from common.const import GET_DEVICES_INFO_TIMEOUT, STACKTRACE
@@ -68,7 +69,7 @@ class AsysCollect:
     def _device_file_export(self):
         def run_msnpureport(export_dir_path):
             f.create_dir(export_dir_path)
-            export_dir_cmd = "cd " + export_dir_path
+            export_dir_cmd = "cd " + shlex.quote(export_dir_path)
             export_tool = "msnpureport -f"
             export_cmd = "{0};{1}".format(export_dir_cmd, export_tool)
             cmd_res = run_cmd_output(export_cmd)

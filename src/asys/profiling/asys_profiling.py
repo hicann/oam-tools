@@ -17,6 +17,7 @@
 # ----------------------------------------------------------------------------
 
 import os
+import shlex
 import subprocess
 from datetime import datetime, timezone
 
@@ -85,7 +86,7 @@ class AsysProfiling():
         if not self._check_param():
             return False
         log_info(f"Run mode is {self.run_modes}.")
-        cmd = (f"msprof --output={self.output_path} --sys-period={str(self.period)} "
+        cmd = (f"msprof --output={shlex.quote(self.output_path)} --sys-period={str(self.period)} "
                 f"--sys-devices={self.device_id} ") 
         for run_mode in self.run_modes:
             func_name = "concat_" + run_mode
