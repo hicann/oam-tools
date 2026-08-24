@@ -5,11 +5,11 @@
 采集性能原始数据成功后，可将采集的原始数据取到装有工具的开发环境上进行性能数据解析，展示性能数据解析结果。
 
 <!-- npu="950,A3,910b,910,310p,310b" id1 -->
-解析操作请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/msprof_parsing_instruct.md)，解析结果文件介绍请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md)。
+解析操作请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/msprof_parsing_instruct.md)，解析结果文件介绍请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/profile_data_file_references.md)。
 <!-- end id1 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id50 -->
-本节仅介绍如何在推理程序中开启性能数据采集，推理应用完整开发过程请参见[《应用开发 \(C&C++\)》](https://hiascend.com/document/redirect/cannCommunityadevguide)。
+本节仅介绍如何在推理程序中开启性能数据采集，推理应用完整开发过程请参见《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》。
 <!-- end id50 -->
 
 ## 前提条件
@@ -52,7 +52,7 @@
 
 3. 配置acl.json文件完成后，请重新编译应用工程、并运行应用工程。
    <!-- npu="950,A3,910b,910,310p,310b" id51 -->
-   应用开发详细内容请参考[《应用开发 \(C&C++\)》](https://hiascend.com/document/redirect/cannCommunityadevguide)
+   应用开发详细内容请参考《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》。
    <!-- end id51 -->
 
     “output”指定路径下生成Profiling性能原始数据，如下所示。

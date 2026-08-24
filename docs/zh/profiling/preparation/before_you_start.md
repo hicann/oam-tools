@@ -8,7 +8,7 @@
 
 1. 根据实际用户场景选择CANN相关软件包安装并配置CANN环境变量。
    <!-- npu="950,A3,910b,910,310p,310b" id6 -->
-   具体请参见[《CANN 软件安装》](https://hiascend.com/document/redirect/CannCommunityInstSoftware)。
+   具体请参见《[CANN软件安装](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/920beta2/softwareinst/instg/instg_0000.html?OS=openEuler&InstallType=netyum)》。
    <!-- end id6 -->
 
     <!-- npu="950,A3,910b,910,310p,310b" id1 -->
@@ -76,7 +76,7 @@
   - 工具要求Python 3.7.5及以上版本。
   - 调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口完成去初始化，才能获取到完整的性能数据。
   <!-- npu="950,A3,910b,910,310p,310b,IPV350" id5 -->
-  - 应用工程开发务必遵循[《应用开发 \(C&C++\)》](https://hiascend.com/document/redirect/cannCommunityadevguide)手册。如果应用程序已调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口导致工具采集流程未正常结束，采集数据会不完整。最后1秒内已采集的数据可能因未及时落盘而丢失，但丢失的数据不大于2M，不影响已落盘的性能数据分析。
+  - 应用工程开发务必遵循《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》手册。如果应用程序已调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口导致工具采集流程未正常结束，采集数据会不完整。最后1秒内已采集的数据可能因未及时落盘而丢失，但丢失的数据不大于2M，不影响已落盘的性能数据分析。
   <!-- end id5 -->
   <!-- npu="950,A3,910b,910,310p,310b" id3 -->
   - 使用pyACL API开发的应用工程在通过msprof命令行方式采集性能数据时，不支持在工程Python脚本中打开相对路径文件。Python脚本中包含打开相对路径文件的操作会导致采集性能数据报错。

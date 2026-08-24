@@ -20,7 +20,7 @@ msprof命令行工具提供了**AI任务运行性能数据**、**AI处理器系�
 - 方式二：通过--application参数传入用户程序或执行脚本。
 
     ```sh
-    msprof [options] --application=<app> 
+    msprof [options] --application=<app>
     ```
 
 在下文举例时，为避免信息冗余，均采用推荐方式进行示例。
@@ -70,14 +70,14 @@ msprof命令行工具提供了**AI任务运行性能数据**、**AI处理器系�
 
 - --output=<path\>：可选，收集到的性能数据的存放路径。
 
-    该参数优先级高于ASCEND\_WORK\_PATH，具体请参见[《环境变量参考》](https://hiascend.com/document/redirect/CannCommunityEnvRef)。
+    该参数优先级高于ASCEND\_WORK\_PATH，具体请参见《[环境变量参考](https://gitcode.com/cann/docs/blob/9.2.0-beta.2/docs/zh/env-vars/README.md)》。
 
     路径中不能包含特殊字符：
 
     ```sh
     "\n", "\\n", "\f", "\\f", "\r", "\\r", "\b", "\\b", "\t", "\\t", "\v", "\\v", "\u007F", "\\u007F", "\"", "\\\"", "'", "\'", "\\", "\\\\", "%", "\\%", ">", "\\>", "<", "\\<", "|", "\\|", "&", "\\&", "$", "\\$", ";", "\\;", "`", "\\`"
     ```
-    
+
     在msprof命令末尾添加AI任务执行命令来传入用户程序或执行脚本时，默认落盘在当前目录。
 
     配置--application参数添加AI任务执行命令来传入用户程序或执行脚本时，默认落盘在AI任务文件所在目录。
@@ -111,7 +111,7 @@ msprof命令行工具提供了**AI任务运行性能数据**、**AI处理器系�
 msprof --output=/home/projects/output /home/projects/MyApp/out/main
 ```
 
-msprof命令执行完成后，会自动解析并导出性能数据结果文件，详细内容请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md#db%E6%A0%BC%E5%BC%8F%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE)。
+msprof命令执行完成后，会自动解析并导出性能数据结果文件，详细内容请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/profile_data_file_references.md#db%E6%A0%BC%E5%BC%8F%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE)。
 <!-- end id3 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/general_collect_commands_res.md#id00002 -->

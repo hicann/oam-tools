@@ -34,7 +34,7 @@ Ascend Graph API是在构图过程中采集性能数据。
 
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id6 -->
 > [!NOTE]说明
->接口详细说明，请参见[《图开发》](https://hiascend.com/document/redirect/CannCommunityGraphguide)。
+>接口详细说明，请参见《[图开发](https://gitcode.com/cann/ge/blob/9.2.0-beta.2/docs/zh/user_guides/graph_dev/README.md)》。
 <!-- end id6 -->
 
 ## 采集性能原始数据（GEInitialize接口传入option）
@@ -68,7 +68,7 @@ std::map<AscendString, AscendString> config = {{"ge.exec.deviceId", "0"},
 
   std::string profilerResultPath = "/home/test/prof";       //该路径需要提前创建
   uint32_t length = strlen("/home/test/prof");
-  ret = ge::aclgrphProfInit(profilerResultPath.c_str(), length);     
+  ret = ge::aclgrphProfInit(profilerResultPath.c_str(), length);
 
   std::map<string, string> options = {{"a", "b"}, {"c", "d"}};
   uint32_t graphId = 0;
@@ -80,7 +80,7 @@ std::map<AscendString, AscendString> config = {{"ge.exec.deviceId", "0"},
   uint32_t device_nums = 1;
   uint64_t data_type_config = ProfDataTypeConfig::kProfTaskTime | ProfDataTypeConfig::kProfAiCoreMetrics | ProfDataTypeConfig::kProfAicpu | ProfDataTypeConfig::kProfTrainingTrace;
   ProfAicoreEvents *aicore_events = NULL;
-  ProfilingAicoreMetrics aicore_metrics = ProfilingAicoreMetrics::kAicoreArithmeticUtilization;  
+  ProfilingAicoreMetrics aicore_metrics = ProfilingAicoreMetrics::kAicoreArithmeticUtilization;
   ge::aclgrphProfConfig *pro_config = ge::aclgrphProfCreateConfig(deviceid_list, device_nums, aicore_metrics, aicore_events, data_type_config);
 
   ge::aclgrphProfStart(pro_config);
@@ -100,6 +100,6 @@ std::map<AscendString, AscendString> config = {{"ge.exec.deviceId", "0"},
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id7 -->
 ## 采集数据说明
 
-配置Ascend Graph API方式采集后请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/msprof_parsing_instruct.md)将原始数据文件解析并导出为可视化的timeline和summary文件。
+配置Ascend Graph API方式采集后请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/msprof_parsing_instruct.md)将原始数据文件解析并导出为可视化的timeline和summary文件。
 
 <!-- end id7 -->
