@@ -19,6 +19,7 @@
 import sys
 import os
 import shutil
+import tempfile
 
 from testcase.conftest import ASYS_SRC_PATH, ut_root_path
 sys.path.insert(0, ASYS_SRC_PATH)
@@ -69,7 +70,26 @@ class TestOpsCollect(AssertTest):
         self.assertTrue(collect_ops("./output") is None)
 
     def test_ops_collect_sk_scenario(self, mocker):
-        # SK场景：跳过算子文件收集(collect_ops_from_dump/collect_file)，保留配置类收集
+        # SK场景：dump目录下的host.o仍正常收集，仅跳过按算子名搜索的兜底路径，配置类收集保持不变
+        mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
+        mocker.patch("params.ParamDict.get_arg", return_value="./")
+        mocker.patch("collect.ops.ops_collect.is_sk_scenario", return_value=True)
+        dump_mock = mocker.patch("collect.ops.ops_collect.collect_ops_from_dump", return_value=False)
+        file_mock = mocker.patch("collect.ops.ops_collect.collect_file", return_value=None)
+        debug_mock = mocker.patch("collect.ops.ops_collect.collect_debug_kernel", return_value=None)
+        opp_mock = mocker.patch("collect.ops.ops_collect.collect_opp_config", return_value=True)
+        custom_mock = mocker.patch("collect.ops.ops_collect.collect_custom_opp_config", return_value=True)
+        self.assertTrue(collect_ops("./output") is None)
+        # dump目录收集仍执行，按算子名搜索的兜底路径在collect_file内部跳过
+        dump_mock.assert_called_once()
+        file_mock.assert_called_once()
+        # 配置类收集仍执行
+        debug_mock.assert_called_once()
+        opp_mock.assert_called_once()
+        custom_mock.assert_called_once()
+
+    def test_ops_collect_sk_scenario_host_o_in_dump(self, mocker):
+        # SK场景：dump目录下有host.o时，跳过按算子名搜索的兜底路径，配置类收集保持不变
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("params.ParamDict.get_arg", return_value="./")
         mocker.patch("collect.ops.ops_collect.is_sk_scenario", return_value=True)
@@ -79,10 +99,9 @@ class TestOpsCollect(AssertTest):
         opp_mock = mocker.patch("collect.ops.ops_collect.collect_opp_config", return_value=True)
         custom_mock = mocker.patch("collect.ops.ops_collect.collect_custom_opp_config", return_value=True)
         self.assertTrue(collect_ops("./output") is None)
-        # 算子文件收集被跳过
-        dump_mock.assert_not_called()
+        dump_mock.assert_called_once()
         file_mock.assert_not_called()
-        # 配置类收集仍执行
+        # 配置类收集在 collect_ops 里位于 if 块之外，与 dump 收集结果无关，仍须执行
         debug_mock.assert_called_once()
         opp_mock.assert_called_once()
         custom_mock.assert_called_once()
@@ -279,6 +298,46 @@ class TestOpsCollect(AssertTest):
         mocker.patch("collect.ops.ops_collect.collect_op_files", return_value=True)
         self.assertTrue(collect_ops_from_dump(ut_root_path + "/data/output") is True)
 
+    def test_ops_collect_collect_ops_from_dump_host_o_real_dir(self):
+        # 端到端：真实临时目录下构造 host.o，不mock文件操作，验证确实被搬到 dfx/ops。
+        # 相邻用例都mock掉了 os.walk 与 collect_op_files，无法发现 collect_ops_from_dump
+        # 的真实行为与mock假设不符。
+        from collect.ops.ops_collect import collect_ops_from_dump
+
+        output_root = tempfile.mkdtemp(prefix="ut_ops_dump_")
+        try:
+            dump_dir = os.path.join(output_root, "dfx", "data-dump", "0")
+            os.makedirs(dump_dir)
+            host_o = os.path.join(dump_dir, "host.o")
+            with open(host_o, "wb") as fw:
+                fw.write(b"\x7fELF stub")
+            # 非算子文件不应被收集
+            with open(os.path.join(dump_dir, "exception_info.1"), "w") as fw:
+                fw.write("noise")
+
+            self.assertTrue(collect_ops_from_dump(output_root) is True)
+
+            collected = os.path.join(output_root, "dfx", "ops", "host.o")
+            self.assertTrue(os.path.isfile(collected))
+            # MOVE_MODE：源文件应已移走
+            self.assertTrue(not os.path.exists(host_o))
+            # 只收 .o/.json，噪声文件留在原地
+            self.assertTrue(os.path.isfile(os.path.join(dump_dir, "exception_info.1")))
+            self.assertTrue(os.listdir(os.path.join(output_root, "dfx", "ops")) == ["host.o"])
+        finally:
+            shutil.rmtree(output_root, ignore_errors=True)
+
+    def test_ops_collect_collect_ops_from_dump_no_dump_dir_real(self):
+        # 端到端：data-dump 目录不存在时应返回 False，且不创建 dfx/ops。
+        from collect.ops.ops_collect import collect_ops_from_dump
+
+        output_root = tempfile.mkdtemp(prefix="ut_ops_nodump_")
+        try:
+            self.assertTrue(collect_ops_from_dump(output_root) is False)
+            self.assertTrue(not os.path.exists(os.path.join(output_root, "dfx", "ops")))
+        finally:
+            shutil.rmtree(output_root, ignore_errors=True)
+
     def test_ops_collect_collect_ops_from_dump_no_ops_files(self, mocker):
         from collect.ops.ops_collect import collect_ops_from_dump
 
@@ -308,3 +367,40 @@ class TestOpsCollect(AssertTest):
         os.environ["ASCEND_WORK_PATH"] = ut_root_path + "/data/"
         os.environ["ASCEND_PROCESS_LOG_PATH"] = ut_root_path + "/data/asys_test_dir/ascend/log/"
         self.assertTrue(collect_ops_files_env_var(test_case_tmp, "./"))
+
+    def test_collect_file_sk_scenario_skip_env_search(self, mocker):
+        from collect.ops.ops_collect import collect_file
+
+        mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
+        mocker.patch("collect.ops.ops_collect.is_sk_scenario", return_value=True)
+        env_search_mock = mocker.patch("collect.ops.ops_collect.collect_ops_files_env_var")
+        info_mock = mocker.patch("collect.ops.ops_collect.log_info")
+        warn_mock = mocker.patch("collect.ops.ops_collect.log_warning")
+        collect_file("./output")
+        info_mock.assert_called_once_with(
+            "SuperKernel scenario detected, skip searching operator files by kernel name."
+        )
+        env_search_mock.assert_not_called()
+        warn_mock.assert_not_called()
+
+    def test_collect_file_non_sk_calls_env_search(self, mocker):
+        from collect.ops.ops_collect import collect_file
+
+        mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
+        mocker.patch("collect.ops.ops_collect.is_sk_scenario", return_value=False)
+        env_search_mock = mocker.patch("collect.ops.ops_collect.collect_ops_files_env_var", return_value=False)
+        mocker.patch("collect.ops.ops_collect.log_warning")
+        collect_file("./output")
+        env_search_mock.assert_called_once()
+
+    def test_collect_file_launch_cmd(self, mocker):
+        from collect.ops.ops_collect import collect_file
+
+        mocker.patch("params.ParamDict.get_command", return_value=consts.launch_cmd)
+        mocker.patch("common.FileOperate.check_dir", return_value=True)
+        collect_dir_mock = mocker.patch("common.FileOperate.collect_dir", return_value=True)
+        warn_mock = mocker.patch("collect.ops.ops_collect.log_warning")
+        ParamDict().asys_output_timestamp_dir = ut_root_path
+        collect_file("./output")
+        collect_dir_mock.assert_called_once()
+        warn_mock.assert_not_called()

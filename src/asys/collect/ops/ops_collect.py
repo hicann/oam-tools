@@ -234,6 +234,10 @@ def collect_file(output_root_path):
             ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates", "extra-info", "ops")
         if f.check_dir(ops_source_dir):
             ret = f.collect_dir(ops_source_dir, ops_target_dir, MOVE_MODE)
+    # SK场景下只生成host.o，没有device .o/.json，按算子名搜索必然失败，跳过兜底搜索
+    elif is_sk_scenario(output_root_path):
+        log_info("SuperKernel scenario detected, skip searching operator files by kernel name.")
+        ret = True
     else:
         ret = collect_ops_files_env_var(output_root_path, ops_target_dir)
     if not ret:
@@ -303,10 +307,7 @@ def collect_ops(output_root_path):
     if not check_launch_ops():
         return
 
-    # SK场景下只生成host.o，没有device .o/.json，跳过算子文件收集，其余配置类收集保持不变
-    if is_sk_scenario(output_root_path):
-        log_info("SuperKernel scenario detected, skip collecting operator files.")
-    elif not collect_ops_from_dump(output_root_path):
+    if not collect_ops_from_dump(output_root_path):
         collect_file(output_root_path)
     collect_debug_kernel(output_root_path)
     collect_opp_config(output_root_path)
