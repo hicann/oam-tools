@@ -314,15 +314,11 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 <!-- end id49 -->
 
 <!-- npu="950,A3,910b" id50 -->
-需要在单算子API执行场景下采集AI任务性能数据（即传入用户程序）时才能采集到具体性能数据。
+仅在单算子场景下采集AI任务性能数据（即传入用户程序）时才能采集到具体性能数据。
 <!-- end id50 -->
 <!-- npu="950" id51 -->
 对于Ascend 950PR/Ascend 950DT，可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id51 -->
-
-<!-- npu="950,A3,910b" id52 -->
-该开关与--ascendcl、--model-execution、--runtime-api、--hccl、--task-time、--aicpu、--ai-core、--aic-mode、--aic-freq、--aic-metrics、--l2互斥，无法同时使用。
-<!-- end id52 -->
 
 <!-- npu="A3,910b" id53 -->
 ### instr-profiling-freq

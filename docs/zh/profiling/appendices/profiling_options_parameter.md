@@ -147,7 +147,7 @@
   <!-- end id23 -->
 
 - dvpp\_freq：DVPP采集频率。范围\[1,100\]，单位Hz。
-- instr\_profiling：AI Core和AI Vector的带宽和延时采集开关。取值on/off，默认为off。
+- instr\_profiling：AI Core和AI Vector的带宽和延时采集开关。仅单算子场景支持。取值on/off，默认为off。
   <!-- npu="910" id24 -->
   - Atlas 训练系列产品：不支持该功能。
   <!-- end id24 -->
@@ -160,15 +160,15 @@
   - Ascend 950PR/Ascend 950DT：支持，但可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
   <!-- end id27 -->
 
-- instr\_profiling\_freq：AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开启相关采集能力。范围\[300,30000\]，单位Hz。
+- instr\_profiling\_freq：AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开启相关采集能力。仅单算子场景支持。范围\[300,30000\]，单位Hz。
   <!-- npu="910" id28 -->
   - Atlas 训练系列产品：不支持该功能。
   <!-- end id28 -->
   <!-- npu="910b" id29 -->
-  - Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持，但instr\_profiling\_freq与training\_trace、task\_trace、hccl、aicpu、fp\_point、bp\_point、aic\_metrics、l2、task\_time、runtime\_api互斥，无法同时执行。
+  - Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持。
   <!-- end id29 -->
   <!-- npu="A3" id30 -->
-  - Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持，但instr\_profiling\_freq与training\_trace、task\_trace、hccl、aicpu、fp\_point、bp\_point、aic\_metrics、l2、task\_time、runtime\_api互斥，无法同时执行。
+  - Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持。
   <!-- end id30 -->
   <!-- npu="950" id31 -->
   - Ascend 950PR/Ascend 950DT：不支持该开关，通过instr\_profiling控制该功能。

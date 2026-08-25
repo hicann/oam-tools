@@ -63,8 +63,8 @@
     drwxr-xr-x 21 .. ../ Feb 9 20:24
     drwxr-x--- 3 PROF_000001_20220129014731273_KEDKPORHMAGPGDCC/ Jan 29 01:47
     ```
-    
-    > [!NOTE]说明 
+
+    > [!NOTE]说明
     >如果acl.json文件之前已经存在，此处仅是修改文件内容、添加Profiling相关配置，则不需要重新编译应用工程。
     >- 异步推理的场景下，应用工程的可执行文件会一直执行，不会调用Proﬁling的stop接口，所以，建议手动停止进程。否则，采集的性能原始数据有可能将磁盘存满，请确保预留足够的磁盘空间。
     >- 通过./app进程名方式运行依赖libslog.so的应用进程，不会产生调试日志。如果需要产生调试日志，需要使用pmupload工具启动应用进程，方法如下：<br>
@@ -107,7 +107,7 @@ Profiling性能数据落盘路径。未配置本参数时，性能数据默认�
 
  采集AI CPU算子的详细信息，如：算子执行时间、数据拷贝时间等。可选on或off，默认值为off。
  <!-- end id2 -->
- 
+
 ### aic_metrics
 
 AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，该参数生效；task_time或task_trace配置为l0或off时，不执行该参数采集。取值包括：
@@ -121,7 +121,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
 - L2Cache：L2 Cache命中率
   <!-- npu="310p" id3 -->
   - Atlas 推理系列产品：不支持
-  <!-- end id3 -->    
+  <!-- end id3 -->
 - PipelineExecuteUtilization：计算类和搬运类指令耗时和占比
 
   <!-- npu="310p" id4 -->
@@ -277,7 +277,7 @@ LLC Profiling采集事件。采集该数据需要设置sys\_hardware\_mem\_freq�
 
  NIC、ROCE、UB带宽数据采集频率。不同产品的采集内容略有差异，请以实际结果为准。范围\[1,100\]，单位Hz。
  <!-- end id30 -->
- 
+
 <!-- npu="310b" id31 -->
 - Atlas 200I/500 A2 推理产品：仅RC场景支持采集NIC，容器场景参数不生效
 <!-- end id31 -->
@@ -297,7 +297,7 @@ LLC Profiling采集事件。采集该数据需要设置sys\_hardware\_mem\_freq�
 - Ascend 950PR/Ascend 950DT：UB带宽数据
 <!-- end id36 -->
 
-<!-- npu="950,A3,910b,910,310p" id37 --> 
+<!-- npu="950,A3,910b,910,310p" id37 -->
 ### sys\_interconnection\_freq
 
 集合通信带宽数据（HCCS）、集合通信硬件加速单元（CCU）带宽数据、SIO数据、PCIe数据采集频率，片间传输带宽信息、UB带宽数据采集频率。不同产品的采集内容略有差异，请以实际结果为准。范围\[1,50\]，单位Hz。默认不采集。
@@ -335,7 +335,7 @@ DVPP采集频率。范围\[1,100\]，单位Hz。
 
 AI Core和AI Vector的带宽和延时采集频率开关。
 
-<br>仅单算子API执行场景支持。仅Ascend 950PR/Ascend 950DT支持。
+<br>仅单算子场景支持。仅Ascend 950PR/Ascend 950DT支持。
 <br>可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id45 -->
 
@@ -344,8 +344,7 @@ AI Core和AI Vector的带宽和延时采集频率开关。
 ### instr\_profiling\_freq
 
 AI Core和AI Vector的带宽和延时采集频率，范围\[300,30000\]，单位Hz。
-<br>仅单算子API执行场景支持。
-<br>该开关与aicpu、aic\_metrics、l2、hccl、task\_time、ascendcl、runtime\_api互斥，无法同时执行。
+<br>仅单算子场景支持。
 <br>仅以下型号支持该参数：
 
 <!-- end id46 -->
@@ -371,7 +370,7 @@ Host侧性能数据采集开关，取值包括：
 <!-- end id52 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id49 -->
-  
+
 ### host\_sys\_usage
 
 采集Host侧系统及所有进程的CPU和内存数据，取值包括cpu和mem。可选其中的一项或多项，选多项时用英文逗号隔开，例如"host\_sys\_usage": "cpu,mem"。

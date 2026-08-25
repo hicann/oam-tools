@@ -212,7 +212,7 @@ DVPP采集频率。范围\[1,100\]，单位Hz。
 
 ### instr\_profiling
 
-AI Core和AI Vector的带宽和延时采集开关。取值on/off，默认为off。
+AI Core和AI Vector的带宽和延时采集开关。仅单算子场景支持。取值on/off，默认为off。
 
 <!-- npu="910" id29 -->
 - Atlas 训练系列产品：不支持该功能。
@@ -232,18 +232,18 @@ AI Core和AI Vector的带宽和延时采集开关。取值on/off，默认为off�
 
 ### instr\_profiling\_freq
 
-AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开启相关采集能力。范围\[300,30000\]，单位Hz。
+AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开启相关采集能力。仅单算子场景支持。范围\[300,30000\]，单位Hz。
 
 <!-- npu="910" id33 -->
 - Atlas 训练系列产品：不支持该功能。
 <!-- end id33 -->
 
 <!-- npu="910b" id34 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持，但instr\_profiling\_freq与training\_trace、task\_trace、hccl、aicpu、fp\_point、bp\_point、aic\_metrics、l2、task\_time、runtime\_api互斥，无法同时执行。
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持。
 <!-- end id34 -->
 
 <!-- npu="A3" id35 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持，但instr\_profiling\_freq与training\_trace、task\_trace、hccl、aicpu、fp\_point、bp\_point、aic\_metrics、l2、task\_time、runtime\_api互斥，无法同时执行。
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持。
 <!-- end id35 -->
 
 <!-- npu="950" id36 -->
