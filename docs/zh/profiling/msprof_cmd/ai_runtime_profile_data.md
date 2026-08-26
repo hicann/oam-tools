@@ -153,6 +153,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
 
 <!-- npu="950,A3,910b,910,310p,310b" id30 -->
+
 ### sys-hardware-mem-freq
 
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
@@ -205,7 +206,15 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 
 图模式单算子场景下，按照GE组件维度和算子维度采集算子内存大小及生命周期信息（单算子API执行场景不采集GE组件内存）；静态图和静态子图场景下，按照算子维度采集算子内存大小及生命周期信息。
 
+### aicore-shape
+
+--aicore-shape=<aicore-shape-value\>：可选，CANN层算子的Shape数据采集开关，仅在--task-time=l0时生效。取值：
+
+- on：开启
+- off：关闭，默认为off
+
 <!-- npu="950" id26 -->
+
 ### task-block
 
 --task-block=<task-block-value\>：可选，采集block级别的profiling数据。
@@ -218,6 +227,7 @@ Ascend 950PR/Ascend 950DT：可选on或off，默认值为off。
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id00005 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id27 -->
+
 ## 使用示例
 
 登录运行环境，在任意路径下执行以下命令：
