@@ -53,8 +53,8 @@ This is the most granular device-side data. Each row is one kernel invocation on
 | `Output Shapes` | string | — | e.g. `"[2048,4096]"` |
 | `Input Data Types` | string | — | e.g. `"FLOAT16;FLOAT16"` |
 | `Output Data Types` | string | — | e.g. `"FLOAT16"` |
-| `Input Formats` | string | — | e.g. `"ND;ND"` |
-| `Output Formats` | string | — | e.g. `"ND"` |
+| `Input Formats` | string | — | e.g. `"ND;ND"` <!-- codespell:ignore --> |
+| `Output Formats` | string | — | e.g. `"ND"` <!-- codespell:ignore --> |
 
 ### 上下文
 

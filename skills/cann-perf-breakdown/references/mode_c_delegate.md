@@ -1,8 +1,6 @@
 # Mode C：仅性能数据，委托给 cann-npu-perfanalysis
 
-当工作目录中**只有性能数据而无模型源码**时，本 skill 进入 Mode C：委托给 sibling skill `cann-npu-perfanalysis` 做 8 维性能诊断（不做模型结构拆解）。
-
-> sibling skill 仓库：https://gitcode.com/jinyingqi/npu-perf-analysis
+当工作目录中**只有性能数据而无模型源码**时，本 skill 进入 Mode C：委托给同一仓库的 `cann-npu-perfanalysis` skill 做 8 维性能诊断（不做模型结构拆解）。
 
 ---
 
@@ -17,20 +15,13 @@
 
 ## 委托方式
 
-Mode C 不复用本 skill 的拆解流程。**spawn 一个 general-purpose subagent**，让其加载 `cann-npu-perfanalysis` 的 SKILL.md + references 后执行。
+Mode C 不复用本 skill 的拆解流程。加载 `skills/cann-npu-perfanalysis/SKILL.md` 及其 references 后执行；需要隔离上下文时可交给 general-purpose subagent。
 
 ### 步骤
 
-#### 1. 准备 sibling skill 本地副本
+#### 1. 定位仓库内 skill
 
-首次运行时 clone（约 < 5 MB）：
-
-```bash
-mkdir -p .skills_cache
-git clone --depth 1 https://gitcode.com/jinyingqi/npu-perf-analysis .skills_cache/npu-perf-analysis
-```
-
-后续运行如目录已存在则跳过。可选 `git -C .skills_cache/npu-perf-analysis pull` 拉取更新。
+确认当前仓库存在 `skills/cann-npu-perfanalysis/SKILL.md`。如果缺失，直接报告依赖不完整，不在运行期间下载外部代码。
 
 #### 2. 拉起 subagent
 
@@ -40,8 +31,8 @@ git clone --depth 1 https://gitcode.com/jinyingqi/npu-perf-analysis .skills_cach
 你将作为 cann-npu-perfanalysis 技能的执行 agent，对以下 NPU profiling 数据做 8 维性能诊断。
 
 技能定义：
-- SKILL.md: .skills_cache/npu-perf-analysis/SKILL.md
-- 参考资料目录: .skills_cache/npu-perf-analysis/references/
+- SKILL.md: skills/cann-npu-perfanalysis/SKILL.md
+- 参考资料目录: skills/cann-npu-perfanalysis/references/
   - data-schema.md       # CSV/JSON column dictionary
   - metrics-formulas.md  # Phase 1-2 公式
   - thresholds.md        # P0-P3 阈值
@@ -60,7 +51,7 @@ git clone --depth 1 https://gitcode.com/jinyingqi/npu-perf-analysis .skills_cach
 输出文件（写入调用方 outputs/ 目录）：
 - analysis_data.json  # 8 维结构化诊断数据，schema 见 SKILL.md 第 255-424 行
 - report.md           # 人读报告，含 P0-P3 优先级瓶颈
-- report.html         # 用 .skills_cache/npu-perf-analysis/references/generate_html.py 渲染
+- report.html         # 用 skills/cann-npu-perfanalysis/references/generate_html.py 渲染
 
 返回：三文件路径 + 一句话顶层结论。
 ```
@@ -89,11 +80,11 @@ git clone --depth 1 https://gitcode.com/jinyingqi/npu-perf-analysis .skills_cach
 
 ---
 
-## 缓存策略
+## 依赖策略
 
-- `.skills_cache/npu-perf-analysis/` 提交到 `.gitignore`
-- 首次 clone 失败（网络问题）时给出明确错误：`Mode C 需要先 clone npu-perf-analysis：git clone https://gitcode.com/jinyingqi/npu-perf-analysis .skills_cache/npu-perf-analysis`
-- 不在 SKILL 启动时自动 clone，只在判定为 Mode C 时按需触发
+- 只使用随 `oam-tools` 一起评审和发布的 `skills/cann-npu-perfanalysis/`
+- 不在 skill 运行期间 clone、pull 或执行外部仓库代码
+- 依赖缺失时给出明确错误：`Mode C 需要仓库内的 skills/cann-npu-perfanalysis/SKILL.md`
 
 ---
 

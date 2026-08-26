@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
+#
 """
 validate_shapes.py — 检查 analysis_config.json 中 shape_semantic 与实际 tensor shape 的一致性。
 
@@ -23,14 +21,17 @@ validate_shapes.py — 检查 analysis_config.json 中 shape_semantic 与实际 
   python scripts/validate_shapes.py -c outputs/analysis_config.json --strict   # ERROR 也报 WARNING
 """
 
-import logging
 import json
 import re
 import sys
 import argparse
 from pathlib import Path
-logger = logging.getLogger(__name__)
 
+SCRIPT_DIR = str(Path(__file__).resolve().parent)
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
+import breakdown_common as bc  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -60,11 +61,22 @@ SYMBOL_MAP = {
 
 
 def build_symbol_table(config: dict) -> dict:
+    # v2 stores config facts under architecture.facts or a top-level "config" block;
+    # keep supporting the legacy top-level "config" dict.
     cfg = config.get('config', {})
+    if not cfg:
+        # try v2 architecture.facts (list of {key,value}) as a fallback source
+        facts = (config.get('architecture') or {}).get('facts')
+        if isinstance(facts, list):
+            cfg = {f.get('key'): f.get('value') for f in facts if isinstance(f, dict)}
     table = {}
     for sym, field in SYMBOL_MAP.items():
         v = cfg.get(field)
-        if v is not None:
+        if isinstance(v, bool):
+            continue
+        if isinstance(v, int):
+            table[sym] = v
+        elif isinstance(v, str) and v.isdigit():
             table[sym] = int(v)
     return table
 
@@ -127,25 +139,22 @@ def extract_explicit_values(shape_sem: str) -> dict[str, int]:
     return result
 
 
-def _literal_dims_in_bracket(inner: str, trivial: set) -> list[int]:
-    """从单个 [...] 内提取非平凡数字字面量。"""
-    nums = []
-    for tok in inner.split(','):
-        tok = tok.strip()
-        if re.fullmatch(r'\d+', tok) and int(tok) not in trivial:
-            nums.append(int(tok))
-    return nums
+def _append_literal_dims(result, dimension_group, trivial):
+    for raw_token in dimension_group.split(','):
+        token = raw_token.strip()
+        if not re.fullmatch(r'\d+', token):
+            continue
+        value = int(token)
+        if value not in trivial:
+            result.append(value)
 
 
 def extract_literal_dims(shape_sem: str) -> list[int]:
-    """Extract standalone numeric literals inside [...] dimension brackets.
-    Skips 1 (trivial broadcast scalar) and 2 (trivial pairing).
-    """
-    trivial = {1, 2}
-    nums = []
-    for m in re.finditer(r'\[([^\]]+)\]', shape_sem):
-        nums.extend(_literal_dims_in_bracket(m.group(1), trivial))
-    return nums
+    """Extract nontrivial standalone numeric literals from dimension brackets."""
+    result = []
+    for match in re.finditer(r'\[([^\]]+)\]', shape_sem):
+        _append_literal_dims(result, match.group(1), {1, 2})
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -168,6 +177,11 @@ def validate_kernel(kernel: dict, op_data: dict, symbol_table: dict, strict: boo
     out_dims = all_dims_set(out_shapes)
     all_dims = in_dims | out_dims
 
+    # Distinguish "profiler has no shape info" (absent) from "shape contradicts".
+    # If both input and output shapes are absent, we cannot verify literal presence;
+    # emit an INFO-level note instead of a spurious contradiction WARNING.
+    shapes_absent = (not in_dims) and (not out_dims)
+
     # 1. Named value cross-check: sym=N in shape_semantic vs config
     explicit = extract_explicit_values(shape_sem)
     for sym, val in explicit.items():
@@ -176,18 +190,22 @@ def validate_kernel(kernel: dict, op_data: dict, symbol_table: dict, strict: boo
             issues.append(('ERROR',
                 f'[{idx}] {name}: shape_semantic 写 {sym}={val}，但 config 中 {sym}={expected}'))
         # Named value should appear somewhere in actual dims
-        if val not in all_dims:
+        if shapes_absent:
+            issues.append(('INFO',
+                f'[{idx}] {name}: profiler 无 shape 信息，无法核对 {sym}={val}（absent，非矛盾）'))
+        elif val not in all_dims:
             issues.append(('WARNING',
                 f'[{idx}] {name}: shape_semantic 中 {sym}={val} 不出现在实际 tensor dims {sorted(all_dims)} '
                 f'(in={op_data.get("input_shapes","")[:50]}, out={op_data.get("output_shapes","")[:50]})'))
 
     # 2. Resolve symbolic tokens, check literal dims inside [...]
     literal_dims = extract_literal_dims(shape_sem)
-    for num in set(literal_dims):
-        if num not in all_dims:
-            issues.append(('WARNING',
-                f'[{idx}] {name}: shape_semantic 中出现字面量 {num}，但不存在于实际 dims {sorted(all_dims)} '
-                f'(in={op_data.get("input_shapes","")[:50]}, out={op_data.get("output_shapes","")[:50]})'))
+    if not shapes_absent:
+        for num in set(literal_dims):
+            if num not in all_dims:
+                issues.append(('WARNING',
+                    f'[{idx}] {name}: shape_semantic 中出现字面量 {num}，但不存在于实际 dims {sorted(all_dims)} '
+                    f'(in={op_data.get("input_shapes","")[:50]}, out={op_data.get("output_shapes","")[:50]})'))
 
     # 3. Arrow-split consistency: left of → should relate to inputs, right to outputs
     arrow = '→'
@@ -196,11 +214,11 @@ def validate_kernel(kernel: dict, op_data: dict, symbol_table: dict, strict: boo
         left_lits = [n for n in extract_literal_dims(f'[{left}]') if n > 1]
         right_lits = [n for n in extract_literal_dims(f'[{right}]') if n > 1]
 
-        # Left-side literals should appear in actual input dims (or at least in all_dims)
+        # Left-side literals should appear in actual input dims (input side validated
+        # independently of output side).
         for num in left_lits:
             if in_dims and num not in in_dims and num not in all_dims:
-                level = 'WARNING' if not strict else 'WARNING'
-                issues.append((level,
+                issues.append(('WARNING',
                     f'[{idx}] {name}: shape_semantic 输入侧 (→左) 包含 {num}，'
                     f'但实际输入 dims={sorted(in_dims)}'))
 
@@ -239,7 +257,9 @@ def collect_kernels_with_op_data(config: dict) -> list[tuple]:
 
     for stage in config.get('stages', {}).values():
         visit(stage)
-    for struct in config.get('layer_structure', {}).values():
+    for struct in config.get('layer_structure', {}).values():   # v1
+        visit(struct)
+    for struct in config.get('structures', {}).values():        # v2
         visit(struct)
     for aux in config.get('runtime_auxiliary', []):
         visit(aux)
@@ -251,97 +271,109 @@ def collect_kernels_with_op_data(config: dict) -> list[tuple]:
 # Main
 # ---------------------------------------------------------------------------
 
-def _collect_issues(pairs, symbol_table, strict, fail_fast):
-    """对所有 kernel 跑校验，返回 all_issues。"""
+def _validate_shape_pairs(pairs, symbol_table, strict, fail_fast):
     all_issues = []
     for kernel, op_data in pairs:
         issues = validate_kernel(kernel, op_data, symbol_table, strict)
         all_issues.extend(issues)
-        if fail_fast and any(lvl == 'ERROR' for lvl, _ in issues):
+        if fail_fast and any(l == 'ERROR' for l, _ in issues):
             break
     return all_issues
 
 
-def _emit_json_result(config_path, pairs, all_issues, fail_fast):
-    """以 JSON 形式输出校验结果。"""
-    errors = [m for lvl, m in all_issues if lvl == 'ERROR']
-    warnings = [m for lvl, m in all_issues if lvl == 'WARNING']
-    formatted_issues = [{
-        'id': 'V1',
-        'severity': 'error' if level == 'ERROR' else 'warning',
-        'node_path': '<kernel>',
-        'message': msg,
-    } for level, msg in all_issues]
-    logger.info(json.dumps({
+def _group_shape_issues(all_issues):
+    errors = [(l, m) for l, m in all_issues if l == 'ERROR']
+    warnings = [(l, m) for l, m in all_issues if l == 'WARNING']
+    infos = [(l, m) for l, m in all_issues if l == 'INFO']
+    return errors, warnings, infos
+
+
+def _shape_exit_code(errors, warnings, strict):
+    return 1 if errors or (strict and warnings) else 0
+
+
+def _emit_shape_json(config_path, pairs, all_issues, strict, fail_fast):
+    errors, warnings, infos = _group_shape_issues(all_issues)
+    sev_map = {'ERROR': 'error', 'WARNING': 'warning', 'INFO': 'info'}
+    formatted = [{'id': 'V1', 'severity': sev_map.get(level, 'warning'),
+                  'node_path': '<kernel>', 'message': message}
+                 for level, message in all_issues]
+    bc.emit(json.dumps({
         'script': 'validate_shapes.py',
         'config': config_path,
         'kernels_checked': len(pairs),
+        'strict': strict,
         'error_count': len(errors),
         'warning_count': len(warnings),
+        'info_count': len(infos),
         'fail_fast': fail_fast,
-        'issues': formatted_issues,
+        'issues': formatted,
     }, ensure_ascii=False, indent=2))
+    return _shape_exit_code(errors, warnings, strict)
 
 
-def _emit_text_result(pairs, errors, warnings, fail_fast):
-    """以可读文本形式输出校验结果。"""
+def _emit_shape_text(pairs, all_issues, strict, fail_fast):
+    if not all_issues:
+        bc.emit(f'✓ 全部 {len(pairs)} 个 shape_semantic 校验通过，无问题。')
+        return 0
+    errors, warnings, infos = _group_shape_issues(all_issues)
     if errors:
-        logger.info('=== ERROR (%d) ===', len(errors))
+        bc.emit(f'=== ERROR ({len(errors)}) ===')
         for _, m in errors:
-            logger.info('  [ERROR] %s', m)
-        logger.info('')
+            bc.emit(f'  [ERROR] {m}')
+        bc.emit()
+
     if warnings:
-        logger.info('=== WARNING (%d) ===', len(warnings))
+        label = 'ERROR(strict)' if strict else 'WARN'
+        bc.emit(f'=== WARNING ({len(warnings)}){" [strict→fail]" if strict else ""} ===')
         for _, m in warnings:
-            logger.info('  [WARN]  %s', m)
-        logger.info('')
-    logger.info('共检查 %d 个 kernel，%d 个 ERROR，%d 个 WARNING。%s',
-                len(pairs), len(errors), len(warnings),
-                ' (fail-fast)' if fail_fast else '')
+            bc.emit(f'  [{label}]  {m}')
+        bc.emit()
+
+    if infos:
+        bc.emit(f'=== INFO ({len(infos)}) ===')
+        for _, m in infos:
+            bc.emit(f'  [INFO]  {m}')
+        bc.emit()
+
+    bc.emit(f'共检查 {len(pairs)} 个 kernel，{len(errors)} 个 ERROR，{len(warnings)} 个 WARNING，{len(infos)} 个 INFO。'
+          + (' (strict)' if strict else '') + (' (fail-fast)' if fail_fast else ''))
+    return _shape_exit_code(errors, warnings, strict)
+
+
+def _emit_no_shape_pairs(config_path, json_out):
+    message = '未找到带 shape_semantic 的 kernel（是否已运行 --enrich？）'
+    if json_out:
+        bc.emit(json.dumps({
+            'script': 'validate_shapes.py',
+            'config': config_path,
+            'error_count': 1,
+            'issues': [{'id': 'V0', 'severity': 'error',
+                        'node_path': '<global>', 'message': message}],
+        }, ensure_ascii=False, indent=2))
+    else:
+        bc.emit(message)
+    return 1
 
 
 def run_validation(config_path: str, strict: bool = False,
                    fail_fast: bool = False, json_out: bool = False) -> int:
     config = json.loads(Path(config_path).read_text())
     symbol_table = build_symbol_table(config)
-
     if not json_out:
-        logger.info('模型: %s', config.get("model_name", "?"))
-        logger.info('符号表: %s', symbol_table)
-        logger.info('')
-
+        bc.emit(f'模型: {config.get("model_name", "?")}')
+        bc.emit(f'符号表: {symbol_table}')
+        bc.emit()
     pairs = collect_kernels_with_op_data(config)
     if not pairs:
-        msg = '未找到带 shape_semantic 的 kernel（是否已运行 --enrich？）'
-        if json_out:
-            logger.info(json.dumps({
-                'script': 'validate_shapes.py',
-                'config': config_path,
-                'error_count': 1,
-                'issues': [{'id': 'V0', 'severity': 'error', 'node_path': '<global>', 'message': msg}],
-            }, ensure_ascii=False, indent=2))
-        else:
-            logger.info(msg)
-        return 1
-
-    all_issues = _collect_issues(pairs, symbol_table, strict, fail_fast)
-    errors = [(lvl, m) for lvl, m in all_issues if lvl == 'ERROR']
-    warnings = [(lvl, m) for lvl, m in all_issues if lvl == 'WARNING']
-
+        return _emit_no_shape_pairs(config_path, json_out)
+    all_issues = _validate_shape_pairs(pairs, symbol_table, strict, fail_fast)
     if json_out:
-        _emit_json_result(config_path, pairs, all_issues, fail_fast)
-        return 1 if errors else 0
-
-    if not all_issues:
-        logger.info('✓ 全部 %d 个 shape_semantic 校验通过，无问题。', len(pairs))
-        return 0
-
-    _emit_text_result(pairs, errors, warnings, fail_fast)
-    return 1 if errors else 0
+        return _emit_shape_json(config_path, pairs, all_issues, strict, fail_fast)
+    return _emit_shape_text(pairs, all_issues, strict, fail_fast)
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(message)s', stream=sys.stdout)
     parser = argparse.ArgumentParser(description='校验 analysis_config.json 中 shape_semantic 的一致性')
     parser.add_argument('-c', '--config', required=True, help='analysis_config.json 路径')
     parser.add_argument('--strict', action='store_true', help='把 WARNING 也视为失败')

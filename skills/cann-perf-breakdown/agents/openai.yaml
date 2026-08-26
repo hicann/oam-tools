@@ -1,0 +1,4 @@
+interface:
+  display_name: "CANN 性能拆解"
+  short_description: "从模型源码与 NPU Profiling 生成可验证的结构化性能拆解"
+  default_prompt: "Use $cann-perf-breakdown to produce a validated NPU performance breakdown from model source and profiling data."

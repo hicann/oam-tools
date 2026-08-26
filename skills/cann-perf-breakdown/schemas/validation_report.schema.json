@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "validation_report.schema.json",
+  "title": "Unified validation report",
+  "description": "Single valid JSON document emitted by run_validation.py. Aggregates all sub-checks. Never a concatenation of multiple JSON objects.",
+  "type": "object",
+  "required": ["status", "error_count", "warning_count", "checks", "issues"],
+  "additionalProperties": false,
+  "properties": {
+    "status": {"enum": ["passed", "failed", "passed_with_warnings", "exploratory"]},
+    "allow_warnings": {"type": "boolean"},
+    "allow_unmapped": {"type": "boolean"},
+    "exploratory": {"type": "boolean"},
+    "error_count": {"type": "integer", "minimum": 0},
+    "warning_count": {"type": "integer", "minimum": 0},
+    "config": {"type": "string"},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {"type": "string"},
+          "status": {"enum": ["passed", "failed", "warning", "skipped", "error"]},
+          "error_count": {"type": "integer", "minimum": 0},
+          "warning_count": {"type": "integer", "minimum": 0},
+          "detail": {"type": ["string", "object", "null"]}
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "message"],
+        "properties": {
+          "id": {"type": "string"},
+          "severity": {"enum": ["error", "warning", "info"]},
+          "check": {"type": "string"},
+          "node_path": {"type": "string"},
+          "message": {"type": "string"}
+        }
+      }
+    }
+  }
+}

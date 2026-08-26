@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
+#
 """
 Step 3 / P8: 与 baseline 做结构等价性回归 (L1–L8)。
 
@@ -27,15 +25,16 @@ L6: 每个叶节点的 op_indices 集合 Jaccard ≥ 0.90
 L7: op 总覆盖（union of op_indices）相等
 L8: 11 类算子的 shape_semantic 字段存在性 100%
 """
-import logging
 import argparse
 import json
 import os
 import sys
 
-from _common import is_shape_always_required as is_shape_required
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
 
-logger = logging.getLogger(__name__)
+import breakdown_common as bc  # noqa: E402
 
 
 def jaccard(a: set, b: set) -> float:
@@ -106,111 +105,265 @@ def collect_kernels_with_shape(config):
     return out
 
 
-def _reg_l1(baseline, new):
-    bl_keys, new_keys = set(baseline.keys()), set(new.keys())
+def _auxiliary_names(auxiliary):
+    return {item.get('name') for item in (auxiliary or [])
+            if isinstance(item, dict) and item.get('name')}
+
+
+def _compare_topology_headers(baseline, new):
+    findings = []
+    bl_keys = set(baseline.keys())
+    new_keys = set(new.keys())
     if bl_keys == new_keys:
-        return {'id': 'L1', 'pass': True, 'detail': f'top-level keys match: {sorted(bl_keys)}'}
-    return {'id': 'L1', 'pass': False,
-            'detail': f'baseline only: {sorted(bl_keys - new_keys)}, '
-                      f'new only: {sorted(new_keys - bl_keys)}'}
+        findings.append({'id': 'L1', 'pass': True, 'detail': f'top-level keys match: {sorted(bl_keys)}'})
+    else:
+        findings.append({'id': 'L1', 'pass': False,
+                         'detail': f'baseline only: {sorted(bl_keys - new_keys)}, '
+                                   f'new only: {sorted(new_keys - bl_keys)}'})
 
-
-def _reg_l2(bl_lt, new_lt, bl_set, new_set):
+    bl_lt = baseline.get('layer_types') or {}
+    new_lt = new.get('layer_types') or {}
+    bl_set = set(bl_lt.keys())
+    new_set = set(new_lt.keys())
     l2_pass = (bl_set == new_set) and all(
         sorted(bl_lt[k].get('layer_indices', [])) == sorted(new_lt[k].get('layer_indices', []))
-        for k in bl_set)
-    return {'id': 'L2', 'pass': l2_pass,
-            'detail': f'baseline layer_types={sorted(bl_set)}, new={sorted(new_set)}'}
+        for k in bl_set
+    )
+    findings.append({
+        'id': 'L2',
+        'pass': l2_pass,
+        'detail': f'baseline layer_types={sorted(bl_set)}, new={sorted(new_set)}',
+    })
 
-
-def _reg_l3(baseline, new):
     bl_st = set((baseline.get('stages') or {}).keys())
     new_st = set((new.get('stages') or {}).keys())
-    return {'id': 'L3', 'pass': bl_st == new_st,
-            'detail': f'stages baseline={sorted(bl_st)}, new={sorted(new_st)}'}
+    findings.append({
+        'id': 'L3',
+        'pass': bl_st == new_st,
+        'detail': f'stages baseline={sorted(bl_st)}, new={sorted(new_st)}',
+    })
+
+    bl_aux = _auxiliary_names(baseline.get('runtime_auxiliary'))
+    new_aux = _auxiliary_names(new.get('runtime_auxiliary'))
+    findings.append({
+        'id': 'L4',
+        'pass': bl_aux == new_aux,
+        'detail': f'baseline aux={sorted(bl_aux)}, new={sorted(new_aux)}',
+    })
+    return findings, bl_set, new_set
 
 
-def _reg_l4(baseline, new):
-    def names(aux_list):
-        return {a.get('name') for a in (aux_list or []) if isinstance(a, dict) and a.get('name')}
-    bl_aux = names(baseline.get('runtime_auxiliary'))
-    new_aux = names(new.get('runtime_auxiliary'))
-    return {'id': 'L4', 'pass': bl_aux == new_aux,
-            'detail': f'baseline aux={sorted(bl_aux)}, new={sorted(new_aux)}'}
-
-
-def _reg_l5(baseline, new, common_types, l5_threshold):
+def _compare_leaf_paths(baseline, new, common_types, threshold):
+    bl_lt = baseline.get('layer_types') or {}
+    new_lt = new.get('layer_types') or {}
     l5_results = []
     for k in common_types:
-        bl_paths = set(collect_leaves(baseline['layer_structure'].get(k, {})).keys())
-        new_paths = set(collect_leaves(new['layer_structure'].get(k, {})).keys())
+        bl_paths = set(collect_leaves(bl_lt and (baseline['layer_structure'].get(k, {}))).keys())
+        new_paths = set(collect_leaves(new and (new['layer_structure'].get(k, {}))).keys())
+        j = jaccard(bl_paths, new_paths)
         l5_results.append({
             'layer_type': k,
-            'jaccard': round(jaccard(bl_paths, new_paths), 3),
+            'jaccard': round(j, 3),
             'baseline_only': sorted(list(bl_paths - new_paths))[:10],
             'new_only': sorted(list(new_paths - bl_paths))[:10],
         })
-    l5_pass = all(r['jaccard'] >= l5_threshold for r in l5_results) if l5_results else True
-    return {'id': 'L5', 'pass': l5_pass, 'threshold': l5_threshold, 'detail': l5_results}
+    passed = all(result['jaccard'] >= threshold for result in l5_results) if l5_results else True
+    return {'id': 'L5', 'pass': passed, 'threshold': threshold, 'detail': l5_results}
 
 
-def _reg_l6(baseline, new, common_types, l6_threshold):
+def _compare_leaf_ops(baseline, new, common_types, threshold):
     l6_results = []
     for k in common_types:
         bl_leaves = collect_leaves(baseline['layer_structure'].get(k, {}))
         new_leaves = collect_leaves(new['layer_structure'].get(k, {}))
-        for path in set(bl_leaves) & set(new_leaves):
+        common = set(bl_leaves) & set(new_leaves)
+        for path in common:
             j = jaccard(bl_leaves[path], new_leaves[path])
-            if j < l6_threshold:
+            if j < threshold:
                 l6_results.append({
-                    'layer_type': k, 'leaf': path, 'jaccard': round(j, 3),
+                    'layer_type': k,
+                    'leaf': path,
+                    'jaccard': round(j, 3),
                     'baseline_only': sorted(list(bl_leaves[path] - new_leaves[path]))[:5],
                     'new_only': sorted(list(new_leaves[path] - bl_leaves[path]))[:5],
                 })
-    return {'id': 'L6', 'pass': not l6_results, 'threshold': l6_threshold,
-            'mismatches': l6_results[:30], 'mismatch_count': len(l6_results)}
+    return {
+        'id': 'L6',
+        'pass': not l6_results,
+        'threshold': threshold,
+        'mismatches': l6_results[:30],
+        'mismatch_count': len(l6_results),
+    }
 
 
-def _reg_l7(baseline, new):
+def _compare_total_coverage(baseline, new):
     bl_ops = collect_all_op_indices(baseline)
     new_ops = collect_all_op_indices(new)
-    return {'id': 'L7', 'pass': bl_ops == new_ops,
-            'detail': {
-                'baseline_count': len(bl_ops), 'new_count': len(new_ops),
-                'missing_in_new': sorted(list(bl_ops - new_ops))[:20],
-                'extra_in_new': sorted(list(new_ops - bl_ops))[:20],
-            }}
+    return {
+        'id': 'L7',
+        'pass': bl_ops == new_ops,
+        'detail': {
+            'baseline_count': len(bl_ops),
+            'new_count': len(new_ops),
+            'missing_in_new': sorted(list(bl_ops - new_ops))[:20],
+            'extra_in_new': sorted(list(new_ops - bl_ops))[:20],
+        },
+    }
 
 
-def _reg_l8(new):
+def _check_required_shapes(new):
     new_kernels = collect_kernels_with_shape(new)
     missing = [(p, idx, kn) for (p, idx), (kn, ok) in new_kernels.items()
-               if is_shape_required(kn) and not ok]
-    return {'id': 'L8', 'pass': not missing,
-            'missing_count': len(missing), 'missing_examples': missing[:10]}
+               if bc.is_shape_semantic_required(kn) and not ok]
+    return {
+        'id': 'L8',
+        'pass': not missing,
+        'missing_count': len(missing),
+        'missing_examples': missing[:10],
+    }
 
 
 def check_regression(baseline, new, l5_threshold=0.95, l6_threshold=0.90):
-    bl_lt = baseline.get('layer_types') or {}
-    new_lt = new.get('layer_types') or {}
-    bl_set, new_set = set(bl_lt.keys()), set(new_lt.keys())
+    findings, bl_set, new_set = _compare_topology_headers(baseline, new)
     common_types = bl_set & new_set
-    return [
-        _reg_l1(baseline, new),
-        _reg_l2(bl_lt, new_lt, bl_set, new_set),
-        _reg_l3(baseline, new),
-        _reg_l4(baseline, new),
-        _reg_l5(baseline, new, common_types, l5_threshold),
-        _reg_l6(baseline, new, common_types, l6_threshold),
-        _reg_l7(baseline, new),
-        _reg_l8(new),
-    ]
+    findings.append(_compare_leaf_paths(baseline, new, common_types, l5_threshold))
+    findings.append(_compare_leaf_ops(baseline, new, common_types, l6_threshold))
+    findings.append(_compare_total_coverage(baseline, new))
+    findings.append(_check_required_shapes(new))
+
+    return findings
 
 
-def _emit_findings(args, findings, hard_fails, soft_fails):
-    """按 --json / 文本模式输出 findings。"""
+def check_architecture_regression(config, manifest):
+    """Semantic architecture comparison of a v2 config against an extracted manifest.
+
+    Blocking (hard) findings when the config's declared architecture contradicts the
+    statically-extracted ground truth.
+    """
+    import os as _os
+    import sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+    import breakdown_common as _bc
+    findings = []
+    arch = config.get('architecture') or {}
+
+    # A layer-count disagreement only blocks when the manifest is actually credible.
+    # With an unreachable checkpoint config the manifest number is a Python default-arg
+    # fallback describing the model family, so blocking here would reject a config that
+    # correctly matched the trace. `severity` is carried on the finding so every consumer
+    # honours the same decision instead of hardcoding MA1 as always-hard.
+    layer_confidence = _bc.manifest_fact_confidence(manifest)
+    findings.append({
+        'id': 'MA1',
+        'pass': arch.get('num_main_layers') == manifest.get('num_main_layers'),
+        # `info` when the manifest number is a low-confidence fallback, matching A1: a formal
+        # pass is exactly `passed`, and "the inputs cannot confirm this" must not be the thing
+        # that blocks. The unconfirmed count is charged in the score instead (§5.7.1).
+        'severity': 'info' if layer_confidence == 'low' else 'error',
+        'detail': {'config': arch.get('num_main_layers'),
+                   'manifest': manifest.get('num_main_layers'),
+                   'manifest_confidence': layer_confidence},
+    })
+
+    m_class = {}
+    for g in manifest.get('layer_groups', []):
+        for idx in _bc.expand_layer_group_indices(g):
+            m_class[idx] = g.get('classification')
+    c_class = {}
+    for g in arch.get('layer_groups', []):
+        for idx in _bc.expand_layer_group_indices(g):
+            c_class[idx] = g.get('classification')
+    mismatched = sorted([i for i in set(m_class) & set(c_class)
+                         if m_class.get(i) != c_class.get(i)])
+    findings.append({'id': 'MA2', 'pass': not mismatched,
+                     'detail': {'mismatched_layers': mismatched[:20]}})
+
+    m_pred = sum(p.get('learned_module_count', 0) for p in manifest.get('prediction_modules', [])
+                 if isinstance(p.get('learned_module_count'), int))
+    c_pred = sum(p.get('learned_module_count', 0) for p in arch.get('prediction_modules', [])
+                 if isinstance(p.get('learned_module_count'), int))
+    # Same reasoning as MA1, plus: a prediction module with an unresolved source_ref was
+    # inferred from a config key rather than found in the modeling source, so it cannot
+    # outrank a config that reports none.
+    unproven_mtp = any(p.get('source_ref', 'unknown') == 'unknown'
+                       for p in manifest.get('prediction_modules') or [])
+    mtp_blocking = layer_confidence != 'low' and not unproven_mtp
+    findings.append({'id': 'MA3', 'pass': m_pred == c_pred,
+                     'severity': 'error' if mtp_blocking else 'warning',
+                     'detail': {'config_learned_mtp': c_pred, 'manifest_learned_mtp': m_pred,
+                                'manifest_mtp_source_unresolved': unproven_mtp}})
+    return findings
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Regression check L1–L8 vs baseline (+ MA1–MA3 vs manifest)')
+    parser.add_argument('--baseline', help='baseline analysis_config.json')
+    parser.add_argument('--new', required=True, help='new analysis_config.json')
+    parser.add_argument('--manifest', help='model_manifest.json，做语义架构回归(MA1-MA3)')
+    parser.add_argument('--strict-soft', action='store_true',
+                        help='把 soft fail（L5/L6/L8）也视为阻断（CI 用）')
+    parser.add_argument('--mode', default='A', choices=['A', 'B'],
+                        help='Mode B 跳过 L6/L7/L8（无 op_indices/kernels）')
+    parser.add_argument('--report', help='输出 Markdown 报告路径')
+    parser.add_argument('--json', action='store_true', help='以 JSON 输出 stdout')
+    parser.add_argument('--l5', type=float, default=0.95, help='L5 Jaccard 阈值')
+    parser.add_argument('--l6', type=float, default=0.90, help='L6 Jaccard 阈值')
+    return parser.parse_args()
+
+
+def _validate_cli_paths(args):
+    if not args.baseline and not args.manifest:
+        bc.emit_error('错误: 需要 --baseline 或 --manifest 之一\n')
+        return 2
+    for path in (args.baseline, args.new, args.manifest):
+        if path and not os.path.exists(path):
+            bc.emit_error(f'错误: 文件不存在: {path}\n')
+            return 1
+    return 0
+
+
+def _load_regression_findings(args):
+    with open(args.new, 'r', encoding='utf-8') as file_obj:
+        new = json.load(file_obj)
+    findings = []
+    if args.baseline:
+        with open(args.baseline, 'r', encoding='utf-8') as file_obj:
+            baseline = json.load(file_obj)
+        findings = check_regression(baseline, new, args.l5, args.l6)
+        if args.mode == 'B':
+            findings = [item for item in findings if item['id'] not in ('L6', 'L7', 'L8')]
+    if args.manifest:
+        with open(args.manifest, 'r', encoding='utf-8') as file_obj:
+            manifest = json.load(file_obj)
+        findings.extend(check_architecture_regression(new, manifest))
+    return findings
+
+
+def _failure_groups(findings, strict_soft):
+    hard_ids = {'L1', 'L2', 'L3', 'L4', 'L7', 'MA1', 'MA2', 'MA3'}
+    soft_ids = {'L5', 'L6', 'L8'}
+    if strict_soft:
+        hard_ids |= soft_ids
+        soft_ids = set()
+
+    def is_hard(finding):
+        severity = finding.get('severity')
+        if severity:
+            return severity == 'error' or (strict_soft and finding['id'] in soft_ids)
+        return finding['id'] in hard_ids
+
+    hard_fails = [item for item in findings if not item['pass'] and is_hard(item)]
+    soft_fails = []
+    for finding in findings:
+        if (not finding['pass'] and not is_hard(finding)
+                and finding['id'] in soft_ids | hard_ids):
+            soft_fails.append(finding)
+    return hard_fails, soft_fails
+
+
+def _emit_regression(args, findings, hard_fails, soft_fails):
     if args.json:
-        logger.info(json.dumps({
+        bc.emit(json.dumps({
             'script': 'regression_check.py',
             'baseline': args.baseline,
             'new': args.new,
@@ -220,65 +373,42 @@ def _emit_findings(args, findings, hard_fails, soft_fails):
             'findings': findings,
         }, indent=2, ensure_ascii=False))
         return
-    for f in findings:
-        mark = '✓' if f['pass'] else '✗'
-        logger.info('[%s] %s', mark, f["id"])
-        if not f['pass']:
-            logger.info('    detail: %s', json.dumps(f.get("detail", f), ensure_ascii=False)[:500])
-    logger.info('\n汇总: hard_fails=%d, soft_fails=%d', len(hard_fails), len(soft_fails))
+    for finding in findings:
+        mark = '✓' if finding['pass'] else '✗'
+        bc.emit(f'[{mark}] {finding["id"]}')
+        if not finding['pass']:
+            detail = json.dumps(finding.get('detail', finding), ensure_ascii=False)[:500]
+            bc.emit(f'    detail: {detail}')
+    bc.emit(f'\n汇总: hard_fails={len(hard_fails)}, soft_fails={len(soft_fails)}')
 
 
-def _write_regression_report(report_path, args, findings):
-    """写 Markdown 回归报告。"""
-    lines = [f'# Regression Check: {os.path.basename(args.new)} vs baseline\n',
-             f'- Baseline: `{args.baseline}`',
-             f'- New:      `{args.new}`',
-             f'- Mode:     {args.mode}\n',
-             '| 项 | 通过 | 详情 |',
-             '|---|---|---|']
-    for f in findings:
-        mark = '✓' if f['pass'] else '✗'
-        detail = json.dumps(f.get('detail', f), ensure_ascii=False)[:200]
-        lines.append(f'| {f["id"]} | {mark} | `{detail}` |')
-    with open(report_path, 'w', encoding='utf-8') as fp:
-        fp.write('\n'.join(lines) + '\n')
-    logger.info('\nReport 已保存到: %s', report_path)
+def _write_regression_report(args, findings):
+    if not args.report:
+        return
+    lines = [f'# Regression Check: {os.path.basename(args.new)} vs baseline\n']
+    lines.append(f'- Baseline: `{args.baseline}`')
+    lines.append(f'- New:      `{args.new}`')
+    lines.append(f'- Mode:     {args.mode}\n')
+    lines.append('| 项 | 通过 | 详情 |')
+    lines.append('|---|---|---|')
+    for finding in findings:
+        mark = '✓' if finding['pass'] else '✗'
+        detail = json.dumps(finding.get('detail', finding), ensure_ascii=False)[:200]
+        lines.append(f'| {finding["id"]} | {mark} | `{detail}` |')
+    with open(args.report, 'w', encoding='utf-8') as file_obj:
+        file_obj.write('\n'.join(lines) + '\n')
+    bc.emit(f'\nReport 已保存到: {args.report}')
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(message)s', stream=sys.stdout)
-    parser = argparse.ArgumentParser(description='Regression check L1–L8 vs baseline')
-    parser.add_argument('--baseline', required=True, help='baseline analysis_config.json')
-    parser.add_argument('--new', required=True, help='new analysis_config.json')
-    parser.add_argument('--mode', default='A', choices=['A', 'B'],
-                        help='Mode B 跳过 L6/L7/L8（无 op_indices/kernels）')
-    parser.add_argument('--report', help='输出 Markdown 报告路径')
-    parser.add_argument('--json', action='store_true', help='以 JSON 输出 stdout')
-    parser.add_argument('--l5', type=float, default=0.95, help='L5 Jaccard 阈值')
-    parser.add_argument('--l6', type=float, default=0.90, help='L6 Jaccard 阈值')
-    args = parser.parse_args()
-
-    for p in (args.baseline, args.new):
-        if not os.path.exists(p):
-            logger.error('错误: 文件不存在: %s', p)
-            sys.exit(1)
-
-    with open(args.baseline, 'r', encoding='utf-8') as f:
-        baseline = json.load(f)
-    with open(args.new, 'r', encoding='utf-8') as f:
-        new = json.load(f)
-
-    findings = check_regression(baseline, new, args.l5, args.l6)
-    if args.mode == 'B':
-        findings = [f for f in findings if f['id'] not in ('L6', 'L7', 'L8')]
-
-    hard_fails = [f for f in findings if not f['pass'] and f['id'] in ('L1', 'L2', 'L3', 'L4', 'L7')]
-    soft_fails = [f for f in findings if not f['pass'] and f['id'] in ('L5', 'L6', 'L8')]
-
-    _emit_findings(args, findings, hard_fails, soft_fails)
-    if args.report:
-        _write_regression_report(args.report, args, findings)
-
+    args = parse_args()
+    path_error = _validate_cli_paths(args)
+    if path_error:
+        sys.exit(path_error)
+    findings = _load_regression_findings(args)
+    hard_fails, soft_fails = _failure_groups(findings, args.strict_soft)
+    _emit_regression(args, findings, hard_fails, soft_fails)
+    _write_regression_report(args, findings)
     sys.exit(1 if hard_fails else 0)
 
 

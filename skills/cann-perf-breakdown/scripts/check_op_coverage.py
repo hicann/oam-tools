@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,24 +12,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
+#
 """
-Step 3 Review: 校验 raw_ops 中的算子在 analysis_config 中的覆盖关系 (C1–C3)。
+Exact op coverage check (schema v2).
 
-C1: raw_ops 全部 op 是否被 layer_structure ∪ stages ∪ runtime_auxiliary 覆盖
-C2: 同一 op_index 是否出现在多个节点 op_indices 中（错误，与 check_structure S9 warning 互补——
-    本脚本视为 ERROR，因为同时还要检查未覆盖）
-C3: 11 类必填 shape_semantic 的 kernel 中，哪些尚未在 analysis_config 的 kernels 数组里登记
+Replaces the old "representative op count x layer count" extrapolation with an
+EXACT union computed from every trace_instance's op_indices/op_range plus any
+leaf op_indices in structures/stages/runtime_auxiliary and explicitly classified
+unmapped_ops.
+
+Reports (never lets missing and duplicate cancel out):
+  C1 missing:    raw_ops indices not covered by any owner            -> error
+  C2 duplicate:  op index owned by more than one instance/node       -> error
+  C3 out-of-range: covered index not present in raw_ops              -> error
+  C4 unmapped-without-reason: unmapped_ops entry missing reason      -> error
+  C5 shape_semantic missing on registered required kernel            -> error
+
+Legacy v1 configs: emits a single info issue and computes best-effort union of
+leaf op_indices (no extrapolation, no pass/fail promotion). Use migrate_config.py
+to convert to v2 for real coverage accounting.
+
+--json prints one JSON object. Exit code nonzero if any error.
 """
-import logging
 import argparse
 import json
 import os
 import sys
 
-from _common import is_shape_always_required
-
-logger = logging.getLogger(__name__)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import breakdown_common as bc  # noqa: E402
 
 
 class Issue(dict):
@@ -39,172 +48,201 @@ class Issue(dict):
         super().__init__(id=code, severity=severity, node_path=path, message=message)
 
 
-def collect_leaf_op_paths(config):
-    out = {}  # op_index -> [leaf_path]
-    kernels_registered = {}  # op_index -> kernel name (if registered with shape_semantic info)
+def collect_registered_kernels(config: dict):
+    """Return {op_index: {name, has_shape_semantic, path}} across structures/stages/aux."""
+    out = {}
 
     def walk(node, path):
         if not isinstance(node, dict):
             return
-        for idx in node.get('op_indices', []) or []:
-            out.setdefault(idx, []).append(path)
         for ks in node.get('kernels', []) or []:
-            kn = ks.get('name', '') or ''
-            kn = kn.split('/')[-1] if '/' in kn else kn
+            kn = (ks.get('name', '') or '').split('/')[-1]
             idx = ks.get('index')
             if idx is not None:
-                kernels_registered[idx] = {
-                    'name': kn,
-                    'has_shape_semantic': bool(ks.get('shape_semantic')),
-                    'path': path,
-                }
+                out[idx] = {'name': kn, 'has_shape_semantic': bool(ks.get('shape_semantic')), 'path': path}
         for child in node.get('children', []) or []:
-            cname = child.get('name', '?')
-            walk(child, f'{path}/{cname}')
+            walk(child, f"{path}/{child.get('name', '?')}")
 
-    for sname, sinfo in (config.get('stages') or {}).items():
-        walk(sinfo, f'stages/{sname}')
-    for ltype, lstruct in (config.get('layer_structure') or {}).items():
-        walk(lstruct, f'layer_structure/{ltype}')
+    for name, sect in (config.get('structures') or {}).items():
+        walk(sect, f"structures/{name}")
+    for name, sect in (config.get('stages') or {}).items():
+        walk(sect, f"stages/{name}")
     for i, aux in enumerate(config.get('runtime_auxiliary') or []):
-        walk(aux, f'runtime_auxiliary[{i}]')
+        walk(aux, f"runtime_auxiliary[{i}]")
+    return out
 
-    return out, kernels_registered
+
+def _ownership_issues(raw_indices, covered, per_owner, kind_by_idx):
+    issues = []
+    missing = sorted(raw_indices - covered)
+    for idx in missing:
+        issues.append(Issue('C1', 'error', f'op_index={idx}',
+                            f'op_index={idx} ({kind_by_idx.get(idx, "?")}) 无任何归属 '
+                            f'(model/runtime/excluded/unmapped 均未包含)'))
+
+    duplicates = sorted([idx for idx, owners in per_owner.items() if len(owners) > 1])
+    for idx in duplicates:
+        issues.append(Issue('C2', 'error', f'op_index={idx}',
+                            f'op_index={idx} 被多个 owner 覆盖: {per_owner[idx]}'))
+
+    out_of_range = sorted(covered - raw_indices)
+    for idx in out_of_range:
+        issues.append(Issue('C3', 'error', f'op_index={idx}',
+                            f'op_index={idx} 出现在配置中但不存在于 raw_ops (owners={per_owner[idx]})'))
+
+    return issues, missing, duplicates, out_of_range
 
 
-def _collect_section_op_indices(config_section):
-    """递归收集一段树结构下所有 op_indices 的集合。"""
-    ops = set()
+def _classification_issues(config, excluded, unmapped, kind_by_idx, allow_unmapped):
+    issues = []
+    if unmapped:
+        sev = 'warning' if allow_unmapped else 'error'
+        issues.append(Issue('C4', sev, 'unmapped_ops',
+                            f'{len(unmapped)} 个 op 归属未知（unmapped）：{sorted(unmapped)[:30]}'
+                            f'{"..." if len(unmapped) > 30 else ""}。'
+                            f'严格模式要求 unmapped=0（填 reason 不算完成映射）。'))
+
+    for idx, rc in excluded.items():
+        kind = kind_by_idx.get(idx, '')
+        if bc.is_main_compute_kind(kind):
+            issues.append(Issue('C6', 'error', f'op_index={idx}',
+                                f'主计算算子 {kind} (op {idx}) 不允许放入 excluded_profiler_ops '
+                                f'(reason_code={rc})'))
+
+    for e in config.get('excluded_profiler_ops', []) or []:
+        if not e.get('evidence'):
+            issues.append(Issue('C7', 'error', 'excluded_profiler_ops',
+                                f'excluded 条目 {e.get("op_indices")} 缺少 evidence'))
+
+    return issues
+
+
+def _shape_semantic_issues(config):
+    issues = []
+    for idx, info in collect_registered_kernels(config).items():
+        if bc.is_shape_semantic_required(info['name']) and not info['has_shape_semantic']:
+            issues.append(Issue('C5', 'error', f'{info["path"]}/kernels[index={idx}]',
+                                f'{info["name"]} 必填 shape_semantic 但未提供'))
+
+    return issues
+
+
+def _coverage_summary(raw_indices, ownership, missing, duplicates, out_of_range):
+    model = ownership['model']
+    runtime = ownership['runtime']
+    excluded = ownership['excluded']
+    unmapped = ownership['unmapped']
+    accounted = len((set(model) | set(runtime) | set(excluded)) & raw_indices)
+    return {
+        'total_ops': len(raw_indices),
+        'model_mapped': len(model),
+        'runtime_mapped': len(runtime),
+        'excluded': len(excluded),
+        'unmapped': len(unmapped),
+        'duplicate': len(duplicates),
+        'out_of_range': len(out_of_range),
+        'missing': len(missing),
+        'exact_coverage_pct': round(100 * accounted / max(len(raw_indices), 1), 2),
+        'missing_sample': missing[:20],
+        'duplicate_sample': duplicates[:20],
+        'out_of_range_sample': out_of_range[:20],
+        'unmapped_sample': sorted(unmapped)[:20],
+    }
+
+
+def check_coverage_v2(config: dict, raw_ops: dict, allow_unmapped: bool = False):
+    raw_indices = bc.expand_raw_op_indices(raw_ops)
+    kind_by_idx = bc.raw_op_kind_by_index(raw_ops)
+    ownership = bc.collect_ownership(config)
+    per_owner = ownership['per_owner']
+    covered = set(per_owner.keys())
+    issues, missing, duplicates, out_of_range = _ownership_issues(
+        raw_indices, covered, per_owner, kind_by_idx)
+    issues.extend(_classification_issues(
+        config, ownership['excluded'], ownership['unmapped'], kind_by_idx, allow_unmapped))
+    issues.extend(_shape_semantic_issues(config))
+    summary = _coverage_summary(raw_indices, ownership, missing, duplicates, out_of_range)
+    return issues, summary
+
+
+def check_coverage_legacy(config: dict, raw_ops: dict):
+    """Best-effort union for v1 — no extrapolation, flagged as unverified."""
+    raw_indices = bc.expand_raw_op_indices(raw_ops)
+    n_ops = len(raw_indices)
+    covered = set()
 
     def walk(node):
         if not isinstance(node, dict):
             return
         for idx in node.get('op_indices', []) or []:
-            ops.add(idx)
+            covered.add(idx)
         for child in node.get('children', []) or []:
             walk(child)
 
-    if isinstance(config_section, dict):
-        walk(config_section)
-    elif isinstance(config_section, list):
-        for item in config_section:
-            walk(item)
-    return ops
-
-
-def _check_c1_count(config, n_ops, issues):
-    """C1: 计数校验（代表性 layer 展开后）。返回 (total_accounted, gap)。"""
-    stages_ops = set()
-    for _sname, sinfo in (config.get('stages') or {}).items():
-        stages_ops |= _collect_section_op_indices(sinfo)
-
-    runtime_ops = set()
+    for s in (config.get('stages') or {}).values():
+        walk(s)
+    for ls in (config.get('layer_structure') or {}).values():
+        walk(ls)
     for aux in (config.get('runtime_auxiliary') or []):
-        runtime_ops |= _collect_section_op_indices(aux)
+        walk(aux)
 
-    layer_total_accounted = 0
-    per_layer_type_info = []
-    for ltype, lstruct in (config.get('layer_structure') or {}).items():
-        rep_ops = _collect_section_op_indices(lstruct)
-        n_instances = len((config.get('layer_types') or {}).get(ltype, {}).get('layer_indices', []))
-        accounted = len(rep_ops) * max(n_instances, 1)
-        layer_total_accounted += accounted
-        per_layer_type_info.append({
-            'layer_type': ltype,
-            'rep_ops_count': len(rep_ops),
-            'n_instances': n_instances,
-            'accounted': accounted,
-        })
-
-    total_accounted = len(stages_ops) + len(runtime_ops) + layer_total_accounted
-    gap = n_ops - total_accounted
-    gap_pct = round(100 * gap / max(n_ops, 1), 2)
-    if abs(gap_pct) > 5:
-        issues.append(Issue('C1', 'warning', '<global>',
-                            f'op count gap: raw_ops={n_ops}, accounted={total_accounted}, '
-                            f'gap={gap} ({gap_pct}%). 详细: {per_layer_type_info}'))
-    return total_accounted, gap
+    issues = [Issue('C0', 'info', '<global>',
+                    'legacy v1 config: exact per-instance coverage 不可用（layer_structure 只含代表层）。'
+                    '请用 migrate_config.py 转为 v2 后再做精确覆盖核算。')]
+    summary = {
+        'total_ops': n_ops,
+        'covered_ops': len(covered & raw_indices),
+        'schema': 'legacy_v1',
+    }
+    return issues, summary
 
 
-def _check_c2_overlap(op_to_paths, issues):
-    """C2: 节点间 op_indices 重叠。"""
-    for idx, paths in op_to_paths.items():
-        if len(paths) <= 1:
-            continue
-        sections = set(p.split('/')[0] for p in paths)
-        if len(sections) == 1:
-            issues.append(Issue('C2', 'error', f'op_index={idx}',
-                                f'op_index={idx} 在同 section 多叶节点出现: {paths}'))
-        else:
-            issues.append(Issue('C2', 'warning', f'op_index={idx}',
-                                f'op_index={idx} 跨 section 出现: {paths}（确认是否合理）'))
+def run(config_path, raw_ops_path, allow_unmapped=False):
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    with open(raw_ops_path, 'r', encoding='utf-8') as f:
+        raw_ops = json.load(f)
 
-
-def _check_c3_shape_semantic(kernels_registered, issues):
-    """C3: kernels[] 已登记的算子缺 shape_semantic。"""
-    for idx, info in kernels_registered.items():
-        kn = info.get('name', '')
-        if is_shape_always_required(kn) and not info.get('has_shape_semantic'):
-            issues.append(Issue('C3', 'error', f'{info.get("path", "?")}/kernels[index={idx}]',
-                                f'{kn} 必填 shape_semantic 但未提供'))
-
-
-def check_coverage(config, raw_ops):
-    """coverage 校验（C1 计数 / C2 重叠 / C3 shape_semantic）。
-
-    analysis_config.json 采用"代表性 layer + layer_indices"模式，
-    layer_structure 只列代表层的 op_indices，故用计数校验而非逐 op 覆盖判定。
-    """
-    issues = []
-    op_to_paths, kernels_registered = collect_leaf_op_paths(config)
-    n_ops = len(raw_ops.get('operators', []))
-
-    total_accounted, gap = _check_c1_count(config, n_ops, issues)
-    _check_c2_overlap(op_to_paths, issues)
-    _check_c3_shape_semantic(kernels_registered, issues)
-
-    return issues, n_ops, total_accounted, gap
+    version = bc.detect_schema_version(config)
+    if version == 2:
+        issues, summary = check_coverage_v2(config, raw_ops, allow_unmapped=allow_unmapped)
+    else:
+        issues, summary = check_coverage_legacy(config, raw_ops)
+    return issues, summary, version
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(message)s', stream=sys.stdout)
-    parser = argparse.ArgumentParser(description='Step 3 Review: op coverage check')
-    parser.add_argument('-c', '--config', required=True, help='analysis_config.json 路径')
-    parser.add_argument('-r', '--raw-ops', dest='raw_ops', required=True, help='raw_ops.json 路径')
-    parser.add_argument('--json', action='store_true', help='以 JSON 输出')
+    parser = argparse.ArgumentParser(description='Exact op coverage check (schema v2)')
+    parser.add_argument('-c', '--config', required=True)
+    parser.add_argument('-r', '--raw-ops', dest='raw_ops', required=True)
+    parser.add_argument('--allow-unmapped', action='store_true',
+                        help='探索模式：unmapped 降级为 warning（结果非 passed，仅 exploratory）')
+    parser.add_argument('--json', action='store_true')
     args = parser.parse_args()
 
-    if not os.path.exists(args.config) or not os.path.exists(args.raw_ops):
-        logger.error('错误: 输入文件不存在')
-        sys.exit(1)
+    for p in (args.config, args.raw_ops):
+        if not os.path.exists(p):
+            bc.emit_error(f'错误: 文件不存在: {p}\n')
+            sys.exit(2)
 
-    with open(args.config, 'r', encoding='utf-8') as f:
-        config = json.load(f)
-    with open(args.raw_ops, 'r', encoding='utf-8') as f:
-        raw_ops = json.load(f)
-
-    issues, n_ops, n_accounted, gap = check_coverage(config, raw_ops)
+    issues, summary, version = run(args.config, args.raw_ops, allow_unmapped=args.allow_unmapped)
     errors = [i for i in issues if i['severity'] == 'error']
 
     if args.json:
-        out = {
+        bc.emit(json.dumps({
             'script': 'check_op_coverage.py',
             'config': args.config,
             'raw_ops': args.raw_ops,
-            'total_ops': n_ops,
-            'accounted_ops': n_accounted,
-            'gap': gap,
-            'gap_pct': round(100 * gap / max(n_ops, 1), 2),
+            'schema_version': version,
             'error_count': len(errors),
+            'summary': summary,
             'issues': issues,
-        }
-        logger.info(json.dumps(out, indent=2, ensure_ascii=False))
+        }, indent=2, ensure_ascii=False))
     else:
         for it in issues:
-            sev = it['severity'].upper()
-            logger.info('[%s] %s @ %s: %s', sev, it["id"], it["node_path"], it["message"])
-        logger.info('\n汇总: ops 总数=%d, 折算覆盖=%d, gap=%d (%s%%), errors=%d',
-                    n_ops, n_accounted, gap, round(100 * gap / max(n_ops, 1), 2), len(errors))
+            bc.emit(f'[{it["severity"].upper()}] {it["id"]} @ {it["node_path"]}: {it["message"]}')
+        bc.emit(f'\n汇总: {json.dumps(summary, ensure_ascii=False)}')
+        bc.emit(f'errors={len(errors)}')
 
     sys.exit(1 if errors else 0)
 

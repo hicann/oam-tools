@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# Copyright (c) 2026 Huawei Technologies Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
+#
 """
 基于 raw_ops.json 的 normalized_name 序列做粗粒度 layer 边界候选检测。
 
@@ -33,15 +31,18 @@
 
 confidence < 0.5 时不输出 boundaries（视为不可靠候选）。
 """
-import logging
 import argparse
 import json
 import math
 import os
 import sys
 from collections import defaultdict
-logger = logging.getLogger(__name__)
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
+import breakdown_common as bc  # noqa: E402
 
 
 def detect_periodic_markers(operators, min_occurrences=4, max_cv=0.4):
@@ -115,8 +116,22 @@ def build_segments(operators, candidate):
     return ranges
 
 
-def _build_segments_result(operators, candidates, min_confidence):
-    """根据周期 marker 候选构建 op_segments 结果 dict。"""
+def parse_args():
+    parser = argparse.ArgumentParser(description='Layer 边界候选检测')
+    parser.add_argument('-r', '--raw-ops', dest='raw_ops', required=True,
+                        help='raw_ops.json 路径（或 raw_ops.compact.json）')
+    parser.add_argument('-o', '--output', default='outputs/op_segments.json',
+                        help='输出 op_segments.json 路径')
+    parser.add_argument('--min-occurrences', type=int, default=4,
+                        help='marker 候选最少出现次数 (default: 4)')
+    parser.add_argument('--max-cv', type=float, default=0.4,
+                        help='marker 候选最大允许 CV (default: 0.4)')
+    parser.add_argument('--min-confidence', type=float, default=0.5,
+                        help='最低 confidence 阈值；低于该值不输出 boundaries')
+    return parser.parse_args()
+
+
+def _segmentation_result(candidates, operators, min_confidence):
     if not candidates:
         return {
             'best_marker': None,
@@ -129,63 +144,63 @@ def _build_segments_result(operators, candidates, min_confidence):
         }
     best = candidates[0]
     confidence = confidence_from(best['cv'], best['count'])
-    note_tail = ('boundaries 可作 layer 候选起点，最终边界以源码语义为准。'
-                 if confidence >= min_confidence
-                 else f'confidence < {min_confidence}，仅供参考，AI 应回退到全手动定位。')
+    accepted = confidence >= min_confidence
     return {
         'best_marker': best['kernel'],
         'layer_length_estimate': int(round(best['mean'])),
         'confidence': confidence,
-        'boundaries': best['positions'] if confidence >= min_confidence else [],
-        'ranges': build_segments(operators, best) if confidence >= min_confidence else [],
+        'boundaries': best['positions'] if accepted else [],
+        'ranges': build_segments(operators, best) if accepted else [],
         'candidates': [
-            {'kernel': c['kernel'], 'count': c['count'],
-             'mean': round(c['mean'], 2), 'cv': round(c['cv'], 3)}
-            for c in candidates[:5]
+            {
+                'kernel': candidate['kernel'],
+                'count': candidate['count'],
+                'mean': round(candidate['mean'], 2),
+                'cv': round(candidate['cv'], 3),
+            }
+            for candidate in candidates[:5]
         ],
-        'note': (f'最佳 marker={best["kernel"]}，{best["count"]} 次出现，'
-                 f'平均间隔 {best["mean"]:.1f}, CV={best["cv"]:.3f}, confidence={confidence}. '
-                 + note_tail),
+        'note': (
+            f'最佳 marker={best["kernel"]}，{best["count"]} 次出现，'
+            f'平均间隔 {best["mean"]:.1f}, CV={best["cv"]:.3f}, confidence={confidence}. '
+            + ('boundaries 可作 layer 候选起点，最终边界以源码语义为准。'
+               if accepted else f'confidence < {min_confidence}，仅供参考，AI 应回退到全手动定位。')
+        ),
     }
 
 
+def _write_result(output, result):
+    os.makedirs(os.path.dirname(output) or '.', exist_ok=True)
+    with open(output, 'w', encoding='utf-8') as file_obj:
+        json.dump(result, file_obj, indent=2, ensure_ascii=False)
+
+
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(message)s', stream=sys.stdout)
-    parser = argparse.ArgumentParser(description='Layer 边界候选检测')
-    parser.add_argument('-r', '--raw-ops', dest='raw_ops', required=True,
-                        help='raw_ops.json 路径（或 raw_ops.compact.json）')
-    parser.add_argument('-o', '--output', default='outputs/op_segments.json',
-                        help='输出 op_segments.json 路径')
-    parser.add_argument('--min-occurrences', type=int, default=4,
-                        help='marker 候选最少出现次数 (default: 4)')
-    parser.add_argument('--max-cv', type=float, default=0.4,
-                        help='marker 候选最大允许 CV (default: 0.4)')
-    parser.add_argument('--min-confidence', type=float, default=0.5,
-                        help='最低 confidence 阈值；低于该值不输出 boundaries')
-    args = parser.parse_args()
+    args = parse_args()
 
     if not os.path.exists(args.raw_ops):
-        logger.error('错误: 文件不存在: %s', args.raw_ops)
+        bc.emit_error(f'错误: 文件不存在: {args.raw_ops}\n')
         sys.exit(1)
 
     with open(args.raw_ops, 'r', encoding='utf-8') as f:
         raw = json.load(f)
     operators = raw.get('operators', [])
     if not operators:
-        logger.error('错误: raw_ops 无 operators')
+        bc.emit_error('错误: raw_ops 无 operators\n')
         sys.exit(1)
 
     candidates = detect_periodic_markers(
-        operators, min_occurrences=args.min_occurrences, max_cv=args.max_cv)
-    result = _build_segments_result(operators, candidates, args.min_confidence)
+        operators,
+        min_occurrences=args.min_occurrences,
+        max_cv=args.max_cv,
+    )
 
-    os.makedirs(os.path.dirname(args.output) or '.', exist_ok=True)
-    with open(args.output, 'w', encoding='utf-8') as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-    logger.info('op_segments 已保存到: %s', args.output)
-    logger.info('  best_marker: %s', result["best_marker"])
-    logger.info('  confidence:  %s', result["confidence"])
-    logger.info('  layer count: %s', len(result["boundaries"]))
+    result = _segmentation_result(candidates, operators, args.min_confidence)
+    _write_result(args.output, result)
+    bc.emit(f'op_segments 已保存到: {args.output}')
+    bc.emit(f'  best_marker: {result["best_marker"]}')
+    bc.emit(f'  confidence:  {result["confidence"]}')
+    bc.emit(f'  layer count: {len(result["boundaries"])}')
 
 
 if __name__ == '__main__':

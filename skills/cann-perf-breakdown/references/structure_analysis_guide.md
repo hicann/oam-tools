@@ -2,16 +2,33 @@
 
 本文档定义如何从模型源码与 `raw_ops.json` 推导出 `analysis_config.json`。目标是**优先**产出正确、清晰、稳定的模型架构表示，为按层、按模块做耗时分析提供可靠输入。**拆分以源码语义为准，kernel 序列只用于定位和验证。**
 
-文档分为四部分：
+## 目录
 
-- **A. 模型 → 结构树**：从源码读出节点、命名、边界、歧义消解
-- **B. kernel → 节点**：把 raw_ops 的算子精确归属到节点，含 shape_semantic 必填范围（**单源**）
-- **C. 输出格式**：`analysis_config.json` 的 schema 与字段规范
-- **D. 工作流速览**：Step 2 拆解 + Step 3 Review 的执行步骤
+- [A 模型结构树](#a-模型结构树) — 从源码读出节点、命名、边界、歧义消解
+  - [A.1 节点来源规则](#a1-节点来源规则) ・ [A.2 命名规则](#a2-命名规则) ・ [A.3 边界划分规则](#a3-边界划分规则) ・ [A.4 歧义消解顺序](#a4-歧义消解顺序)
+- [B Kernel 节点](#b-kernel-节点) — 把 raw_ops 的算子精确归属到节点
+  - [B.1 实现细节 op](#b1-实现细节-op-的处理) ・ [B.2 通信操作](#b2-通信操作的处理) ・ [B.3 op 映射规则](#b3-op-映射规则) ・ [B.4 辅助证据](#b4-辅助证据) ・ [B.5 shape_semantic（可选注解）](#b5-shape_semantic可选注解)
+- [C. 输出格式](#c-输出格式) — `analysis_config.json` 的 schema 与字段规范
+  - [C.1 顶层 schema](#c1-顶层-schema-与示例) ・ [C.2 顶层字段](#c2-顶层字段说明) ・ [C.3 节点字段](#c3-节点字段说明) ・ [C.4 树结构规则](#c4-树结构规则) ・ [C.5 显式数据流边](#c5-显式数据流边branches)
+- [D. 工作流速览](#d-工作流速览) — Step 2 拆解 + Step 3 Review 的执行步骤
+- [E. Schema v2 权威定义](#e-schema-v2模型层-vs-运行时调用权威定义) — 模型层 vs 运行时调用、覆盖四分类
+
+**两条贯穿全文的红线**：
+
+1. **源码是主证据，trace 是辅证，且 trace 只能单向证伪**。拆分以源码语义为准。一次采集只覆盖单个 step、单个 rank，且发生在切分与融合之后，所以它看到的是源码所有路径的一个**子集**。这个不对称决定了两个方向的分歧含义完全不同：
+
+   | 方向 | 含义 | 判定 |
+   |---|---|---|
+   | trace 里有，拆解里没有 | 该算子确实执行过，而拆解没有任何归属 | **错误**（拆解漏了，源码解释不能豁免；由 C1/C6 拦截） |
+   | 拆解里有，trace 里没有 | 未执行的分支、其他 rank 的分片、被融合掉的算子、本 step 跳过的层 | **不是错误**（最多记录一条 info） |
+   | trace 里的算子在拆解里全部有归属 | 覆盖率完整 | **默认以源码为主，判为无错**。层数、专家数这类 trace 无法裁定的标量由源码单独决定，trace 既不能推翻它，也不能因为"没能佐证"而扣分 |
+
+   换句话说：**trace 能证伪的只有覆盖率**。任何检查若反转其中一个方向，就等于把"没采到的数据"当成缺陷，这正是同样输入在三个采集上得出三个不同结论的原因。规则的代码入口是 `breakdown_common.py` 的 `TRACE_CAN_ONLY_FALSIFY_COVERAGE` 与 `trace_disagreement_severity()`。
+2. **`children` 只表达包含关系**。相邻不等于有数据流边；残差、并行支路、skip 必须在 `branches` 里显式声明，未声明的边在下游就不存在（见 [C.5](#c5-显式数据流边branches)）。
 
 ---
 
-## A. 模型 → 结构树
+## A 模型结构树
 
 ### A.1 节点来源规则
 
@@ -93,7 +110,7 @@
 
 ---
 
-## B. kernel → 节点
+## B Kernel 节点
 
 ### B.1 实现细节 op 的处理
 
@@ -133,24 +150,15 @@
 - 用于判断某个 `MatMul`、`GroupedMatmul`、`QuantBatchMatmul` 等同名算子更可能属哪个节点。
 - 用于核对前后节点是否真的存在维度变化边界。
 
-### B.5 shape_semantic 必填范围（单源）
+### B.5 shape_semantic（可选注解）
 
-`kernels` 数组的条目中，对以下算子**必须**提供 `shape_semantic`，用模型维度符号标注 shape 含义：
+`shape_semantic` 是**可选**注解，不进入正式门禁，也不参与评分。它是叠加在 profiler 已有维度上的一层解释：缺失并不说明拆解错误，填了也不能证明拆解正确。因此把它做成必填曾经既拦不住真错误，又给"不可能出错的证据"发分。
 
-| 类别 | 算子 |
-|---|---|
-| **MatMul 类** | `MatMul` / `MatMulV2` / `QuantBatchMatmulV3` / `GroupedMatmul` / `GemmEx` / `BatchMatMul`（及变体） |
-| **Attention 类** | `FlashAttentionScore` / `FusedInferAttentionScore` / `KvQuantSparseFlashAttention` |
-| **通信类** | `HcomAllGather` / `HcomReduceScatter` / `HcomAllToAll` / `hcom_allReduce` |
-| **Norm 类** | `RmsNorm` / `LayerNormV3` / `InplaceAddRmsNorm` / `AddRmsNorm*` / `AddRmsNormDynamicQuant` |
-| **Fused 计算类** | `MlaPrologV3` / `DequantSwigluQuant` / `LightningIndexerQuant` / `MoeGatingTopKHash` |
-| **旋转位置编码** | `RotaryMul` |
-| **KV cache 更新** | `ScatterNdUpdate`、KV cache 拼接用的 `ConcatV2` / `ConcatD` |
-| **残差加法** | `Add`（明确为残差连接时） |
-| **Embedding/Gather** | `GatherV2` / `GatherV3` |
-| **MoE 调度** | `MoeDistributeDispatchV2` / `MoeDistributeCombineV2` |
+它仍然有用——排查一个 kernel 到底算的是什么时，写清 shape 语义能快速暴露张量归属搞错的情况（例如把 Q 输出当成 K）。需要时用 `run_validation.py --with-shapes` 或直接跑 `validate_shapes.py` 检查一致性。
 
-**免填**：`Cast`、`Reshape`、`Transpose`（纯格式转换）、`DynamicQuant`/`Dequant*`（量化辅助）。
+**建议填写的场景**（按语义，不按 kernel 名）：承担主要计算量的 GEMM 与 attention、改变张量布局的通信、以及多输出的融合算子——这三类最容易把张量认错。纯格式转换（Cast / Reshape / Transpose）与量化、反量化辅助算子没有必要填。
+
+> 此处刻意不列固定 kernel 名表。同一语义在不同模型族与不同算子库版本下名字完全不同，把某一族的名字写成通用规则，等于把适配器该做的事写死进指南。各族已知别名见 `adapters/<family>.py` 的 `kernel_anchors`。
 
 **统一维度符号**：`B`（Batch）、`T`（Time/SeqLen，统一用 T 不用 S）、`H`（NumHeads）、`D`（HeadDim）、`hidden`（hidden_size）、`ffn`（intermediate_size）、`E`（num_experts）、`topK`（experts per token）、`q_rank`（q_lora_rank）、`kv_rank`（kv_lora_rank）。
 
@@ -160,14 +168,14 @@
 - `[B*T, hidden] → [B*T, hidden]`（Norm）
 - `[B*T, H, kv_rank] → AllGather → [B*T, H, kv_rank*tp]`（通信）
 
-#### B.5.1 shape_semantic 正确性规则（填写前必须逐一核对）
+#### B.5.1 填写时的正确性规则（选择填写就要填对）
 
-1. **先看实际 shape**：填写前先查看该 kernel 在 `raw_ops.json` 中的 `input_shapes` 和 `output_shapes`，以实际 shape 为准，**绝不凭印象或架构直觉猜测**。
-2. **`→` 左侧描述输入，右侧描述输出**：`→` 左边只写主要输入张量的语义维度（通常是 input[0]），右边写所有关键输出张量；多输出用逗号分隔。
-3. **命名维度必须与实际数值一致**：若写 `H_q=128`，则实际输出 tensor 中必须存在维度 128；若写 `kv_rank=512`，则实际 shape 中必须存在 512。**不得**写 config 字段名之外的新符号而不标注数值（如直接写 `H_idx` 而不写 `H_idx=64`）。
-4. **fused kernel 须追踪每个关键输出**：对 `MlaPrologV3`、`LightningIndexerQuant`、`AddRmsNormDynamicQuant` 等多输出 fused kernel，需对照 raw_ops 的每条 output shape，识别其含义后在 shape_semantic 右侧列出所有关键输出。**不得**将 Q 输出标成 K，**不得**混用 `H_idx`/`H_q`。
-5. **吸收（absorbed）注意**：MLA 推理时 `W_kv_b` 已被吸收进 Q，`MlaPrologV3` 输出的是 `Q_nope_abs[B*T, H_q, kv_rank]`，维度是 `kv_rank`（512）而非 `D_nope`（128）。
-6. **验证脚本**：写完 analysis_config.json 并运行 enrich 后，执行 `python scripts/validate_shapes.py -c outputs/analysis_config.json` 确认无 ERROR，再进行下一步。
+1. **先看实际 shape**：以 `raw_ops.json` 里该 kernel 的 `input_shapes` / `output_shapes` 为准，**绝不凭印象或架构直觉猜测**。
+2. **`→` 左侧描述输入，右侧描述输出**：左边写主要输入张量（通常是 input[0]）的语义维度，右边写所有关键输出；多输出用逗号分隔。
+3. **命名维度必须与实际数值一致**：写 `H_q=128` 就要求实际 tensor 中存在维度 128。引入 config 字段名之外的新符号时必须标注数值。
+4. **融合算子须追踪每个关键输出**：多输出融合 kernel 要对照每条 output shape 逐个识别含义，全部列在右侧。**不得**把 Q 输出标成 K —— 这是最常见也最容易被忽略的错标。
+5. **注意权重吸收**：某些 attention 实现在推理时会把一个投影权重吸收进另一个，输出维度因此变成低秩维而非原始 head dim。以实际 shape 为准，不要按论文公式推。
+6. **验证**：`python scripts/validate_shapes.py -c outputs/analysis_config.json` 确认无 ERROR。这是排查手段，不是流程门禁。
 
 ---
 
@@ -292,7 +300,39 @@
 - 同一代表性 step 中重复出现的同构阶段，只保留一份类型定义，并使用 `stage_indices` 或 `instance_indices` 标明重复实例，**不**按迭代展开成多份相同子树。
 - **不**要求为了"全覆盖"把 runtime 辅助逻辑强塞进模块树；这类内容应进入 `runtime_auxiliary`。
 - **不能**静默遗漏已经识别出的重要阶段。主干结构和 runtime 辅助逻辑都应在配置中有明确归属。
-- `kernels` 数组对 [B.5](#b5-shape_semantic-必填范围单源) 列出的算子**必须**填写 `shape_semantic`。
+- `children` **只表达包含关系**：相邻两个 child 之间不存在数据流边。所有非链式连接见 [C.5](#c5-显式数据流边branches)。
+- `kernels` 的 `shape_semantic` 可选（见 [B.5](#b5-shape_semantic可选注解)）。
+
+### C.5 显式数据流边（`branches`）
+
+`children` 的顺序描述"谁包含谁"，不描述"数据怎么流"。残差、并行支路和 skip 全部活在变量传递里：
+
+```python
+hidden, residual = self.input_layernorm(hidden, past_residual)   # 加法在 kernel 内部
+hidden = self.self_attn(hidden)
+hidden, residual = self.post_attention_layernorm(hidden, residual)
+```
+
+这段代码里有两处残差汇合，但 `children` 顺序上**没有任何痕迹**——没有独立的 Add 算子，op 序列里也看不出来。所以规则是：**没有在 `branches` 里声明的边，在下游就等于不存在**，Skill 2 建图与 Skill 3 渲染都禁止从 children 顺序推导连接。一个 norm 了输入却不声明分支的模板，会被正常渲染成一条直链而不报错——这正是整层残差静默丢失的方式。
+
+每条 `branches[]`：
+
+| 字段 | 含义 |
+|---|---|
+| `name` | 边的标识 |
+| `kind` | `residual`（默认）/ `parallel` / `skip` / `gate` / `cross_invocation` |
+| `inputs` | 分叉点（一个或多个），可用兄弟节点名或完整节点 id |
+| `output` | 汇合点 |
+| `semantic` | 这条边在源码里是什么 |
+| `source_ref` / `code_ref` | 指向源码行 |
+
+`inputs` 与 `output` 之间的兄弟节点就是被绕过的部分。三条容易写错的地方：
+
+1. **方向不能反**：起点取在主路径上（两端相邻、中间没有被绕过的节点）会被 `check_dataflow.py` 的 D2 判为错误。
+2. **跨调用的 carry 写成绕回式**：融合 add-norm 把本层入口 norm 融进上一次调用的尾部，因此注意力残差有一端落在**上一次调用**里。这种边的 `inputs` 位置在 `output` **之后**（在 children 顺序上绕回），下游据此识别为跨 invocation 的 carry 而非层内环。写成正向会复现 G7 要抓的反向残差缺陷。
+3. **并行支路必须声明**：一个值被两个消费者读取（含直接读 `forward()` 入参的共享专家形态）要写成 `kind: parallel`。若写成相邻 children 又不给 branches，下游会把并行渲染成串行链（D4）。
+
+写完后用 `dataflow_source.json` 逐条核对：每个 `merges[]` 都要有对应的 `branches[]`，每个 `forks[]` 都要有对应的 parallel 声明。`check_dataflow.py` 会做这个比对。
 
 ---
 
@@ -358,14 +398,28 @@ enrich 命令为每个叶节点的 `op_indices` 追加 `op_data` 字段（含 `i
 
 ### D.2 Step 3：Review 拆解结果
 
-Step 3 用脚本暴露问题、AI 仅修正定位过的节点。**不再裸读全量源码与 raw_ops**。
+Step 3 先用脚本暴露集合与格式问题，再执行一次完整的源码/Trace 语义审查。后续修正可聚焦 issue 命中的节点，但 Q/K/V、残差、layer 边界、final norm/tail/runtime 九项强制检查不能跳过。
 
 #### D.2.1 运行确定性脚本检查
 
+正式流程用统一入口，输出**单一合法 JSON**：
+
 ```bash
-python scripts/check_structure.py    -c outputs/analysis_config.json --json > outputs/issues.json
-python scripts/validate_shapes.py    -c outputs/analysis_config.json --fail-fast --json >> outputs/issues.json
-python scripts/check_op_coverage.py  -c outputs/analysis_config.json -r outputs/raw_ops.json --json >> outputs/issues.json
+python scripts/run_validation.py \
+  -c outputs/analysis_config.json \
+  -r outputs/raw_ops.json \
+  -m outputs/model_manifest.json \
+  --model-source /path/to/model-source/modeling_<x>.py \
+  --semantic-review outputs/semantic_review.json \
+  -o outputs/validation_report.json
+```
+
+单独调试某一维度时才直接调用子脚本（各自 `--json` 输出单一 JSON，**不要**用 `>>` 把多个 JSON 文档追加进同一个文件——那样产出的不是合法 JSON）：
+
+```bash
+python scripts/check_structure.py   -c outputs/analysis_config.json --json
+python scripts/check_dataflow.py    -c outputs/analysis_config.json -s models/<x>/modeling_<x>.py --json
+python scripts/check_op_coverage.py -c outputs/analysis_config.json -r outputs/raw_ops.json --json
 ```
 
 脚本规则与本指南直接对齐：
@@ -373,14 +427,16 @@ python scripts/check_op_coverage.py  -c outputs/analysis_config.json -r outputs/
 | 脚本 | 检查 |
 |---|---|
 | `check_structure.py` | 树良构性（schema 完整、layer_types/layer_structure 匹配、必填字段、索引列表无重复、双归属检测） |
-| `validate_shapes.py` | shape_semantic 与实际 tensor shape 一致性 |
-| `check_op_coverage.py` | op 全覆盖、不重叠、shape_semantic 必填类算子全在 kernels 数组登记 |
+| `check_dataflow.py` | **D1-D7：配置声明的边与源码 `forward()` 是否一致**（漏声明残差、方向反了、绕过源码没调用的节点、并行支路被串行化、未声明运行期分支） |
+| `check_sublayers.py` | 代表结构树子模块一致性（父=子 union、无重叠、模板 ⊆ 代表实例） |
+| `check_op_coverage.py` | op 全覆盖、不重叠、`kernels` 登记完整 |
+| `validate_shapes.py` | 可选排查：shape_semantic 与实际 tensor shape 一致性（不在正式门禁内） |
 
-#### D.2.2 若 issues.json 为空 → 跳过 AI review
+#### D.2.2 确定性 issues 为空也不能跳过语义审查
 
-直接进入 D.3。
+Kernel 全覆盖和父子集合一致只能证明“每个 op 有归属”，不能证明数据流正确。按 `semantic_review_protocol.md` 生成请求并逐项填写 `semantic_review.json`。
 
-#### D.2.3 否则拉起 review subagent
+#### D.2.3 修复确定性 issue
 
 subagent 与主 agent 使用相同模型与推理强度。**输入**：
 
@@ -400,12 +456,75 @@ subagent 与主 agent 使用相同模型与推理强度。**输入**：
 
 **输出**：修正后的 `analysis_config.json` + review 结论。
 
-#### D.2.4 重新 enrich + 校验
+#### D.2.4 重新 enrich + 语义审查 + 校验
 
-修正后重新运行 D.1.6 enrich 与 D.2.1 三脚本，循环执行直至 issues 列表为空或迭代上限（默认 3 次）。
+修正后重新运行 D.1.6 enrich，重新生成并完成 `semantic_review.json`，再运行统一校验与 `score_breakdown.py`。任何 config 变化都会使旧 review 的 SHA256 失效。循环执行直至 semantic review、validation 和 score 均为 passed；每轮按 `references/breakdown_scoring.md` 保存历史并从历史最佳配置继续。默认最多评估 5 轮，连续两轮无提升则标记证据不足并停止空转。
 
 ### D.3 与下游的衔接
 
-- 通过 D.2.4 后，`analysis_config.json` 进入 Step 4（generate_report.py）与 Step 5（compute_metrics.py），脚本调用见 SKILL.md。
+- 通过 D.2.4 后，`analysis_config.json` 进入指标计算并交给 `cann-perf-breakdown-to-ui-json`，脚本调用见 SKILL.md。
 - 若是 Mode B（仅模型源码），输出文件名为 `model_structure.json`，op_indices 留空，可加 `branches` 字段表达多分支；不进入 Step 4/5。详见 `references/mode_b_branches.md`。
-- 若是 Mode C（仅性能数据），不走本流程，委托给 cann-npu-perfanalysis sibling skill；详见 `references/mode_c_delegate.md`。
+- 若是 Mode C（仅性能数据），不走本流程，委托给仓库内的 `cann-npu-perfanalysis` skill；详见 `references/mode_c_delegate.md`。
+
+---
+
+## E. Schema v2：模型层 vs 运行时调用（**权威定义**）
+
+schema v2 将“学习到的模型架构”与“运行时观测到的执行”彻底分离。§C 的 v1 树（`layer_types`/`layer_structure`）已废弃，v2 config **不允许**再出现这两个字段。
+
+### E.1 术语定义
+
+| 术语 | 定义 | schema 字段 |
+|---|---|---|
+| **model layer（模型层）** | 拥有独立学习参数的 decoder layer。由源码构造决定（`nn.ModuleList(range(N))` 等） | `architecture.layer_groups[].model_layer_indices` / `model_layer_range` |
+| **prediction module（MTP/预测层）** | 独立学习的预测/推测层。数量由 config（如 `num_nextn_predict_layers`）决定 | `architecture.prediction_modules[].learned_module_count` + `model_layer_indices`（追加在主层号之后） |
+| **trace instance（运行时调用）** | 代表性 step 中一次真实模块调用 | `trace_instances[]` |
+| **invocation_index** | 同一 model layer 的第几次运行时调用 | `trace_instances[].invocation_index` |
+| **representative template（代表模板）** | 用于压缩报告体积的结构树，**不是**层号 | `structures[]` + `trace_instances[].representative_instance_id` |
+| **execution_count** | 从 `trace_instances` 派生的调用计数，**禁止**用模型层数代替 | 由脚本推导 |
+
+### E.2 MTP / spec decoding 规则（重写，**唯一解释**）
+
+> 重复调用复用同一个学习到的模块，**除非**源码构造证明存在不同参数层。
+
+- 外层 loop 调用一个内部含 decoder layer 的包装层 N 次：记为 **1 个 learned prediction module + N 个 trace_instances**，N 个 instance 的 `model_layer_index` **全部相同**。
+- **禁止**把 N 次调用写成 N 个模型层，**禁止**按 kernel 出现顺序生成伪层号（如 `6,7,8`）。
+- prediction module 的 `model_layer_indices` **必须** ≥ `num_main_layers`（追加在主层之后，不占用主层号）。
+- DS3.2 金标准：`num_main_layers=61`，Dense `[0,1,2]`，MoE `[3..60]`，学习 MTP 层 **1 个**（层号 61）；`next_n=3` 时层 61 有 **3 个 invocation**。
+
+### E.3 采集范围与外推禁令
+
+`trace_scope` 是**可选**字段（不在 schema `required` 里）：它标注这次采集覆盖了什么，而不是模型是什么样。结构由源码决定，采集范围只影响哪些节点有性能数据。
+
+- **不得外推**：没有被采集到的层、rank 或 stage，不得推算或复制指标。报告里这些节点应显示为"未采集"，而不是按代表层的耗时乘个系数。这是硬性规则，与 `trace_scope` 是否填写无关。
+- 只有**证据充分**才能声明 `rank_local` / `pipeline_stage_local` 及具体 rank/stage。证据来自 runtime YAML（`parallel_config` 的 tp/ep/pp/cp）、launcher 参数、rank metadata、观测层集合。
+- PP 未证明时若只观测到部分层，写 `kind=unknown` 或留空，**禁止**写"可能是 pipeline rank 0"再按完整模型展示。
+- YAML 中缺少 PP key 视为 `pp=unknown`（**不是** `pp=1`）。
+- 填了 `trace_scope` 就要一并给出 `confidence` 与 `evidence`；报告会显示它们。
+- 层数与 trace 的交叉校验（`check_manifest_trace.py` 的 MT1）默认只作 `info`：一次采集可能只覆盖单个 step 或单个 rank，trace 不能反驳源码读出的层数。确需阻断时显式传 `--fail-on-trace-mismatch`。
+
+### E.4 精确覆盖规则（四分类）
+
+代表 step 的每个 op 必须归入以下**前三类之一**：
+
+| 类别 | schema 来源 | 说明 |
+|---|---|---|
+| `mapped_model_ops` | `trace_instances` + `stages` + `structures` 叶子 | 模型模块算子 |
+| `mapped_runtime_ops` | `runtime_auxiliary` | 运行时辅助（verify/sample/init/脚手架） |
+| `excluded_profiler_ops` | `excluded_profiler_ops` | **仅** profiler/bookkeeping；`reason_code` ∈ {`profiler_marker`,`stream_sync_placeholder`,`cross_step_bookkeeping`,`device_param_update`,`empty_shape_noop`} + `evidence` |
+| `unmapped_ops` | `unmapped_ops` | 归属未知 = 未完成；严格校验必然失败 |
+
+- 覆盖率 = model ∪ runtime ∪ excluded 的**精确并集**。**禁止**用“代表层 op 数 × 层数”外推。
+- missing 与 duplicate **不得**相互抵消，两者都显式报告。
+- 主计算算子（MatMul/Attention/Norm/MoE/通信/Gather/KV cache/采样）**禁止**放入 `excluded_profiler_ops`（脚本 C6 阻断）。
+- **禁止**用一个包含几百个索引的 `unmapped_ops` 节点冒充完成；填 `reason` 不算覆盖。
+- 正式 `passed` 要求 `unmapped=0`、`duplicate=0`、无越界。探索模式 `--allow-unmapped` 状态为 `exploratory`（非 passed），报告标注未验证。
+- 完整的 Step 6 映射规程与提示词模板见 `references/ai_mapping_protocol.md`。
+
+### E.5 证据与置信度
+
+架构与并行声明都必须带证据：`architecture.source_of_truth`、`layer_groups[].source_ref`、`trace_scope.evidence` 与 `confidence`。无法静态解析的值写 `"unknown"`，**禁止**用模型常识补值。manifest 提取器（`extract_model_manifest.py`）对每条事实记录 `source_ref`/`method`/`confidence`。
+
+### E.6 旧版迁移
+
+v1 config 可用 `migrate_config.py` 迁移到 v2，结果标记 `migration.status = legacy_unverified`：因 v1 的 `layer_indices` 混淆了层号与调用次数，迁移后 `trace_instances[].model_layer_index` 一律为 `"unknown"`，必须重新跑 `extract_model_manifest` + `validate_architecture` 才能提升为可信状态。
