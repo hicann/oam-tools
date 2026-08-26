@@ -25,14 +25,17 @@ repos:
           )
 
   # OAT compliance check (Open Source Audit Tool)
+  # require_serial + pass_filenames=false: oat_check.sh 内部自行收集 staged
+  # 文件，只调用一次。避免 pass_filenames=true 时每文件单独触发一次 OAT
+  # 扫描，导致 oat-py 在 CI 环境中偶发不生成 PlainReport 报告而误报失败。
   - repo: local
     hooks:
       - id: oat-check
         name: OAT Compliance Check
         entry: bash scripts/oat_check.sh
         language: system
-        pass_filenames: true
-        types: [file]
+        pass_filenames: false
+        require_serial: true
         stages: [pre-commit]
         verbose: true
 
