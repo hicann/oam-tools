@@ -1,0 +1,353 @@
+{
+  "script": "check_graph_consistency.py",
+  "graph": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2-v7/ui-report/report/outputs/model_architecture_graph.json",
+  "config": "ds3.2-fix/work/analysis_config_v2.json",
+  "status": "warning",
+  "error_count": 0,
+  "warning_count": 28,
+  "detail": {
+    "graph_items": 69,
+    "decoder_clusters": 3,
+    "config_layer_groups": 3,
+    "expected_index_sets": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      [
+        61
+      ]
+    ],
+    "actual_index_sets": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      [
+        61
+      ]
+    ],
+    "config_leaf_nodes": 30,
+    "model_id": null
+  },
+  "issues": [
+    {
+      "id": "G3",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "architecture.num_main_layers",
+      "message": "层号 6..60（55 层）声明存在但本次采集未观测，已作为 source-only 节点保留（不带指标）"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_dense 的 instanceIndices ([0, 1, 2])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    },
+    {
+      "id": "G4",
+      "severity": "warning",
+      "check": "graph_consistency",
+      "node_path": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+      "message": "子节点重复了父节点 model/ds3.2/DeepseekV3DecoderLayer_moe/mlp 的 instanceIndices ([3, 4, 5])，会被读成 3x3 次调用；重复语义应只由父节点承担"
+    }
+  ]
+}

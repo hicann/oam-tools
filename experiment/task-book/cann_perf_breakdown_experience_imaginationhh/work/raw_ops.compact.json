@@ -1,0 +1,4953 @@
+{
+  "step_id": "15",
+  "kernel_count": 548,
+  "kernel_types_count": 55,
+  "kernel_types": {
+    "Cast": 77,
+    "MatMul": 49,
+    "QuantBatchMatmulV3": 36,
+    "DynamicQuant": 33,
+    "ConcatV2": 30,
+    "AivKernel": 28,
+    "Add": 19,
+    "SplitV": 18,
+    "RotaryMul": 18,
+    "ScatterNdUpdate": 18,
+    "Transpose": 15,
+    "DequantSwigluQuant": 15,
+    "GatherV2": 12,
+    "GroupedMatmul": 12,
+    "RmsNorm": 10,
+    "MlaPrologV3": 9,
+    "LayerNormV3": 9,
+    "LightningIndexerQuant": 9,
+    "KvQuantSparseFlashAttention": 9,
+    "InplaceAddRmsNorm": 9,
+    "ConcatD": 9,
+    "HcomAllGather": 8,
+    "Mul": 8,
+    "MoeGatingTopKHash": 6,
+    "MoeDistributeDispatchV2": 6,
+    "MoeDistributeCombineV2": 6,
+    "ArgMaxV2": 5,
+    "ArgMaxWithValue": 4,
+    "Sub": 4,
+    "OnesLike": 4,
+    "hcom_allReduce": 4,
+    "UpdateModelParam_static_bin": 4,
+    "SubGreaterEqualLessLogicalAnd": 4,
+    "HcomReduceScatter": 4,
+    "BatchMatMul_to_tranpose_batch_matmul": 4,
+    "HcomAllToAll": 4,
+    "AddRmsNormDynamicQuant": 3,
+    "Equal": 3,
+    "AddRmsNorm/AddRmsNormCast": 3,
+    "Reshape_58/ConfusionTranspose/Transpose": 3,
+    "Fill": 2,
+    "ReverseV2": 2,
+    "BatchMatMul_1_to_tranpose_batch_matmul": 1,
+    "BatchMatMul_2_to_tranpose_batch_matmul": 1,
+    "BatchMatMul_3_to_tranpose_batch_matmul": 1,
+    "AddRmsNorm_3/AddRmsNormCast": 1,
+    "BatchMatMul_4_to_tranpose_batch_matmul": 1,
+    "AddRmsNorm_5/AddRmsNormCast": 1,
+    "BatchMatMul_5_to_tranpose_batch_matmul": 1,
+    "AddRmsNorm_7/AddRmsNormCast": 1,
+    "Reshape_284/ConfusionTranspose/Transpose": 1,
+    "ZerosLike": 1,
+    "ReduceAny": 1,
+    "SelectV2": 1,
+    "TensorMove": 1
+  },
+  "compact_operator_count": 542,
+  "note": "compact view for Step 2: timing fields removed; consecutive identical ops folded as {repeat:true,...,count}",
+  "operators": [
+    {
+      "index": 0,
+      "org_index": 2740,
+      "normalized_name": "ArgMaxWithValue",
+      "stream_id": "47",
+      "task_type": "ArgMaxWithValue",
+      "input_shapes": "1,4",
+      "output_shapes": "1;1"
+    },
+    {
+      "index": 1,
+      "org_index": 2741,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 2,
+      "org_index": 2742,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 3,
+      "org_index": 2743,
+      "normalized_name": "Sub",
+      "stream_id": "47",
+      "task_type": "Sub",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 4,
+      "org_index": 2744,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 5,
+      "org_index": 2745,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 6,
+      "org_index": 2746,
+      "normalized_name": "OnesLike",
+      "stream_id": "47",
+      "task_type": "OnesLike",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 7,
+      "org_index": 2747,
+      "normalized_name": "hcom_allReduce",
+      "stream_id": "N/A",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 8,
+      "org_index": 2748,
+      "normalized_name": "AivKernel",
+      "stream_id": "43",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "repeat": true,
+      "normalized_name": "Transpose",
+      "stream_id": "47",
+      "task_type": "Transpose",
+      "input_shapes": "256,7168;2",
+      "output_shapes": "7168,256",
+      "first_index": 9,
+      "last_index": 11,
+      "first_org_index": 2749,
+      "count": 3
+    },
+    {
+      "index": 12,
+      "org_index": 2752,
+      "normalized_name": "UpdateModelParam_static_bin",
+      "stream_id": "47",
+      "task_type": "Data",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 13,
+      "org_index": 2753,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "repeat": true,
+      "normalized_name": "AivKernel",
+      "stream_id": "186",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A",
+      "first_index": 14,
+      "last_index": 16,
+      "first_org_index": 2754,
+      "count": 3
+    },
+    {
+      "index": 17,
+      "org_index": 2757,
+      "normalized_name": "SubGreaterEqualLessLogicalAnd",
+      "stream_id": "189",
+      "task_type": "AutomaticBufferFusionOp",
+      "input_shapes": "16,4;;;",
+      "output_shapes": "16,4;16,4"
+    },
+    {
+      "index": 18,
+      "org_index": 2758,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 19,
+      "org_index": 2759,
+      "normalized_name": "Mul",
+      "stream_id": "189",
+      "task_type": "Mul",
+      "input_shapes": "16,4;16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 20,
+      "org_index": 2760,
+      "normalized_name": "GatherV2",
+      "stream_id": "189",
+      "task_type": "GatherV2",
+      "input_shapes": "8080,7168;16,4;1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 21,
+      "org_index": 2761,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "16,4,1",
+      "output_shapes": "16,4,1"
+    },
+    {
+      "index": 22,
+      "org_index": 2762,
+      "normalized_name": "Mul",
+      "stream_id": "189",
+      "task_type": "Mul",
+      "input_shapes": "16,4,7168;16,4,1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 23,
+      "org_index": 2763,
+      "normalized_name": "GatherV2",
+      "stream_id": "189",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 24,
+      "org_index": 2764,
+      "normalized_name": "AivKernel",
+      "stream_id": "186",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 25,
+      "org_index": 2765,
+      "normalized_name": "HcomReduceScatter",
+      "stream_id": "N/A",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 26,
+      "org_index": 2766,
+      "normalized_name": "GatherV2",
+      "stream_id": "189",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 27,
+      "org_index": 2767,
+      "normalized_name": "RmsNorm",
+      "stream_id": "189",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 28,
+      "org_index": 2768,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 29,
+      "org_index": 2769,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 30,
+      "org_index": 2770,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 31,
+      "org_index": 2771,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 32,
+      "org_index": 2772,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 33,
+      "org_index": 2773,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 34,
+      "org_index": 2774,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 35,
+      "org_index": 2775,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 36,
+      "org_index": 2776,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 37,
+      "org_index": 2777,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 38,
+      "org_index": 2778,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 39,
+      "org_index": 2779,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 40,
+      "org_index": 2780,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 41,
+      "org_index": 2781,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 42,
+      "org_index": 2782,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 43,
+      "org_index": 2783,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 44,
+      "org_index": 2784,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 45,
+      "org_index": 2785,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 46,
+      "org_index": 2786,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 47,
+      "org_index": 2787,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 48,
+      "org_index": 2788,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 49,
+      "org_index": 2789,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 50,
+      "org_index": 2790,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 51,
+      "org_index": 2791,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 52,
+      "org_index": 2792,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 53,
+      "org_index": 2793,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 54,
+      "org_index": 2794,
+      "normalized_name": "BatchMatMul_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 55,
+      "org_index": 2795,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 56,
+      "org_index": 2796,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 57,
+      "org_index": 2797,
+      "normalized_name": "AddRmsNormDynamicQuant",
+      "stream_id": "189",
+      "task_type": "AddRmsNormDynamicQuant",
+      "input_shapes": "1,4,7168;1,4,7168;7168;7168",
+      "output_shapes": "1,4,7168;1;1,4,7168;1,4;1"
+    },
+    {
+      "index": 58,
+      "org_index": 2798,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;1152,448,16,32;36864",
+      "output_shapes": "4,36864"
+    },
+    {
+      "index": 59,
+      "org_index": 2799,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "1,4,36864;36864,1;4;18432",
+      "output_shapes": "1,4,18432;1,4"
+    },
+    {
+      "index": 60,
+      "org_index": 2800,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,18432;224,1152,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 61,
+      "org_index": 2801,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 62,
+      "org_index": 2802,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 63,
+      "org_index": 2803,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 64,
+      "org_index": 2804,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 65,
+      "org_index": 2805,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 66,
+      "org_index": 2806,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 67,
+      "org_index": 2807,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 68,
+      "org_index": 2808,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 69,
+      "org_index": 2809,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 70,
+      "org_index": 2810,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 71,
+      "org_index": 2811,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 72,
+      "org_index": 2812,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 73,
+      "org_index": 2813,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 74,
+      "org_index": 2814,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 75,
+      "org_index": 2815,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 76,
+      "org_index": 2816,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 77,
+      "org_index": 2817,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 78,
+      "org_index": 2818,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 79,
+      "org_index": 2819,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 80,
+      "org_index": 2820,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 81,
+      "org_index": 2821,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 82,
+      "org_index": 2822,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 83,
+      "org_index": 2823,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 84,
+      "org_index": 2824,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 85,
+      "org_index": 2825,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 86,
+      "org_index": 2826,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 87,
+      "org_index": 2827,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 88,
+      "org_index": 2828,
+      "normalized_name": "BatchMatMul_1_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 89,
+      "org_index": 2829,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 90,
+      "org_index": 2830,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 91,
+      "org_index": 2831,
+      "normalized_name": "AddRmsNormDynamicQuant",
+      "stream_id": "189",
+      "task_type": "AddRmsNormDynamicQuant",
+      "input_shapes": "1,4,7168;1,4,7168;7168;7168",
+      "output_shapes": "1,4,7168;1;1,4,7168;1,4;1"
+    },
+    {
+      "index": 92,
+      "org_index": 2832,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;1152,448,16,32;36864",
+      "output_shapes": "4,36864"
+    },
+    {
+      "index": 93,
+      "org_index": 2833,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "1,4,36864;36864,1;4;18432",
+      "output_shapes": "1,4,18432;1,4"
+    },
+    {
+      "index": 94,
+      "org_index": 2834,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,18432;224,1152,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 95,
+      "org_index": 2835,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 96,
+      "org_index": 2836,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 97,
+      "org_index": 2837,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 98,
+      "org_index": 2838,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 99,
+      "org_index": 2839,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 100,
+      "org_index": 2840,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 101,
+      "org_index": 2841,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 102,
+      "org_index": 2842,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 103,
+      "org_index": 2843,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 104,
+      "org_index": 2844,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 105,
+      "org_index": 2845,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 106,
+      "org_index": 2846,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 107,
+      "org_index": 2847,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 108,
+      "org_index": 2848,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 109,
+      "org_index": 2849,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 110,
+      "org_index": 2850,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 111,
+      "org_index": 2851,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 112,
+      "org_index": 2852,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 113,
+      "org_index": 2853,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 114,
+      "org_index": 2854,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 115,
+      "org_index": 2855,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 116,
+      "org_index": 2856,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 117,
+      "org_index": 2857,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 118,
+      "org_index": 2858,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 119,
+      "org_index": 2859,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 120,
+      "org_index": 2860,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 121,
+      "org_index": 2861,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 122,
+      "org_index": 2862,
+      "normalized_name": "BatchMatMul_2_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 123,
+      "org_index": 2863,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 124,
+      "org_index": 2864,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 125,
+      "org_index": 2865,
+      "normalized_name": "AddRmsNormDynamicQuant",
+      "stream_id": "189",
+      "task_type": "AddRmsNormDynamicQuant",
+      "input_shapes": "1,4,7168;1,4,7168;7168;7168",
+      "output_shapes": "1,4,7168;1;1,4,7168;1,4;1"
+    },
+    {
+      "index": 126,
+      "org_index": 2866,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;1152,448,16,32;36864",
+      "output_shapes": "4,36864"
+    },
+    {
+      "index": 127,
+      "org_index": 2867,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "1,4,36864;36864,1;4;18432",
+      "output_shapes": "1,4,18432;1,4"
+    },
+    {
+      "index": 128,
+      "org_index": 2868,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,18432;224,1152,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 129,
+      "org_index": 2869,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 130,
+      "org_index": 2870,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 131,
+      "org_index": 2871,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 132,
+      "org_index": 2872,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 133,
+      "org_index": 2873,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 134,
+      "org_index": 2874,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 135,
+      "org_index": 2875,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 136,
+      "org_index": 2876,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 137,
+      "org_index": 2877,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 138,
+      "org_index": 2878,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 139,
+      "org_index": 2879,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 140,
+      "org_index": 2880,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 141,
+      "org_index": 2881,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 142,
+      "org_index": 2882,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 143,
+      "org_index": 2883,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 144,
+      "org_index": 2884,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 145,
+      "org_index": 2885,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 146,
+      "org_index": 2886,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 147,
+      "org_index": 2887,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 148,
+      "org_index": 2888,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 149,
+      "org_index": 2889,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 150,
+      "org_index": 2890,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 151,
+      "org_index": 2891,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 152,
+      "org_index": 2892,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 153,
+      "org_index": 2893,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 154,
+      "org_index": 2894,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 155,
+      "org_index": 2895,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 156,
+      "org_index": 2896,
+      "normalized_name": "BatchMatMul_3_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 157,
+      "org_index": 2897,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 158,
+      "org_index": 2898,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 159,
+      "org_index": 2899,
+      "normalized_name": "AddRmsNorm_3/AddRmsNormCast",
+      "stream_id": "189",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 160,
+      "org_index": 2900,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 161,
+      "org_index": 2901,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "190",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 162,
+      "org_index": 2902,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 163,
+      "org_index": 2903,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "189",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 164,
+      "org_index": 2904,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 165,
+      "org_index": 2905,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "190",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 166,
+      "org_index": 2906,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 167,
+      "org_index": 2907,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 168,
+      "org_index": 2908,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 169,
+      "org_index": 2909,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 170,
+      "org_index": 2910,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 171,
+      "org_index": 2911,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 172,
+      "org_index": 2912,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 173,
+      "org_index": 2913,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 174,
+      "org_index": 2914,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 175,
+      "org_index": 2915,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 176,
+      "org_index": 2916,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 177,
+      "org_index": 2917,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 178,
+      "org_index": 2918,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 179,
+      "org_index": 2919,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 180,
+      "org_index": 2920,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 181,
+      "org_index": 2921,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 182,
+      "org_index": 2922,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 183,
+      "org_index": 2923,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 184,
+      "org_index": 2924,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 185,
+      "org_index": 2925,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 186,
+      "org_index": 2926,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 187,
+      "org_index": 2927,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 188,
+      "org_index": 2928,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 189,
+      "org_index": 2929,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 190,
+      "org_index": 2930,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 191,
+      "org_index": 2931,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 192,
+      "org_index": 2932,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 193,
+      "org_index": 2933,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 194,
+      "org_index": 2934,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 195,
+      "org_index": 2935,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 196,
+      "org_index": 2936,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 197,
+      "org_index": 2937,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 198,
+      "org_index": 2938,
+      "normalized_name": "BatchMatMul_4_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 199,
+      "org_index": 2939,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 200,
+      "org_index": 2940,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 201,
+      "org_index": 2941,
+      "normalized_name": "AddRmsNorm_5/AddRmsNormCast",
+      "stream_id": "189",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 202,
+      "org_index": 2942,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 203,
+      "org_index": 2943,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "190",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 204,
+      "org_index": 2944,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 205,
+      "org_index": 2945,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "189",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 206,
+      "org_index": 2946,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 207,
+      "org_index": 2947,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "190",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 208,
+      "org_index": 2948,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 209,
+      "org_index": 2949,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 210,
+      "org_index": 2950,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 211,
+      "org_index": 2951,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 212,
+      "org_index": 2952,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 213,
+      "org_index": 2953,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 214,
+      "org_index": 2954,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "189",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 215,
+      "org_index": 2955,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "192",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 216,
+      "org_index": 2956,
+      "normalized_name": "SplitV",
+      "stream_id": "192",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 217,
+      "org_index": 2957,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 218,
+      "org_index": 2958,
+      "normalized_name": "MatMul",
+      "stream_id": "191",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 219,
+      "org_index": 2959,
+      "normalized_name": "RotaryMul",
+      "stream_id": "192",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 220,
+      "org_index": 2960,
+      "normalized_name": "ConcatV2",
+      "stream_id": "192",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 221,
+      "org_index": 2961,
+      "normalized_name": "MatMul",
+      "stream_id": "192",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 222,
+      "org_index": 2962,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 223,
+      "org_index": 2963,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "189",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 224,
+      "org_index": 2964,
+      "normalized_name": "SplitV",
+      "stream_id": "189",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 225,
+      "org_index": 2965,
+      "normalized_name": "RotaryMul",
+      "stream_id": "189",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 226,
+      "org_index": 2966,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "192",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 227,
+      "org_index": 2967,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 228,
+      "org_index": 2968,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 229,
+      "org_index": 2969,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 230,
+      "org_index": 2970,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 231,
+      "org_index": 2971,
+      "normalized_name": "Cast",
+      "stream_id": "192",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 232,
+      "org_index": 2972,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 233,
+      "org_index": 2973,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 234,
+      "org_index": 2974,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "189",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 235,
+      "org_index": 2975,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 236,
+      "org_index": 2976,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "189",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 237,
+      "org_index": 2977,
+      "normalized_name": "ConcatV2",
+      "stream_id": "189",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 238,
+      "org_index": 2978,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "189",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 239,
+      "org_index": 2979,
+      "normalized_name": "Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 240,
+      "org_index": 2980,
+      "normalized_name": "BatchMatMul_5_to_tranpose_batch_matmul",
+      "stream_id": "189",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 241,
+      "org_index": 2981,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "189",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 242,
+      "org_index": 2982,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "189",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 243,
+      "org_index": 2983,
+      "normalized_name": "AddRmsNorm_7/AddRmsNormCast",
+      "stream_id": "189",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 244,
+      "org_index": 2984,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 245,
+      "org_index": 2985,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "190",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 246,
+      "org_index": 2986,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 247,
+      "org_index": 2987,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "189",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 248,
+      "org_index": 2988,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 249,
+      "org_index": 2989,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "190",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 250,
+      "org_index": 2990,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "190",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 251,
+      "org_index": 2991,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 252,
+      "org_index": 2992,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "189",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 253,
+      "org_index": 2993,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "189",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 254,
+      "org_index": 2994,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "189",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 255,
+      "org_index": 2995,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "189",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 256,
+      "org_index": 2996,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 257,
+      "org_index": 2997,
+      "normalized_name": "AivKernel",
+      "stream_id": "186",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 258,
+      "org_index": 2998,
+      "normalized_name": "MatMul",
+      "stream_id": "189",
+      "task_type": "MatMul",
+      "input_shapes": "64,7168;505,448,16,16",
+      "output_shapes": "64,8080"
+    },
+    {
+      "index": 259,
+      "org_index": 2999,
+      "normalized_name": "HcomAllToAll",
+      "stream_id": "N/A",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 260,
+      "org_index": 3000,
+      "normalized_name": "AivKernel",
+      "stream_id": "186",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 261,
+      "org_index": 3001,
+      "normalized_name": "Reshape_284/ConfusionTranspose/Transpose",
+      "stream_id": "189",
+      "task_type": "Transpose",
+      "input_shapes": "16,4,8080;3",
+      "output_shapes": "4,16,8080"
+    },
+    {
+      "index": 262,
+      "org_index": 3002,
+      "normalized_name": "Cast",
+      "stream_id": "189",
+      "task_type": "Cast",
+      "input_shapes": "1,4,129280",
+      "output_shapes": "1,4,129280"
+    },
+    {
+      "index": 263,
+      "org_index": 3003,
+      "normalized_name": "ArgMaxV2",
+      "stream_id": "47",
+      "task_type": "ArgMaxV2",
+      "input_shapes": "1,4,129280;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 264,
+      "org_index": 3004,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 265,
+      "org_index": 3005,
+      "normalized_name": "ZerosLike",
+      "stream_id": "47",
+      "task_type": "ZerosLike",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 266,
+      "org_index": 3006,
+      "normalized_name": "Equal",
+      "stream_id": "47",
+      "task_type": "Equal",
+      "input_shapes": "1,3;1,3",
+      "output_shapes": "1,3"
+    },
+    {
+      "index": 267,
+      "org_index": 3007,
+      "normalized_name": "Equal",
+      "stream_id": "47",
+      "task_type": "Equal",
+      "input_shapes": "1,3;",
+      "output_shapes": "1,3"
+    },
+    {
+      "index": 268,
+      "org_index": 3008,
+      "normalized_name": "ReduceAny",
+      "stream_id": "47",
+      "task_type": "ReduceAny",
+      "input_shapes": "1,3;1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 269,
+      "org_index": 3009,
+      "normalized_name": "Equal",
+      "stream_id": "47",
+      "task_type": "Equal",
+      "input_shapes": "1,3;",
+      "output_shapes": "1,3"
+    },
+    {
+      "index": 270,
+      "org_index": 3010,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,3",
+      "output_shapes": "1,3"
+    },
+    {
+      "index": 271,
+      "org_index": 3011,
+      "normalized_name": "ArgMaxV2",
+      "stream_id": "47",
+      "task_type": "ArgMaxV2",
+      "input_shapes": "1,3;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 272,
+      "org_index": 3012,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 273,
+      "org_index": 3013,
+      "normalized_name": "Fill",
+      "stream_id": "47",
+      "task_type": "Fill",
+      "input_shapes": "1;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 274,
+      "org_index": 3014,
+      "normalized_name": "SelectV2",
+      "stream_id": "47",
+      "task_type": "SelectV2",
+      "input_shapes": "1;1;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 275,
+      "org_index": 3015,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 276,
+      "org_index": 3016,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 277,
+      "org_index": 3017,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 278,
+      "org_index": 3018,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "65552;1",
+      "output_shapes": "65553"
+    },
+    {
+      "index": 279,
+      "org_index": 3019,
+      "normalized_name": "ReverseV2",
+      "stream_id": "47",
+      "task_type": "ReverseV2",
+      "input_shapes": "65553;1",
+      "output_shapes": "65553"
+    },
+    {
+      "index": 280,
+      "org_index": 3020,
+      "normalized_name": "Fill",
+      "stream_id": "47",
+      "task_type": "Fill",
+      "input_shapes": "2;",
+      "output_shapes": "1,65553"
+    },
+    {
+      "index": 281,
+      "org_index": 3021,
+      "normalized_name": "TensorMove",
+      "stream_id": "47",
+      "task_type": "TensorMove",
+      "input_shapes": "65553",
+      "output_shapes": "65553"
+    },
+    {
+      "index": 282,
+      "org_index": 3022,
+      "normalized_name": "ReverseV2",
+      "stream_id": "47",
+      "task_type": "ReverseV2",
+      "input_shapes": "1,65553;1",
+      "output_shapes": "1,65553"
+    },
+    {
+      "index": 283,
+      "org_index": 3023,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,1;",
+      "output_shapes": "1,1"
+    },
+    {
+      "index": 284,
+      "org_index": 3024,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,1;1,1",
+      "output_shapes": "1,1"
+    },
+    {
+      "index": 285,
+      "org_index": 3025,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 286,
+      "org_index": 3026,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 287,
+      "org_index": 3027,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,1;",
+      "output_shapes": "1,1"
+    },
+    {
+      "index": 288,
+      "org_index": 3028,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,1;1,1",
+      "output_shapes": "1,1"
+    },
+    {
+      "index": 289,
+      "org_index": 3029,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 290,
+      "org_index": 3030,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,4,7168;1,1,7168",
+      "output_shapes": "1,5,7168"
+    },
+    {
+      "index": 291,
+      "org_index": 3031,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1;",
+      "output_shapes": "1"
+    },
+    {
+      "index": 292,
+      "org_index": 3032,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 293,
+      "org_index": 3033,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1;1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 294,
+      "org_index": 3034,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 295,
+      "org_index": 3035,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1;1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 296,
+      "org_index": 3036,
+      "normalized_name": "ArgMaxWithValue",
+      "stream_id": "47",
+      "task_type": "ArgMaxWithValue",
+      "input_shapes": "1,4",
+      "output_shapes": "1;1"
+    },
+    {
+      "index": 297,
+      "org_index": 3037,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 298,
+      "org_index": 3038,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 299,
+      "org_index": 3039,
+      "normalized_name": "Sub",
+      "stream_id": "47",
+      "task_type": "Sub",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 300,
+      "org_index": 3040,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 301,
+      "org_index": 3041,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 302,
+      "org_index": 3042,
+      "normalized_name": "OnesLike",
+      "stream_id": "47",
+      "task_type": "OnesLike",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 303,
+      "org_index": 3043,
+      "normalized_name": "AivKernel",
+      "stream_id": "43",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 304,
+      "org_index": 3044,
+      "normalized_name": "hcom_allReduce",
+      "stream_id": "N/A",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 305,
+      "org_index": 3045,
+      "normalized_name": "Transpose",
+      "stream_id": "47",
+      "task_type": "Transpose",
+      "input_shapes": "256,7168;2",
+      "output_shapes": "7168,256"
+    },
+    {
+      "index": 306,
+      "org_index": 3046,
+      "normalized_name": "UpdateModelParam_static_bin",
+      "stream_id": "47",
+      "task_type": "Data",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 307,
+      "org_index": 3047,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 308,
+      "org_index": 3048,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 309,
+      "org_index": 3049,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 310,
+      "org_index": 3050,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 311,
+      "org_index": 3051,
+      "normalized_name": "SubGreaterEqualLessLogicalAnd",
+      "stream_id": "179",
+      "task_type": "AutomaticBufferFusionOp",
+      "input_shapes": "16,4;;;",
+      "output_shapes": "16,4;16,4"
+    },
+    {
+      "index": 312,
+      "org_index": 3052,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 313,
+      "org_index": 3053,
+      "normalized_name": "Mul",
+      "stream_id": "179",
+      "task_type": "Mul",
+      "input_shapes": "16,4;16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 314,
+      "org_index": 3054,
+      "normalized_name": "GatherV2",
+      "stream_id": "179",
+      "task_type": "GatherV2",
+      "input_shapes": "8080,7168;16,4;1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 315,
+      "org_index": 3055,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "16,4,1",
+      "output_shapes": "16,4,1"
+    },
+    {
+      "index": 316,
+      "org_index": 3056,
+      "normalized_name": "Mul",
+      "stream_id": "179",
+      "task_type": "Mul",
+      "input_shapes": "16,4,7168;16,4,1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 317,
+      "org_index": 3057,
+      "normalized_name": "GatherV2",
+      "stream_id": "179",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 318,
+      "org_index": 3058,
+      "normalized_name": "HcomReduceScatter",
+      "stream_id": "N/A",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 319,
+      "org_index": 3059,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 320,
+      "org_index": 3060,
+      "normalized_name": "GatherV2",
+      "stream_id": "179",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 321,
+      "org_index": 3061,
+      "normalized_name": "RmsNorm",
+      "stream_id": "179",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 322,
+      "org_index": 3062,
+      "normalized_name": "RmsNorm",
+      "stream_id": "179",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 323,
+      "org_index": 3063,
+      "normalized_name": "ConcatV2",
+      "stream_id": "179",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,7168;1,4,7168",
+      "output_shapes": "1,4,14336"
+    },
+    {
+      "index": 324,
+      "org_index": 3064,
+      "normalized_name": "MatMul",
+      "stream_id": "179",
+      "task_type": "MatMul",
+      "input_shapes": "4,14336;448,896,16,16",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 325,
+      "org_index": 3065,
+      "normalized_name": "RmsNorm",
+      "stream_id": "179",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 326,
+      "org_index": 3066,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "179",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 327,
+      "org_index": 3067,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "182",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 328,
+      "org_index": 3068,
+      "normalized_name": "SplitV",
+      "stream_id": "182",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 329,
+      "org_index": 3069,
+      "normalized_name": "MatMul",
+      "stream_id": "179",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 330,
+      "org_index": 3070,
+      "normalized_name": "MatMul",
+      "stream_id": "181",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 331,
+      "org_index": 3071,
+      "normalized_name": "RotaryMul",
+      "stream_id": "182",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 332,
+      "org_index": 3072,
+      "normalized_name": "ConcatV2",
+      "stream_id": "182",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 333,
+      "org_index": 3073,
+      "normalized_name": "MatMul",
+      "stream_id": "182",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 334,
+      "org_index": 3074,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "179",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 335,
+      "org_index": 3075,
+      "normalized_name": "Cast",
+      "stream_id": "182",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 336,
+      "org_index": 3076,
+      "normalized_name": "SplitV",
+      "stream_id": "179",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 337,
+      "org_index": 3077,
+      "normalized_name": "RotaryMul",
+      "stream_id": "179",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 338,
+      "org_index": 3078,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "182",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 339,
+      "org_index": 3079,
+      "normalized_name": "ConcatV2",
+      "stream_id": "179",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 340,
+      "org_index": 3080,
+      "normalized_name": "MatMul",
+      "stream_id": "179",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 341,
+      "org_index": 3081,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 342,
+      "org_index": 3082,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "179",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 343,
+      "org_index": 3083,
+      "normalized_name": "Cast",
+      "stream_id": "182",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 344,
+      "org_index": 3084,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 345,
+      "org_index": 3085,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "179",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 346,
+      "org_index": 3086,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "179",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 347,
+      "org_index": 3087,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 348,
+      "org_index": 3088,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "179",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 349,
+      "org_index": 3089,
+      "normalized_name": "ConcatV2",
+      "stream_id": "179",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 350,
+      "org_index": 3090,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "179",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 351,
+      "org_index": 3091,
+      "normalized_name": "Transpose",
+      "stream_id": "179",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 352,
+      "org_index": 3092,
+      "normalized_name": "BatchMatMul_to_tranpose_batch_matmul",
+      "stream_id": "179",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 353,
+      "org_index": 3093,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "179",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 354,
+      "org_index": 3094,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "179",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 355,
+      "org_index": 3095,
+      "normalized_name": "AddRmsNorm/AddRmsNormCast",
+      "stream_id": "179",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 356,
+      "org_index": 3096,
+      "normalized_name": "MatMul",
+      "stream_id": "179",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 357,
+      "org_index": 3097,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "180",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 358,
+      "org_index": 3098,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "180",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 359,
+      "org_index": 3099,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "179",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 360,
+      "org_index": 3100,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "179",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 361,
+      "org_index": 3101,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "180",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 362,
+      "org_index": 3102,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "179",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 363,
+      "org_index": 3103,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "180",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 364,
+      "org_index": 3104,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "179",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 365,
+      "org_index": 3105,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "179",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 366,
+      "org_index": 3106,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "179",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 367,
+      "org_index": 3107,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "179",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 368,
+      "org_index": 3108,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 369,
+      "org_index": 3109,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 370,
+      "org_index": 3110,
+      "normalized_name": "MatMul",
+      "stream_id": "179",
+      "task_type": "MatMul",
+      "input_shapes": "64,7168;505,448,16,16",
+      "output_shapes": "64,8080"
+    },
+    {
+      "index": 371,
+      "org_index": 3111,
+      "normalized_name": "HcomAllToAll",
+      "stream_id": "N/A",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 372,
+      "org_index": 3112,
+      "normalized_name": "AivKernel",
+      "stream_id": "176",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 373,
+      "org_index": 3113,
+      "normalized_name": "Reshape_58/ConfusionTranspose/Transpose",
+      "stream_id": "179",
+      "task_type": "Transpose",
+      "input_shapes": "16,4,8080;3",
+      "output_shapes": "4,16,8080"
+    },
+    {
+      "index": 374,
+      "org_index": 3114,
+      "normalized_name": "Cast",
+      "stream_id": "179",
+      "task_type": "Cast",
+      "input_shapes": "1,4,129280",
+      "output_shapes": "1,4,129280"
+    },
+    {
+      "index": 375,
+      "org_index": 3115,
+      "normalized_name": "ArgMaxV2",
+      "stream_id": "47",
+      "task_type": "ArgMaxV2",
+      "input_shapes": "1,4,129280;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 376,
+      "org_index": 3116,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 377,
+      "org_index": 3117,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,4,7168;1,1,7168",
+      "output_shapes": "1,5,7168"
+    },
+    {
+      "index": 378,
+      "org_index": 3118,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,5"
+    },
+    {
+      "index": 379,
+      "org_index": 3119,
+      "normalized_name": "ArgMaxWithValue",
+      "stream_id": "47",
+      "task_type": "ArgMaxWithValue",
+      "input_shapes": "1,4",
+      "output_shapes": "1;1"
+    },
+    {
+      "index": 380,
+      "org_index": 3120,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 381,
+      "org_index": 3121,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 382,
+      "org_index": 3122,
+      "normalized_name": "Sub",
+      "stream_id": "47",
+      "task_type": "Sub",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 383,
+      "org_index": 3123,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 384,
+      "org_index": 3124,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 385,
+      "org_index": 3125,
+      "normalized_name": "OnesLike",
+      "stream_id": "47",
+      "task_type": "OnesLike",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 386,
+      "org_index": 3126,
+      "normalized_name": "hcom_allReduce",
+      "stream_id": "N/A",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 387,
+      "org_index": 3127,
+      "normalized_name": "AivKernel",
+      "stream_id": "43",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 388,
+      "org_index": 3128,
+      "normalized_name": "Transpose",
+      "stream_id": "47",
+      "task_type": "Transpose",
+      "input_shapes": "256,7168;2",
+      "output_shapes": "7168,256"
+    },
+    {
+      "index": 389,
+      "org_index": 3129,
+      "normalized_name": "UpdateModelParam_static_bin",
+      "stream_id": "47",
+      "task_type": "Data",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 390,
+      "org_index": 3130,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "repeat": true,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A",
+      "first_index": 391,
+      "last_index": 393,
+      "first_org_index": 3131,
+      "count": 3
+    },
+    {
+      "index": 394,
+      "org_index": 3134,
+      "normalized_name": "SubGreaterEqualLessLogicalAnd",
+      "stream_id": "273",
+      "task_type": "AutomaticBufferFusionOp",
+      "input_shapes": "16,4;;;",
+      "output_shapes": "16,4;16,4"
+    },
+    {
+      "index": 395,
+      "org_index": 3135,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 396,
+      "org_index": 3136,
+      "normalized_name": "Mul",
+      "stream_id": "273",
+      "task_type": "Mul",
+      "input_shapes": "16,4;16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 397,
+      "org_index": 3137,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "8080,7168;16,4;1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 398,
+      "org_index": 3138,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "16,4,1",
+      "output_shapes": "16,4,1"
+    },
+    {
+      "index": 399,
+      "org_index": 3139,
+      "normalized_name": "Mul",
+      "stream_id": "273",
+      "task_type": "Mul",
+      "input_shapes": "16,4,7168;16,4,1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 400,
+      "org_index": 3140,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 401,
+      "org_index": 3141,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 402,
+      "org_index": 3142,
+      "normalized_name": "HcomReduceScatter",
+      "stream_id": "N/A",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 403,
+      "org_index": 3143,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 404,
+      "org_index": 3144,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 405,
+      "org_index": 3145,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 406,
+      "org_index": 3146,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,7168;1,4,7168",
+      "output_shapes": "1,4,14336"
+    },
+    {
+      "index": 407,
+      "org_index": 3147,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,14336;448,896,16,16",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 408,
+      "org_index": 3148,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 409,
+      "org_index": 3149,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "273",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 410,
+      "org_index": 3150,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "172",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 411,
+      "org_index": 3151,
+      "normalized_name": "SplitV",
+      "stream_id": "172",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 412,
+      "org_index": 3152,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 413,
+      "org_index": 3153,
+      "normalized_name": "MatMul",
+      "stream_id": "275",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 414,
+      "org_index": 3154,
+      "normalized_name": "RotaryMul",
+      "stream_id": "172",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 415,
+      "org_index": 3155,
+      "normalized_name": "ConcatV2",
+      "stream_id": "172",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 416,
+      "org_index": 3156,
+      "normalized_name": "MatMul",
+      "stream_id": "172",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 417,
+      "org_index": 3157,
+      "normalized_name": "Cast",
+      "stream_id": "172",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 418,
+      "org_index": 3158,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "273",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 419,
+      "org_index": 3159,
+      "normalized_name": "SplitV",
+      "stream_id": "273",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 420,
+      "org_index": 3160,
+      "normalized_name": "RotaryMul",
+      "stream_id": "273",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 421,
+      "org_index": 3161,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "172",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 422,
+      "org_index": 3162,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 423,
+      "org_index": 3163,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 424,
+      "org_index": 3164,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 425,
+      "org_index": 3165,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "273",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 426,
+      "org_index": 3166,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 427,
+      "org_index": 3167,
+      "normalized_name": "Cast",
+      "stream_id": "172",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 428,
+      "org_index": 3168,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "273",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 429,
+      "org_index": 3169,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "273",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 430,
+      "org_index": 3170,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 431,
+      "org_index": 3171,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "273",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 432,
+      "org_index": 3172,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 433,
+      "org_index": 3173,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "273",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 434,
+      "org_index": 3174,
+      "normalized_name": "Transpose",
+      "stream_id": "273",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 435,
+      "org_index": 3175,
+      "normalized_name": "BatchMatMul_to_tranpose_batch_matmul",
+      "stream_id": "273",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 436,
+      "org_index": 3176,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "273",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 437,
+      "org_index": 3177,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "273",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 438,
+      "org_index": 3178,
+      "normalized_name": "AddRmsNorm/AddRmsNormCast",
+      "stream_id": "273",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 439,
+      "org_index": 3179,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 440,
+      "org_index": 3180,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "274",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 441,
+      "org_index": 3181,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "274",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 442,
+      "org_index": 3182,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "273",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 443,
+      "org_index": 3183,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "273",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 444,
+      "org_index": 3184,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "274",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 445,
+      "org_index": 3185,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "274",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 446,
+      "org_index": 3186,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "273",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 447,
+      "org_index": 3187,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "273",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 448,
+      "org_index": 3188,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "273",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 449,
+      "org_index": 3189,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "273",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 450,
+      "org_index": 3190,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "273",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 451,
+      "org_index": 3191,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 452,
+      "org_index": 3192,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 453,
+      "org_index": 3193,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "64,7168;505,448,16,16",
+      "output_shapes": "64,8080"
+    },
+    {
+      "index": 454,
+      "org_index": 3194,
+      "normalized_name": "HcomAllToAll",
+      "stream_id": "N/A",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 455,
+      "org_index": 3195,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 456,
+      "org_index": 3196,
+      "normalized_name": "Reshape_58/ConfusionTranspose/Transpose",
+      "stream_id": "273",
+      "task_type": "Transpose",
+      "input_shapes": "16,4,8080;3",
+      "output_shapes": "4,16,8080"
+    },
+    {
+      "index": 457,
+      "org_index": 3197,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,129280",
+      "output_shapes": "1,4,129280"
+    },
+    {
+      "index": 458,
+      "org_index": 3198,
+      "normalized_name": "ArgMaxV2",
+      "stream_id": "47",
+      "task_type": "ArgMaxV2",
+      "input_shapes": "1,4,129280;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 459,
+      "org_index": 3199,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 460,
+      "org_index": 3200,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,1;1,1",
+      "output_shapes": "1,2"
+    },
+    {
+      "index": 461,
+      "org_index": 3201,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,4,7168;1,1,7168",
+      "output_shapes": "1,5,7168"
+    },
+    {
+      "index": 462,
+      "org_index": 3202,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,5"
+    },
+    {
+      "index": 463,
+      "org_index": 3203,
+      "normalized_name": "ArgMaxWithValue",
+      "stream_id": "47",
+      "task_type": "ArgMaxWithValue",
+      "input_shapes": "1,4",
+      "output_shapes": "1;1"
+    },
+    {
+      "index": 464,
+      "org_index": 3204,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 465,
+      "org_index": 3205,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 466,
+      "org_index": 3206,
+      "normalized_name": "Sub",
+      "stream_id": "47",
+      "task_type": "Sub",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 467,
+      "org_index": 3207,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;1,1",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 468,
+      "org_index": 3208,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 469,
+      "org_index": 3209,
+      "normalized_name": "OnesLike",
+      "stream_id": "47",
+      "task_type": "OnesLike",
+      "input_shapes": "1",
+      "output_shapes": "1"
+    },
+    {
+      "index": 470,
+      "org_index": 3210,
+      "normalized_name": "AivKernel",
+      "stream_id": "43",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 471,
+      "org_index": 3211,
+      "normalized_name": "hcom_allReduce",
+      "stream_id": "N/A",
+      "task_type": "hcom_allReduce_",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 472,
+      "org_index": 3212,
+      "normalized_name": "Transpose",
+      "stream_id": "47",
+      "task_type": "Transpose",
+      "input_shapes": "256,7168;2",
+      "output_shapes": "7168,256"
+    },
+    {
+      "index": 473,
+      "org_index": 3213,
+      "normalized_name": "UpdateModelParam_static_bin",
+      "stream_id": "47",
+      "task_type": "Data",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 474,
+      "org_index": 3214,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 475,
+      "org_index": 3215,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 476,
+      "org_index": 3216,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 477,
+      "org_index": 3217,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 478,
+      "org_index": 3218,
+      "normalized_name": "SubGreaterEqualLessLogicalAnd",
+      "stream_id": "273",
+      "task_type": "AutomaticBufferFusionOp",
+      "input_shapes": "16,4;;;",
+      "output_shapes": "16,4;16,4"
+    },
+    {
+      "index": 479,
+      "org_index": 3219,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 480,
+      "org_index": 3220,
+      "normalized_name": "Mul",
+      "stream_id": "273",
+      "task_type": "Mul",
+      "input_shapes": "16,4;16,4",
+      "output_shapes": "16,4"
+    },
+    {
+      "index": 481,
+      "org_index": 3221,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "8080,7168;16,4;1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 482,
+      "org_index": 3222,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "16,4,1",
+      "output_shapes": "16,4,1"
+    },
+    {
+      "index": 483,
+      "org_index": 3223,
+      "normalized_name": "Mul",
+      "stream_id": "273",
+      "task_type": "Mul",
+      "input_shapes": "16,4,7168;16,4,1",
+      "output_shapes": "16,4,7168"
+    },
+    {
+      "index": 484,
+      "org_index": 3224,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 485,
+      "org_index": 3225,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 486,
+      "org_index": 3226,
+      "normalized_name": "HcomReduceScatter",
+      "stream_id": "N/A",
+      "task_type": "HcomReduceScatter",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 487,
+      "org_index": 3227,
+      "normalized_name": "GatherV2",
+      "stream_id": "273",
+      "task_type": "GatherV2",
+      "input_shapes": "163840,64;4;",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 488,
+      "org_index": 3228,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 489,
+      "org_index": 3229,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 490,
+      "org_index": 3230,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,7168;1,4,7168",
+      "output_shapes": "1,4,14336"
+    },
+    {
+      "index": 491,
+      "org_index": 3231,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,14336;448,896,16,16",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 492,
+      "org_index": 3232,
+      "normalized_name": "RmsNorm",
+      "stream_id": "273",
+      "task_type": "RmsNorm",
+      "input_shapes": "1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1"
+    },
+    {
+      "index": 493,
+      "org_index": 3233,
+      "normalized_name": "MlaPrologV3",
+      "stream_id": "273",
+      "task_type": "MlaPrologV3",
+      "input_shapes": "4,7168;96,448,16,16;768,96,16,32;128,128,512;36,448,16,16;1536;512;4,64;4,64;520,128,1,656;1,2,1;4;1,24576;1",
+      "output_shapes": "4,128,512;4,128,64;520,128,1,656;1,2,1;;4,1536;4,1"
+    },
+    {
+      "index": 494,
+      "org_index": 3234,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "172",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,1536;256,96,16,32;8192;4",
+      "output_shapes": "4,8192"
+    },
+    {
+      "index": 495,
+      "org_index": 3235,
+      "normalized_name": "SplitV",
+      "stream_id": "172",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,64;1,4,64,64"
+    },
+    {
+      "index": 496,
+      "org_index": 3236,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;8,448,16,16",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 497,
+      "org_index": 3237,
+      "normalized_name": "MatMul",
+      "stream_id": "275",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;4,448,16,16",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 498,
+      "org_index": 3238,
+      "normalized_name": "RotaryMul",
+      "stream_id": "172",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,64,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,64,1,64"
+    },
+    {
+      "index": 499,
+      "org_index": 3239,
+      "normalized_name": "ConcatV2",
+      "stream_id": "172",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,64,64;1,4,64,64",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 500,
+      "org_index": 3240,
+      "normalized_name": "MatMul",
+      "stream_id": "172",
+      "task_type": "MatMul",
+      "input_shapes": "256,128;128,128",
+      "output_shapes": "256,128"
+    },
+    {
+      "index": 501,
+      "org_index": 3241,
+      "normalized_name": "LayerNormV3",
+      "stream_id": "273",
+      "task_type": "LayerNormV3",
+      "input_shapes": "1,4,128;128;128",
+      "output_shapes": "1,4,128;1,4,1;1,4,1"
+    },
+    {
+      "index": 502,
+      "org_index": 3242,
+      "normalized_name": "Cast",
+      "stream_id": "172",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128"
+    },
+    {
+      "index": 503,
+      "org_index": 3243,
+      "normalized_name": "SplitV",
+      "stream_id": "273",
+      "task_type": "SplitVD",
+      "input_shapes": "1,4,128",
+      "output_shapes": "1,4,64;1,4,64"
+    },
+    {
+      "index": 504,
+      "org_index": 3244,
+      "normalized_name": "RotaryMul",
+      "stream_id": "273",
+      "task_type": "RotaryMul",
+      "input_shapes": "4,1,1,64;4,1,1,64;4,1,1,64",
+      "output_shapes": "4,1,1,64"
+    },
+    {
+      "index": 505,
+      "org_index": 3245,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "172",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,64,128",
+      "output_shapes": "1,4,64,128;1,4,64"
+    },
+    {
+      "index": 506,
+      "org_index": 3246,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "1,4,1,64;1,4,1,64",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 507,
+      "org_index": 3247,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,128;128,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 508,
+      "org_index": 3248,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128"
+    },
+    {
+      "index": 509,
+      "org_index": 3249,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "273",
+      "task_type": "DynamicQuant",
+      "input_shapes": "1,4,1,128",
+      "output_shapes": "1,4,1,128;1,4,1"
+    },
+    {
+      "index": 510,
+      "org_index": 3250,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,1",
+      "output_shapes": "1,4,1"
+    },
+    {
+      "index": 511,
+      "org_index": 3251,
+      "normalized_name": "Cast",
+      "stream_id": "172",
+      "task_type": "Cast",
+      "input_shapes": "1,4,64",
+      "output_shapes": "1,4,64"
+    },
+    {
+      "index": 512,
+      "org_index": 3252,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "273",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,1;4,1;4,1",
+      "output_shapes": "66560,1"
+    },
+    {
+      "index": 513,
+      "org_index": 3253,
+      "normalized_name": "ScatterNdUpdate",
+      "stream_id": "273",
+      "task_type": "ScatterNdUpdate",
+      "input_shapes": "66560,128;4,1;4,128",
+      "output_shapes": "66560,128"
+    },
+    {
+      "index": 514,
+      "org_index": 3254,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "4,64",
+      "output_shapes": "4,64"
+    },
+    {
+      "index": 515,
+      "org_index": 3255,
+      "normalized_name": "LightningIndexerQuant",
+      "stream_id": "273",
+      "task_type": "LightningIndexerQuant",
+      "input_shapes": "4,64,128;520,128,1,128;4,64;4,64;520,128,1;1;1;1,520",
+      "output_shapes": "4,1,2048"
+    },
+    {
+      "index": 516,
+      "org_index": 3256,
+      "normalized_name": "ConcatV2",
+      "stream_id": "273",
+      "task_type": "ConcatV2D",
+      "input_shapes": "4,128,512;4,128,64",
+      "output_shapes": "4,128,576"
+    },
+    {
+      "index": 517,
+      "org_index": 3257,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "stream_id": "273",
+      "task_type": "KvQuantSparseFlashAttention",
+      "input_shapes": "4,128,576;520,128,1,656;520,128,1,656;4,1,2048;1,520;1;1",
+      "output_shapes": "4,128,512"
+    },
+    {
+      "index": 518,
+      "org_index": 3258,
+      "normalized_name": "Transpose",
+      "stream_id": "273",
+      "task_type": "Transpose",
+      "input_shapes": "4,128,512;3",
+      "output_shapes": "128,4,512"
+    },
+    {
+      "index": 519,
+      "org_index": 3259,
+      "normalized_name": "BatchMatMul_to_tranpose_batch_matmul",
+      "stream_id": "273",
+      "task_type": "TransposeBatchMatMul",
+      "input_shapes": "128,4,512;128,512,128",
+      "output_shapes": "4,128,128"
+    },
+    {
+      "index": 520,
+      "org_index": 3260,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "273",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,16384;16384",
+      "output_shapes": "4,16384;4"
+    },
+    {
+      "index": 521,
+      "org_index": 3261,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "273",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,16384;224,1024,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 522,
+      "org_index": 3262,
+      "normalized_name": "AddRmsNorm/AddRmsNormCast",
+      "stream_id": "273",
+      "task_type": "AddRmsNormCast",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 523,
+      "org_index": 3263,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "4,7168;7168,256",
+      "output_shapes": "4,256"
+    },
+    {
+      "index": 524,
+      "org_index": 3264,
+      "normalized_name": "DynamicQuant",
+      "stream_id": "274",
+      "task_type": "DynamicQuant",
+      "input_shapes": "4,7168;7168",
+      "output_shapes": "4,7168;4"
+    },
+    {
+      "index": 525,
+      "org_index": 3265,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "274",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,7168;128,448,16,32;4096",
+      "output_shapes": "4,4096"
+    },
+    {
+      "index": 526,
+      "org_index": 3266,
+      "normalized_name": "MoeGatingTopKHash",
+      "stream_id": "273",
+      "task_type": "MoeGatingTopKHash",
+      "input_shapes": "4,256;256",
+      "output_shapes": "4,8;4,8;4,256"
+    },
+    {
+      "index": 527,
+      "org_index": 3267,
+      "normalized_name": "MoeDistributeDispatchV2",
+      "stream_id": "273",
+      "task_type": "MoeDistributeDispatchV2",
+      "input_shapes": "4,7168;4,8;256,7168",
+      "output_shapes": "512,7168;512;65536;16;256;1;"
+    },
+    {
+      "index": 528,
+      "org_index": 3268,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "274",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "4,4096;4096,1;4;2048",
+      "output_shapes": "4,2048;4"
+    },
+    {
+      "index": 529,
+      "org_index": 3269,
+      "normalized_name": "QuantBatchMatmulV3",
+      "stream_id": "274",
+      "task_type": "QuantBatchMatmulV3",
+      "input_shapes": "4,2048;224,128,16,32;7168;4",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 530,
+      "org_index": 3270,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "273",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,7168;16,128,448,16,32;;;;;;16",
+      "output_shapes": "512,4096"
+    },
+    {
+      "index": 531,
+      "org_index": 3271,
+      "normalized_name": "DequantSwigluQuant",
+      "stream_id": "273",
+      "task_type": "DequantSwigluQuant",
+      "input_shapes": "512,4096;16,4096;512;16,2048;16",
+      "output_shapes": "512,2048;512"
+    },
+    {
+      "index": 532,
+      "org_index": 3272,
+      "normalized_name": "GroupedMatmul",
+      "stream_id": "273",
+      "task_type": "GroupedMatmul",
+      "input_shapes": "512,2048;16,224,128,16,32;;16,7168;;;;16;512",
+      "output_shapes": "512,7168"
+    },
+    {
+      "index": 533,
+      "org_index": 3273,
+      "normalized_name": "MoeDistributeCombineV2",
+      "stream_id": "273",
+      "task_type": "MoeDistributeCombineV2",
+      "input_shapes": "512,7168;4,8;65536;256;4,8;1;4,7168",
+      "output_shapes": "4,7168"
+    },
+    {
+      "index": 534,
+      "org_index": 3274,
+      "normalized_name": "InplaceAddRmsNorm",
+      "stream_id": "273",
+      "task_type": "InplaceAddRmsNorm",
+      "input_shapes": "1,4,7168;1,4,7168;7168",
+      "output_shapes": "1,4,7168;1,4,1;1,4,7168"
+    },
+    {
+      "index": 535,
+      "org_index": 3275,
+      "normalized_name": "HcomAllGather",
+      "stream_id": "N/A",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 536,
+      "org_index": 3276,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllGather",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 537,
+      "org_index": 3277,
+      "normalized_name": "MatMul",
+      "stream_id": "273",
+      "task_type": "MatMul",
+      "input_shapes": "64,7168;505,448,16,16",
+      "output_shapes": "64,8080"
+    },
+    {
+      "index": 538,
+      "org_index": 3278,
+      "normalized_name": "AivKernel",
+      "stream_id": "270",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 539,
+      "org_index": 3279,
+      "normalized_name": "HcomAllToAll",
+      "stream_id": "N/A",
+      "task_type": "HcomAllToAll",
+      "input_shapes": "N/A",
+      "output_shapes": "N/A"
+    },
+    {
+      "index": 540,
+      "org_index": 3280,
+      "normalized_name": "Reshape_58/ConfusionTranspose/Transpose",
+      "stream_id": "273",
+      "task_type": "Transpose",
+      "input_shapes": "16,4,8080;3",
+      "output_shapes": "4,16,8080"
+    },
+    {
+      "index": 541,
+      "org_index": 3281,
+      "normalized_name": "Cast",
+      "stream_id": "273",
+      "task_type": "Cast",
+      "input_shapes": "1,4,129280",
+      "output_shapes": "1,4,129280"
+    },
+    {
+      "index": 542,
+      "org_index": 3282,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,4;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 543,
+      "org_index": 3283,
+      "normalized_name": "ArgMaxV2",
+      "stream_id": "47",
+      "task_type": "ArgMaxV2",
+      "input_shapes": "1,4,129280;",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 544,
+      "org_index": 3284,
+      "normalized_name": "Cast",
+      "stream_id": "47",
+      "task_type": "Cast",
+      "input_shapes": "1,4",
+      "output_shapes": "1,4"
+    },
+    {
+      "index": 545,
+      "org_index": 3285,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,2;1,1",
+      "output_shapes": "1,3"
+    },
+    {
+      "index": 546,
+      "org_index": 3286,
+      "normalized_name": "Add",
+      "stream_id": "47",
+      "task_type": "Add",
+      "input_shapes": "1,1;",
+      "output_shapes": "1,1"
+    },
+    {
+      "index": 547,
+      "org_index": 3287,
+      "normalized_name": "ConcatD",
+      "stream_id": "47",
+      "task_type": "ConcatD",
+      "input_shapes": "1,1;1,3",
+      "output_shapes": "1,4"
+    }
+  ]
+}

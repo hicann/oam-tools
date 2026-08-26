@@ -1,0 +1,144 @@
+{
+  "status": "passed_with_warnings",
+  "allow_warnings": true,
+  "allow_unmapped": false,
+  "exploratory": false,
+  "error_count": 0,
+  "warning_count": 1,
+  "config": "ds3.2-fix/work/analysis_config_v2.json",
+  "checks": [
+    {
+      "name": "structure",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "schema_version": 2
+      }
+    },
+    {
+      "name": "architecture",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "manifest": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2-v7/work/model_manifest.json"
+      }
+    },
+    {
+      "name": "manifest_trace",
+      "status": "warning",
+      "error_count": 0,
+      "warning_count": 1,
+      "detail": {
+        "manifest_num_main_layers": 61,
+        "witness_counts": {
+          "MoeGatingTopK": 6,
+          "MlaProlog": 9,
+          "KvQuantSparseFlashAttention": 9
+        },
+        "implied_layer_counts": {
+          "KvQuantSparseFlashAttention": 9,
+          "MlaProlog": 9,
+          "MoeGatingTopK": 6
+        },
+        "witness_scopes_differ": true,
+        "manifest_confidence": "low",
+        "inconsistent_witnesses": {
+          "KvQuantSparseFlashAttention": {
+            "count": 9,
+            "per_layer_if_manifest": 0.148
+          },
+          "MlaProlog": {
+            "count": 9,
+            "per_layer_if_manifest": 0.148
+          },
+          "MoeGatingTopK": {
+            "count": 6,
+            "per_layer_if_manifest": 0.098
+          }
+        }
+      }
+    },
+    {
+      "name": "coverage",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "total_ops": 548,
+        "model_mapped": 449,
+        "runtime_mapped": 99,
+        "excluded": 0,
+        "unmapped": 0,
+        "duplicate": 0,
+        "out_of_range": 0,
+        "missing": 0,
+        "exact_coverage_pct": 100.0,
+        "missing_sample": [],
+        "duplicate_sample": [],
+        "out_of_range_sample": [],
+        "unmapped_sample": []
+      }
+    },
+    {
+      "name": "sublayers",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {}
+    },
+    {
+      "name": "shapes",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "kernels_checked": 0
+      }
+    },
+    {
+      "name": "regression",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "findings": 3
+      }
+    },
+    {
+      "name": "semantic_review",
+      "status": "passed",
+      "error_count": 0,
+      "warning_count": 0,
+      "detail": {
+        "required_checks": [
+          "source_model_identity",
+          "module_inventory_complete",
+          "dataflow_edges_complete",
+          "branch_topology_correct",
+          "residual_paths_correct",
+          "layer_boundaries_correct",
+          "tail_stages_correct",
+          "runtime_nodes_observed",
+          "code_refs_resolve"
+        ],
+        "schema_valid": true,
+        "artifact_digests_match": true,
+        "stale_artifacts": [],
+        "review_status": "passed",
+        "checks_present": 9,
+        "blocking_findings": []
+      }
+    }
+  ],
+  "issues": [
+    {
+      "id": "MT1",
+      "severity": "warning",
+      "node_path": "model_manifest.num_main_layers",
+      "message": "manifest 声明 61 层，但 trace 的 per-layer kernel 数量无法被其整除（KvQuantSparseFlashAttention=9, MlaProlog=9, MoeGatingTopK=6）；各 witness 计数不一致，说明它们覆盖的层子集不同（如注意力锚点跨 dense+MoE+MTP，MoE gate 仅跨 MoE+MTP），无法反推单一层数。请核对 checkpoint config.json 与实际加载的权重（manifest 置信度 low；trace 仅为辅助证据，不裁定层数，需由 checkpoint config.json 确认。trace 能证伪的只有覆盖率，见 C1）",
+      "check": "manifest_trace"
+    }
+  ]
+}

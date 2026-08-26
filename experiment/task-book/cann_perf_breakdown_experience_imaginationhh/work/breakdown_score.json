@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "score": 99,
+  "max_score": 100,
+  "minimum_score": 95,
+  "validation_status": "passed_with_warnings",
+  "dimensions": [
+    {
+      "id": "architecture_integrity",
+      "label": "架构完整性",
+      "score": 20,
+      "max_score": 20,
+      "minimum_score": 19,
+      "status": "passed",
+      "evidence": [
+        "validation:architecture",
+        "validation:regression",
+        "semantic_review",
+        "model_manifest.json"
+      ],
+      "actions": [
+        "按 manifest 和源码修正层数、层类型、MTP learned layer 与 invocation。"
+      ]
+    },
+    {
+      "id": "dataflow_branch_correctness",
+      "label": "数据流与分支正确性",
+      "score": 20,
+      "max_score": 20,
+      "minimum_score": 19,
+      "status": "passed",
+      "evidence": [
+        "validation:structure",
+        "validation:sublayers",
+        "semantic_review",
+        "structures"
+      ],
+      "actions": [
+        "恢复源码中的 Q/K/V、残差、MoE/GQA/MLA 分支；确保父节点等于子节点 op union。"
+      ]
+    },
+    {
+      "id": "layer_submodule_boundaries",
+      "label": "Layer/子模块边界",
+      "score": 20,
+      "max_score": 20,
+      "minimum_score": 19,
+      "status": "passed",
+      "evidence": [
+        "validation:structure",
+        "validation:coverage",
+        "validation:sublayers",
+        "semantic_review"
+      ],
+      "actions": [
+        "根据源码 anchor 和 op 时序收紧 layer/submodule 边界，消除跨层和重叠归属。"
+      ]
+    },
+    {
+      "id": "kernel_exact_coverage",
+      "label": "Kernel 精确覆盖",
+      "score": 15,
+      "max_score": 15,
+      "minimum_score": 15,
+      "status": "passed",
+      "evidence": [
+        "exact_coverage_pct=100.0",
+        "total_ops=548"
+      ],
+      "actions": [
+        "逐个处理 missing/unmapped/duplicate/out_of_range；主计算 Kernel 不得 excluded。"
+      ]
+    },
+    {
+      "id": "shape_semantic_consistency",
+      "label": "Shape 与语义一致性",
+      "score": 10,
+      "max_score": 10,
+      "minimum_score": 9,
+      "status": "passed",
+      "evidence": [
+        "validation:shapes",
+        "kernels_checked=0",
+        "shape_semantic 未提供：按结构正确性计分，不因缺少标注扣分"
+      ],
+      "actions": [
+        "补全逐 Kernel op_data/shape_semantic，并按源码维度符号修正不一致。"
+      ]
+    },
+    {
+      "id": "trace_instance_scope",
+      "label": "Trace 实例与 scope",
+      "score": 9,
+      "max_score": 10,
+      "minimum_score": 9,
+      "status": "passed",
+      "evidence": [
+        "trace_instances=9",
+        "scope=rank_local",
+        "confidence=medium"
+      ],
+      "actions": [
+        "补充每次真实 invocation 的范围、layer_group 和 trace scope/rank 证据。"
+      ]
+    },
+    {
+      "id": "evidence_traceability",
+      "label": "证据与可追溯性",
+      "score": 5,
+      "max_score": 5,
+      "minimum_score": 5,
+      "status": "passed",
+      "evidence": [
+        "code_ref_ratio=0.918",
+        "manifest_evidence_gaps=1",
+        "证据缺口（不扣分，仅记录）: checkpoint config.json 不可达（model_path=未在 YAML 中声明）：以下数值来自 Python 默认参数，可能与实际权重不符"
+      ],
+      "actions": [
+        "为架构事实和结构节点补充真实 source_ref/code_ref，解决 manifest evidence gaps。"
+      ]
+    }
+  ],
+  "failed_dimensions": [],
+  "hard_gates": {
+    "passed": true,
+    "blocking_issues": []
+  },
+  "required_actions": [],
+  "constraints": [
+    "不得降低评分阈值或分项阈值",
+    "不得删除主计算 Kernel 或扩大 excluded_profiler_ops 来提分",
+    "下一轮从历史最佳配置开始，只修正有证据的问题",
+    "analysis_config/raw_ops/model_manifest 任一变化后必须重新完成 semantic review"
+  ]
+}

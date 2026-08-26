@@ -1,0 +1,886 @@
+{
+ "schema_version": "1.0",
+ "model_id": "ds3.2",
+ "report_id": "ds3.2/from-breakdown",
+ "purpose": "bind backend performance nodes to declared source architecture items",
+ "id_namespace": "model/ds3.2",
+ "mappings": [
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:1688",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:1415",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/runtime/spec_token_verify_main",
+   "source_node_ids": [
+    "model/ds3.2/runtime/spec_token_verify_main"
+   ],
+   "projected_graph_node_id": "model/ds3.2/runtime/spec_token_verify_main",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:2068",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:1415",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:198",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:198",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/stages/mtp_preprocessing",
+   "source_node_ids": [
+    "model/ds3.2/stages/mtp_preprocessing"
+   ],
+   "projected_graph_node_id": "model/ds3.2/stages/mtp_preprocessing",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1704",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:143",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:72",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/runtime/step_start_init",
+   "source_node_ids": [
+    "model/ds3.2/runtime/step_start_init"
+   ],
+   "projected_graph_node_id": "model/ds3.2/runtime/step_start_init",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1502",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/stages/mtp_lm_head",
+   "source_node_ids": [
+    "model/ds3.2/stages/mtp_lm_head"
+   ],
+   "projected_graph_node_id": "model/ds3.2/stages/mtp_lm_head",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1942",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "mapping_kind": "aggregate",
+   "evidence": [
+    "source: modeling_deepseek.py:143",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:673",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "source_node_ids": [
+    "model/ds3.2/runtime/spec_token_verify_mtp_1"
+   ],
+   "projected_graph_node_id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:2068",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "source_node_ids": [
+    "model/ds3.2/runtime/spec_token_verify_mtp_0"
+   ],
+   "projected_graph_node_id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:2068",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/stages/lm_head",
+   "source_node_ids": [
+    "model/ds3.2/stages/lm_head"
+   ],
+   "projected_graph_node_id": "model/ds3.2/stages/lm_head",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1942",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:494",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:494",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:937",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/combine"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:494",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:474",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:444",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/gate"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:444",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:494",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/runtime/final_sampling",
+   "source_node_ids": [
+    "model/ds3.2/runtime/final_sampling"
+   ],
+   "projected_graph_node_id": "model/ds3.2/runtime/final_sampling",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:2068",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/stages/embedding",
+   "source_node_ids": [
+    "model/ds3.2/stages/embedding"
+   ],
+   "projected_graph_node_id": "model/ds3.2/stages/embedding",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1502",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:182",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:444",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:444",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:187",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:187",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1485",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/input_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1465",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1465",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1485",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1688",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1465",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "source_node_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1485",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  },
+  {
+   "backend_node_id": "model/ds3.2/stages/main_final_norm",
+   "source_node_ids": [
+    "model/ds3.2/stages/main_final_norm"
+   ],
+   "projected_graph_node_id": "model/ds3.2/stages/main_final_norm",
+   "mapping_kind": "exact",
+   "evidence": [
+    "source: modeling_deepseek.py:1502",
+    "performance scope: 15"
+   ],
+   "review_state": "resolved"
+  }
+ ],
+ "source_only_nodes": [],
+ "validation": {
+  "backend_node_count": 67,
+  "mapped_or_classified_backend_node_count": 67,
+  "all_backend_nodes_classified": true
+ }
+}

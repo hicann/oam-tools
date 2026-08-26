@@ -1,0 +1,1914 @@
+{
+ "schema_version": "2.1-ui",
+ "model_id": "ds3.2",
+ "report_id": "ds3.2/from-breakdown",
+ "id_namespace": "model/ds3.2",
+ "representative_step": 15,
+ "peak_bf16_tflops_assumed": 376.0,
+ "total_time_us": 17114.52,
+ "modules": [
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "module": "DeepseekV3MTPLayer",
+   "metric_scope": "aggregate",
+   "time_us": 4050.48,
+   "time_pct": 23.6669,
+   "nops": 129,
+   "hbm_mb": 6746.0351,
+   "gflops": 0.027206,
+   "mfu_bf16_pct": 0.0018,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 36.24,
+    "QuantBatchMatmulV3": 20.97,
+    "KvQuantSparseFlashAttention": 7.97,
+    "MlaPrologV3": 5.78,
+    "MatMul": 5.01,
+    "LightningIndexerQuant": 4.94,
+    "MoeDistributeDispatchV2": 3.37,
+    "DequantSwigluQuant": 2.65,
+    "DynamicQuant": 2.46,
+    "MoeDistributeCombineV2": 2.08,
+    "BatchMatMul_to_tranpose_batch_matmul": 1.69,
+    "ScatterNdUpdate": 1.55,
+    "RotaryMul": 1.16,
+    "Cast": 0.94,
+    "ConcatV2": 0.85,
+    "Transpose": 0.63,
+    "MoeGatingTopKHash": 0.47,
+    "RmsNorm": 0.32,
+    "AddRmsNorm/AddRmsNormCast": 0.27,
+    "InplaceAddRmsNorm": 0.27,
+    "SplitV": 0.23,
+    "LayerNormV3": 0.16
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1688",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "module": "DeepseekV3DecoderLayer_moe",
+   "metric_scope": "aggregate",
+   "time_us": 3807.06,
+   "time_pct": 22.2446,
+   "nops": 126,
+   "hbm_mb": 6745.666,
+   "gflops": 0.027206,
+   "mfu_bf16_pct": 0.0019,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 39.93,
+    "QuantBatchMatmulV3": 15.44,
+    "KvQuantSparseFlashAttention": 8.0,
+    "MlaPrologV3": 6.18,
+    "LightningIndexerQuant": 5.67,
+    "MatMul": 5.45,
+    "MoeDistributeDispatchV2": 3.66,
+    "DequantSwigluQuant": 2.79,
+    "DynamicQuant": 2.36,
+    "ScatterNdUpdate": 1.92,
+    "MoeDistributeCombineV2": 1.88,
+    "RotaryMul": 1.19,
+    "ConcatV2": 0.9,
+    "Cast": 0.78,
+    "Transpose": 0.68,
+    "BatchMatMul_4_to_tranpose_batch_matmul": 0.6,
+    "BatchMatMul_5_to_tranpose_batch_matmul": 0.56,
+    "BatchMatMul_3_to_tranpose_batch_matmul": 0.55,
+    "MoeGatingTopKHash": 0.5,
+    "InplaceAddRmsNorm": 0.28,
+    "SplitV": 0.24,
+    "LayerNormV3": 0.17,
+    "AddRmsNorm_3/AddRmsNormCast": 0.1,
+    "AddRmsNorm_5/AddRmsNormCast": 0.09,
+    "AddRmsNorm_7/AddRmsNormCast": 0.09
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1415",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_main",
+   "module": "spec_token_verify_main",
+   "metric_scope": "direct",
+   "time_us": 3099.96,
+   "time_pct": 18.113,
+   "nops": 45,
+   "hbm_mb": 9.2486,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "ReverseV2": 89.79,
+    "hcom_allReduce": 2.61,
+    "ArgMaxV2": 1.96,
+    "Transpose": 1.1,
+    "Add": 0.95,
+    "AivKernel": 0.87,
+    "ConcatD": 0.77,
+    "Fill": 0.54,
+    "Cast": 0.37,
+    "TensorMove": 0.27,
+    "Equal": 0.2,
+    "UpdateModelParam_static_bin": 0.12,
+    "ReduceAny": 0.1,
+    "Sub": 0.1,
+    "SelectV2": 0.07,
+    "ArgMaxWithValue": 0.06,
+    "ZerosLike": 0.06,
+    "OnesLike": 0.04
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:2068",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "module": "DeepseekV3DecoderLayer_dense",
+   "metric_scope": "aggregate",
+   "time_us": 2534.6,
+   "time_pct": 14.8096,
+   "nops": 102,
+   "hbm_mb": 4588.1231,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0027,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 45.71,
+    "KvQuantSparseFlashAttention": 12.17,
+    "MlaPrologV3": 10.95,
+    "LightningIndexerQuant": 8.64,
+    "MatMul": 5.2,
+    "DynamicQuant": 2.94,
+    "ScatterNdUpdate": 2.87,
+    "RotaryMul": 1.8,
+    "DequantSwigluQuant": 1.74,
+    "ConcatV2": 1.35,
+    "Cast": 1.23,
+    "Transpose": 1.0,
+    "BatchMatMul_to_tranpose_batch_matmul": 0.97,
+    "BatchMatMul_1_to_tranpose_batch_matmul": 0.96,
+    "BatchMatMul_2_to_tranpose_batch_matmul": 0.91,
+    "AddRmsNormDynamicQuant": 0.54,
+    "SplitV": 0.34,
+    "InplaceAddRmsNorm": 0.27,
+    "LayerNormV3": 0.25,
+    "RmsNorm": 0.18
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1415",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "module": "mlp",
+   "metric_scope": "aggregate",
+   "time_us": 2445.1,
+   "time_pct": 14.2867,
+   "nops": 33,
+   "hbm_mb": 4428.7382,
+   "gflops": 0.001573,
+   "mfu_bf16_pct": 0.0002,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 60.03,
+    "QuantBatchMatmulV3": 21.87,
+    "MoeDistributeDispatchV2": 5.57,
+    "DequantSwigluQuant": 4.39,
+    "MoeDistributeCombineV2": 3.44,
+    "MatMul": 3.15,
+    "MoeGatingTopKHash": 0.78,
+    "DynamicQuant": 0.77
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:198",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "module": "mlp",
+   "metric_scope": "aggregate",
+   "time_us": 2221.58,
+   "time_pct": 12.9807,
+   "nops": 33,
+   "hbm_mb": 4428.7382,
+   "gflops": 0.001573,
+   "mfu_bf16_pct": 0.0002,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 68.43,
+    "QuantBatchMatmulV3": 12.17,
+    "MoeDistributeDispatchV2": 6.27,
+    "DequantSwigluQuant": 4.78,
+    "MatMul": 3.56,
+    "MoeDistributeCombineV2": 3.21,
+    "MoeGatingTopKHash": 0.86,
+    "DynamicQuant": 0.71
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:198",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/stages/mtp_preprocessing",
+   "module": "mtp_preprocessing",
+   "metric_scope": "single_instance",
+   "time_us": 1656.96,
+   "time_pct": 9.6816,
+   "nops": 53,
+   "hbm_mb": 1049.1754,
+   "gflops": 0.002753,
+   "mfu_bf16_pct": 0.0004,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MatMul": 45.87,
+    "HcomAllGather": 22.63,
+    "AivKernel": 20.61,
+    "HcomReduceScatter": 4.57,
+    "GatherV2": 1.89,
+    "Mul": 1.89,
+    "RmsNorm": 1.42,
+    "Cast": 0.41,
+    "SubGreaterEqualLessLogicalAnd": 0.36,
+    "ConcatV2": 0.35
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1704",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "module": "self_attn",
+   "metric_scope": "aggregate",
+   "time_us": 1624.08,
+   "time_pct": 9.4895,
+   "nops": 87,
+   "hbm_mb": 2315.3691,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0042,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 19.52,
+    "KvQuantSparseFlashAttention": 19.0,
+    "MlaPrologV3": 17.08,
+    "LightningIndexerQuant": 13.48,
+    "MatMul": 8.11,
+    "DynamicQuant": 4.59,
+    "ScatterNdUpdate": 4.47,
+    "RotaryMul": 2.81,
+    "ConcatV2": 2.11,
+    "Cast": 1.93,
+    "Transpose": 1.56,
+    "BatchMatMul_to_tranpose_batch_matmul": 1.51,
+    "BatchMatMul_1_to_tranpose_batch_matmul": 1.5,
+    "BatchMatMul_2_to_tranpose_batch_matmul": 1.42,
+    "SplitV": 0.53,
+    "LayerNormV3": 0.4
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "module": "routed_experts",
+   "metric_scope": "aggregate",
+   "time_us": 1602.98,
+   "time_pct": 9.3662,
+   "nops": 9,
+   "hbm_mb": 4111.2278,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 94.84,
+    "DequantSwigluQuant": 5.16
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "module": "self_attn",
+   "metric_scope": "aggregate",
+   "time_us": 1570.5,
+   "time_pct": 9.1764,
+   "nops": 87,
+   "hbm_mb": 2315.3691,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0043,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "KvQuantSparseFlashAttention": 20.56,
+    "QuantBatchMatmulV3": 20.03,
+    "MlaPrologV3": 14.91,
+    "LightningIndexerQuant": 12.73,
+    "MatMul": 8.02,
+    "DynamicQuant": 5.13,
+    "BatchMatMul_to_tranpose_batch_matmul": 4.37,
+    "ScatterNdUpdate": 3.99,
+    "RotaryMul": 2.98,
+    "Cast": 2.42,
+    "ConcatV2": 2.2,
+    "Transpose": 1.64,
+    "SplitV": 0.59,
+    "LayerNormV3": 0.42
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "module": "self_attn",
+   "metric_scope": "aggregate",
+   "time_us": 1564.5,
+   "time_pct": 9.1414,
+   "nops": 87,
+   "hbm_mb": 2315.3691,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0044,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 20.29,
+    "KvQuantSparseFlashAttention": 19.46,
+    "MlaPrologV3": 15.05,
+    "LightningIndexerQuant": 13.79,
+    "MatMul": 8.2,
+    "DynamicQuant": 4.74,
+    "ScatterNdUpdate": 4.68,
+    "RotaryMul": 2.89,
+    "ConcatV2": 2.19,
+    "Cast": 1.9,
+    "Transpose": 1.65,
+    "BatchMatMul_4_to_tranpose_batch_matmul": 1.47,
+    "BatchMatMul_5_to_tranpose_batch_matmul": 1.35,
+    "BatchMatMul_3_to_tranpose_batch_matmul": 1.34,
+    "SplitV": 0.58,
+    "LayerNormV3": 0.42
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "module": "shared_expert",
+   "metric_scope": "aggregate",
+   "time_us": 1141.06,
+   "time_pct": 6.6672,
+   "nops": 12,
+   "hbm_mb": 2010.9103,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 55.47,
+    "QuantBatchMatmulV3": 40.99,
+    "DequantSwigluQuant": 1.89,
+    "DynamicQuant": 1.65
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:143",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "module": "gate_up",
+   "metric_scope": "all_observed_instances",
+   "time_us": 992.2,
+   "time_pct": 5.7974,
+   "nops": 3,
+   "hbm_mb": 2721.0001,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "module": "routed_experts",
+   "metric_scope": "aggregate",
+   "time_us": 987.6,
+   "time_pct": 5.7705,
+   "nops": 9,
+   "hbm_mb": 2353.3957,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 84.52,
+    "DequantSwigluQuant": 8.69,
+    "QuantBatchMatmulV3": 6.79
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "module": "shared_down",
+   "metric_scope": "all_observed_instances",
+   "time_us": 939.1,
+   "time_pct": 5.4872,
+   "nops": 3,
+   "hbm_mb": 1842.0841,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 67.4,
+    "QuantBatchMatmulV3": 32.6
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "module": "mlp",
+   "metric_scope": "all_observed_instances",
+   "time_us": 885.52,
+   "time_pct": 5.1741,
+   "nops": 9,
+   "hbm_mb": 2271.4278,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 95.03,
+    "DequantSwigluQuant": 4.97
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:72",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/runtime/step_start_init",
+   "module": "step_start_init",
+   "metric_scope": "direct",
+   "time_us": 648.74,
+   "time_pct": 3.7906,
+   "nops": 17,
+   "hbm_mb": 21.0001,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "hcom_allReduce": 47.69,
+    "HcomAllGather": 18.09,
+    "AivKernel": 17.77,
+    "Transpose": 13.65,
+    "Cast": 0.69,
+    "UpdateModelParam_static_bin": 0.63,
+    "Sub": 0.52,
+    "Add": 0.38,
+    "ArgMaxWithValue": 0.36,
+    "OnesLike": 0.23
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1502",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "module": "indexer",
+   "metric_scope": "all_observed_instances",
+   "time_us": 642.4,
+   "time_pct": 3.7535,
+   "nops": 66,
+   "hbm_mb": 230.4158,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0106,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "LightningIndexerQuant": 34.08,
+    "MatMul": 20.51,
+    "ScatterNdUpdate": 11.3,
+    "QuantBatchMatmulV3": 7.96,
+    "DynamicQuant": 7.96,
+    "RotaryMul": 7.09,
+    "Cast": 4.87,
+    "ConcatV2": 3.87,
+    "SplitV": 1.35,
+    "LayerNormV3": 1.0
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "module": "indexer",
+   "metric_scope": "all_observed_instances",
+   "time_us": 636.24,
+   "time_pct": 3.7175,
+   "nops": 66,
+   "hbm_mb": 230.4158,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.0107,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "LightningIndexerQuant": 33.9,
+    "MatMul": 20.17,
+    "ScatterNdUpdate": 11.52,
+    "DynamicQuant": 8.28,
+    "QuantBatchMatmulV3": 8.0,
+    "RotaryMul": 7.11,
+    "Cast": 4.66,
+    "ConcatV2": 3.89,
+    "SplitV": 1.44,
+    "LayerNormV3": 1.03
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "module": "indexer",
+   "metric_scope": "all_observed_instances",
+   "time_us": 620.18,
+   "time_pct": 3.6237,
+   "nops": 66,
+   "hbm_mb": 230.4158,
+   "gflops": 0.025633,
+   "mfu_bf16_pct": 0.011,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "LightningIndexerQuant": 32.25,
+    "MatMul": 20.31,
+    "ScatterNdUpdate": 10.1,
+    "DynamicQuant": 8.99,
+    "QuantBatchMatmulV3": 8.09,
+    "RotaryMul": 7.55,
+    "Cast": 6.13,
+    "ConcatV2": 4.03,
+    "SplitV": 1.5,
+    "LayerNormV3": 1.06
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "module": "down",
+   "metric_scope": "all_observed_instances",
+   "time_us": 528.12,
+   "time_pct": 3.0858,
+   "nops": 3,
+   "hbm_mb": 1371.6593,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/stages/mtp_lm_head",
+   "module": "mtp_lm_head",
+   "metric_scope": "single_instance",
+   "time_us": 526.68,
+   "time_pct": 3.0774,
+   "nops": 21,
+   "hbm_mb": 348.8262,
+   "gflops": 0.049644,
+   "mfu_bf16_pct": 0.0251,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MatMul": 59.73,
+    "HcomAllGather": 16.17,
+    "HcomAllToAll": 15.08,
+    "Reshape_58/ConfusionTranspose/Transpose": 4.63,
+    "Cast": 4.39,
+    "AivKernel": 0.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1942",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "module": "down",
+   "metric_scope": "all_observed_instances",
+   "time_us": 505.26,
+   "time_pct": 2.9522,
+   "nops": 3,
+   "hbm_mb": 1371.6593,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "module": "gate_up",
+   "metric_scope": "all_observed_instances",
+   "time_us": 396.54,
+   "time_pct": 2.317,
+   "nops": 3,
+   "hbm_mb": 963.168,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "GroupedMatmul": 83.09,
+    "QuantBatchMatmulV3": 16.91
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "module": "attn_core",
+   "metric_scope": "all_observed_instances",
+   "time_us": 332.6,
+   "time_pct": 1.9434,
+   "nops": 6,
+   "hbm_mb": 506.2999,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "KvQuantSparseFlashAttention": 97.1,
+    "ConcatV2": 2.9
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "module": "attn_core",
+   "metric_scope": "all_observed_instances",
+   "time_us": 317.86,
+   "time_pct": 1.8573,
+   "nops": 6,
+   "hbm_mb": 506.2999,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "KvQuantSparseFlashAttention": 97.06,
+    "ConcatV2": 2.94
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "module": "attn_core",
+   "metric_scope": "all_observed_instances",
+   "time_us": 313.92,
+   "time_pct": 1.8342,
+   "nops": 6,
+   "hbm_mb": 506.2999,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "KvQuantSparseFlashAttention": 96.97,
+    "ConcatV2": 3.03
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "module": "shared_expert",
+   "metric_scope": "aggregate",
+   "time_us": 309.66,
+   "time_pct": 1.8093,
+   "nops": 12,
+   "hbm_mb": 253.0782,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 87.28,
+    "DequantSwigluQuant": 7.61,
+    "DynamicQuant": 5.12
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:143",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "module": "o_proj",
+   "metric_scope": "all_observed_instances",
+   "time_us": 289.2,
+   "time_pct": 1.6898,
+   "nops": 6,
+   "hbm_mb": 673.4239,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 91.4,
+    "DynamicQuant": 8.6
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "module": "o_proj",
+   "metric_scope": "all_observed_instances",
+   "time_us": 289.18,
+   "time_pct": 1.6897,
+   "nops": 6,
+   "hbm_mb": 673.4239,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 91.92,
+    "DynamicQuant": 8.08
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "module": "o_proj",
+   "metric_scope": "all_observed_instances",
+   "time_us": 287.94,
+   "time_pct": 1.6824,
+   "nops": 6,
+   "hbm_mb": 673.4239,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 92.55,
+    "DynamicQuant": 7.45
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:673",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "module": "spec_token_verify_mtp_1",
+   "metric_scope": "direct",
+   "time_us": 281.62,
+   "time_pct": 1.6455,
+   "nops": 16,
+   "hbm_mb": 8.1232,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "hcom_allReduce": 52.92,
+    "ArgMaxV2": 20.89,
+    "Transpose": 12.53,
+    "ConcatD": 7.16,
+    "Cast": 1.83,
+    "UpdateModelParam_static_bin": 1.38,
+    "Sub": 1.07,
+    "Add": 0.95,
+    "ArgMaxWithValue": 0.75,
+    "OnesLike": 0.53,
+    "AivKernel": 0.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:2068",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "module": "mla_prolog",
+   "metric_scope": "all_observed_instances",
+   "time_us": 277.42,
+   "time_pct": 1.621,
+   "nops": 3,
+   "hbm_mb": 852.3546,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MlaPrologV3": 100.0
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "module": "mla_prolog",
+   "metric_scope": "all_observed_instances",
+   "time_us": 235.44,
+   "time_pct": 1.3757,
+   "nops": 3,
+   "hbm_mb": 852.3546,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MlaPrologV3": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "module": "mla_prolog",
+   "metric_scope": "all_observed_instances",
+   "time_us": 234.16,
+   "time_pct": 1.3682,
+   "nops": 3,
+   "hbm_mb": 852.3546,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MlaPrologV3": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "module": "spec_token_verify_mtp_0",
+   "metric_scope": "direct",
+   "time_us": 198.32,
+   "time_pct": 1.1588,
+   "nops": 15,
+   "hbm_mb": 8.1232,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "hcom_allReduce": 34.97,
+    "ArgMaxV2": 29.55,
+    "Transpose": 17.16,
+    "ConcatD": 8.81,
+    "Cast": 2.64,
+    "UpdateModelParam_static_bin": 1.74,
+    "Sub": 1.63,
+    "Add": 1.45,
+    "ArgMaxWithValue": 1.11,
+    "OnesLike": 0.92,
+    "AivKernel": 0.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:2068",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/stages/lm_head",
+   "module": "lm_head",
+   "metric_scope": "single_instance",
+   "time_us": 188.78,
+   "time_pct": 1.103,
+   "nops": 7,
+   "hbm_mb": 116.2754,
+   "gflops": 0.016548,
+   "mfu_bf16_pct": 0.0233,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MatMul": 58.87,
+    "HcomAllGather": 17.68,
+    "HcomAllToAll": 14.96,
+    "Reshape_284/ConfusionTranspose/Transpose": 4.32,
+    "Cast": 4.16,
+    "AivKernel": 0.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1942",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "module": "shared_gate_up",
+   "metric_scope": "all_observed_instances",
+   "time_us": 161.52,
+   "time_pct": 0.9438,
+   "nops": 3,
+   "hbm_mb": 168.2812,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "module": "shared_gate_up",
+   "metric_scope": "all_observed_instances",
+   "time_us": 156.88,
+   "time_pct": 0.9166,
+   "nops": 3,
+   "hbm_mb": 168.2812,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "module": "dispatch",
+   "metric_scope": "all_observed_instances",
+   "time_us": 139.28,
+   "time_pct": 0.8138,
+   "nops": 3,
+   "hbm_mb": 32.0437,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeDistributeDispatchV2": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:494",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "module": "dispatch",
+   "metric_scope": "all_observed_instances",
+   "time_us": 136.3,
+   "time_pct": 0.7964,
+   "nops": 3,
+   "hbm_mb": 32.0437,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeDistributeDispatchV2": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:494",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "module": "shared_down",
+   "metric_scope": "all_observed_instances",
+   "time_us": 113.38,
+   "time_pct": 0.6625,
+   "nops": 3,
+   "hbm_mb": 84.252,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "QuantBatchMatmulV3": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "module": "kv_b_absorb",
+   "metric_scope": "all_observed_instances",
+   "time_us": 97.22,
+   "time_pct": 0.5681,
+   "nops": 6,
+   "hbm_mb": 52.875,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "Transpose": 25.98,
+    "BatchMatMul_to_tranpose_batch_matmul": 25.22,
+    "BatchMatMul_1_to_tranpose_batch_matmul": 25.08,
+    "BatchMatMul_2_to_tranpose_batch_matmul": 23.72
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "module": "kv_b_absorb",
+   "metric_scope": "all_observed_instances",
+   "time_us": 94.36,
+   "time_pct": 0.5513,
+   "nops": 6,
+   "hbm_mb": 52.875,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "BatchMatMul_to_tranpose_batch_matmul": 72.74,
+    "Transpose": 27.26
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "module": "kv_b_absorb",
+   "metric_scope": "all_observed_instances",
+   "time_us": 90.96,
+   "time_pct": 0.5315,
+   "nops": 6,
+   "hbm_mb": 52.875,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "Transpose": 28.36,
+    "BatchMatMul_4_to_tranpose_batch_matmul": 25.29,
+    "BatchMatMul_5_to_tranpose_batch_matmul": 23.26,
+    "BatchMatMul_3_to_tranpose_batch_matmul": 23.09
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:937",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "module": "activation",
+   "metric_scope": "all_observed_instances",
+   "time_us": 85.8,
+   "time_pct": 0.5013,
+   "nops": 3,
+   "hbm_mb": 18.5685,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DequantSwigluQuant": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "module": "combine",
+   "metric_scope": "all_observed_instances",
+   "time_us": 84.06,
+   "time_pct": 0.4912,
+   "nops": 3,
+   "hbm_mb": 21.705,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeDistributeCombineV2": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:494",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "module": "activation",
+   "metric_scope": "all_observed_instances",
+   "time_us": 82.66,
+   "time_pct": 0.483,
+   "nops": 3,
+   "hbm_mb": 18.5685,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DequantSwigluQuant": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:474",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "module": "gate",
+   "metric_scope": "all_observed_instances",
+   "time_us": 79.16,
+   "time_pct": 0.4625,
+   "nops": 3,
+   "hbm_mb": 10.6699,
+   "gflops": 0.001573,
+   "mfu_bf16_pct": 0.0053,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MatMul": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:444",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "module": "gate",
+   "metric_scope": "all_observed_instances",
+   "time_us": 77.1,
+   "time_pct": 0.4505,
+   "nops": 3,
+   "hbm_mb": 10.6699,
+   "gflops": 0.001573,
+   "mfu_bf16_pct": 0.0054,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MatMul": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:444",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "module": "combine",
+   "metric_scope": "all_observed_instances",
+   "time_us": 71.4,
+   "time_pct": 0.4172,
+   "nops": 3,
+   "hbm_mb": 21.705,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeDistributeCombineV2": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:494",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/runtime/final_sampling",
+   "module": "final_sampling",
+   "metric_scope": "direct",
+   "time_us": 69.72,
+   "time_pct": 0.4074,
+   "nops": 6,
+   "hbm_mb": 0.9864,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "ArgMaxV2": 83.99,
+    "Add": 7.6,
+    "ConcatD": 6.45,
+    "Cast": 1.95
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:2068",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/stages/embedding",
+   "module": "embedding",
+   "metric_scope": "single_instance",
+   "time_us": 48.06,
+   "time_pct": 0.2808,
+   "nops": 10,
+   "hbm_mb": 153.0962,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "HcomReduceScatter": 48.73,
+    "Mul": 22.1,
+    "GatherV2": 20.52,
+    "Cast": 4.66,
+    "SubGreaterEqualLessLogicalAnd": 4.0,
+    "AivKernel": 0.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1502",
+   "kernel_scope_note": null
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "module": "shared_activation",
+   "metric_scope": "all_observed_instances",
+   "time_us": 23.56,
+   "time_pct": 0.1377,
+   "nops": 3,
+   "hbm_mb": 0.1758,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DequantSwigluQuant": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "module": "shared_activation",
+   "metric_scope": "all_observed_instances",
+   "time_us": 21.56,
+   "time_pct": 0.126,
+   "nops": 3,
+   "hbm_mb": 0.1758,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DequantSwigluQuant": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:182",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "module": "topk_routing",
+   "metric_scope": "all_observed_instances",
+   "time_us": 19.1,
+   "time_pct": 0.1116,
+   "nops": 3,
+   "hbm_mb": 0.0135,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeGatingTopKHash": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:444",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "module": "topk_routing",
+   "metric_scope": "all_observed_instances",
+   "time_us": 18.98,
+   "time_pct": 0.1109,
+   "nops": 3,
+   "hbm_mb": 0.0135,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "MoeGatingTopKHash": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:444",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "module": "shared_quant",
+   "metric_scope": "all_observed_instances",
+   "time_us": 18.88,
+   "time_pct": 0.1103,
+   "nops": 3,
+   "hbm_mb": 0.3692,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DynamicQuant": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:187",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "module": "shared_quant",
+   "metric_scope": "all_observed_instances",
+   "time_us": 15.84,
+   "time_pct": 0.0926,
+   "nops": 3,
+   "hbm_mb": 0.3692,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "DynamicQuant": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:187",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "module": "post_attention_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 13.58,
+   "time_pct": 0.0793,
+   "nops": 3,
+   "hbm_mb": 0.7383,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "AddRmsNormDynamicQuant": 100.0
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1485",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "module": "input_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 13.14,
+   "time_pct": 0.0768,
+   "nops": 3,
+   "hbm_mb": 0.3692,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "RmsNorm": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1465",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "module": "input_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 11.42,
+   "time_pct": 0.0667,
+   "nops": 3,
+   "hbm_mb": 0.5879,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "InplaceAddRmsNorm": 60.77,
+    "RmsNorm": 39.23
+   },
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1465",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [0, 1, 2]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "module": "post_attention_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 10.96,
+   "time_pct": 0.064,
+   "nops": 3,
+   "hbm_mb": 0.8614,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "AddRmsNorm/AddRmsNormCast": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1485",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "module": "shared_head_norm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 10.78,
+   "time_pct": 0.063,
+   "nops": 3,
+   "hbm_mb": 0.6973,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "InplaceAddRmsNorm": 100.0
+   },
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1688",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [61]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "module": "input_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 10.54,
+   "time_pct": 0.0616,
+   "nops": 3,
+   "hbm_mb": 0.6973,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "InplaceAddRmsNorm": 100.0
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1465",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "module": "post_attention_layernorm",
+   "metric_scope": "all_observed_instances",
+   "time_us": 10.44,
+   "time_pct": 0.061,
+   "nops": 3,
+   "hbm_mb": 0.8614,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "AddRmsNorm_3/AddRmsNormCast": 34.87,
+    "AddRmsNorm_5/AddRmsNormCast": 33.14,
+    "AddRmsNorm_7/AddRmsNormCast": 31.99
+   },
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "code_ref": "modeling_deepseek.py:1485",
+   "kernel_scope_note": "Metrics aggregate every observed instance of this node across all 3 invocations (model layer indices [3, 4, 5]) in representative step 15."
+  },
+  {
+   "node_id": "model/ds3.2/stages/main_final_norm",
+   "module": "main_final_norm",
+   "metric_scope": "single_instance",
+   "time_us": 3.54,
+   "time_pct": 0.0207,
+   "nops": 1,
+   "hbm_mb": 0.2324,
+   "gflops": 0.0,
+   "mfu_bf16_pct": null,
+   "mfu_int8_pct": null,
+   "aicore_time_us": null,
+   "mac_ratio": null,
+   "mte2_ratio": null,
+   "op_ratio": {
+    "InplaceAddRmsNorm": 100.0
+   },
+   "instance_indices": [],
+   "invocation_count": null,
+   "code_ref": "modeling_deepseek.py:1502",
+   "kernel_scope_note": null
+  }
+ ],
+ "scope_note": "Metrics are representative-step aggregates over attributed kernels. HBM figures are logical shape x dtype estimates, not measured traffic."
+}

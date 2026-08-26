@@ -1,0 +1,5 @@
+# Codespell ignore words - technical terms used in CANN/oam-tools
+# These are legitimate technical terms, not spelling errors
+[codespell]
+skip = .git,*.json,*.csv,go.sum
+ignore-words-list = hcom,lmhead,dequant,imaginationhh, cann,msprof,asys,msaicerr

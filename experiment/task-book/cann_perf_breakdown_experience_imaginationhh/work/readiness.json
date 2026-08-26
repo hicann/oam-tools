@@ -1,0 +1,73 @@
+{
+ "schema_version": 1,
+ "breakdown": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2-v7/work",
+ "ready": true,
+ "checks": [
+  {
+   "ok": true,
+   "check": "analysis_config_v2.json exists",
+   "detail": "ds3.2-fix/work/analysis_config_v2.json"
+  },
+  {
+   "ok": true,
+   "check": "config is schema v2",
+   "detail": "found 2"
+  },
+  {
+   "ok": true,
+   "check": "config declares every required block",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "config is not an unverified legacy migration",
+   "detail": "migration.status='native_v2'"
+  },
+  {
+   "ok": true,
+   "check": "unmapped_ops is empty",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "trace_scope.kind is declared",
+   "detail": "found 'rank_local'"
+  },
+  {
+   "ok": true,
+   "check": "validation_report.json exists",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "validation status is convertible",
+   "detail": "status='passed_with_warnings'"
+  },
+  {
+   "ok": true,
+   "check": "breakdown_score.json exists",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "breakdown score is passed",
+   "detail": "status='passed' score=99"
+  },
+  {
+   "ok": true,
+   "check": "score meets its own minimum",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "semantic_review.json exists",
+   "detail": ""
+  },
+  {
+   "ok": true,
+   "check": "semantic review hash binding present",
+   "detail": "no config_sha256 recorded; cannot verify staleness"
+  }
+ ],
+ "blockers": []
+}

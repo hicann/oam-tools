@@ -1,0 +1,1778 @@
+{
+ "schema_version": 1,
+ "id_namespace": "model/ds3.2",
+ "representative_step": 15,
+ "observed_instances": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  61
+ ],
+ "roots": {
+  "stages": [
+   "model/ds3.2/stages/embedding",
+   "model/ds3.2/stages/main_final_norm",
+   "model/ds3.2/stages/lm_head",
+   "model/ds3.2/stages/mtp_preprocessing",
+   "model/ds3.2/stages/mtp_lm_head"
+  ],
+  "layer_structure": {
+   "DeepseekV3DecoderLayer_dense": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "DeepseekV3DecoderLayer_moe": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "DeepseekV3MTPLayer": "model/ds3.2/DeepseekV3MTPLayer"
+  },
+  "runtime_auxiliary": [
+   "model/ds3.2/runtime/step_start_init",
+   "model/ds3.2/runtime/spec_token_verify_main",
+   "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "model/ds3.2/runtime/final_sampling"
+  ]
+ },
+ "nodes": [
+  {
+   "node_id": "model/ds3.2/stages/embedding",
+   "semantic_key": "embedding",
+   "node_kind": "op",
+   "metric_scope": "single_instance",
+   "name": "embedding",
+   "semantic": "vocab-sharded token embedding (embed_tp=16) + rotary cos/sin",
+   "code_ref": "modeling_deepseek.py:1502",
+   "instance_indices": [],
+   "invocation_count": null,
+   "op_indices": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26
+   ],
+   "parent_id": "model/ds3.2/stages",
+   "source_path": "stages.embedding",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/stages/main_final_norm",
+   "semantic_key": "main_final_norm",
+   "node_kind": "op",
+   "metric_scope": "single_instance",
+   "name": "main_final_norm",
+   "semantic": "final RMSNorm before lm_head (InplaceAddRmsNorm)",
+   "code_ref": "modeling_deepseek.py:1502",
+   "instance_indices": [],
+   "invocation_count": null,
+   "op_indices": [
+    255
+   ],
+   "parent_id": "model/ds3.2/stages",
+   "source_path": "stages.main_final_norm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/stages/lm_head",
+   "semantic_key": "lm_head",
+   "node_kind": "op",
+   "metric_scope": "single_instance",
+   "name": "lm_head",
+   "semantic": "lm_head vocab proj + TP allgather + AllToAll + logits cast",
+   "code_ref": "modeling_deepseek.py:1942",
+   "instance_indices": [],
+   "invocation_count": null,
+   "op_indices": [
+    256,
+    257,
+    258,
+    259,
+    260,
+    261,
+    262
+   ],
+   "parent_id": "model/ds3.2/stages",
+   "source_path": "stages.lm_head",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/stages/mtp_preprocessing",
+   "semantic_key": "mtp_preprocessing",
+   "node_kind": "op",
+   "metric_scope": "single_instance",
+   "name": "mtp_preprocessing",
+   "semantic": "MTP per-iter preprocessing: weight_allgather + embed + rotary + eh_proj (3 iterations, stage_indices=[0,1,2])",
+   "code_ref": "modeling_deepseek.py:1704",
+   "instance_indices": [],
+   "invocation_count": null,
+   "op_indices": [
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319,
+    320,
+    321,
+    322,
+    323,
+    324,
+    390,
+    391,
+    392,
+    393,
+    394,
+    395,
+    396,
+    397,
+    398,
+    399,
+    400,
+    401,
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    474,
+    475,
+    476,
+    477,
+    478,
+    479,
+    480,
+    481,
+    482,
+    483,
+    484,
+    485,
+    486,
+    487,
+    488,
+    489,
+    490,
+    491
+   ],
+   "parent_id": "model/ds3.2/stages",
+   "source_path": "stages.mtp_preprocessing",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/stages/mtp_lm_head",
+   "semantic_key": "mtp_lm_head",
+   "node_kind": "op",
+   "metric_scope": "single_instance",
+   "name": "mtp_lm_head",
+   "semantic": "MTP per-iter lm_head: vocab proj + TP allgather + AllToAll + logits cast (3 iterations, stage_indices=[0,1,2])",
+   "code_ref": "modeling_deepseek.py:1942",
+   "instance_indices": [],
+   "invocation_count": null,
+   "op_indices": [
+    368,
+    369,
+    370,
+    371,
+    372,
+    373,
+    374,
+    451,
+    452,
+    453,
+    454,
+    455,
+    456,
+    457,
+    535,
+    536,
+    537,
+    538,
+    539,
+    540,
+    541
+   ],
+   "parent_id": "model/ds3.2/stages",
+   "source_path": "stages.mtp_lm_head",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "semantic_key": "DeepseekV3DecoderLayer_dense",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "DeepseekV3DecoderLayer_dense",
+   "semantic": "dense decoder layer: MLA attention + dense MLP",
+   "code_ref": "modeling_deepseek.py:1415",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp"
+   ],
+   "repeat_count": 3,
+   "declared_instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "unobserved_instance_indices": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "semantic_key": "input_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "input_layernorm",
+   "semantic": "RMSNorm (fused with prev residual via InplaceAddRmsNorm; standalone for layer 0)",
+   "code_ref": "modeling_deepseek.py:1465",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    61
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.input_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "semantic_key": "self_attn",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "self_attn",
+   "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer sparse-KV, KvQuantSparseFlashAttention)",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "semantic_key": "mla_prolog",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "mla_prolog",
+   "semantic": "MLA prolog (q/k/v low-rank decomposition)",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    62
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn.mla_prolog",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "semantic_key": "indexer",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "indexer",
+   "semantic": "LightningIndexer quant + KV cache index",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn.indexer",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "semantic_key": "attn_core",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "attn_core",
+   "semantic": "KvQuantSparseFlashAttention",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    85,
+    86
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn.attn_core",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "semantic_key": "kv_b_absorb",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "kv_b_absorb",
+   "semantic": "kv_b weight absorption",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    87,
+    88
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn.kv_b_absorb",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "semantic_key": "o_proj",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "o_proj",
+   "semantic": "output projection",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    89,
+    90
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.self_attn.o_proj",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "semantic_key": "post_attention_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "post_attention_layernorm",
+   "semantic": "RMSNorm (fused with residual)",
+   "code_ref": "modeling_deepseek.py:1485",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    91
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.post_attention_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "semantic_key": "mlp",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "mlp",
+   "semantic": "dense MLP (gate_proj + up_proj + down_proj, W8A8 quantized)",
+   "code_ref": "modeling_deepseek.py:72",
+   "instance_indices": [
+    0,
+    1,
+    2
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    92,
+    93,
+    94
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "source_path": "structures.DeepseekV3DecoderLayer_dense.mlp",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "semantic_key": "DeepseekV3DecoderLayer_moe",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "DeepseekV3DecoderLayer_moe",
+   "semantic": "MoE decoder layer: MLA attention + sparse MoE (256 experts, top-8, EP) + shared expert",
+   "code_ref": "modeling_deepseek.py:1415",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp"
+   ],
+   "repeat_count": 3,
+   "declared_instance_indices": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60
+   ],
+   "unobserved_instance_indices": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "semantic_key": "input_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "input_layernorm",
+   "semantic": "RMSNorm (fused with prev residual)",
+   "code_ref": "modeling_deepseek.py:1465",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    129
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.input_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "semantic_key": "self_attn",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "self_attn",
+   "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer sparse-KV, KvQuantSparseFlashAttention)",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "semantic_key": "mla_prolog",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "mla_prolog",
+   "semantic": "MLA prolog",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    130
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn.mla_prolog",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "semantic_key": "indexer",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "indexer",
+   "semantic": "LightningIndexer quant + KV cache index",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn.indexer",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "semantic_key": "attn_core",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "attn_core",
+   "semantic": "KvQuantSparseFlashAttention",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    153,
+    154
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn.attn_core",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "semantic_key": "kv_b_absorb",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "kv_b_absorb",
+   "semantic": "kv_b weight absorption",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    155,
+    156
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn.kv_b_absorb",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "semantic_key": "o_proj",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "o_proj",
+   "semantic": "output projection",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    157,
+    158
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.self_attn.o_proj",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "semantic_key": "post_attention_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "post_attention_layernorm",
+   "semantic": "RMSNorm (fused with residual)",
+   "code_ref": "modeling_deepseek.py:1485",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    159
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.post_attention_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "semantic_key": "mlp",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "mlp",
+   "semantic": "sparse MoE (256 routed experts top-8 + 1 shared expert, W8A8, EP double-routing)",
+   "code_ref": "modeling_deepseek.py:198",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "semantic_key": "gate",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "gate",
+   "semantic": "router gate projection",
+   "code_ref": "modeling_deepseek.py:444",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    160
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.gate",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "semantic_key": "shared_expert",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "shared_expert",
+   "semantic": "shared expert (W8A8)",
+   "code_ref": "modeling_deepseek.py:143",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.shared_expert",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "semantic_key": "shared_quant",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_quant",
+   "semantic": "shared expert quant",
+   "code_ref": "modeling_deepseek.py:187",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    161
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.shared_expert.shared_quant",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "semantic_key": "shared_gate_up",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_gate_up",
+   "semantic": "shared expert gate_up proj",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    162
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.shared_expert.shared_gate_up",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "semantic_key": "shared_activation",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_activation",
+   "semantic": "shared expert activation",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    165
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.shared_expert.shared_activation",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "semantic_key": "shared_down",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_down",
+   "semantic": "shared expert down proj",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    166
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.shared_expert.shared_down",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "semantic_key": "topk_routing",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "topk_routing",
+   "semantic": "MoeGatingTopKHash (top-8 selection)",
+   "code_ref": "modeling_deepseek.py:444",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    163
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.topk_routing",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "semantic_key": "dispatch",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "dispatch",
+   "semantic": "MoeDistributeDispatchV2 (EP AllToAll dispatch)",
+   "code_ref": "modeling_deepseek.py:494",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    164
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.dispatch",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "semantic_key": "routed_experts",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "routed_experts",
+   "semantic": "routed experts GroupedMatmul (W8A8)",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.routed_experts",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "semantic_key": "gate_up",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "gate_up",
+   "semantic": "expert gate_up GroupedMatmul",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    167
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.routed_experts.gate_up",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "semantic_key": "activation",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "activation",
+   "semantic": "DequantSwigluQuant",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    168
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.routed_experts.activation",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "semantic_key": "down",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "down",
+   "semantic": "expert down GroupedMatmul",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    169
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.routed_experts.down",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "semantic_key": "combine",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "combine",
+   "semantic": "MoeDistributeCombineV2 (EP AllToAll combine)",
+   "code_ref": "modeling_deepseek.py:494",
+   "instance_indices": [
+    3,
+    4,
+    5
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    170
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source_path": "structures.DeepseekV3DecoderLayer_moe.mlp.combine",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "semantic_key": "DeepseekV3MTPLayer",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "DeepseekV3MTPLayer",
+   "semantic": "MTP decoder layer body: MLA attention + MoE MLP + shared_head_norm (3 invocations, next_n=3)",
+   "code_ref": "modeling_deepseek.py:1688",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2",
+   "source_path": "structures.DeepseekV3MTPLayer",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm"
+   ],
+   "repeat_count": 1,
+   "declared_instance_indices": [
+    61
+   ],
+   "unobserved_instance_indices": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "semantic_key": "input_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "input_layernorm",
+   "semantic": "RMSNorm",
+   "code_ref": "modeling_deepseek.py:1465",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    325
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_path": "structures.DeepseekV3MTPLayer.input_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "semantic_key": "self_attn",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "self_attn",
+   "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer, KvQuantSparseFlashAttention)",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "semantic_key": "mla_prolog",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "mla_prolog",
+   "semantic": "MLA prolog",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    326
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn.mla_prolog",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "semantic_key": "indexer",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "indexer",
+   "semantic": "LightningIndexer quant + KV cache index",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    327,
+    328,
+    329,
+    330,
+    331,
+    332,
+    333,
+    334,
+    335,
+    336,
+    337,
+    338,
+    339,
+    340,
+    341,
+    342,
+    343,
+    344,
+    345,
+    346,
+    347,
+    348
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn.indexer",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "semantic_key": "attn_core",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "attn_core",
+   "semantic": "KvQuantSparseFlashAttention",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    349,
+    350
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn.attn_core",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "semantic_key": "kv_b_absorb",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "kv_b_absorb",
+   "semantic": "kv_b weight absorption",
+   "code_ref": "modeling_deepseek.py:937",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    351,
+    352
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn.kv_b_absorb",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "semantic_key": "o_proj",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "o_proj",
+   "semantic": "output projection",
+   "code_ref": "modeling_deepseek.py:673",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    353,
+    354
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source_path": "structures.DeepseekV3MTPLayer.self_attn.o_proj",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "semantic_key": "post_attention_layernorm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "post_attention_layernorm",
+   "semantic": "RMSNorm (fused with residual)",
+   "code_ref": "modeling_deepseek.py:1485",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    355
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_path": "structures.DeepseekV3MTPLayer.post_attention_layernorm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "semantic_key": "mlp",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "mlp",
+   "semantic": "sparse MoE (256 routed + 1 shared, W8A8, EP double-routing)",
+   "code_ref": "modeling_deepseek.py:198",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/combine"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "semantic_key": "gate",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "gate",
+   "semantic": "router gate projection",
+   "code_ref": "modeling_deepseek.py:444",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    356
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.gate",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "semantic_key": "shared_expert",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "shared_expert",
+   "semantic": "shared expert (W8A8)",
+   "code_ref": "modeling_deepseek.py:143",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.shared_expert",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "semantic_key": "shared_quant",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_quant",
+   "semantic": "shared expert quant",
+   "code_ref": "modeling_deepseek.py:187",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    357
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.shared_expert.shared_quant",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "semantic_key": "shared_gate_up",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_gate_up",
+   "semantic": "shared expert gate_up proj",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    358
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.shared_expert.shared_gate_up",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "semantic_key": "shared_activation",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_activation",
+   "semantic": "shared expert activation",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    361
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.shared_expert.shared_activation",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "semantic_key": "shared_down",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_down",
+   "semantic": "shared expert down proj",
+   "code_ref": "modeling_deepseek.py:182",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    363
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.shared_expert.shared_down",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "semantic_key": "topk_routing",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "topk_routing",
+   "semantic": "MoeGatingTopKHash",
+   "code_ref": "modeling_deepseek.py:444",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    359
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.topk_routing",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "semantic_key": "dispatch",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "dispatch",
+   "semantic": "MoeDistributeDispatchV2",
+   "code_ref": "modeling_deepseek.py:494",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    360
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.dispatch",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "semantic_key": "routed_experts",
+   "node_kind": "module",
+   "metric_scope": "aggregate",
+   "name": "routed_experts",
+   "semantic": "routed experts GroupedMatmul (W8A8)",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.routed_experts",
+   "child_ids": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down"
+   ]
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "semantic_key": "gate_up",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "gate_up",
+   "semantic": "expert gate_up GroupedMatmul",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    362
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.routed_experts.gate_up",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "semantic_key": "activation",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "activation",
+   "semantic": "DequantSwigluQuant",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    364
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.routed_experts.activation",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "semantic_key": "down",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "down",
+   "semantic": "expert down GroupedMatmul",
+   "code_ref": "modeling_deepseek.py:474",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    365
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.routed_experts.down",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "semantic_key": "combine",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "combine",
+   "semantic": "MoeDistributeCombineV2",
+   "code_ref": "modeling_deepseek.py:494",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    366
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source_path": "structures.DeepseekV3MTPLayer.mlp.combine",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "semantic_key": "shared_head_norm",
+   "node_kind": "op",
+   "metric_scope": "all_observed_instances",
+   "name": "shared_head_norm",
+   "semantic": "shared head norm (InplaceAddRmsNorm, fused residual + final norm)",
+   "code_ref": "modeling_deepseek.py:1688",
+   "instance_indices": [
+    61
+   ],
+   "invocation_count": 3,
+   "op_indices": [
+    367
+   ],
+   "parent_id": "model/ds3.2/DeepseekV3MTPLayer",
+   "source_path": "structures.DeepseekV3MTPLayer.shared_head_norm",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/runtime/step_start_init",
+   "semantic_key": "step_start_init",
+   "node_kind": "runtime_auxiliary",
+   "metric_scope": "direct",
+   "name": "step_start_init",
+   "semantic": "step init: mask construction + param update + HcomAllGather",
+   "code_ref": "modeling_deepseek.py:1502",
+   "instance_indices": [],
+   "op_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "parent_id": "model/ds3.2/runtime",
+   "source_path": "runtime_auxiliary.step_start_init",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_main",
+   "semantic_key": "spec_token_verify_main",
+   "node_kind": "runtime_auxiliary",
+   "metric_scope": "direct",
+   "name": "spec_token_verify_main",
+   "semantic": "speculative token verification between main model and MTP (ArgMax + ConcatD + token compare + param update)",
+   "code_ref": "modeling_deepseek.py:2068",
+   "instance_indices": [],
+   "op_indices": [
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287,
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    306,
+    307
+   ],
+   "parent_id": "model/ds3.2/runtime",
+   "source_path": "runtime_auxiliary.spec_token_verify_main",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "semantic_key": "spec_token_verify_mtp_0",
+   "node_kind": "runtime_auxiliary",
+   "metric_scope": "direct",
+   "name": "spec_token_verify_mtp_0",
+   "semantic": "spec token verify between MTP iter 0 and iter 1",
+   "code_ref": "modeling_deepseek.py:2068",
+   "instance_indices": [],
+   "op_indices": [
+    375,
+    376,
+    377,
+    378,
+    379,
+    380,
+    381,
+    382,
+    383,
+    384,
+    385,
+    386,
+    387,
+    388,
+    389
+   ],
+   "parent_id": "model/ds3.2/runtime",
+   "source_path": "runtime_auxiliary.spec_token_verify_mtp_0",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "semantic_key": "spec_token_verify_mtp_1",
+   "node_kind": "runtime_auxiliary",
+   "metric_scope": "direct",
+   "name": "spec_token_verify_mtp_1",
+   "semantic": "spec token verify between MTP iter 1 and iter 2",
+   "code_ref": "modeling_deepseek.py:2068",
+   "instance_indices": [],
+   "op_indices": [
+    458,
+    459,
+    460,
+    461,
+    462,
+    463,
+    464,
+    465,
+    466,
+    467,
+    468,
+    469,
+    470,
+    471,
+    472,
+    473
+   ],
+   "parent_id": "model/ds3.2/runtime",
+   "source_path": "runtime_auxiliary.spec_token_verify_mtp_1",
+   "child_ids": []
+  },
+  {
+   "node_id": "model/ds3.2/runtime/final_sampling",
+   "semantic_key": "final_sampling",
+   "node_kind": "runtime_auxiliary",
+   "metric_scope": "direct",
+   "name": "final_sampling",
+   "semantic": "final argmax sampling + token assembly",
+   "code_ref": "modeling_deepseek.py:2068",
+   "instance_indices": [],
+   "op_indices": [
+    542,
+    543,
+    544,
+    545,
+    546,
+    547
+   ],
+   "parent_id": "model/ds3.2/runtime",
+   "source_path": "runtime_auxiliary.final_sampling",
+   "child_ids": []
+  }
+ ]
+}

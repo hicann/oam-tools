@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "model_name": "models",
+  "adapter": "deepseek",
+  "config_class": "DeepseekV3Config",
+  "weights_config": null,
+  "declared_model_path": null,
+  "source_of_truth": [
+    "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/configuration_deepseek.py:1",
+    "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/modeling_deepseek.py:1"
+  ],
+  "num_main_layers": 61,
+  "layer_groups": [
+    {
+      "type": "DeepseekV3DecoderLayer_dense",
+      "classification": "dense",
+      "model_layer_indices": [
+        0,
+        1,
+        2
+      ],
+      "predicate": "layer_idx < first_k_dense_replace (3)",
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/modeling_deepseek.py:1430",
+      "confidence": "high"
+    },
+    {
+      "type": "DeepseekV3DecoderLayer_moe",
+      "classification": "moe",
+      "model_layer_range": [
+        3,
+        60
+      ],
+      "predicate": "layer_idx >= first_k_dense_replace (3)",
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/modeling_deepseek.py:1430",
+      "confidence": "high"
+    }
+  ],
+  "prediction_modules": [
+    {
+      "type": "DeepseekV3DecoderLayer_mtp",
+      "learned_module_count": 1,
+      "model_layer_indices": [
+        61
+      ],
+      "count_config_key": "num_nextn_predict_layers",
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/modeling_deepseek.py:1688",
+      "confidence": "high"
+    }
+  ],
+  "facts": [
+    {
+      "key": "num_hidden_layers",
+      "value": 61,
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/configuration_deepseek.py:123",
+      "method": "ast_default_arg",
+      "confidence": "low"
+    },
+    {
+      "key": "num_nextn_predict_layers",
+      "value": 1,
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/configuration_deepseek.py:124",
+      "method": "ast_default_arg",
+      "confidence": "low"
+    },
+    {
+      "key": "first_k_dense_replace",
+      "value": 3,
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/configuration_deepseek.py:141",
+      "method": "ast_default_arg",
+      "confidence": "low"
+    },
+    {
+      "key": "n_routed_experts",
+      "value": 256,
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/configuration_deepseek.py:128",
+      "method": "ast_default_arg",
+      "confidence": "low"
+    },
+    {
+      "key": "main_layer_construction",
+      "value": "range(num_hidden_layers)",
+      "source_ref": "../../../../perf-skills/perf-breakdown-skill_1160-1/run_1/ds3.2/model/models/modeling_deepseek.py:1551",
+      "method": "ast_range_expr",
+      "confidence": "high"
+    }
+  ],
+  "evidence_gaps": [
+    "checkpoint config.json 不可达（model_path=未在 YAML 中声明）：以下数值来自 Python 默认参数，可能与实际权重不符"
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "reviewed_at": "2026-08-07T01:25:13.684882+00:00",
+  "reviewer": "AI agent after source-and-trace review (re-review: residual branches added to structures)",
+  "artifacts": {
+    "analysis_config": {
+      "path": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2-fix/work/analysis_config_v2.json",
+      "sha256": "dfcf752d45044a1b7f3cb9909a72b46b8f9c2272fbc8bd3bf8eee2ee56ea074f"
+    },
+    "raw_ops": {
+      "path": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2-fix/work/raw_ops.json",
+      "sha256": "619de96b1348163c4aa79d06a8687b341a57fe9426cf055d8edfd46c432eb3f0"
+    },
+    "model_manifest": {
+      "path": "/mnt/workspace/gitCode/imagination/html/8_6final/ds3.2/work/model_manifest.json",
+      "sha256": "cc5305b245597081e783673947d1a01d8b8f23bbbc7dbce1eca080eb12cbe97f"
+    }
+  },
+  "source_evidence": [
+    {
+      "source_ref": "modeling_deepseek.py:1446-1495",
+      "explanation": "DeepseekV3DecoderLayer.forward: input_layernorm(past_residual) -> self_attn -> post_attention_layernorm(residual) -> mlp (dense or MoE). Layer 0 uses standalone RmsNorm (past_residual=None); layers 1+ use InplaceAddRmsNorm fusing prev residual. Matches trace: L1 [61..94], L3 [129..170]."
+    },
+    {
+      "source_ref": "modeling_deepseek.py:673-982",
+      "explanation": "DeepseekIndexerAttention.forward_absorb: MLA absorbed mode with mla_prolog (q/k/v low-rank), LightningIndexer quant + KV cache index, KvQuantSparseFlashAttention, kv_b_absorb, o_proj. 9 MlaPrologV3 in trace = 6 main + 3 MTP."
+    },
+    {
+      "source_ref": "modeling_deepseek.py:198-510",
+      "explanation": "DeepseekV3MoE.forward: gate init routing -> shared expert (concurrent) -> topk routing -> dispatch (MoeDistributeDispatchV2 AllToAll) -> routed experts (GroupedMatmul w13 + DequantSwigluQuant + GroupedMatmul w2) -> combine (MoeDistributeCombineV2 AllToAll). 6 MoeGatingTopKHash = 3 main MoE + 3 MTP."
+    },
+    {
+      "source_ref": "modeling_deepseek.py:1688-1740",
+      "explanation": "DeepseekV3ModelMTPLayer.forward: invokes decoder layer at mtp_start_layer_idx + mtp_layer_idx (layer 61). 3 invocations (next_n=3) with model_layer_index=61, invocation_index 0/1/2. Each iter: preprocessing (embed + eh_proj) + decoder body + shared_head_norm + lm_head."
+    },
+    {
+      "source_ref": "modeling_deepseek.py:1942-2068",
+      "explanation": "DeepseekV3ForCausalLM.forward_lm_head: vocab proj + TP AllGather + AllToAll + logits cast. Main lm_head at ops 256-262; MTP lm_head at 368-374, 451-457, 535-541 (3 iterations)."
+    }
+  ],
+  "checks": [
+    {
+      "id": "source_model_identity",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "manifest.config_class=DeepseekV3Config, adapter=deepseek, source_of_truth=[configuration_deepseek.py, modeling_deepseek.py]; config.model_name=ds3.2; same source files read. Same model and variant.",
+          "source_ref": "configuration_deepseek.py:1",
+          "config_path": "$.architecture.source_of_truth"
+        }
+      ]
+    },
+    {
+      "id": "module_inventory_complete",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "All modules present: embedding (stages.embedding), 3 dense decoder layers (L0-2), 3 MoE decoder layers (L3-5), main_final_norm, lm_head, 3 MTP iterations (model_layer_index=61, next_n=3) with preprocessing + body + lm_head. manifest declares 61 main + 1 MTP module; trace observes 6 main + 3 MTP invocations (rank_local slice).",
+          "source_ref": "modeling_deepseek.py:1502-1551",
+          "config_path": "$.stages"
+        }
+      ]
+    },
+    {
+      "id": "dataflow_edges_complete",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "Decoder forward order (input_layernorm -> attn -> post_attn_norm -> mlp) matches trace for dense L1 [61,62..91,92..94] and MoE L3 [129,130..159,160..170]. MTP iter 0: preprocessing [308..324] -> body [325..367] -> lm_head [368..374]. Main: embedding [17..26] -> 6 layers -> final_norm [255] -> lm_head [256..262].",
+          "source_ref": "modeling_deepseek.py:1465-1494",
+          "op_indices": [
+            61,
+            91,
+            129,
+            159,
+            255,
+            325,
+            367
+          ]
+        }
+      ]
+    },
+    {
+      "id": "branch_topology_correct",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "structures[*].branches now declare the residual topology machine-readably. DeepseekV3DecoderLayer.forward: hidden,residual=input_layernorm(hidden,past_residual) at 1465 forks the residual; self_attn (1468) is bypassed; hidden,residual=post_attention_layernorm(hidden,residual) at 1485 rejoins it -> attn_residual input_layernorm->post_attention_layernorm. mlp (1487/1489) is bypassed and outputs=(residual,hidden) at 1494 hands the residual to the next layer past_residual -> mlp_residual post_attention_layernorm->input_layernorm. MTP reuses the same DeepseekV3DecoderLayer (2465 ModuleDict of DeepseekV3DecoderLayer), so its internal branches are identical; only the sink differs -- DeepseekV3ModelMTPLayer consumes the returned residual at shared_head_norm(hidden_states,residual) (2543), so the MTP mlp_residual output is shared_head_norm, not a next layer. No branch asserts a skip over an empty span. MTP sink verified separately at modeling_deepseek.py:2543.",
+          "source_ref": "modeling_deepseek.py:1465-1494",
+          "op_indices": [
+            27,
+            61,
+            62,
+            85,
+            87,
+            89,
+            91,
+            95,
+            129,
+            159,
+            161,
+            163,
+            167,
+            171,
+            213,
+            255,
+            367,
+            450,
+            534
+          ]
+        }
+      ]
+    },
+    {
+      "id": "residual_paths_correct",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "Two residual junctions per layer, both fused (no standalone Add kernel exists in this capture, by design). (1) input_layernorm: InplaceAddRmsNorm fuses previous-layer residual with this layer entry norm -- ops 61/95/129/171/213; layer 0 is the exception and uses a standalone RmsNorm at op 27 because past_residual is None. (2) post_attention_layernorm: AddRmsNormDynamicQuant (dense, ops 91/125) and AddRmsNorm_3/AddRmsNormCast (MoE, op 159). L5 has no next layer, so its second residual fuses into the model final norm InplaceAddRmsNorm at op 255. MTP tail: InplaceAddRmsNorm at ops 367/450/534 = shared_head_norm. 6 layers x 2 junctions = 12, all accounted. MTP sink verified separately at modeling_deepseek.py:2543.",
+          "source_ref": "modeling_deepseek.py:1465-1494",
+          "op_indices": [
+            27,
+            61,
+            91,
+            95,
+            125,
+            129,
+            159,
+            171,
+            213,
+            255,
+            367,
+            450,
+            534
+          ]
+        }
+      ]
+    },
+    {
+      "id": "layer_boundaries_correct",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "6 main layers contiguous: L0[27-60], L1[61-94], L2[95-128] (34 ops each, dense); L3[129-170], L4[171-212], L5[213-254] (42 ops each, MoE). 3 MTP body iterations: [325-367], [408-450], [492-534] (43 ops each). Boundaries confirmed by 9 MlaPrologV3 anchors and 9 InplaceAddRmsNorm. Coverage 357 model + 92 stages + 99 runtime = 548, no overlap.",
+          "source_ref": "modeling_deepseek.py:1415-1495",
+          "op_indices": [
+            27,
+            61,
+            95,
+            129,
+            171,
+            213,
+            325,
+            408,
+            492
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tail_stages_correct",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "main_final_norm = InplaceAddRmsNorm op 255 (fused layer 5 residual + final norm). lm_head = ops 256-262 (TP AllGather + vocab proj MatMul + AllToAll + reshape + logits cast). MTP lm_head = ops 368-374/451-457/535-541 (3 iterations, stage_indices). final_sampling = ops 542-547 (ArgMaxV2 + ConcatD + token assembly) -> runtime_auxiliary.",
+          "source_ref": "modeling_deepseek.py:1942",
+          "config_path": "$.stages",
+          "op_indices": [
+            255,
+            256,
+            262,
+            368,
+            535,
+            542
+          ]
+        }
+      ]
+    },
+    {
+      "id": "runtime_nodes_observed",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "runtime_auxiliary.step_start_init ops [0-16] = mask construction + UpdateModelParam + HcomAllGather (actually in trace step 15). spec_token_verify_main ops [263-307] = ArgMaxV2 + ConcatD + token compare (45 ops, between main lm_head and MTP). spec_token_verify_mtp ops [375-389, 458-473] = inter-MTP-iteration verification. final_sampling ops [542-547] = ArgMaxV2 + ConcatD. All present in trace, not fabricated.",
+          "config_path": "$.runtime_auxiliary",
+          "op_indices": [
+            0,
+            263,
+            375,
+            458,
+            542
+          ]
+        }
+      ]
+    },
+    {
+      "id": "code_refs_resolve",
+      "status": "passed",
+      "evidence": [
+        {
+          "explanation": "Spot-checked: modeling_deepseek.py:1415=DeepseekV3DecoderLayer, :673=DeepseekIndexerAttention, :937=forward_absorb, :1465=input_layernorm call, :1485=post_attention_layernorm, :72=DeepseekV3DenseMLP, :198=DeepseekV3MoE, :444=forward_gate_init_routing, :474=forward_expert, :494=forward_combine_double_routing, :1688=DeepseekV3ModelMTPLayer, :1942=forward_lm_head. All valid.",
+          "source_ref": "modeling_deepseek.py:1415",
+          "config_path": "$.structures"
+        }
+      ]
+    }
+  ],
+  "findings": []
+}

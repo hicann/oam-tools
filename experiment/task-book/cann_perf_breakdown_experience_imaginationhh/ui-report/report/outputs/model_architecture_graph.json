@@ -1,0 +1,3733 @@
+{
+ "schema_version": "model_architecture_graph.v1",
+ "metadata": {
+  "modelId": "ds3.2",
+  "reportId": "ds3.2/from-breakdown",
+  "extractionScope": "hybrid",
+  "sourceScope": "declared_structure",
+  "backendScope": 15,
+  "sourceNodeCount": 69,
+  "backendNodeCount": 67
+ },
+ "roots": [
+  {
+   "id": "section/source_architecture",
+   "label": "Source architecture",
+   "kind": "section",
+   "type": "section",
+   "origin": "synthetic",
+   "synthetic": true,
+   "dataState": "source_only",
+   "selectable": false,
+   "children": [
+    {
+     "id": "model/ds3.2/stages/embedding",
+     "label": "embedding",
+     "kind": "op",
+     "type": "op",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1502"
+     ],
+     "attributes": {
+      "semantic": "vocab-sharded token embedding (embed_tp=16) + rotary cos/sin",
+      "metricScope": "single_instance",
+      "semanticKey": "embedding"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/stages/embedding",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/stages/main_final_norm",
+     "label": "main_final_norm",
+     "kind": "op",
+     "type": "op",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1502"
+     ],
+     "attributes": {
+      "semantic": "final RMSNorm before lm_head (InplaceAddRmsNorm)",
+      "metricScope": "single_instance",
+      "semanticKey": "main_final_norm"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/stages/main_final_norm",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/stages/lm_head",
+     "label": "lm_head",
+     "kind": "op",
+     "type": "op",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1942"
+     ],
+     "attributes": {
+      "semantic": "lm_head vocab proj + TP allgather + AllToAll + logits cast",
+      "metricScope": "single_instance",
+      "semanticKey": "lm_head"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/stages/lm_head",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/stages/mtp_preprocessing",
+     "label": "mtp_preprocessing",
+     "kind": "op",
+     "type": "op",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1704"
+     ],
+     "attributes": {
+      "semantic": "MTP per-iter preprocessing: weight_allgather + embed + rotary + eh_proj (3 iterations, stage_indices=[0,1,2])",
+      "metricScope": "single_instance",
+      "semanticKey": "mtp_preprocessing"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/stages/mtp_preprocessing",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/stages/mtp_lm_head",
+     "label": "mtp_lm_head",
+     "kind": "op",
+     "type": "op",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1942"
+     ],
+     "attributes": {
+      "semantic": "MTP per-iter lm_head: vocab proj + TP allgather + AllToAll + logits cast (3 iterations, stage_indices=[0,1,2])",
+      "metricScope": "single_instance",
+      "semanticKey": "mtp_lm_head"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/stages/mtp_lm_head",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+     "label": "DeepseekV3DecoderLayer_dense",
+     "kind": "module",
+     "type": "module",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1415"
+     ],
+     "attributes": {
+      "semantic": "dense decoder layer: MLA attention + dense MLP",
+      "metricScope": "aggregate",
+      "semanticKey": "DeepseekV3DecoderLayer_dense"
+     },
+     "children": [
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+       "label": "input_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1465"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm (fused with prev residual via InplaceAddRmsNorm; standalone for layer 0)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "input_layernorm"
+       },
+       "children": [],
+       "repeatCount": 3,
+       "instanceIndices": [
+        0,
+        1,
+        2
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+       "label": "self_attn",
+       "kind": "module",
+       "type": "module",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:673"
+       ],
+       "attributes": {
+        "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer sparse-KV, KvQuantSparseFlashAttention)",
+        "metricScope": "aggregate",
+        "semanticKey": "self_attn"
+       },
+       "children": [
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+         "label": "mla_prolog",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "MLA prolog (q/k/v low-rank decomposition)",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "mla_prolog"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          0,
+          1,
+          2
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+         "label": "indexer",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "LightningIndexer quant + KV cache index",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "indexer"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          0,
+          1,
+          2
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+         "label": "attn_core",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "KvQuantSparseFlashAttention",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "attn_core"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          0,
+          1,
+          2
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+         "label": "kv_b_absorb",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "kv_b weight absorption",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "kv_b_absorb"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          0,
+          1,
+          2
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+         "label": "o_proj",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "output projection",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "o_proj"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          0,
+          1,
+          2
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+         "mappingKind": "exact"
+        }
+       ],
+       "repeatCount": 3,
+       "instanceIndices": [
+        0,
+        1,
+        2
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+       "mappingKind": "aggregate"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+       "label": "post_attention_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1485"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm (fused with residual)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "post_attention_layernorm"
+       },
+       "children": [],
+       "repeatCount": 3,
+       "instanceIndices": [
+        0,
+        1,
+        2
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+       "label": "mlp",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:72"
+       ],
+       "attributes": {
+        "semantic": "dense MLP (gate_proj + up_proj + down_proj, W8A8 quantized)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "mlp"
+       },
+       "children": [],
+       "repeatCount": 3,
+       "instanceIndices": [
+        0,
+        1,
+        2
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+       "mappingKind": "exact"
+      }
+     ],
+     "repeatCount": 3,
+     "instanceIndices": [
+      0,
+      1,
+      2
+     ],
+     "defaultCollapsed": false,
+     "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+     "mappingKind": "aggregate",
+     "structureKey": "DeepseekV3DecoderLayer_dense"
+    },
+    {
+     "id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+     "label": "DeepseekV3DecoderLayer_moe",
+     "kind": "module",
+     "type": "module",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1415"
+     ],
+     "attributes": {
+      "semantic": "MoE decoder layer: MLA attention + sparse MoE (256 experts, top-8, EP) + shared expert",
+      "metricScope": "aggregate",
+      "semanticKey": "DeepseekV3DecoderLayer_moe"
+     },
+     "children": [
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+       "label": "input_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1465"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm (fused with prev residual)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "input_layernorm"
+       },
+       "children": [],
+       "repeatCount": 3,
+       "instanceIndices": [
+        3,
+        4,
+        5
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+       "label": "self_attn",
+       "kind": "module",
+       "type": "module",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:673"
+       ],
+       "attributes": {
+        "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer sparse-KV, KvQuantSparseFlashAttention)",
+        "metricScope": "aggregate",
+        "semanticKey": "self_attn"
+       },
+       "children": [
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+         "label": "mla_prolog",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "MLA prolog",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "mla_prolog"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+         "label": "indexer",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "LightningIndexer quant + KV cache index",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "indexer"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+         "label": "attn_core",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "KvQuantSparseFlashAttention",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "attn_core"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+         "label": "kv_b_absorb",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "kv_b weight absorption",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "kv_b_absorb"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+         "label": "o_proj",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "output projection",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "o_proj"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+         "mappingKind": "exact"
+        }
+       ],
+       "repeatCount": 3,
+       "instanceIndices": [
+        3,
+        4,
+        5
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+       "mappingKind": "aggregate"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+       "label": "post_attention_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1485"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm (fused with residual)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "post_attention_layernorm"
+       },
+       "children": [],
+       "repeatCount": 3,
+       "instanceIndices": [
+        3,
+        4,
+        5
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+       "label": "mlp",
+       "kind": "module",
+       "type": "module",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:198"
+       ],
+       "attributes": {
+        "semantic": "sparse MoE (256 routed experts top-8 + 1 shared expert, W8A8, EP double-routing)",
+        "metricScope": "aggregate",
+        "semanticKey": "mlp"
+       },
+       "children": [
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+         "label": "gate",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:444"
+         ],
+         "attributes": {
+          "semantic": "router gate projection",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "gate"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+         "label": "shared_expert",
+         "kind": "module",
+         "type": "module",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:143"
+         ],
+         "attributes": {
+          "semantic": "shared expert (W8A8)",
+          "metricScope": "aggregate",
+          "semanticKey": "shared_expert"
+         },
+         "children": [
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+           "label": "shared_quant",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:187"
+           ],
+           "attributes": {
+            "semantic": "shared expert quant",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_quant"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+           "label": "shared_gate_up",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert gate_up proj",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_gate_up"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+           "label": "shared_activation",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert activation",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_activation"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+           "label": "shared_down",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert down proj",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_down"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+           "mappingKind": "exact"
+          }
+         ],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+         "mappingKind": "aggregate"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+         "label": "topk_routing",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:444"
+         ],
+         "attributes": {
+          "semantic": "MoeGatingTopKHash (top-8 selection)",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "topk_routing"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+         "label": "dispatch",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:494"
+         ],
+         "attributes": {
+          "semantic": "MoeDistributeDispatchV2 (EP AllToAll dispatch)",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "dispatch"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+         "label": "routed_experts",
+         "kind": "module",
+         "type": "module",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:474"
+         ],
+         "attributes": {
+          "semantic": "routed experts GroupedMatmul (W8A8)",
+          "metricScope": "aggregate",
+          "semanticKey": "routed_experts"
+         },
+         "children": [
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+           "label": "gate_up",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "expert gate_up GroupedMatmul",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "gate_up"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+           "label": "activation",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "DequantSwigluQuant",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "activation"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+           "label": "down",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "expert down GroupedMatmul",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "down"
+           },
+           "children": [],
+           "repeatCount": 3,
+           "instanceIndices": [
+            3,
+            4,
+            5
+           ],
+           "defaultCollapsed": false,
+           "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+           "mappingKind": "exact"
+          }
+         ],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+         "mappingKind": "aggregate"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+         "label": "combine",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:494"
+         ],
+         "attributes": {
+          "semantic": "MoeDistributeCombineV2 (EP AllToAll combine)",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "combine"
+         },
+         "children": [],
+         "repeatCount": 3,
+         "instanceIndices": [
+          3,
+          4,
+          5
+         ],
+         "defaultCollapsed": false,
+         "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+         "mappingKind": "exact"
+        }
+       ],
+       "repeatCount": 3,
+       "instanceIndices": [
+        3,
+        4,
+        5
+       ],
+       "defaultCollapsed": false,
+       "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+       "mappingKind": "aggregate"
+      }
+     ],
+     "repeatCount": 58,
+     "instanceIndices": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60
+     ],
+     "defaultCollapsed": false,
+     "observedInstanceIndices": [
+      3,
+      4,
+      5
+     ],
+     "unobservedInstanceIndices": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60
+     ],
+     "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+     "mappingKind": "aggregate",
+     "structureKey": "DeepseekV3DecoderLayer_moe"
+    },
+    {
+     "id": "model/ds3.2/DeepseekV3MTPLayer",
+     "label": "DeepseekV3MTPLayer",
+     "kind": "module",
+     "type": "module",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1688"
+     ],
+     "attributes": {
+      "semantic": "MTP decoder layer body: MLA attention + MoE MLP + shared_head_norm (3 invocations, next_n=3)",
+      "metricScope": "aggregate",
+      "semanticKey": "DeepseekV3MTPLayer"
+     },
+     "children": [
+      {
+       "id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+       "label": "input_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1465"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "input_layernorm"
+       },
+       "children": [],
+       "instanceIndices": [
+        61
+       ],
+       "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+       "label": "self_attn",
+       "kind": "module",
+       "type": "module",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:673"
+       ],
+       "attributes": {
+        "semantic": "DeepseekIndexerAttention (MLA absorbed, LightningIndexer, KvQuantSparseFlashAttention)",
+        "metricScope": "aggregate",
+        "semanticKey": "self_attn"
+       },
+       "children": [
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+         "label": "mla_prolog",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "MLA prolog",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "mla_prolog"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+         "label": "indexer",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "LightningIndexer quant + KV cache index",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "indexer"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+         "label": "attn_core",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "KvQuantSparseFlashAttention",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "attn_core"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+         "label": "kv_b_absorb",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:937"
+         ],
+         "attributes": {
+          "semantic": "kv_b weight absorption",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "kv_b_absorb"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+         "label": "o_proj",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:673"
+         ],
+         "attributes": {
+          "semantic": "output projection",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "o_proj"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+         "mappingKind": "exact"
+        }
+       ],
+       "instanceIndices": [
+        61
+       ],
+       "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+       "mappingKind": "aggregate"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+       "label": "post_attention_layernorm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1485"
+       ],
+       "attributes": {
+        "semantic": "RMSNorm (fused with residual)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "post_attention_layernorm"
+       },
+       "children": [],
+       "instanceIndices": [
+        61
+       ],
+       "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+       "mappingKind": "exact"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+       "label": "mlp",
+       "kind": "module",
+       "type": "module",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:198"
+       ],
+       "attributes": {
+        "semantic": "sparse MoE (256 routed + 1 shared, W8A8, EP double-routing)",
+        "metricScope": "aggregate",
+        "semanticKey": "mlp"
+       },
+       "children": [
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+         "label": "gate",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:444"
+         ],
+         "attributes": {
+          "semantic": "router gate projection",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "gate"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+         "label": "shared_expert",
+         "kind": "module",
+         "type": "module",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:143"
+         ],
+         "attributes": {
+          "semantic": "shared expert (W8A8)",
+          "metricScope": "aggregate",
+          "semanticKey": "shared_expert"
+         },
+         "children": [
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+           "label": "shared_quant",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:187"
+           ],
+           "attributes": {
+            "semantic": "shared expert quant",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_quant"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+           "label": "shared_gate_up",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert gate_up proj",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_gate_up"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+           "label": "shared_activation",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert activation",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_activation"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+           "label": "shared_down",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:182"
+           ],
+           "attributes": {
+            "semantic": "shared expert down proj",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "shared_down"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+           "mappingKind": "exact"
+          }
+         ],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+         "mappingKind": "aggregate"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+         "label": "topk_routing",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:444"
+         ],
+         "attributes": {
+          "semantic": "MoeGatingTopKHash",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "topk_routing"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+         "label": "dispatch",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:494"
+         ],
+         "attributes": {
+          "semantic": "MoeDistributeDispatchV2",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "dispatch"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+         "mappingKind": "exact"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+         "label": "routed_experts",
+         "kind": "module",
+         "type": "module",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:474"
+         ],
+         "attributes": {
+          "semantic": "routed experts GroupedMatmul (W8A8)",
+          "metricScope": "aggregate",
+          "semanticKey": "routed_experts"
+         },
+         "children": [
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+           "label": "gate_up",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "expert gate_up GroupedMatmul",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "gate_up"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+           "label": "activation",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "DequantSwigluQuant",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "activation"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+           "mappingKind": "exact"
+          },
+          {
+           "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+           "label": "down",
+           "kind": "op",
+           "type": "op",
+           "origin": "hybrid",
+           "dataState": "mapped",
+           "selectable": true,
+           "sourceRefs": [
+            "modeling_deepseek.py:474"
+           ],
+           "attributes": {
+            "semantic": "expert down GroupedMatmul",
+            "metricScope": "all_observed_instances",
+            "semanticKey": "down"
+           },
+           "children": [],
+           "instanceIndices": [
+            61
+           ],
+           "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+           "mappingKind": "exact"
+          }
+         ],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+         "mappingKind": "aggregate"
+        },
+        {
+         "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+         "label": "combine",
+         "kind": "op",
+         "type": "op",
+         "origin": "hybrid",
+         "dataState": "mapped",
+         "selectable": true,
+         "sourceRefs": [
+          "modeling_deepseek.py:494"
+         ],
+         "attributes": {
+          "semantic": "MoeDistributeCombineV2",
+          "metricScope": "all_observed_instances",
+          "semanticKey": "combine"
+         },
+         "children": [],
+         "instanceIndices": [
+          61
+         ],
+         "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+         "mappingKind": "exact"
+        }
+       ],
+       "instanceIndices": [
+        61
+       ],
+       "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+       "mappingKind": "aggregate"
+      },
+      {
+       "id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+       "label": "shared_head_norm",
+       "kind": "op",
+       "type": "op",
+       "origin": "hybrid",
+       "dataState": "mapped",
+       "selectable": true,
+       "sourceRefs": [
+        "modeling_deepseek.py:1688"
+       ],
+       "attributes": {
+        "semantic": "shared head norm (InplaceAddRmsNorm, fused residual + final norm)",
+        "metricScope": "all_observed_instances",
+        "semanticKey": "shared_head_norm"
+       },
+       "children": [],
+       "instanceIndices": [
+        61
+       ],
+       "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+       "mappingKind": "exact"
+      }
+     ],
+     "instanceIndices": [
+      61
+     ],
+     "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer",
+     "mappingKind": "aggregate",
+     "structureKey": "DeepseekV3MTPLayer"
+    }
+   ],
+   "sourceRefs": [],
+   "attributes": {}
+  },
+  {
+   "id": "section/runtime_auxiliary",
+   "label": "Runtime auxiliary",
+   "kind": "section",
+   "type": "section",
+   "origin": "synthetic",
+   "synthetic": true,
+   "dataState": "runtime",
+   "selectable": false,
+   "children": [
+    {
+     "id": "model/ds3.2/runtime/step_start_init",
+     "label": "step_start_init",
+     "kind": "op",
+     "type": "runtime_auxiliary",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:1502"
+     ],
+     "attributes": {
+      "semantic": "step init: mask construction + param update + HcomAllGather",
+      "metricScope": "direct",
+      "semanticKey": "step_start_init"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/runtime/step_start_init",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/runtime/spec_token_verify_main",
+     "label": "spec_token_verify_main",
+     "kind": "op",
+     "type": "runtime_auxiliary",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:2068"
+     ],
+     "attributes": {
+      "semantic": "speculative token verification between main model and MTP (ArgMax + ConcatD + token compare + param update)",
+      "metricScope": "direct",
+      "semanticKey": "spec_token_verify_main"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/runtime/spec_token_verify_main",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+     "label": "spec_token_verify_mtp_0",
+     "kind": "op",
+     "type": "runtime_auxiliary",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:2068"
+     ],
+     "attributes": {
+      "semantic": "spec token verify between MTP iter 0 and iter 1",
+      "metricScope": "direct",
+      "semanticKey": "spec_token_verify_mtp_0"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+     "label": "spec_token_verify_mtp_1",
+     "kind": "op",
+     "type": "runtime_auxiliary",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:2068"
+     ],
+     "attributes": {
+      "semantic": "spec token verify between MTP iter 1 and iter 2",
+      "metricScope": "direct",
+      "semanticKey": "spec_token_verify_mtp_1"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+     "mappingKind": "exact"
+    },
+    {
+     "id": "model/ds3.2/runtime/final_sampling",
+     "label": "final_sampling",
+     "kind": "op",
+     "type": "runtime_auxiliary",
+     "origin": "hybrid",
+     "dataState": "mapped",
+     "selectable": true,
+     "sourceRefs": [
+      "modeling_deepseek.py:2068"
+     ],
+     "attributes": {
+      "semantic": "final argmax sampling + token assembly",
+      "metricScope": "direct",
+      "semanticKey": "final_sampling"
+     },
+     "children": [],
+     "backendNodeId": "model/ds3.2/runtime/final_sampling",
+     "mappingKind": "exact"
+    }
+   ],
+   "sourceRefs": [],
+   "attributes": {}
+  }
+ ],
+ "edges": [
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog->model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "mla_prolog",
+    "to": "indexer"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer->model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "indexer",
+    "to": "attn_core"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core->model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "attn_core",
+    "to": "kv_b_absorb"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb->model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "kv_b_absorb",
+    "to": "o_proj"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm->model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "input_layernorm",
+    "to": "self_attn"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn->model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "self_attn",
+    "to": "post_attention_layernorm"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm->model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "post_attention_layernorm",
+    "to": "mlp"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_dense",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog->model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "mla_prolog",
+    "to": "indexer"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer->model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "indexer",
+    "to": "attn_core"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core->model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "attn_core",
+    "to": "kv_b_absorb"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb->model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "kv_b_absorb",
+    "to": "o_proj"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_quant",
+    "to": "shared_gate_up"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_gate_up",
+    "to": "shared_activation"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_activation",
+    "to": "shared_down"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "gate_up",
+    "to": "activation"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+    "modeling_deepseek.py:474"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "activation",
+    "to": "down"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+    "modeling_deepseek.py:474"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "gate",
+    "to": "shared_expert"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_expert",
+    "to": "topk_routing"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "topk_routing",
+    "to": "dispatch"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "dispatch",
+    "to": "routed_experts"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "routed_experts",
+    "to": "combine"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm->model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "input_layernorm",
+    "to": "self_attn"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn->model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "self_attn",
+    "to": "post_attention_layernorm"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm->model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "post_attention_layernorm",
+    "to": "mlp"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3DecoderLayer_moe",
+    "modeling_deepseek.py:1415"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog->model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "mla_prolog",
+    "to": "indexer"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer->model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "indexer",
+    "to": "attn_core"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core->model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "attn_core",
+    "to": "kv_b_absorb"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb->model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "kv_b_absorb",
+    "to": "o_proj"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "modeling_deepseek.py:673"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant->model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_quant",
+    "to": "shared_gate_up"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up->model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_gate_up",
+    "to": "shared_activation"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation->model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_activation",
+    "to": "shared_down"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+    "modeling_deepseek.py:143"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up->model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "gate_up",
+    "to": "activation"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+    "modeling_deepseek.py:474"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation->model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "activation",
+    "to": "down"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+    "modeling_deepseek.py:474"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/gate->model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "gate",
+    "to": "shared_expert"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert->model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "shared_expert",
+    "to": "topk_routing"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing->model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "topk_routing",
+    "to": "dispatch"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch->model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "dispatch",
+    "to": "routed_experts"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts->model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "routed_experts",
+    "to": "combine"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "modeling_deepseek.py:198"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/input_layernorm->model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "input_layernorm",
+    "to": "self_attn"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer",
+    "modeling_deepseek.py:1688"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/self_attn->model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "self_attn",
+    "to": "post_attention_layernorm"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer",
+    "modeling_deepseek.py:1688"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm->model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "post_attention_layernorm",
+    "to": "mlp"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer",
+    "modeling_deepseek.py:1688"
+   ]
+  },
+  {
+   "id": "activation::model/ds3.2/DeepseekV3MTPLayer/mlp->model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "semanticEdgeType": "activation",
+   "tensor": {
+    "role": "activation",
+    "from": "mlp",
+    "to": "shared_head_norm"
+   },
+   "provenance": [
+    "declared children order in model/ds3.2/DeepseekV3MTPLayer",
+    "modeling_deepseek.py:1688"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3DecoderLayer_dense::model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm->model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": false,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+    "to": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm"
+   },
+   "provenance": [
+    "structures.DeepseekV3DecoderLayer_dense.branches: attn_residual",
+    "modeling_deepseek.py:1465-1485"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3DecoderLayer_dense::model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm->model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": true,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+    "to": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm"
+   },
+   "provenance": [
+    "structures.DeepseekV3DecoderLayer_dense.branches: mlp_residual",
+    "modeling_deepseek.py:1485-1494"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3DecoderLayer_moe::model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm->model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": false,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+    "to": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm"
+   },
+   "provenance": [
+    "structures.DeepseekV3DecoderLayer_moe.branches: attn_residual",
+    "modeling_deepseek.py:1465-1485"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3DecoderLayer_moe::model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm->model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "source": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": true,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+    "to": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm"
+   },
+   "provenance": [
+    "structures.DeepseekV3DecoderLayer_moe.branches: mlp_residual",
+    "modeling_deepseek.py:1485-1494"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3MTPLayer::model/ds3.2/DeepseekV3MTPLayer/input_layernorm->model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": false,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+    "to": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm"
+   },
+   "provenance": [
+    "structures.DeepseekV3MTPLayer.branches: attn_residual",
+    "modeling_deepseek.py:1465-1485"
+   ]
+  },
+  {
+   "id": "residual::DeepseekV3MTPLayer::model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm->model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "source": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "target": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "semanticEdgeType": "residual",
+   "dashed": true,
+   "tag": "residual",
+   "crossInvocation": false,
+   "tensor": {
+    "role": "residual",
+    "from": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+    "to": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm"
+   },
+   "provenance": [
+    "structures.DeepseekV3MTPLayer.branches: mlp_residual",
+    "modeling_deepseek.py:1485-1494"
+   ]
+  }
+ ],
+ "width": 608,
+ "height": 6040,
+ "nodes": [
+  {
+   "id": "model/ds3.2/stages/embedding",
+   "label": "embedding",
+   "kind": "op",
+   "x": 64,
+   "y": 96,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/stages/embedding",
+   "parent": "section/source_architecture",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/stages/main_final_norm",
+   "label": "main_final_norm",
+   "kind": "op",
+   "x": 64,
+   "y": 184,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/stages/main_final_norm",
+   "parent": "section/source_architecture",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/stages/lm_head",
+   "label": "lm_head",
+   "kind": "op",
+   "x": 64,
+   "y": 272,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/stages/lm_head",
+   "parent": "section/source_architecture",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/stages/mtp_preprocessing",
+   "label": "mtp_preprocessing",
+   "kind": "op",
+   "x": 64,
+   "y": 360,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/stages/mtp_preprocessing",
+   "parent": "section/source_architecture",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/stages/mtp_lm_head",
+   "label": "mtp_lm_head",
+   "kind": "op",
+   "x": 64,
+   "y": 448,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/stages/mtp_lm_head",
+   "parent": "section/source_architecture",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "label": "input_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 592,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "label": "mla_prolog",
+   "kind": "op",
+   "x": 112,
+   "y": 736,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "label": "indexer",
+   "kind": "op",
+   "x": 112,
+   "y": 824,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "label": "attn_core",
+   "kind": "op",
+   "x": 112,
+   "y": 912,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "label": "kv_b_absorb",
+   "kind": "op",
+   "x": 112,
+   "y": 1000,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "label": "o_proj",
+   "kind": "op",
+   "x": 112,
+   "y": 1088,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "label": "post_attention_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 1200,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "label": "mlp",
+   "kind": "op",
+   "x": 88,
+   "y": 1288,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "label": "input_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 1456,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "label": "mla_prolog",
+   "kind": "op",
+   "x": 112,
+   "y": 1600,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "label": "indexer",
+   "kind": "op",
+   "x": 112,
+   "y": 1688,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "label": "attn_core",
+   "kind": "op",
+   "x": 112,
+   "y": 1776,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "label": "kv_b_absorb",
+   "kind": "op",
+   "x": 112,
+   "y": 1864,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "label": "o_proj",
+   "kind": "op",
+   "x": 112,
+   "y": 1952,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "label": "post_attention_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 2064,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "label": "gate",
+   "kind": "op",
+   "x": 112,
+   "y": 2208,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "label": "shared_quant",
+   "kind": "op",
+   "x": 136,
+   "y": 2352,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "label": "shared_gate_up",
+   "kind": "op",
+   "x": 136,
+   "y": 2440,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "label": "shared_activation",
+   "kind": "op",
+   "x": 136,
+   "y": 2528,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "label": "shared_down",
+   "kind": "op",
+   "x": 136,
+   "y": 2616,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "label": "topk_routing",
+   "kind": "op",
+   "x": 112,
+   "y": 2728,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "label": "dispatch",
+   "kind": "op",
+   "x": 112,
+   "y": 2816,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "label": "gate_up",
+   "kind": "op",
+   "x": 136,
+   "y": 2960,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "label": "activation",
+   "kind": "op",
+   "x": 136,
+   "y": 3048,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "label": "down",
+   "kind": "op",
+   "x": 136,
+   "y": 3136,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "label": "combine",
+   "kind": "op",
+   "x": 112,
+   "y": 3248,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine",
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "label": "input_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 3440,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "label": "mla_prolog",
+   "kind": "op",
+   "x": 112,
+   "y": 3584,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "label": "indexer",
+   "kind": "op",
+   "x": 112,
+   "y": 3672,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "label": "attn_core",
+   "kind": "op",
+   "x": 112,
+   "y": 3760,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "label": "kv_b_absorb",
+   "kind": "op",
+   "x": 112,
+   "y": 3848,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "label": "o_proj",
+   "kind": "op",
+   "x": 112,
+   "y": 3936,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "label": "post_attention_layernorm",
+   "kind": "op",
+   "x": 88,
+   "y": 4048,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "label": "gate",
+   "kind": "op",
+   "x": 112,
+   "y": 4192,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "label": "shared_quant",
+   "kind": "op",
+   "x": 136,
+   "y": 4336,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "label": "shared_gate_up",
+   "kind": "op",
+   "x": 136,
+   "y": 4424,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "label": "shared_activation",
+   "kind": "op",
+   "x": 136,
+   "y": 4512,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "label": "shared_down",
+   "kind": "op",
+   "x": 136,
+   "y": 4600,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "label": "topk_routing",
+   "kind": "op",
+   "x": 112,
+   "y": 4712,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "label": "dispatch",
+   "kind": "op",
+   "x": 112,
+   "y": 4800,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "label": "gate_up",
+   "kind": "op",
+   "x": 136,
+   "y": 4944,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "label": "activation",
+   "kind": "op",
+   "x": 136,
+   "y": 5032,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "label": "down",
+   "kind": "op",
+   "x": 136,
+   "y": 5120,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "label": "combine",
+   "kind": "op",
+   "x": 112,
+   "y": 5232,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/combine",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "label": "shared_head_norm",
+   "kind": "op",
+   "x": 88,
+   "y": 5344,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm",
+   "parent": "model/ds3.2/DeepseekV3MTPLayer",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/runtime/step_start_init",
+   "label": "step_start_init",
+   "kind": "op",
+   "x": 64,
+   "y": 5568,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/runtime/step_start_init",
+   "parent": "section/runtime_auxiliary",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/runtime/spec_token_verify_main",
+   "label": "spec_token_verify_main",
+   "kind": "op",
+   "x": 64,
+   "y": 5656,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/runtime/spec_token_verify_main",
+   "parent": "section/runtime_auxiliary",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "label": "spec_token_verify_mtp_0",
+   "kind": "op",
+   "x": 64,
+   "y": 5744,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/runtime/spec_token_verify_mtp_0",
+   "parent": "section/runtime_auxiliary",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "label": "spec_token_verify_mtp_1",
+   "kind": "op",
+   "x": 64,
+   "y": 5832,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/runtime/spec_token_verify_mtp_1",
+   "parent": "section/runtime_auxiliary",
+   "typeLabel": "Op"
+  },
+  {
+   "id": "model/ds3.2/runtime/final_sampling",
+   "label": "final_sampling",
+   "kind": "op",
+   "x": 64,
+   "y": 5920,
+   "width": 336,
+   "height": 56,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/runtime/final_sampling",
+   "parent": "section/runtime_auxiliary",
+   "typeLabel": "Op"
+  }
+ ],
+ "clusters": [
+  {
+   "id": "section/source_architecture",
+   "label": "Source architecture",
+   "kind": "section",
+   "x": 40,
+   "y": 40,
+   "width": 528,
+   "height": 5408,
+   "dataState": "source_only",
+   "origin": "synthetic",
+   "selectable": false,
+   "children": [
+    "model/ds3.2/stages/embedding",
+    "model/ds3.2/stages/main_final_norm",
+    "model/ds3.2/stages/lm_head",
+    "model/ds3.2/stages/mtp_preprocessing",
+    "model/ds3.2/stages/mtp_lm_head",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe",
+    "model/ds3.2/DeepseekV3MTPLayer"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": true,
+   "parent": ""
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "label": "DeepseekV3DecoderLayer_dense",
+   "kind": "module",
+   "x": 64,
+   "y": 536,
+   "width": 432,
+   "height": 832,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/input_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/mlp"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "section/source_architecture"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "label": "self_attn",
+   "kind": "module",
+   "x": 88,
+   "y": 680,
+   "width": 384,
+   "height": 488,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/indexer",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3DecoderLayer_dense/self_attn/o_proj"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_dense"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "label": "DeepseekV3DecoderLayer_moe",
+   "kind": "module",
+   "x": 64,
+   "y": 1400,
+   "width": 480,
+   "height": 1952,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/input_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "section/source_architecture"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "label": "self_attn",
+   "kind": "module",
+   "x": 88,
+   "y": 1544,
+   "width": 384,
+   "height": 488,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/indexer",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/self_attn/o_proj"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "label": "mlp",
+   "kind": "module",
+   "x": 88,
+   "y": 2152,
+   "width": 432,
+   "height": 1176,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/gate",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/topk_routing",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/dispatch",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/combine"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "label": "shared_expert",
+   "kind": "module",
+   "x": 112,
+   "y": 2296,
+   "width": 384,
+   "height": 400,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_quant",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_gate_up",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_activation",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/shared_expert/shared_down"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "label": "routed_experts",
+   "kind": "module",
+   "x": 112,
+   "y": 2904,
+   "width": 384,
+   "height": 312,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts",
+   "children": [
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/gate_up",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/activation",
+    "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp/routed_experts/down"
+   ],
+   "nodes": [],
+   "repeat": true,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3DecoderLayer_moe/mlp"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer",
+   "label": "DeepseekV3MTPLayer",
+   "kind": "module",
+   "x": 64,
+   "y": 3384,
+   "width": 480,
+   "height": 2040,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer",
+   "children": [
+    "model/ds3.2/DeepseekV3MTPLayer/input_layernorm",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+    "model/ds3.2/DeepseekV3MTPLayer/post_attention_layernorm",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp",
+    "model/ds3.2/DeepseekV3MTPLayer/shared_head_norm"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "section/source_architecture"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "label": "self_attn",
+   "kind": "module",
+   "x": 88,
+   "y": 3528,
+   "width": 384,
+   "height": 488,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/self_attn",
+   "children": [
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/mla_prolog",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/indexer",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/attn_core",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/kv_b_absorb",
+    "model/ds3.2/DeepseekV3MTPLayer/self_attn/o_proj"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3MTPLayer"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "label": "mlp",
+   "kind": "module",
+   "x": 88,
+   "y": 4136,
+   "width": 432,
+   "height": 1176,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp",
+   "children": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/gate",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/topk_routing",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/dispatch",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/combine"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3MTPLayer"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "label": "shared_expert",
+   "kind": "module",
+   "x": 112,
+   "y": 4280,
+   "width": 384,
+   "height": 400,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert",
+   "children": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_quant",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_gate_up",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_activation",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/shared_expert/shared_down"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp"
+  },
+  {
+   "id": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "label": "routed_experts",
+   "kind": "module",
+   "x": 112,
+   "y": 4888,
+   "width": 384,
+   "height": 312,
+   "dataState": "mapped",
+   "origin": "hybrid",
+   "selectable": true,
+   "backendNodeId": "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts",
+   "children": [
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/gate_up",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/activation",
+    "model/ds3.2/DeepseekV3MTPLayer/mlp/routed_experts/down"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": false,
+   "parent": "model/ds3.2/DeepseekV3MTPLayer/mlp"
+  },
+  {
+   "id": "section/runtime_auxiliary",
+   "label": "Runtime auxiliary",
+   "kind": "section",
+   "x": 40,
+   "y": 5512,
+   "width": 384,
+   "height": 488,
+   "dataState": "runtime",
+   "origin": "synthetic",
+   "selectable": false,
+   "children": [
+    "model/ds3.2/runtime/step_start_init",
+    "model/ds3.2/runtime/spec_token_verify_main",
+    "model/ds3.2/runtime/spec_token_verify_mtp_0",
+    "model/ds3.2/runtime/spec_token_verify_mtp_1",
+    "model/ds3.2/runtime/final_sampling"
+   ],
+   "nodes": [],
+   "repeat": false,
+   "collapsible": true,
+   "structuralRoot": true,
+   "parent": ""
+  }
+ ]
+}
