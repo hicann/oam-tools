@@ -1612,8 +1612,6 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
             if [ $(id -u) -eq 0 ]; then
                 chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script"> /dev/null 2>&1
                 chown "root":"root" "${target_dir}/${opp_platform_dir}"> /dev/null 2>&1
-            else
-                chmod 750 "${target_dir}"> /dev/null 2>&1
             fi
 #            aicpuinfofile "add"
             # repairaicpu "${target_dir}"
