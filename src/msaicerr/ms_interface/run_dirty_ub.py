@@ -28,7 +28,7 @@ def run_dirty_ub_tik(configs, soc_version, device_id):
         from tbe import tik
         from tbe.common import platform as cce
         from tbe.common.platform import set_current_compile_soc_info as te_set_version
-    except ImportError as e:
+    except (ImportError, AttributeError) as e:
         utils.print_warn_log(
             f"failed to import te or tbe to compile op dirty_ub, skipped it. error: {e}")
         return False

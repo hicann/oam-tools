@@ -40,7 +40,36 @@ compile_op = CompileOP(op_name, inputs, outputs, 'Ascend950')
 
 class TestCompileOp():
 
-    def test_get_ub_size_not_tbe(self, mocker):
+    @staticmethod
+    def test_get_ub_size_not_tbe(mocker):
+        ub_size = compile_op.get_ub_size()
+        assert ub_size == 0
+
+    @staticmethod
+    def test_get_ub_size_import_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise ImportError("mocked tbe import error")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        ub_size = compile_op.get_ub_size()
+        assert ub_size == 0
+
+    @staticmethod
+    def test_get_ub_size_attribute_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise AttributeError("module 'numpy' has no attribute 'bool'")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 

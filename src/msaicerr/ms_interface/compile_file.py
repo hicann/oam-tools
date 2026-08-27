@@ -27,7 +27,7 @@ def get_compile_from_tik(soc_version, compile_temp_dir):
         from tbe.common import platform as cce
         from tbe.common.platform import set_current_compile_soc_info as te_set_version
         from tbe import tik
-    except ImportError as e:
+    except (ImportError, AttributeError) as e:
         utils.print_warn_log(f"failed to import te or tbe to compile op golden op, skipped it. error: {e}")
         return []
     build_dir = Path(compile_temp_dir).joinpath(ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')

@@ -36,6 +36,20 @@ class TestCompileFileMethods(CommonAssert):
         result = get_compile_from_tik("Ascend910B1", "/tmp")
         self.assertEqual(result, [])
 
+    def test_get_compile_from_tik_attribute_error(self, mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise AttributeError("module 'numpy' has no attribute 'bool'")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        from ms_interface.compile_file import get_compile_from_tik
+        result = get_compile_from_tik("Ascend910B1", "/tmp")
+        self.assertEqual(result, [])
+
     def test_get_compile_file_with_handler(self, mocker):
         mock_handler = Mock()
         mock_handler.is_chip_handler.return_value = True

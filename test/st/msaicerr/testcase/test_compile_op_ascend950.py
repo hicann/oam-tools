@@ -36,6 +36,60 @@ compile_op = CompileOP(op_name, inputs, outputs, 'Ascend950')
 
 class TestCompileOp():
 
+    @staticmethod
+    def test_get_compile_from_tik_attribute_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise AttributeError("module 'numpy' has no attribute 'bool'")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        from ms_interface.compile_file import get_compile_from_tik
+        assert get_compile_from_tik("Ascend910B1", "/tmp") == []
+
+    @staticmethod
+    def test_get_ub_size_import_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise ImportError("mocked tbe import error")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        assert compile_op.get_ub_size() == 0
+
+    @staticmethod
+    def test_get_ub_size_attribute_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise AttributeError("module 'numpy' has no attribute 'bool'")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        assert compile_op.get_ub_size() == 0
+
+    @staticmethod
+    def test_run_dirty_ub_tik_attribute_error(mocker):
+        import builtins
+        real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name.startswith("tbe"):
+                raise AttributeError("module 'numpy' has no attribute 'bool'")
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch("builtins.__import__", side_effect=mock_import)
+        from ms_interface.run_dirty_ub import run_dirty_ub_tik
+        assert run_dirty_ub_tik({"compile_temp_dir": "/tmp/x"}, "Ascend910B", 0) is False
+
     def test_get_compile_file_golden_have_temp(self, caplog):
         temp_dir = Path(cur_abspath).joinpath(
             "../test_get_compile_file_golden_have_temp")

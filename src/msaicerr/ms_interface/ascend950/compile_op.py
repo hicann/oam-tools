@@ -42,7 +42,8 @@ class CompileOP:
     def get_ub_size():
         try:
             from tbe.common import platform
-        except ImportError:
+        except (ImportError, AttributeError) as e:
+            utils.print_warn_log(f"failed to import tbe, skipped it. error: {e}")
             return 0
         try:
             soc_version = DSMIInterface().get_chip_info(0).get_complete_platform()
