@@ -239,7 +239,12 @@ set_target_properties(msprofbin
 
 if (DEFINED PKG_NAME AND PKG_NAME STREQUAL "oam")
     install(TARGETS msprofbin ${INSTALL_OPTIONAL}
-        RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/bin
+        RUNTIME DESTINATION ${INSTALL_TOOLS_DIR}/profiler/bin
+        # 须带 OWNER_WRITE：msprof 是 ELF，CMake 在 install 期就地改写 RPATH，
+        # 无写位会导致 "RPATH_CHANGE could not write new RPATH / Error opening
+        # file for update" 使 rpm 打包失败。包内写位不影响安装后权限——运行期由
+        # XML install_mod 收口（rpm/deb postinst chmod 555、run 走 entity 递归 550）。
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         COMPONENT oam-tools
     )
 else()
@@ -282,7 +287,7 @@ if(_msprof_whl_count GREATER 1)
 endif()
 # whl 自身保留显式 555（文件权限，不影响目录可删除性），与历史终态一致。
 install(PROGRAMS ${msprof_whl}
-    DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool
+    DESTINATION ${INSTALL_TOOLS_DIR}/profiler/profiler_tool
     ${INSTALL_OPTIONAL}
     COMPONENT oam-tools
     PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
@@ -315,7 +320,7 @@ if(msprof_whl)
     # 目录权限不声明，交回 cmake 默认的 755：unlink 只看父目录写位，目录带 owner
     # 写位才能让 build/ 被 rm -rf 删除（文件无写位不阻塞删除）。
     install(DIRECTORY "${_msprof_extracted_dir}/"
-        DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/profiler_tool
+        DESTINATION ${INSTALL_TOOLS_DIR}/profiler/profiler_tool
         ${INSTALL_OPTIONAL}
         COMPONENT oam-tools
         FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE

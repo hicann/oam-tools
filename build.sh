@@ -38,7 +38,7 @@ usage() {
     echo "    --build-type=<TYPE>"
     echo "                   Specify build type (TYPE options: Release/Debug), default is Release"
     echo "    --pkg-type=<TYPE>"
-    echo "                   Specify package type (TYPE option: run/rpm/deb), Default: run"
+    echo "                   Specify package type (TYPE option: run/rpm/deb/deb,rpm/all), Default: run"
     echo "    --pkg          Alias for --pkg-type=run (build run package; default behavior)"
     echo "    --ascend_install_path=<PATH>"
     echo "                   Set ascend package install path, default /usr/local/Ascend/cann"
@@ -132,9 +132,12 @@ checkopts() {
         shift 2
         ;;
         --pkg-type)
-        if [ "X$2" != "Xrun" ] && [ "X$2" != "Xrpm" ] && [ "X$2" != "Xdeb" ]; then
-          usage && echo "Error: Invalid value '$2' for option '$1'" && exit 1
-        fi
+        # 取值集合与 cann-cmake function/prepare.cmake 的 CPACK_GENERATOR 分支保持一致：
+        # run(External) / rpm / deb / deb,rpm(DEB;RPM) / all(DEB;RPM;External)
+        case "$2" in
+          run|rpm|deb|deb,rpm|all) ;;
+          *) usage && echo "Error: Invalid value '$2' for option '$1'" && exit 1 ;;
+        esac
         PACKAGE_TYPE="$2"
         shift 2
         ;;
@@ -311,12 +314,26 @@ build_oam_tools() {
         echo "execute command: make ${VERBOSE} -j${THREAD_NUM} && make install failed."
         return 1
     fi
-    # 只搬本次 ${PACKAGE_TYPE} 后缀产物，不按固定顺序扫描，避免残留旧后缀先命中搬错包。
-    if compgen -G "cann*.${PACKAGE_TYPE}" > /dev/null 2>&1; then
-        mkdir -pv "$BUILD_OUT_PATH"
-        mv cann*.${PACKAGE_TYPE} "$BUILD_OUT_PATH"
-    else
-        echo "package oam_tools failed: no cann*.${PACKAGE_TYPE} artifact found"
+    # 只搬本次 ${PACKAGE_TYPE} 对应后缀的产物，不按固定顺序扫描，避免残留旧后缀先命中搬错包。
+    # deb,rpm 与 all 一次产出多个包，故按取值展开成后缀列表（all 含 run）。
+    case "${PACKAGE_TYPE}" in
+      all)     PKG_SUFFIXES="deb rpm run" ;;
+      deb,rpm) PKG_SUFFIXES="deb rpm" ;;
+      *)       PKG_SUFFIXES="${PACKAGE_TYPE}" ;;
+    esac
+    moved_any="false"
+    for sfx in ${PKG_SUFFIXES}; do
+        if compgen -G "cann*.${sfx}" > /dev/null 2>&1; then
+            mkdir -pv "$BUILD_OUT_PATH"
+            mv cann*.${sfx} "$BUILD_OUT_PATH"
+            moved_any="true"
+        else
+            echo "package oam_tools failed: no cann*.${sfx} artifact found"
+            return 1
+        fi
+    done
+    if [ "X${moved_any}" != "Xtrue" ]; then
+        echo "package oam_tools failed: no artifact found for PACKAGE_TYPE=${PACKAGE_TYPE}"
         return 1
     fi
 

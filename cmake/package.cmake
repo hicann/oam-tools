@@ -111,17 +111,9 @@ function(pack_built_in)
       ${CANN_CMAKE_DIR}/scripts/install/multi_version.inc
   )
 
-  set(CONF_FILES
-      ${CANN_CMAKE_DIR}/scripts/package/cfg/path.cfg
-  )
-
   install(FILES ${CMAKE_BINARY_DIR}/version.oam-tools.info
       DESTINATION share/info/oam_tools
       RENAME version.info
-      COMPONENT oam-tools
-  )
-  install(FILES ${CONF_FILES}
-      DESTINATION ${CMAKE_SYSTEM_PROCESSOR}-linux/conf
       COMPONENT oam-tools
   )
   install(FILES ${PACKAGE_FILES}
@@ -140,6 +132,17 @@ function(pack_built_in)
   endif()
 
   message(STATUS "current compute_unit is: ${compute_unit}")
+
+  # 仅 rpm 需要：rpmbuild 的 brp-strip 会对 bundle 内 Ascend NPU 的 .o（非标准 ELF）
+  # 执行 strip 并失败中断打包，故禁掉。deb 侧 dpkg-deb 不跑 brp-strip、实测无需处理；
+  # 若后续 deb 接入 dh 工具链或启用 CPACK_DEBIAN_PACKAGE_SHLIBDEPS，需在此补 deb 分支。
+  # deb,rpm 与 all 同样产出 rpm，只判 STREQUAL "rpm" 会漏掉它们而使打包中断；
+  # "all" 不含 rpm 子串，须单列。
+  if(PACKAGE_TYPE MATCHES "rpm" OR PACKAGE_TYPE STREQUAL "all")
+    set(CPACK_RPM_SPEC_MORE_DEFINE "%define __strip /bin/true
+%define __objdump /bin/true
+%define debug_package %{nil}")
+  endif()
 
   set_cann_cpack_config(oam-tools SHARE_INFO_NAME oam_tools PACKAGE_TYPE ${PACKAGE_TYPE})
 

@@ -62,6 +62,6 @@ target_link_options(ascend_dump_parser PRIVATE
 )
 
 install(TARGETS ascend_dump_parser
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64
+    LIBRARY DESTINATION ${INSTALL_LIB64_DIR}
     COMPONENT oam-tools
 )

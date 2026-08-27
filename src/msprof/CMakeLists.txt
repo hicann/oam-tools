@@ -179,7 +179,6 @@ target_include_directories(msprof_headers INTERFACE
 
 add_subdirectory(collector)
 
-set(MSPROF_INSTALL_LIBRARY_DIR ${INSTALL_LIBRARY_DIR}/msprof/lib)
 set(MSPROF_INSTALL_CONFIG_DIR  ${INSTALL_LIBRARY_DIR}/msprof/lib/cmake)
 
 add_custom_target(profiling
@@ -192,7 +191,7 @@ add_custom_target(profiling
 install(DIRECTORY
     ${MSPROF_INSTALL_CONFIG_DIR}/profiling # install_config_dir is a relative path, must Splicing it while install
     DESTINATION
-    ${MSPROF_INSTALL_LIBRARY_DIR}
+    ${INSTALL_TOOLS_DIR}/profiler
     ${INSTALL_OPTIONAL}
     COMPONENT oam-tools
 )

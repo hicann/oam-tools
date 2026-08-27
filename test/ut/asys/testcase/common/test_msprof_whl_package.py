@@ -67,10 +67,124 @@ def test_extraction_happens_at_build_time():
         "不应回退到安装期 install(CODE) 解包方式"
 
 
+ROOT_CMAKE = REPO_ROOT / "CMakeLists.txt"
+# staging 绝对路径与本用例无关（只关心尾部落点），统一替成占位符。
+_STAGING_STUB = "/BUILD/_CPack_Packages/makeself_staging"
+_VAR_RE = re.compile(r"\$\{(\w+)\}")
+# 走"相对路径交 CPACK_PACKAGING_INSTALL_PREFIX 收"那条分支的 PACKAGE_TYPE 取值，
+# 与 cann-cmake function/prepare.cmake 的 CPACK_GENERATOR 分支对齐：deb,rpm 与 all
+# 同样产出 rpm/deb 包，漏掉它们会让 tools/* 落到绝对 staging 路径而不进包载荷。
+PKG_PACKAGE_TYPES = ("rpm", "deb", "deb,rpm", "all")
+
+
+def resolve_cmake_var(name, package_type):
+    """解析根 CMakeLists.txt 中变量 name 在给定 PACKAGE_TYPE 下的取值。
+
+    先在 PACKAGE_TYPE 的对应分支里找 set(name ...)，找不到再退到全文件找。
+    按"从 DESTINATION 里提取到的名字"去查，而非把名字写死在用例里——
+    变量改名（两处同步改）不应让用例失败，只有落点变了才应该失败。
+
+    分支头只匹配到 "if(PACKAGE_TYPE" 为止，不绑定具体判定表达式：判定条件会随
+    cann-cmake 支持的取值增减而调整（rpm/deb/deb,rpm/all），用例关心的是两个分支
+    各自给出什么落点，而非条件怎么写。
+    """
+    content = ROOT_CMAKE.read_text(encoding="utf-8")
+    branches = re.search(
+        r"if\(PACKAGE_TYPE [^\n]*\)"
+        r"(?P<pkg>.*?)else\(\)(?P<run>.*?)endif\(\)",
+        content,
+        re.S,
+    )
+    assert branches is not None, "未在根 CMakeLists.txt 找到 PACKAGE_TYPE 分支"
+    branch = branches.group("pkg" if package_type in PKG_PACKAGE_TYPES else "run")
+    pattern = re.compile(r"set\(" + re.escape(name) + r"\s+([^)]+)\)")
+    declared = pattern.search(branch) or pattern.search(content)
+    assert declared is not None, (
+        f"{package_type}: 根 CMakeLists.txt 未定义 {name}"
+    )
+    return declared.group(1).strip()
+
+
+def cmake_branch_condition():
+    """取出根 CMakeLists.txt 里 PACKAGE_TYPE 分支的判定表达式原文。"""
+    content = ROOT_CMAKE.read_text(encoding="utf-8")
+    declared = re.search(r"if\((PACKAGE_TYPE [^\n]*)\)\s*\n", content)
+    assert declared is not None, "未在根 CMakeLists.txt 找到 PACKAGE_TYPE 分支判定"
+    return declared.group(1)
+
+
+def eval_cmake_condition(condition, package_type):
+    """按 CMake 语义判断 condition 在给定 PACKAGE_TYPE 下是否为真。
+
+    只需支持本判定用到的 STREQUAL / MATCHES 与 OR 组合。
+    """
+    for clause in condition.split(" OR "):
+        matched = re.fullmatch(
+            r'PACKAGE_TYPE (STREQUAL|MATCHES) "([^"]*)"', clause.strip()
+        )
+        assert matched is not None, f"判定子句超出用例支持范围: {clause}"
+        operator, operand = matched.groups()
+        if operator == "STREQUAL":
+            if package_type == operand:
+                return True
+        elif re.search(operand, package_type):
+            return True
+    return False
+
+
+def test_branch_condition_covers_every_packaging_type():
+    """判定条件必须命中全部产出 rpm/deb 的取值，run 与空值必须不命中。
+
+    resolve_cmake_var 里的分支归属是用例侧的假定，光靠它无法发现"条件写窄了"——
+    条件退回只判 rpm/deb 时，deb,rpm 与 all 在真实构建中落进 else 分支拿到绝对
+    staging 路径、文件不进包，而用例仍会读 pkg 分支从而误报通过。故在此直接对
+    条件本身求值。
+    """
+    condition = cmake_branch_condition()
+    for package_type in PKG_PACKAGE_TYPES:
+        assert eval_cmake_condition(condition, package_type), (
+            f"PACKAGE_TYPE={package_type} 会产出 rpm/deb 包，"
+            f"但判定 `{condition}` 未命中，文件将落到绝对 staging 路径而不进包"
+        )
+    for package_type in ("run", ""):
+        assert not eval_cmake_condition(condition, package_type), (
+            f"PACKAGE_TYPE={package_type or '<空>'} 应走 run 形态，"
+            f"但判定 `{condition}` 命中了打包分支"
+        )
+
+
+def expand_destination(destination, package_type):
+    """把 DESTINATION 里的 CMake 变量按给定包类型逐层展开成实际路径。"""
+    expanded = destination
+    for _ in range(10):  # 逐层展开，兼容变量值里嵌套引用其他变量
+        names = _VAR_RE.findall(expanded)
+        if not names:
+            break
+        for name in names:
+            value = (
+                _STAGING_STUB
+                if name == "OAM_STAGING_DIR"
+                else resolve_cmake_var(name, package_type)
+            )
+            expanded = expanded.replace("${" + name + "}", value)
+    # 自检：展开必须彻底，否则下面的落点断言会因残留 ${...} 而失去意义。
+    assert "${" not in expanded, f"{package_type}: DESTINATION 仍有未展开变量 {expanded}"
+    return expanded
+
+
 def test_extracted_dir_installed_via_install_directory():
-    # 解包产物通过 install(DIRECTORY) 声明进包，落到 profiler_tool 下。
+    # 解包产物通过 install(DIRECTORY) 声明进包。断言的是"展开后落点"而非变量名：
+    # 各打包取值（含 deb,rpm / all）与 run 下都必须落到 tools/profiler/profiler_tool。
     block = get_install_directory_block()
-    assert "tools/profiler/profiler_tool" in block
+    declared = re.search(r"DESTINATION\s+(\S+)", block)
+    assert declared is not None, "install(DIRECTORY) 未声明 DESTINATION"
+    destination = declared.group(1)
+    for package_type in PKG_PACKAGE_TYPES + ("run",):
+        expanded = expand_destination(destination, package_type)
+        assert expanded.endswith("tools/profiler/profiler_tool"), (
+            f"{package_type} 包下解包产物落点应为 tools/profiler/profiler_tool，"
+            f"实际 {expanded}"
+        )
     assert "COMPONENT oam-tools" in block
 
 

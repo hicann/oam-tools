@@ -151,7 +151,11 @@ set_target_properties(acp
 )
 
 install(TARGETS acp ${INSTALL_OPTIONAL}
-    RUNTIME DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/bin
+    RUNTIME DESTINATION ${INSTALL_TOOLS_DIR}/profiler/bin
+    # 须带 OWNER_WRITE：acp 是 ELF，CMake 在 install 期就地改写 RPATH，无写位会导致
+    # "RPATH_CHANGE could not write new RPATH / Error opening file for update" 使
+    # rpm 打包失败。包内写位不影响安装后权限——运行期由 XML install_mod 收口。
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     COMPONENT oam-tools
 )
 
@@ -299,7 +303,7 @@ target_link_libraries(profinj PRIVATE
 )
 
 install(TARGETS profinj ${INSTALL_OPTIONAL}
-    LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}/tools/profiler/lib64
+    LIBRARY DESTINATION ${INSTALL_TOOLS_DIR}/profiler/lib64
     COMPONENT oam-tools
 )
 

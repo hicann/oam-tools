@@ -31,10 +31,21 @@ include(cmake/intf_pub.cmake)
 # OAM_STAGING_DIR：makeself 暂存绝对路径，供配置期 file() 操作用，不随包类型变化。
 set(OAM_STAGING_DIR ${CMAKE_BINARY_DIR}/_CPack_Packages/makeself_staging)
 # INSTALL_LIBRARY_DIR 按包类型切换：rpm/deb 用相对路径交 CPACK_PACKAGING_INSTALL_PREFIX 收，run 用绝对 staging。
-if(PACKAGE_TYPE STREQUAL "rpm" OR PACKAGE_TYPE STREQUAL "deb")
+# 取值集合与 cann-cmake function/prepare.cmake 的 CPACK_GENERATOR 分支一致：除 rpm/deb 外
+# 还有 deb,rpm(DEB;RPM) 与 all(DEB;RPM;External)，它们同样产出 rpm/deb 包。只判 STREQUAL
+# "rpm"/"deb" 会让这两个取值落进 else，拿到绝对 staging 路径而绕过 CPACK_PACKAGING_INSTALL_PREFIX，
+# 结果 tools/* 与 lib64/* 不进包载荷（表现为装完缺目录）。"all" 不含 rpm/deb 子串，须单列。
+if(PACKAGE_TYPE MATCHES "rpm|deb" OR PACKAGE_TYPE STREQUAL "all")
     set(INSTALL_LIBRARY_DIR .)
+    # tools / lib64 用 bare 相对路径，与本文件既有 install 规则（tools/aml/lib64/*、
+    # ${CMAKE_SYSTEM_PROCESSOR}-linux/lib64）保持同一形态，避免同包内出现两个 lib64 目录。
+    set(INSTALL_TOOLS_DIR tools)
+    set(INSTALL_LIB64_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
 else()
     set(INSTALL_LIBRARY_DIR ${OAM_STAGING_DIR})
+    # run 包保持原有绝对路径结构
+    set(INSTALL_TOOLS_DIR ${OAM_STAGING_DIR}/tools)
+    set(INSTALL_LIB64_DIR ${OAM_STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/lib64)
 endif()
 
 # Ascend mode
@@ -285,13 +296,13 @@ if(EXISTS "${BUNDLE_PKG}/aml")
 endif()
 
 # 拷贝 built-in 目录
-# 文件显式 440（owner/group 只读），与主线 CANN 包对 opp/built-in/op_impl 子树一致；
+# 文件显式 555，与主线 CANN 包对 opp/built-in/op_impl 子树一致；
 # 目录不再显式声明，交回 cmake install(DIRECTORY) 默认的 755。
 if(EXISTS "${BUNDLE_PKG}/built-in")
     install(DIRECTORY ${BUNDLE_PKG}/built-in/op_impl/ai_core/tbe
         DESTINATION opp/built-in/op_impl/ai_core
         COMPONENT oam-tools
-        FILE_PERMISSIONS OWNER_READ GROUP_READ
+        FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         PATTERN "op_api" EXCLUDE
     )
     install(FILES

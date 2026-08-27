@@ -65,11 +65,27 @@ def test_stale_artifacts_cleaned_before_make_package():
 def test_artifact_moved_by_package_type():
     # 只搬本次 PACKAGE_TYPE 对应后缀的产物，不按固定顺序扫描 run/rpm/deb，
     # 避免残留旧后缀先命中导致搬错包类型。
+    # PACKAGE_TYPE 取值含 deb,rpm 与 all（一次产出多个包），故先展开成后缀列表再逐个搬，
+    # 不能直接用 cann*.${PACKAGE_TYPE}（cann*.all / cann*.deb,rpm 匹配不到任何产物）。
     build_content = get_build_script_content()
-    assert 'compgen -G "cann*.${PACKAGE_TYPE}"' in build_content, \
-        "产物应按 ${PACKAGE_TYPE} 后缀查找"
-    assert 'mv cann*.${PACKAGE_TYPE} "$BUILD_OUT_PATH"' in build_content, \
-        "应搬运 ${PACKAGE_TYPE} 后缀的全部产物"
+    assert 'compgen -G "cann*.${sfx}"' in build_content, \
+        "产物应按展开后的单个后缀查找"
+    assert 'mv cann*.${sfx} "$BUILD_OUT_PATH"' in build_content, \
+        "应搬运展开后各后缀的全部产物"
+    # 后缀列表必须覆盖多包取值，否则 all / deb,rpm 会漏搬。
+    assert 'all)     PKG_SUFFIXES="deb rpm run"' in build_content, \
+        "all 应展开为 deb rpm run 三种后缀"
+    assert 'deb,rpm) PKG_SUFFIXES="deb rpm"' in build_content, \
+        "deb,rpm 应展开为 deb rpm 两种后缀"
     # 不应再按固定顺序 for ext in run rpm deb 扫描（旧写法会先命中残留 run）。
     assert "for ext in run rpm deb" not in build_content, \
         "不应按固定顺序扫描 run/rpm/deb（会先命中残留旧产物）"
+
+
+def test_pkg_type_accepts_all_cann_cmake_values():
+    # --pkg-type 取值集合须与 cann-cmake function/prepare.cmake 的 CPACK_GENERATOR
+    # 分支一致：run / rpm / deb / deb,rpm / all。少一个会让流水线无法从 build.sh
+    # 产出对应包类型。
+    build_content = get_build_script_content()
+    assert "run|rpm|deb|deb,rpm|all)" in build_content, \
+        "--pkg-type 应接受 run/rpm/deb/deb,rpm/all 全部取值"
