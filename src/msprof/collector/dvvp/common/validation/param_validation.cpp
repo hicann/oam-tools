@@ -52,7 +52,7 @@ const std::map<std::string, ProfSocPmuType> SOC_PMU_MAP = {
 
 enum class ParamBasicCheckResult { SUCCESS, FAILED, CONTINUE };
 
-ParamBasicCheckResult CheckParamEmptyAndSupported(const std::string &switchName, const std::string &switchStr) {
+static ParamBasicCheckResult CheckParamEmptyAndSupported(const std::string &switchName, const std::string &switchStr) {
     if (switchStr.empty()) {
         MSPROF_LOGI("Argument %s is empty.", switchName.c_str());
         return ParamBasicCheckResult::SUCCESS;

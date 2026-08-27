@@ -473,7 +473,7 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomTenEvents) {
     EXPECT_EQ("0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa", params->ntsPmuEvents);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsMaxEvent) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsBoundaryEvents) {
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
     const char *argv[] = {"msprof", "--nts-metrics=Custom:0,0x71b,1819", "python3", "test.py", nullptr};
     optind = 1;
@@ -481,6 +481,17 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsMaxEvent) {
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
     ASSERT_NE(nullptr, params);
     EXPECT_EQ("0x0,0x71b,0x71b", params->ntsPmuEvents);
+}
+
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsExplicitPositiveEvents) {
+    SetPlatformTypeForTest(TARGET_CHIP_TYPE);
+    const char *argv[] = {
+        "msprof", "--nts-metrics=Custom:+1,+0x10,+0,+0x71b", "python3", "test.py", nullptr};
+    optind = 1;
+    InputParser parser = InputParser();
+    auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
+    ASSERT_NE(nullptr, params);
+    EXPECT_EQ("0x1,0x10,0x0,0x71b", params->ntsPmuEvents);
 }
 
 TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectInvalidValues) {
@@ -511,15 +522,42 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectInvalidValues) {
     InputParser invalidEventParser = InputParser();
     EXPECT_EQ(nullptr, invalidEventParser.MsprofGetOpts(MSPROF_APP_ARGC, invalidEventArgv));
 
-    const char *maxOverflowArgv[] = {"msprof", "--nts-metrics=Custom:0x71c", "python3", "test.py", nullptr};
-    optind = 1;
-    InputParser maxOverflowParser = InputParser();
-    EXPECT_EQ(nullptr, maxOverflowParser.MsprofGetOpts(MSPROF_APP_ARGC, maxOverflowArgv));
-
     const char *largeEventArgv[] = {"msprof", "--nts-metrics=Custom:0x80000000", "python3", "test.py", nullptr};
     optind = 1;
     InputParser largeEventParser = InputParser();
     EXPECT_EQ(nullptr, largeEventParser.MsprofGetOpts(MSPROF_APP_ARGC, largeEventArgv));
+}
+
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsEventAboveMaxAsOutOfRange) {
+    SetPlatformTypeForTest(TARGET_CHIP_TYPE);
+    const char *argv[] = {"msprof", "--nts-metrics=Custom:0x71c", "python3", "test.py", nullptr};
+    optind = 1;
+    testing::internal::CaptureStdout();
+    testing::internal::CaptureStderr();
+    InputParser parser = InputParser();
+    EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv));
+    const std::string logOutput = testing::internal::GetCapturedStdout() +
+        testing::internal::GetCapturedStderr();
+    EXPECT_NE(std::string::npos, logOutput.find("The event is out of range"));
+}
+
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsNegativeEventAsOutOfRange) {
+    SetPlatformTypeForTest(TARGET_CHIP_TYPE);
+    const std::vector<std::string> negativeEvents = {
+        "-1", "-0", "-18446744073709551615", "-0x10", "-0x0"
+    };
+    for (const auto &event : negativeEvents) {
+        const std::string ntsMetrics = "--nts-metrics=Custom:" + event;
+        const char *argv[] = {"msprof", ntsMetrics.c_str(), "python3", "test.py", nullptr};
+        optind = 1;
+        testing::internal::CaptureStdout();
+        testing::internal::CaptureStderr();
+        InputParser parser = InputParser();
+        EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv)) << event;
+        const std::string logOutput = testing::internal::GetCapturedStdout() +
+            testing::internal::GetCapturedStderr();
+        EXPECT_NE(std::string::npos, logOutput.find("The event is out of range")) << event;
+    }
 }
 
 TEST_F(INPUT_PARSER_UTEST, NtsMetricsOnlyAvailableOnTargetChip) {

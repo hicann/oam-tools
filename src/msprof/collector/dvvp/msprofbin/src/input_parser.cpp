@@ -112,7 +112,6 @@ const std::string TEXT_EXPORT_TYPE  = "text";
 const std::string DB_EXPORT_TYPE    = "db";
 const std::string NTS_PIPE_UTILIZATION  = "PipeUtilization";
 const std::string NTS_CUSTOM_PREFIX     = "Custom:";
-constexpr uint64_t NTS_EVENT_MIN        = 0x0;
 constexpr uint64_t NTS_EVENT_MAX        = 0x71b;
 constexpr size_t NTS_EVENT_MAX_NUM      = 10;
 constexpr int32_t DECIMAL_BASE          = 10;
@@ -120,17 +119,24 @@ constexpr int32_t HEX_BASE              = 16;
 constexpr size_t HEX_PREFIX_LEN         = 2;
 
 namespace {
-bool ParseNtsEvent(const std::string &rawEvent, uint64_t &eventValue)
+bool ParseNtsEvent(const std::string &rawEvent, uint64_t &eventValue, bool &isNegative)
 {
     std::string event = Utils::Trim(rawEvent);
     if (event.empty()) {
         return false;
     }
+    isNegative = event[0] == '-';
+    const bool hasSign = isNegative || event[0] == '+';
+    const size_t signOffset = hasSign ? 1 : 0;
+    if (signOffset == event.size()) {
+        return false;
+    }
     int32_t base = DECIMAL_BASE;
-    size_t start = 0;
-    if (event.size() > HEX_PREFIX_LEN && event[0] == '0' && (event[1] == 'x' || event[1] == 'X')) {
+    size_t start = signOffset;
+    if (event.size() > start + HEX_PREFIX_LEN && event[start] == '0' &&
+        (event[start + 1] == 'x' || event[start + 1] == 'X')) {
         base = HEX_BASE;
-        start = HEX_PREFIX_LEN;
+        start += HEX_PREFIX_LEN;
         if (event.size() == start) {
             return false;
         }
@@ -141,15 +147,23 @@ bool ParseNtsEvent(const std::string &rawEvent, uint64_t &eventValue)
             return false;
         }
     }
+    if (isNegative) {
+        eventValue = 0;
+        return true;
+    }
+    const std::string unsignedEvent = event.substr(signOffset);
     size_t pos = 0;
     try {
-        eventValue = std::stoull(event, &pos, base);
+        eventValue = std::stoull(unsignedEvent, &pos, base);
     } catch (const std::invalid_argument &) {
         return false;
     } catch (const std::out_of_range &) {
         return false;
     }
-    return pos == event.size();
+    if (pos != unsignedEvent.size()) {
+        return false;
+    }
+    return true;
 }
 
 std::string FormatNtsEvent(uint64_t eventValue)
@@ -896,13 +910,14 @@ int32_t InputParser::CheckNtsCustomMetricsValid(const std::string &ntsMetrics)
     std::vector<std::string> normalizedEvents;
     for (const auto &event : events) {
         uint64_t eventValue = 0;
+        bool isNegative = false;
         const std::string trimmedEvent = Utils::Trim(event);
-        if (!ParseNtsEvent(trimmedEvent, eventValue)) {
+        if (!ParseNtsEvent(trimmedEvent, eventValue, isNegative)) {
             CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. Hexadecimal or decimal parameters are "
                 "allowed in custom mode.", trimmedEvent.c_str());
             return MSPROF_DAEMON_ERROR;
         }
-        if (eventValue < NTS_EVENT_MIN || eventValue > NTS_EVENT_MAX) {
+        if (isNegative || eventValue > NTS_EVENT_MAX) {
             CmdLog::CmdErrorLog("Argument --nts-metrics: invalid value:%s. The event is out of range [0x0, 0x71b].",
                 trimmedEvent.c_str());
             return MSPROF_DAEMON_ERROR;
