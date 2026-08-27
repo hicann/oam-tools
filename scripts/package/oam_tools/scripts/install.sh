@@ -50,7 +50,7 @@ platform_data=$(grep -e "arch" "$_RUN_PKG_INFO_FILE" | cut --only-delimited -d"=
 opp_old_platform_dir=oam-tools_$platform_data-linux
 opp_platform_dir=oam_tools
 upper_opp_platform=$(echo "${opp_platform_dir}" | tr 'a-z' 'A-Z')
-# defaluts info determinated by user's inputs
+# defaluts info determined by user's inputs
 _INSTALL_LOG_DIR="oam_tools/install_log"
 _INSTALL_INFO_SUFFIX="${opp_platform_dir}/ascend_install.info"
 _VERSION_INFO_SUFFIX="${opp_platform_dir}/version.info"
@@ -141,7 +141,7 @@ checkemtpyuser() {
     if [ "${_uname_value}" != "" ] || [ "${_ugroup_value}" != "" ]; then
         logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Operation of \
 ${_cmd_type} oam-tools not support specific user name or user group. Please \
-use [--help] to see the useage."notepadd
+use [--help] to see the usage."notepadd
         return 1
     fi
 }
@@ -358,7 +358,7 @@ Please install without quiet mode and check permission."
             fi
         else
             if [ ${ret} -ne 0 ]; then
-                logandprint "[WARNING]: You are going to put run-files on a unsecure install-path, do you want to continue? [y/n]"
+                logandprint "[WARNING]: You are going to put run-files on an insecure install-path, do you want to continue? [y/n]"
                 while true
                 do
                     read yn
@@ -817,7 +817,7 @@ not support that the install path contains space character."
     if [ x"${temp_path}" = "x" ]; then
         temp_path="/"
     fi
-    # covert relative path to absolute path
+    # convert relative path to absolute path
     prefix=$(echo "${temp_path}" | cut -d"/" -f1 | cut -d"~" -f1)
     if [ x"${prefix}" = "x" ]; then
         in_install_path_param="${temp_path}"
@@ -831,7 +831,7 @@ not support that the install path contains space character."
             exit 1
         fi
     fi
-    # covert '~' to home path
+    # convert '~' to home path
     home=$(echo "${in_install_path_param}" | cut -d"~" -f1)
     if [ "x${home}" = "x" ]; then
 	temp_path_value=$(echo "${in_install_path_param}" | cut -d"~" -f2)
@@ -1153,12 +1153,12 @@ do
     --chip=*)
         tmp_chip_type=$(echo $1 | cut -d"=" -f2 )
         if test -z "$tmp_chip_type"; then
-            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip cannot be null."
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --chip cannot be null."
             exitlog
             exit 1
         fi
         if [ "${is_uninstall}" = "y" ]; then
-            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --chip is not supported to used by this way. please use with \
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --chip is not supported to used by this way. please use with \
 '--full', '--devel', '--run', '--upgrade'."
             exitlog
             exit 1
@@ -1169,7 +1169,7 @@ do
     --feature=*)
         feature_choice=$(echo $1 | cut -d"=" -f2 )
         if test -z "$feature_choice"; then
-            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Paramter --feature cannot be null."
+            echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Parameter --feature cannot be null."
             exitlog
             exit 1
         fi
@@ -1215,7 +1215,7 @@ do
         ;;
     -*)
         echo "[Oam-Tools] [ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Unsupported parameters [$1], \
-operation execute failed. Please use [--help] to see the useage."
+operation execute failed. Please use [--help] to see the usage."
         exitlog
         exit 1
         ;;
@@ -1300,7 +1300,7 @@ if [ "${is_input_path}" = y ]; then
 fi
 
 _UNINSTALL_SHELL_FILE="${target_dir}""/${opp_platform_dir}/script/opp_uninstall.sh"
-# adpter for old version's path
+# adapter for old version's path
 if [ ! -f "${_UNINSTALL_SHELL_FILE}" ]; then
     _UNINSTALL_SHELL_FILE="${target_dir}""/${opp_platform_dir}/scripts/opp_uninstall.sh"
 fi
@@ -1612,8 +1612,6 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
             if [ $(id -u) -eq 0 ]; then
                 chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script"> /dev/null 2>&1
                 chown "root":"root" "${target_dir}/${opp_platform_dir}"> /dev/null 2>&1
-            else
-                chmod 750 "${target_dir}"> /dev/null 2>&1
             fi
 #            aicpuinfofile "add"
             # repairaicpu "${target_dir}"
