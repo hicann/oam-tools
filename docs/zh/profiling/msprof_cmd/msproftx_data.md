@@ -26,7 +26,7 @@ msprof [options] <app>
 
 采集mstx数据必须传入用户程序。
 
-<!-- npu="950,A3,910b,910,310p,310b,IPV350" id3 -->
+<!-- npu="950,A3,910b,910,310p,310b" id3 -->
 app参数说明请参见[app参数说明](general_collect_commands.md#app参数说明)，options参数说明请参见[参数说明](#参数说明)。
 <!-- end id3 -->
 

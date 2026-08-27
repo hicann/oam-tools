@@ -13,7 +13,7 @@
 |方式三：订阅算子信息|将采集到的性能数据解析后写入管道，由用户读入内存，再由用户调用API获取性能数据。|
 
 <!-- npu="950,A3,910b,910,310p,310b" id22 -->
-注：接口详细说明，请参见[Runtime运行时 API](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)》。
+注：接口详细说明，请参见《[Runtime运行时 API](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)》。
 <!-- end id22 -->
 
 > [!NOTE]说明
@@ -41,7 +41,7 @@
 
 > [!NOTE]说明
 >aclprofInit接口传入的性能采集数据的落盘路径，需要确保用户进程具有读写权限。
-<!-- npu="950,A3,910b,910,310p,310b,IPV350" id23 -->
+<!-- npu="950,A3,910b,910,310p,310b" id23 -->
 >接口详细说明，请参见《[Runtime运行时 API](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)》。
 <!-- end id23 -->
 
@@ -113,7 +113,7 @@ aclprofFinalize();
 
 > [!NOTE]说明
 >当只开启msproftx功能时，aclProfCreateConfig接口的deviceIdList参数值需设为空，deviceNums参数值设为0。
-<!-- npu="950,A3,910b,910,310p,310b,IPV350" id24 -->
+<!-- npu="950,A3,910b,910,310p,310b" id24 -->
 >接口详细说明，请参见《[Runtime运行时 API](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)》。
 <!-- end id24 -->
 
