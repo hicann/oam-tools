@@ -51,7 +51,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> CreateMessage(const std::string &name
                 MSPROF_LOGE("Failed to GetPrototype by descriptor of name=%s", name.c_str());
             }
         } else {
-            MSPROF_LOGE("Failed to generated_factory by descriptor of name=%s", name.c_str());
+            MSPROF_LOGE("Failed to get the generated factory for descriptor of name=%s", name.c_str());
         }
     } else {
         MSPROF_LOGW("Unable to find message type by name %s.", name.c_str());
@@ -152,7 +152,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
 
     // parse name len
     if (bufLen < currLen + sizeof(uint32_t)) {
-        MSPROF_LOGE("bufLen less than name len, bufLen=%d, expected_len=%d", bufLen, sizeof(uint32_t));
+        MSPROF_LOGE("bufLen is less than name len, bufLen=%d, expected_len=%d", bufLen, sizeof(uint32_t));
         return message;
     }
     uint32_t nameLen = ::ntohl(*(reinterpret_cast<const uint32_t *>(buf.c_str())));
@@ -164,7 +164,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
 
     // parse name
     if (bufLen < (currLen + nameLen)) {
-        MSPROF_LOGE("bufLen less than name, bufLen=%d, expected_len=%d",
+        MSPROF_LOGE("bufLen is less than name, bufLen=%d, expected_len=%d",
             bufLen, currLen + nameLen);
         return message;
     }

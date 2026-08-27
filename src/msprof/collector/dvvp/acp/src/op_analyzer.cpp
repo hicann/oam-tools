@@ -98,7 +98,7 @@ void OpAnalyzer::InitAnalyzerByDeviceId(const std::string &deviceId)
 void OpAnalyzer::OnOpData(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq)
 {
     if (!inited_) {
-        MSPROF_LOGE("OpAnalyzer is not been inited!");
+        MSPROF_LOGE("OpAnalyzer has not been initialized!");
         return;
     }
     if (fileChunkReq == nullptr || fileChunkReq->fileName.empty()) {
@@ -530,7 +530,7 @@ void OpAnalyzer::HandleOpPmuData(const std::string &name, KernelDetail &data, fl
         if (attr == nullptr) {
             continue;
         }
-        float output = attr->fomula(attr->attr, data.pmu[i], totalCycle, aicFreq_);
+        float output = attr->formula(attr->attr, data.pmu[i], totalCycle, aicFreq_);
         // add avg pmu value
         (void)avgLen;
         avg[i] += output / KERNEL_EXECUTE_TIME;

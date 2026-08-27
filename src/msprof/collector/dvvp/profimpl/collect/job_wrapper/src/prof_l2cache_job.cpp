@@ -55,8 +55,8 @@ int32_t ProfL2CacheTaskJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     bool ret = ParamValidation::instance()->CheckSocPmuEventsValid(ProfSocPmuType::PMU_TYPE_MATA,
         *l2CacheTaskProfilingEvents);
     if (!ret || l2CacheTaskProfilingEvents->size() > L2_CACHE_TASK_EVENT_MAX_SIZE) {
-        MSPROF_LOGE("ProfL2CacheTaskJob Exits Error Events Size %zu bytes", l2CacheTaskProfilingEvents->size());
-        MSPROF_INNER_ERROR("EK9999", "ProfL2CacheTaskJob Exits Error Events Size %zu",
+        MSPROF_LOGE("Invalid L2 cache task profiling events, event count: %zu", l2CacheTaskProfilingEvents->size());
+        MSPROF_INNER_ERROR("EK9999", "Invalid L2 cache task profiling events, event count: %zu",
             l2CacheTaskProfilingEvents->size());
         return PROFILING_FAILED;
     }

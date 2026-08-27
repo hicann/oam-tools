@@ -37,14 +37,14 @@ const char MSPORF_REPORT_BUFFER_LEN_STRING[] = "report_buffer_len";
 const char MSPORF_DEVICE_STRING[] = "device";
 const char MSPORF_CHANNELS_STRING[] = "channels";
 const char MSPORF_CHANNEL_STRING[] = "channel";
-const char MSPORF_PERIOD_STRING[] = "peroid";
+const char MSPORF_PERIOD_STRING[] = "period";
 const char MSPORF_CHANNEL_BUFFER_SIZE_STRING[] = "channel_buffer_size";
 const char MSPORF_DRIVER_BUFFER_SIZE_STRING[] = "driver_buffer_size";
 const char MSPORF_THRESHOLD_STRING[] = "threshold";
 constexpr int32_t MIN_REPORT_BUFFER_LEN = static_cast<int32_t>(16384 * 0.5);
 constexpr int32_t MAX_REPORT_BUFFER_LEN = 16384 * 2;
-constexpr int32_t MIN_CHANNEL_PEROID = 1;
-constexpr int32_t MAX_CHANNEL_PEROID = 1000;
+constexpr int32_t MIN_CHANNEL_PERIOD = 1;
+constexpr int32_t MAX_CHANNEL_PERIOD = 1000;
 constexpr int32_t MIN_CHANNEL_BUFFER_SIZE = static_cast<int32_t>(2097152 * 0.5);
 constexpr int32_t MAX_CHANNEL_BUFFER_SIZE = 2097152 * 2;
 constexpr int32_t MIN_HWTS_THRESHOLD = 10;
@@ -82,7 +82,7 @@ struct ProfJsonReporters {
 
 struct ProfJsonChannels {
     int32_t channelId;
-    int32_t peroid;
+    int32_t period;
     int32_t reportBufferLen;
     int32_t driverBufferLen;
     int32_t threshold;
@@ -104,7 +104,7 @@ public:
     bool GetJsonChannelProfSwitch(const uint32_t &channelId) const;
     uint32_t GetJsonChannelReportBufferLen(const uint32_t &channelId) const;
     uint32_t GetJsonChannelDriverBufferLen(const uint32_t &channelId) const;
-    uint32_t GetJsonChannelPeroid(const uint32_t &channelId) const;
+    uint32_t GetJsonChannelPeriod(const uint32_t &channelId) const;
     uint32_t GetJsonChannelThreshold(const uint32_t &channelId) const;
     bool CheckJsonModuleId(const std::string &tempString) const;
     bool CheckJsonReporterId(const std::string &tempString) const;

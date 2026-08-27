@@ -68,7 +68,7 @@ int32_t ProfStarsSocLogJob::Process()
     DrvPeripheralProfileCfg drvPeripheralProfileCfg;
     drvPeripheralProfileCfg.profDeviceId = collectionJobCfg_->comParams->devId;
     drvPeripheralProfileCfg.profChannel = channelId_;
-    drvPeripheralProfileCfg.profSamplePeriod = JsonParser::instance()->GetJsonChannelPeroid(channelId_);
+    drvPeripheralProfileCfg.profSamplePeriod = JsonParser::instance()->GetJsonChannelPeriod(channelId_);
     drvPeripheralProfileCfg.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId_);
     int32_t ret = DrvStarsSocLogStart(drvPeripheralProfileCfg, collectionJobCfg_->comParams->params);
     MSPROF_LOGI("start profiling stars soc log, ret=%d", ret);

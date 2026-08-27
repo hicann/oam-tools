@@ -236,14 +236,14 @@ int32_t Utils::RelativePath(const std::string &path,
 std::string Utils::DirName(const std::string &path)
 {
     std::string result;
-    char *pathc = MSVP_STRDUP(path.c_str());
-    if (pathc != nullptr) {
-        char *dirc = OsalDirName(pathc);
+    char *pathCopy = MSVP_STRDUP(path.c_str());
+    if (pathCopy != nullptr) {
+        char *dirc = OsalDirName(pathCopy);
         if (dirc != nullptr) {
             result = dirc;
         }
-        free(pathc);
-        pathc = nullptr;
+        free(pathCopy);
+        pathCopy = nullptr;
     }
     return result;
 }
@@ -264,14 +264,14 @@ std::string Utils::DirName(const std::string &path)
 std::string Utils::BaseName(const std::string &path)
 {
     std::string result;
-    char *pathc = MSVP_STRDUP(path.c_str());
-    if (pathc != nullptr) {
-        char *basec = OsalBaseName(pathc);
+    char *pathCopy = MSVP_STRDUP(path.c_str());
+    if (pathCopy != nullptr) {
+        char *basec = OsalBaseName(pathCopy);
         if (basec != nullptr) {
             result = basec;
         }
-        free(pathc);
-        pathc = nullptr;
+        free(pathCopy);
+        pathCopy = nullptr;
     }
     return result;
 }
@@ -1456,7 +1456,7 @@ uint64_t Utils::GreenwichToMonotonic(uint64_t inputTime)
 bool Utils::StrToUint64(uint64_t &out, const std::string &numStr)
 {
     if (!IsAllDigit(numStr)) {
-        MSPROF_LOGE("StrToUint64 failed, the input string is not digit.");
+        MSPROF_LOGE("StrToUint64 failed, the input string is not a valid number.");
         return false;
     }
     size_t pos = 0;
@@ -1477,7 +1477,7 @@ bool Utils::StrToUint64(uint64_t &out, const std::string &numStr)
 bool Utils::StrToUint32(uint32_t &out, const std::string &numStr)
 {
     if (!IsAllDigit(numStr)) {
-        MSPROF_LOGE("StrToUint32 failed, the input string is not digit.");
+        MSPROF_LOGE("StrToUint32 failed, the input string is not a valid number.");
         return false;
     }
     size_t pos = 0;

@@ -173,13 +173,13 @@ void JsonParser::ParseJsonChannels(const ProfJsonRoot &profJsonRootFile)
         }
         tempChannel.channelId = tmpInt;
         if (!channelsArray[i].Contains(MSPORF_PERIOD_STRING)) {
-            tempChannel.peroid = 0;
-        } else if (channelsArray[i][MSPORF_PERIOD_STRING].GetValue<int32_t>() < MIN_CHANNEL_PEROID ||
-                    channelsArray[i][MSPORF_PERIOD_STRING].GetValue<int32_t>() > MAX_CHANNEL_PEROID) {
-            MSPROF_LOGW("The peroid of Channel %d is out of range", tempChannel.channelId);
-            tempChannel.peroid = 0;
+            tempChannel.period = 0;
+        } else if (channelsArray[i][MSPORF_PERIOD_STRING].GetValue<int32_t>() < MIN_CHANNEL_PERIOD ||
+                    channelsArray[i][MSPORF_PERIOD_STRING].GetValue<int32_t>() > MAX_CHANNEL_PERIOD) {
+            MSPROF_LOGW("The period of Channel %d is out of range", tempChannel.channelId);
+            tempChannel.period = 0;
         } else {
-            tempChannel.peroid = (channelsArray[i])[MSPORF_PERIOD_STRING].GetValue<int32_t>();
+            tempChannel.period = (channelsArray[i])[MSPORF_PERIOD_STRING].GetValue<int32_t>();
         }
 
         CheckChannelReportBufferLen(channelsArray[i], tempChannel);
@@ -204,7 +204,7 @@ void JsonParser::CheckModuleReportBufferLen(JsonValue temp, ProfJsonReporters &t
             tempReporter.reportBufferLen = 0;
         } else if ((temp[MSPORF_REPORT_BUFFER_LEN_STRING].GetValue<int32_t>() < MIN_REPORT_BUFFER_LEN ||
                     temp[MSPORF_REPORT_BUFFER_LEN_STRING].GetValue<int32_t>() > MAX_REPORT_BUFFER_LEN)) {
-            MSPROF_LOGW("The reporter buffer len of Repoter %d is out of range", tempReporter.reporterId);
+            MSPROF_LOGW("The reporter buffer len of Reporter %d is out of range", tempReporter.reporterId);
             tempReporter.reportBufferLen = 0;
         } else {
             tempReporter.reportBufferLen = (temp)[MSPORF_REPORT_BUFFER_LEN_STRING].GetValue<int32_t>();
@@ -369,12 +369,12 @@ uint32_t JsonParser::GetJsonChannelDriverBufferLen(const uint32_t &channelId) co
     return 0;
 }
 
-uint32_t JsonParser::GetJsonChannelPeroid(const uint32_t &channelId) const
+uint32_t JsonParser::GetJsonChannelPeriod(const uint32_t &channelId) const
 {
     auto iter = channelParams_.find(channelId);
     if (iter != channelParams_.end()) {
-        if (iter->second.peroid > 0) {
-            return static_cast<uint32_t>(iter->second.peroid);
+        if (iter->second.period > 0) {
+            return static_cast<uint32_t>(iter->second.period);
         }
     }
     return 0;

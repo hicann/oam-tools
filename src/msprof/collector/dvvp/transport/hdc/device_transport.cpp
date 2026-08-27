@@ -326,8 +326,8 @@ int32_t DeviceTransport::SendMsgAndRecvResponse(const std::string &msg, TLV_REQ_
         int32_t recvLen = ctrlTran_->RecvPacket(packet, timeout_);
         if (recvLen < 0 || packet == nullptr) {
             ctrlInitialized_ = false;
-            MSPROF_LOGE("Device(%s) the ack of the message is failed", devIndexIdStr_.c_str());
-            MSPROF_INNER_ERROR("EK9999", "Device(%s) the ack of the message is failed", devIndexIdStr_.c_str());
+            MSPROF_LOGE("Device(%s) message acknowledgment failed", devIndexIdStr_.c_str());
+            MSPROF_INNER_ERROR("EK9999", "Device(%s) message acknowledgment failed", devIndexIdStr_.c_str());
             break;
         }
         ret = PROFILING_SUCCESS;

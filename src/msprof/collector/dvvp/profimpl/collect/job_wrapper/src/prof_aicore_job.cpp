@@ -75,10 +75,10 @@ int32_t ProfAicoreJob::Process()
     drvPeripheralProfileCfg.profDeviceId = collectionJobCfg_->comParams->devId;
     drvPeripheralProfileCfg.profChannel = channelId_;
     drvPeripheralProfileCfg.profSamplePeriod = period_;  // int32_t prof_sample_period,
-    const uint32_t peroid = JsonParser::instance()->GetJsonChannelPeroid(channelId_);
+    const uint32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId_);
     const uint32_t bufferLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId_);
-    if (peroid != 0) {
-        drvPeripheralProfileCfg.profSamplePeriod = peroid;
+    if (period != 0) {
+        drvPeripheralProfileCfg.profSamplePeriod = period;
     }
     if (bufferLen != 0) {
         drvPeripheralProfileCfg.bufLen = bufferLen;

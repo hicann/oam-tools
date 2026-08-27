@@ -570,7 +570,7 @@ bool Platform::CheckIfSupportAdprof(uint32_t deviceId) const
     }
 
     if (!IsDrvApiVersionSupport(ADPROF_API_VERSION) || GetPlatformType() == CHIP_MINI) {
-        MSPROF_LOGI("Current version not support driver channel.");
+        MSPROF_LOGI("The current version does not support the driver channel.");
         return false;
     }
     constexpr uint32_t vmngNormalNoneSplitMode = 0;
@@ -582,7 +582,7 @@ bool Platform::CheckIfSupportAdprof(uint32_t deviceId) const
     }
     if ((GetPlatformType() == CHIP_DC || GetPlatformType() == CHIP_CLOUD) &&
         mode != vmngNormalNoneSplitMode) {
-        MSPROF_LOGI("This chip not support driver channel in split mode.");
+        MSPROF_LOGI("This chip does not support the driver channel in split mode.");
         return false;
     }
 

@@ -171,7 +171,7 @@ void PerfExtraTask::ResolvePerfRecordData(const std::string &fileName) const
 void PerfExtraTask::StoreData(const std::string &fileName)
 {
     if (!(Utils::IsFileExist(fileName))) {
-        MSPROF_LOGW("file:%s is not exist", fileName.c_str());
+        MSPROF_LOGW("file:%s does not exist", fileName.c_str());
         return;
     }
 

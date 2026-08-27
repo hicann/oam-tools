@@ -116,9 +116,9 @@ int32_t ProfDvppJob::Process()
             peripheralCfg_.profChannel      = channelId;
             peripheralCfg_.profSamplePeriod = samplePeriod_;
             peripheralCfg_.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId);
-            int32_t peroid = JsonParser::instance()->GetJsonChannelPeroid(channelId);
-            if (peroid != 0) {
-                peripheralCfg_.profSamplePeriod = peroid;
+            int32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId);
+            if (period != 0) {
+                peripheralCfg_.profSamplePeriod = period;
             } else {
                 peripheralCfg_.profSamplePeriod = samplePeriod_;
             }

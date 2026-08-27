@@ -51,6 +51,8 @@
 #include "prof_aicpu_job.h"
 #include "prof_adprof_job.h"
 #include "prof_ccu_job.h"
+#include "prof_comm_job.h"
+#include "json_parser.h"
 #include "tsd_stub.h"
 
 namespace {
@@ -112,6 +114,47 @@ using namespace Analysis::Dvvp::JobWrapper;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 using namespace Analysis::Dvvp::Common::Config;
 using namespace analysis::dvvp::driver;
+using namespace Msprofiler::Parser;
+
+namespace {
+int32_t g_capturedSamplePeriod = 0;
+
+int32_t CaptureTscpuStartConfig(const DrvPeripheralProfileCfg &config,
+    const std::vector<std::string> & /* events */)
+{
+    g_capturedSamplePeriod = config.profSamplePeriod;
+    return PROFILING_SUCCESS;
+}
+
+int32_t CaptureAicoreStartConfig(const DrvPeripheralProfileCfg &config,
+    const std::vector<int32_t> & /* cores */, const std::vector<std::string> & /* events */)
+{
+    g_capturedSamplePeriod = config.profSamplePeriod;
+    return PROFILING_SUCCESS;
+}
+
+int32_t CapturePeripheralStartConfig(DrvPeripheralProfileCfg &config)
+{
+    g_capturedSamplePeriod = config.profSamplePeriod;
+    return PROFILING_SUCCESS;
+}
+
+class TestProfPeripheralJob : public ProfPeripheralJob {
+public:
+    void SetChannel(AI_DRV_CHANNEL channelId)
+    {
+        channelId_ = channelId;
+    }
+};
+
+void SetChannelPeriod(AI_DRV_CHANNEL channelId, int32_t period)
+{
+    ProfJsonChannels channel = {};
+    channel.channelId = channelId;
+    channel.period = period;
+    JsonParser::instance()->channelParams_[channelId] = channel;
+}
+}
 
 class JOB_WRAPPER_PROF_TsCPu_JOB_TEST: public testing::Test {
 protected:
@@ -129,6 +172,8 @@ protected:
     }
     virtual void TearDown() {
         GlobalMockObject::reset();
+        JsonParser::instance()->channelParams_.clear();
+        JsonParser::instance()->UnInit();
         collectionJobCfg_.reset();
     }
 public:
@@ -171,6 +216,42 @@ TEST_F(JOB_WRAPPER_PROF_TsCPu_JOB_TEST, Process) {
     EXPECT_EQ(PROFILING_SUCCESS, proTsCpuJob->Process());
 }
 
+TEST_F(JOB_WRAPPER_PROF_TsCPu_JOB_TEST, ProcessUsesConfiguredPeriod) {
+    constexpr int32_t configuredPeriod = 37;
+    SetChannelPeriod(PROF_CHANNEL_TS_CPU, configuredPeriod);
+    collectionJobCfg_->jobParams.events->push_back("0x11");
+    g_capturedSamplePeriod = 0;
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvTscpuStart)
+        .stubs()
+        .will(invoke(CaptureTscpuStartConfig));
+
+    auto profTscpuJob = std::make_shared<ProfTscpuJob>();
+    ASSERT_EQ(PROFILING_SUCCESS, profTscpuJob->Init(collectionJobCfg_));
+    ASSERT_EQ(PROFILING_SUCCESS, profTscpuJob->Process());
+    EXPECT_EQ(configuredPeriod, g_capturedSamplePeriod);
+}
+
+TEST_F(JOB_WRAPPER_PROF_TsCPu_JOB_TEST, PeripheralProcessUsesConfiguredPeriod) {
+    constexpr int32_t configuredPeriod = 43;
+    SetChannelPeriod(PROF_CHANNEL_TS_CPU, configuredPeriod);
+    g_capturedSamplePeriod = 0;
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvPeripheralStart)
+        .stubs()
+        .will(invoke(CapturePeripheralStartConfig));
+
+    auto profPeripheralJob = std::make_shared<TestProfPeripheralJob>();
+    profPeripheralJob->SetChannel(PROF_CHANNEL_TS_CPU);
+    ASSERT_EQ(PROFILING_SUCCESS, profPeripheralJob->Init(collectionJobCfg_));
+    ASSERT_EQ(PROFILING_SUCCESS, profPeripheralJob->Process());
+    EXPECT_EQ(configuredPeriod, g_capturedSamplePeriod);
+}
+
 TEST_F(JOB_WRAPPER_PROF_TsCPu_JOB_TEST, Uninit) {
     GlobalMockObject::verify();
 
@@ -198,6 +279,7 @@ protected:
     }
     virtual void TearDown() {
         GlobalMockObject::reset();
+        JsonParser::instance()->UnInit();
         collectionJobCfg_.reset();
     }
 public:
@@ -276,6 +358,7 @@ protected:
     }
     virtual void TearDown() {
         GlobalMockObject::reset();
+        JsonParser::instance()->channelParams_.clear();
         collectionJobCfg_.reset();
     }
 public:
@@ -334,6 +417,27 @@ TEST_F(JOB_WRAPPER_PROF_AICORE_JOB_TEST, Process) {
         .stubs()
         .will(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_SUCCESS, profAicoreJob->Process());
+}
+
+TEST_F(JOB_WRAPPER_PROF_AICORE_JOB_TEST, ProcessUsesConfiguredPeriod) {
+    constexpr int32_t configuredPeriod = 41;
+    SetChannelPeriod(PROF_CHANNEL_AI_CORE, configuredPeriod);
+    g_capturedSamplePeriod = 0;
+    collectionJobCfg_->comParams->params->ai_core_profiling = "on";
+    collectionJobCfg_->comParams->params->ai_core_profiling_mode = "sample-based";
+    collectionJobCfg_->jobParams.events->push_back("0x11");
+    collectionJobCfg_->jobParams.cores->push_back(0);
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvAicoreStart)
+        .stubs()
+        .will(invoke(CaptureAicoreStartConfig));
+
+    auto profAicoreJob = std::make_shared<ProfAicoreJob>();
+    ASSERT_EQ(PROFILING_SUCCESS, profAicoreJob->Init(collectionJobCfg_));
+    ASSERT_EQ(PROFILING_SUCCESS, profAicoreJob->Process());
+    EXPECT_EQ(configuredPeriod, g_capturedSamplePeriod);
 }
 
 TEST_F(JOB_WRAPPER_PROF_AICORE_JOB_TEST, Uninit) {

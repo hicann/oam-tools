@@ -74,7 +74,7 @@ int32_t ProfAdprofJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     drvError_t err = drvDeviceGetPhyIdByIndex(static_cast<uint32_t>(cfg->comParams->devId), &phyId_);
     if (err != DRV_ERROR_NONE) {
         if (err == DRV_ERROR_NOT_SUPPORT) {
-            MSPROF_LOGW("[ProfAdprofJob]Driver not support drvDeviceGetPhyIdByIndex interface.");
+            MSPROF_LOGW("[ProfAdprofJob]Driver does not support the drvDeviceGetPhyIdByIndex interface.");
             phyId_ = static_cast<uint32_t>(cfg->comParams->devId);
         } else {
             MSPROF_LOGE("[ProfAdprofJob]Failed to get phyId by devId: %u, err: %d.",
@@ -106,7 +106,7 @@ int32_t ProfAdprofJob::InitAdprof()
     uint32_t ret = tsdCapabilityGet_(collectionJobCfg_->comParams->devId, TSD_CAPABILITY_ADPROF,
                                      reinterpret_cast<uint64_t>(&result));
     if (ret != tsd::TSD_OK || !result) {
-        MSPROF_LOGW("Tsd client not support adprof");
+        MSPROF_LOGW("The Tsd client does not support adprof");
         return PROFILING_FAILED;
     }
 

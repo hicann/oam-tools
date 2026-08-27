@@ -96,14 +96,14 @@ const std::string CANN_JSON = R"({
 
 const std::string DEVICE_JSON = R"({
     "device": {
-        "poll_peroid": 10000,
+        "poll_period": 10000,
         "channels": [
             {
                 "channel": 6
             },
             {
                 "channel": 7,
-                "peroid": 20,
+                "period": 20,
                 "threshold": 999,
                 "channel_buffer_size": 2097152,
                 "driver_buffer_size": 64,
@@ -112,7 +112,7 @@ const std::string DEVICE_JSON = R"({
             },
             {
                 "channel": 45,
-                "peroid": 10000,
+                "period": 10000,
                 "threshold": 100,
                 "channel_buffer_size": 10,
                 "driver_buffer_size": 10,
@@ -121,7 +121,7 @@ const std::string DEVICE_JSON = R"({
             },
             {
                 "channel": 48,
-                "peroid": 20,
+                "period": 20,
                 "threshold": 20,
                 "channel_buffer_size": 2097152,
                 "driver_buffer_size": 100,
@@ -130,11 +130,11 @@ const std::string DEVICE_JSON = R"({
             },
             {
                 "channel": 0,
-                "peroid": 10
+                "period": 10
             },
             {
                 "channel": 160,
-                "peroid": 10
+                "period": 10
             }
         ]
     }
@@ -168,14 +168,14 @@ const std::string FULL_JSON = R"({
         "channels": [
             {
                 "channel": 45,
-                "peroid": 1,
+                "period": 1,
                 "threshold": 10,
                 "channel_buffer_size": 1048576,
                 "driver_buffer_size": 32
             },
             {
                 "channel": 48,
-                "peroid": 1000,
+                "period": 1000,
                 "threshold": 95,
                 "channel_buffer_size": 4194304,
                 "driver_buffer_size": 128,
@@ -213,7 +213,7 @@ TEST_F(JSON_PARSER_UTEST, InitWithMissingInvalidAndEmptyJsonKeepsDefaults)
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelReporterSwitch(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_DVPP));
-    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_DVPP));
+    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_DVPP));
 }
 
@@ -252,28 +252,28 @@ TEST_F(JSON_PARSER_UTEST, ParsesDeviceChannelsAndBounds)
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelProfSwitch(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_DVPP));
-    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_DVPP));
+    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_DVPP));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_DVPP));
 
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelReporterSwitch(PROF_CHANNEL_DDR));
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelProfSwitch(PROF_CHANNEL_DDR));
     EXPECT_EQ(2097152U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_DDR));
     EXPECT_EQ(64U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_DDR));
-    EXPECT_EQ(20U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_DDR));
+    EXPECT_EQ(20U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_DDR));
     EXPECT_EQ(999U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_DDR));
 
     EXPECT_FALSE(JsonParser::instance()->GetJsonChannelReporterSwitch(PROF_CHANNEL_HWTS_LOG));
     EXPECT_FALSE(JsonParser::instance()->GetJsonChannelProfSwitch(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(10U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_HWTS_LOG));
-    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_HWTS_LOG));
+    EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(0U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_HWTS_LOG));
 
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelReporterSwitch(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelProfSwitch(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(2097152U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(100U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_AIV_HWTS_LOG));
-    EXPECT_EQ(20U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_AIV_HWTS_LOG));
+    EXPECT_EQ(20U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(20U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_AIV_HWTS_LOG));
 }
 
@@ -293,14 +293,14 @@ TEST_F(JSON_PARSER_UTEST, ParsesFullJsonAndInitOnlyOnce)
     EXPECT_EQ(32768U, JsonParser::instance()->GetJsonModuleReporterBufferLen(ADDITIONAL));
     EXPECT_FALSE(JsonParser::instance()->GetJsonModuleReporterSwitch(ADDITIONAL));
 
-    EXPECT_EQ(1U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_HWTS_LOG));
+    EXPECT_EQ(1U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(10U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(1048576U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_HWTS_LOG));
     EXPECT_EQ(32U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_HWTS_LOG));
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelProfSwitch(PROF_CHANNEL_HWTS_LOG));
     EXPECT_TRUE(JsonParser::instance()->GetJsonChannelReporterSwitch(PROF_CHANNEL_HWTS_LOG));
 
-    EXPECT_EQ(1000U, JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_AIV_HWTS_LOG));
+    EXPECT_EQ(1000U, JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(95U, JsonParser::instance()->GetJsonChannelThreshold(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(4194304U, JsonParser::instance()->GetJsonChannelReportBufferLen(PROF_CHANNEL_AIV_HWTS_LOG));
     EXPECT_EQ(128U, JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_AIV_HWTS_LOG));

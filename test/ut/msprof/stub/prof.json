@@ -33,11 +33,11 @@
         ]
     },
     "device": {
-        "poll_peroid": 1000,
+        "poll_period": 1000,
         "channels": [
             {
                 "channel": 6,
-                "peroid": 100,
+                "period": 100,
                 "channel_buffer_size": 4096,
                 "driver_buffer_size": 2048,
                 "threshold": 80,
@@ -46,7 +46,7 @@
             },
             {
                 "channel": 7,
-                "peroid": 2000,
+                "period": 2000,
                 "channel_buffer_size": 4096,
                 "driver_buffer_size": 4096,
                 "threshold": 80,
@@ -55,7 +55,7 @@
             },
             {
                 "channel": 45,
-                "peroid": 2000,
+                "period": 2000,
                 "channel_buffer_size": 4096,
                 "driver_buffer_size": 4096,
                 "threshold": 1,

@@ -71,9 +71,9 @@ int32_t ProfTscpuJob::Process()
     drvPeripheralProfileCfg.profDeviceId = collectionJobCfg_->comParams->devId;
     drvPeripheralProfileCfg.profChannel = PROF_CHANNEL_TS_CPU;
     drvPeripheralProfileCfg.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_TS_CPU);
-    uint32_t peroid = JsonParser::instance()->GetJsonChannelPeroid(PROF_CHANNEL_TS_CPU);
-    if (peroid != 0) {
-        drvPeripheralProfileCfg.profSamplePeriod = peroid;
+    uint32_t period = JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_TS_CPU);
+    if (period != 0) {
+        drvPeripheralProfileCfg.profSamplePeriod = period;
     } else {
         drvPeripheralProfileCfg.profSamplePeriod = tsCpuPeriod;  // int32_t prof_sample_period
     }
@@ -223,8 +223,8 @@ int32_t ProfTsTrackJob::Process()
     if (Platform::instance()->GetMaxMonitorNumber() == ACC_PMU_EVENT_MAX_NUM) {
         drvPeripheralProfileCfg.profSamplePeriod = 0;
     } else {
-        uint32_t peroid = JsonParser::instance()->GetJsonChannelPeroid(channelId_);
-        drvPeripheralProfileCfg.profSamplePeriod = (peroid != 0) ? peroid : cpuProfilingInterval;
+        uint32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId_);
+        drvPeripheralProfileCfg.profSamplePeriod = (period != 0) ? period : cpuProfilingInterval;
     }
     drvPeripheralProfileCfg.profDataFilePath = "";
     const int32_t ret = DrvTsFwStart(drvPeripheralProfileCfg, collectionJobCfg_->comParams->params);

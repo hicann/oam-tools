@@ -32,7 +32,7 @@ enum class PmuCalculationType {
 
 struct PmuCalculationAttr {
     std::string pmuName;
-    CalculatePmuFunc fomula;
+    CalculatePmuFunc formula;
     PmuCalculationType type;
     CalculateAttr attr;
 };

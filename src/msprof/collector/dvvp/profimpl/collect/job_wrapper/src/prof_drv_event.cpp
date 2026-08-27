@@ -40,7 +40,7 @@ int32_t ProfDrvEvent::SubscribeEventThreadInit(struct TaskEventAttr *eventAttr) 
     userBlock.pulArg = eventAttr;
     int32_t ret = OsalCreateTaskWithThreadAttr(&eventAttr->handle, &userBlock, &threadAttr);
     if (ret != OSAL_EN_OK) {
-        MSPROF_LOGE("Start task wait event thread for device %u failed, strerr : %s",
+        MSPROF_LOGE("Start task wait event thread for device %u failed, error message: %s",
             eventAttr->deviceId, strerror(OsalGetErrorCode()));
         return PROFILING_FAILED;
     }
@@ -79,7 +79,7 @@ void *ProfDrvEvent::EventThreadHandle(void *attr)
         }
         int32_t err = Platform::instance()->HalEschedCreateGrpEx(eventAttr->deviceId, &grpPara, &grpId);
         if (err != DRV_ERROR_NONE) {
-            (void)halEschedDettachDevice(eventAttr->deviceId);                    // dettach process from device
+            (void)halEschedDettachDevice(eventAttr->deviceId);                    // detach process from device
             MSPROF_LOGW("Called halEschedCreateGrpEx unsuccessfully. (devId=%u, ret=%d)\n", eventAttr->deviceId, err);
             return nullptr;
         }
@@ -205,7 +205,7 @@ void ProfDrvEvent::WaitEvent(struct TaskEventAttr *eventAttr, uint32_t grpId)
 
 void ProfDrvEvent::SubscribeEventThreadUninit(uint32_t devId) const
 {
-    // dettach process from device
+    // detach process from device
     drvError_t ret = halEschedDettachDevice(devId);
     if (ret != DRV_ERROR_NONE) {
         MSPROF_LOGW("call halEschedDettachDevice ret: %d", ret);

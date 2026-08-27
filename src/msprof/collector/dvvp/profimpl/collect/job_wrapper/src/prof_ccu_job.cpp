@@ -161,7 +161,7 @@ int32_t ProfCcuStatJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
         return PROFILING_FAILED;
     }
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_CCU_STATISTIC)) {
-        MSPROF_LOGI("The platform not support ccu statistic feature.");
+        MSPROF_LOGI("The platform does not support the ccu statistic feature.");
         return PROFILING_FAILED;
     }
     collectionJobCfg_ = cfg;

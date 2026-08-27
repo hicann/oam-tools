@@ -101,7 +101,7 @@ int32_t ProfDdrJob::SetPeripheralConfig()
         } else if ((*collectionJobCfg_->jobParams.events)[i].compare("master_id") == 0) {  // master id
             configP->masterId = static_cast<uint32_t>(collectionJobCfg_->comParams->params->ddr_master_id);
         } else {
-            MSPROF_LOGW("DDR event:%s not support", (*collectionJobCfg_->jobParams.events)[i].c_str());
+            MSPROF_LOGW("DDR event:%s is not supported", (*collectionJobCfg_->jobParams.events)[i].c_str());
         }
     }
 
@@ -175,7 +175,7 @@ int32_t ProfHbmJob::SetPeripheralConfig()
         } else if ((*collectionJobCfg_->jobParams.events)[i].compare("write") == 0) {
             configP->event[configP->eventNum++] = PERIPHERAL_EVENT_WRITE;
         } else {
-            MSPROF_LOGW("HBM event:%s not support", (*collectionJobCfg_->jobParams.events)[i].c_str());
+            MSPROF_LOGW("HBM event:%s is not supported", (*collectionJobCfg_->jobParams.events)[i].c_str());
         }
     }
 
@@ -427,7 +427,7 @@ int32_t ProfLlcJob::SetPeripheralConfig()
         } else if ((*collectionJobCfg_->jobParams.events)[i].compare("write") == 0) {
             configP->sampleType = llcWrite;
         } else {
-            MSPROF_LOGW("LLC event:%s not support", (*collectionJobCfg_->jobParams.events)[i].c_str());
+            MSPROF_LOGW("LLC event:%s is not supported", (*collectionJobCfg_->jobParams.events)[i].c_str());
         }
     }
 

@@ -46,7 +46,7 @@ FileAgeing::~FileAgeing()
 int32_t FileAgeing::Init()
 {
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_TYPE) {
-        MSPROF_LOGW("platform type is MINI_TYPE, not support file ageing");
+        MSPROF_LOGW("The MINI_TYPE platform does not support file ageing");
         return PROFILING_SUCCESS;
     }
 

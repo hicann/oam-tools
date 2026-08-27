@@ -1234,7 +1234,7 @@ int32_t InputParser::UninitCheckHostSysCmd(const OsalProcess checkProcess) const
         return MSPROF_DAEMON_ERROR;
     }
     if (!analysis::dvvp::common::utils::Utils::ProcessIsRuning(checkProcess)) {
-        MSPROF_LOGI("Process:%d is not exist", static_cast<int32_t>(checkProcess));
+        MSPROF_LOGI("Process:%d does not exist", static_cast<int32_t>(checkProcess));
         return MSPROF_DAEMON_OK;
     }
     static const std::string ENV_PATH = "PATH=/usr/bin/:/usr/sbin:/var:/bin";

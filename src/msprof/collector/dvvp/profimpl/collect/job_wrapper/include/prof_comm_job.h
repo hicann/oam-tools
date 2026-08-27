@@ -31,7 +31,7 @@ using namespace analysis::dvvp::common::config;
 #define CHECK_JOB_EVENT_PARAM_RET(cfg, ACTION)  do {                                   \
     if ((cfg) == nullptr || (cfg)->comParams == nullptr ||                             \
         (cfg)->jobParams.events == nullptr || (cfg)->jobParams.events->size() == 0) {  \
-        MSPROF_LOGI("Job check event param not pass");                                 \
+        MSPROF_LOGI("Job event parameter validation failed");                         \
         ACTION;                                                                        \
     }                                                                                  \
 } while (0)
@@ -53,7 +53,7 @@ using namespace analysis::dvvp::common::config;
 
 #define CHECK_JOB_CONFIG_UNSIGNED_SIZE_RET(size, ACTION) do {                          \
     if ((size) == 0 || (size) > 0x7FFFFFFF) {                                          \
-        MSPROF_LOGE("Profiling Config Size Out Range");                                \
+        MSPROF_LOGE("Profiling configuration size is out of range");                   \
         ACTION;                                                                        \
     }                                                                                  \
 } while (0)

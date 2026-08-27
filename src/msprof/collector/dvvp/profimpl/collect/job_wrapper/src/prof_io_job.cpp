@@ -159,7 +159,7 @@ int32_t ProfNetDevStatJob::Process()
             MSPROF_LOGW("NetDevStatsHandler Init Failed, ret=%d", ret);
             return PROFILING_FAILED;
         } else if (ret == PROFILING_NOTSUPPORT) {
-            MSPROF_LOGW("NetDevStatsHandler Not Support");
+            MSPROF_LOGW("NetDevStatsHandler is not supported");
             return PROFILING_FAILED;
         }
         MSPROF_LOGI("NetDevStatsHandler Init succ, sampleIntervalNs_:%llu", sampleIntervalNs_);
@@ -189,7 +189,7 @@ int32_t ProfNetDevStatJob::Uninit()
     auto curHandler = TimerManager::instance()->GetProfTimerHandler(PROF_NETDEV_STATS);
     if (curHandler == nullptr) {
         if (collectionJobCfg_->comParams->devId != DEFAULT_HOST_ID) {
-            MSPROF_LOGE("NetDevStatsHandler is not exist");
+            MSPROF_LOGE("NetDevStatsHandler does not exist");
         }
         return PROFILING_SUCCESS;
     }

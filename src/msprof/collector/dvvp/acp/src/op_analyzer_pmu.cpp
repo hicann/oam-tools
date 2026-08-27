@@ -124,7 +124,7 @@ void OpAnalyzerPmu::HandleSubTaskThread(const void *data, uint16_t logType) cons
 {
     UNUSED(data);
     UNUSED(logType);
-    MSPROF_LOGI("SubTaskThread data not support to analyze.");
+    MSPROF_LOGI("SubTaskThread data is not supported for analysis.");
     return;
 }
 

@@ -144,7 +144,7 @@ int32_t ProfUbJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     collectionJobCfg_ = cfg;
 
     if (!Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_UB)) {
-        MSPROF_LOGI("Ub Profiling not support.");
+        MSPROF_LOGI("Ub Profiling is not supported.");
         return PROFILING_FAILED;
     }
 

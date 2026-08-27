@@ -95,7 +95,7 @@ uint64_t HashData::DoubleHash(const std::string &data) const
 uint64_t HashData::GenHashId(const std::string &module, CONST_CHAR_PTR data, uint32_t dataLen)
 {
     if (hashMapMutex_.find(module) == hashMapMutex_.end()) {
-        MSPROF_LOGE("HashData not support module:%s", module.c_str());
+        MSPROF_LOGE("HashData does not support module:%s", module.c_str());
         return 0;
     }
 

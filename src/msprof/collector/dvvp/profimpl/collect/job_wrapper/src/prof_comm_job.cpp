@@ -183,9 +183,9 @@ int32_t ProfPeripheralJob::Process()
     peripheralCfg_.profDeviceId     = collectionJobCfg_->comParams->devId;
     peripheralCfg_.profChannel      = channelId_;
     peripheralCfg_.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId_);
-    int32_t peroid = JsonParser::instance()->GetJsonChannelPeroid(channelId_);
-    if (peroid != 0) {
-        peripheralCfg_.profSamplePeriod = peroid;
+    int32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId_);
+    if (period != 0) {
+        peripheralCfg_.profSamplePeriod = period;
     } else {
         peripheralCfg_.profSamplePeriod = samplePeriod_;
     }

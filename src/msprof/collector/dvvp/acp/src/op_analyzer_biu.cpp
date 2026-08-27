@@ -341,7 +341,7 @@ void OpAnalyzerBiu::SaveDataToFile(std::string path)
         }
     }
     if (biuStringData.empty()) {
-        MSPROF_LOGI("Biu data is empty, nothing need to do.");
+        MSPROF_LOGI("Biu data is empty, nothing needs to be done.");
         return;
     }
     // remove comma at the end of string
