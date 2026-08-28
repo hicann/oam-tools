@@ -17,7 +17,7 @@
 # device 侧联编守卫：本目录可能被单独作为入口联编，补齐缺失的 INTERFACE 目标
 include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
-protobuf_generate(msprofbin_proto
+generate_cann_protobuf(msprofbin_proto
     CppPath
     HeaderPath
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/profiler.proto

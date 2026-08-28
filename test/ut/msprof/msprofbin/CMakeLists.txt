@@ -9,7 +9,7 @@
 # -----------------------------------------------------------------------------------------------------------
 set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)
 
-protobuf_generate(msprof_bin_utest_proto
+generate_cann_protobuf(msprof_bin_utest_proto
     CppPath
     HeaderPath
     ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto

@@ -296,7 +296,7 @@ Closed-source binary packages are fetched per branch. The table below uses the d
 |---|---|---|
 |msprobe|master|https://gitcode.com/Ascend/msprobe|
 |msprof|master|https://gitcode.com/Ascend/msprof|
-|cann-cmake|master-049|[cmake-master-049.tar.gz](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cmake/cmake-master-049.tar.gz) |
+|cann-cmake|master-053|[cmake-master-053.tar.gz](https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cmake/cmake-master-053.tar.gz) |
 
 <a id="environment-verification"></a>
 ## Environment Verification

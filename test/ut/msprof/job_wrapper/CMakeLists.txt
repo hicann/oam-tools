@@ -15,7 +15,7 @@
 # ----------------------------------------------------------------------------
 set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)
 
-protobuf_generate(job_wrapper_proto
+generate_cann_protobuf(job_wrapper_proto
     CppPath
     HeaderPath
     ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto

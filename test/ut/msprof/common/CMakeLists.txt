@@ -264,7 +264,7 @@ set_target_properties(chunk_pool_utest
 )
 
 ###################### param_validation_utest ###########################
-protobuf_generate(param_validation_utest_proto
+generate_cann_protobuf(param_validation_utest_proto
     CppPath
     HeaderPath
     ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto

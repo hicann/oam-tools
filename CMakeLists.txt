@@ -109,8 +109,6 @@ get_target_property(PROTOC_PROGRAM host_protoc IMPORTED_LOCATION)
 set(PROTOBUF_HOST_INCLUDE ${PROTOBUF_LIB_CACHE_DIR}/include)
 message("PROTOC_PROGRAM: ${PROTOC_PROGRAM}")
 
-include(cmake/third_party/protobuf_fun.cmake)
-
 include(cmake/dependencies.cmake)
 # 外部依赖库及编译选项
 include(cmake/third_party/third_party_header_libs.cmake)

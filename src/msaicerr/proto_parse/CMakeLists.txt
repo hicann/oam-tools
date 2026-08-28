@@ -14,7 +14,7 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-protobuf_generate(dump_data_protos
+generate_cann_protobuf(dump_data_protos
     CppPath
     HeaderPath
     ${CMAKE_CURRENT_LIST_DIR}/dump_data.proto

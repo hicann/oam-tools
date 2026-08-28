@@ -18,7 +18,7 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../msprof_intf_pub_cxx.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../msprof_find_target.cmake)
 
-protobuf_generate(profiler_proto_oam
+generate_cann_protobuf(profiler_proto_oam
     CppPath
     HeaderPath
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/profiler.proto
