@@ -41,7 +41,16 @@ compile_op = CompileOP(op_name, inputs, outputs, 'Ascend950')
 class TestCompileOp():
 
     @staticmethod
-    def test_get_ub_size_not_tbe(mocker):
+    def test_get_ub_size_not_tbe(monkeypatch, mocker):
+        # 必须显式让 "from tbe.common import platform" 失败，不能依赖环境里
+        # 恰好没有 tbe：CANN 自带 tbe，其导入会因缺 scipy 中途失败，留下
+        # tbe=None 但 tbe.common 已被缓存为真模块（部分初始化的导入缓存）。
+        # 此后该 import 经缓存命中而不抛 ImportError，被测分支走不到 return 0，
+        # 于是本用例单独跑通过、进全量套件即失败，且云端与本地失败的用例名不同。
+        # 把条目设为 None 是 CPython 约定：sys.modules[x] is None 时 import x
+        # 直接抛 ImportError。monkeypatch 会在用例结束后自动还原。
+        for mod_name in ("tbe", "tbe.common", "tbe.common.platform"):
+            monkeypatch.setitem(sys.modules, mod_name, None)
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 
