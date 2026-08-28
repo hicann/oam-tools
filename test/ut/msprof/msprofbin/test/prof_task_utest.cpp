@@ -38,7 +38,13 @@ TEST_F(PROF_TASK_UTEST, RpcTaskTest) {
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
     new analysis::dvvp::message::ProfileParams);   
     SHARED_PTR_ALIA<ProfRpcTask> task(new ProfRpcTask(0, params));
+
+    testing::internal::CaptureStdout();
     EXPECT_EQ(task->Init(), PROFILING_FAILED);
+    const std::string log = testing::internal::GetCapturedStdout();
+    EXPECT_NE(std::string::npos,
+        log.find("Invalid profiling period: -1, valid range: greater than 0."));
+
     EXPECT_EQ(task->Stop(), PROFILING_SUCCESS);
     task->PostSyncDataCtrl();
     EXPECT_EQ(task->UnInit(), PROFILING_SUCCESS);

@@ -78,7 +78,7 @@ ChannelReader::ChannelReader(int32_t deviceId, analysis::dvvp::driver::AI_DRV_CH
     if (JsonParser::instance()->GetJsonChannelReportBufferLen(channelId_) != 0) {
         bufSize_ = JsonParser::instance()->GetJsonChannelReportBufferLen(channelId_);
     }
-    MSPROF_LOGI("Channel reader %s, buffer size : %d", relativeFileName.c_str(), bufSize_);
+    MSPROF_LOGI("Channel reader %s, buffer size: %d bytes", relativeFileName.c_str(), bufSize_);
 }
 
 ChannelReader::~ChannelReader() {}

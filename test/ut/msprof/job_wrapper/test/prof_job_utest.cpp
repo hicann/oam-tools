@@ -1605,6 +1605,18 @@ TEST_F(JOB_WRAPPER_PROF_CTRLCPU_JOB_TEST, StoreData) {
     auto jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
     Analysis::Dvvp::JobWrapper::PerfExtraTask perfTask(10, "./", jobCtx, collectionJobCfg_->comParams->params);
     EXPECT_EQ(PROFILING_SUCCESS, perfTask.Init());
+
+    const std::string emptyFileName = "./empty_perf_data_test_" + std::to_string(getpid());
+    std::ofstream emptyFile(emptyFileName);
+    emptyFile.close();
+    testing::internal::CaptureStdout();
+    perfTask.StoreData(emptyFileName);
+    const std::string log = testing::internal::GetCapturedStdout();
+    EXPECT_NE(std::string::npos,
+        log.find("Invalid data file size: 0 bytes, valid range: (0, " +
+            std::to_string(MSVP_LARGE_FILE_MAX_LEN) + "] bytes."));
+    remove(emptyFileName.c_str());
+
     //file open failed
     std::string fileName = "./test/test";
     perfTask.StoreData(fileName);
@@ -1616,6 +1628,18 @@ TEST_F(JOB_WRAPPER_PROF_CTRLCPU_JOB_TEST, StoreData) {
 
     perfTask.StoreData(fileName);
     remove("./test");
+
+    const std::string upperBoundFileName = "./upper_bound_perf_data_test_" + std::to_string(getpid());
+    std::ofstream upperBoundFile(upperBoundFileName);
+    upperBoundFile.close();
+    MOCKER(analysis::dvvp::common::utils::Utils::GetFileSize)
+        .stubs().will(returnValue(static_cast<int64_t>(MSVP_LARGE_FILE_MAX_LEN + 1)));
+    testing::internal::CaptureStdout();
+    perfTask.StoreData(upperBoundFileName);
+    const std::string upperBoundLog = testing::internal::GetCapturedStdout();
+    EXPECT_NE(std::string::npos, upperBoundLog.find("Invalid data file size: " +
+        std::to_string(MSVP_LARGE_FILE_MAX_LEN + 1)));
+    remove(upperBoundFileName.c_str());
 }
 
 

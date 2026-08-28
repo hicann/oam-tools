@@ -287,7 +287,7 @@ int32_t ProfRpcTask::Init()
         return PROFILING_FAILED;
     }
     if (params_->profiling_period <= 0) {
-        MSPROF_LOGE("Profiling period is invalid, and the value is %d", params_->profiling_period);
+        MSPROF_LOGE("Invalid profiling period: %d, valid range: greater than 0.", params_->profiling_period);
         return PROFILING_FAILED;
     }
     int32_t ret =

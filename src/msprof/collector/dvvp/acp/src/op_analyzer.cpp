@@ -291,8 +291,10 @@ void OpAnalyzer::SubTaskInfoMatch(KernelDetail &value)
 void OpAnalyzer::StoreAssociation() const
 {
     for (auto iter = analyzerPmu_->logInfo_.begin(); iter != analyzerPmu_->logInfo_.end(); ++iter) {
-        MSPROF_LOGI("Save summary info key: %s, task id: %u, stream id: %u, begin time: %llu, end time: %llu, "
-            "aic total cycle: %llu, aiv total cycle: %llu, main block dim: %u, slave block dim: %u, aic freq: %lf, "
+        MSPROF_LOGI("Save summary info key: %s, task id: %u, stream id: %u, begin time: %llu ns, "
+            "end time: %llu ns, "
+            "aic total cycle: %llu, aiv total cycle: %llu, main block dim: %u, slave block dim: %u, "
+            "aic freq: %lf MHz, "
             "aic core num: %lld, aiv core num: %lld.", iter->first.c_str(), iter->second.taskId,
             iter->second.streamId, iter->second.beginTime, iter->second.endTime, iter->second.aicTotalCycle,
             iter->second.aivTotalCycle, lowBlockDim_, highBlockDim_, aicFreq_, aicCoreNum_, aivCoreNum_);
@@ -429,8 +431,9 @@ void OpAnalyzer::WriteOpBaseData(std::ofstream& file, std::vector<std::vector<Ke
             taskDurationAvg += ((static_cast<float>(data.endTime - data.beginTime) / NS_CONVERT_US) / dataSize);
             // total time
             HandleOpTotalTime(data, aicTotalTimeAvg, aivTotalTimeAvg);
-            MSPROF_LOGI("Acp calculate summary data, taskDuration: %f, aicTotalCycle: %llu, aivTotalCycle: %llu, "
-                "aicTotalTime: %f, aivTotalTime: %f, vec location: %u, vec size: %u.", taskDurationAvg,
+            MSPROF_LOGI("Acp calculate summary data, taskDuration: %f us, aicTotalCycle: %llu, "
+                "aivTotalCycle: %llu, aicTotalTime: %f us, aivTotalTime: %f us, vec location: %u, vec size: %u.",
+                taskDurationAvg,
                 aicTotalCycleAvg, aivTotalCycleAvg, aicTotalTimeAvg, aivTotalTimeAvg, time, dataSize);
         }
     }
@@ -445,8 +448,8 @@ void OpAnalyzer::WriteOpBaseData(std::ofstream& file, std::vector<std::vector<Ke
     WriteFloatDataToFile(file, aivTotalTimeAvg);
     file << ",";
     file << aivTotalCycleAvg;
-    MSPROF_LOGI("Save task duration: %f, aic total time: %f, aiv total time: %f.", taskDurationAvg, aicTotalTimeAvg,
-        aivTotalTimeAvg);
+    MSPROF_LOGI("Save task duration: %f us, aic total time: %f us, aiv total time: %f us.", taskDurationAvg,
+        aicTotalTimeAvg, aivTotalTimeAvg);
 }
 
 /**

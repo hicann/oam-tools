@@ -84,7 +84,8 @@ std::string EncodeMessage(SHARED_PTR_ALIA<google::protobuf::Message> message)
     const std::string &type = message->GetTypeName();
 
     if (type.size() > analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN) {
-        MSPROF_LOGE("Type size:%zu is invalid", type.size());
+        MSPROF_LOGE("Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
+            analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN);
         return out;
     }
     auto nameLen = static_cast<uint32_t>(type.size() + 1);
@@ -123,7 +124,8 @@ SHARED_PTR_ALIA<std::string> EncodeMessageShared(SHARED_PTR_ALIA<google::protobu
     const std::string &type = message->GetTypeName();
 
     if (type.size() > analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN) {
-        MSPROF_LOGE("Type size:%zu is invalid", type.size());
+        MSPROF_LOGE("Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
+            analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN);
         return out;
     }
     auto nameLen = static_cast<uint32_t>(type.size() + 1);

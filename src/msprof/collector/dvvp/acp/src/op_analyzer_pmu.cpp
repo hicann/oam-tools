@@ -91,7 +91,7 @@ void OpAnalyzerPmu::HandleStarsAcsq(const T *logData, uint16_t logType)
     uint64_t sysTime = ((static_cast<uint64_t>(logData->sysCountHigh) << offsetBit) | logData->sysCountLow);
     sysTime = static_cast<uint64_t>(static_cast<double>(sysTime) / frequency_);
 
-    MSPROF_LOGI("HandleStarsAcsq get key: %s, time: %llu, logType: %u.", key.c_str(), sysTime, logType);
+    MSPROF_LOGI("HandleStarsAcsq get key: %s, time: %llu ns, logType: %u.", key.c_str(), sysTime, logType);
     auto iter = logInfo_.find(key); // search for first match
     if (iter == logInfo_.end() ||
         (iter->second.beginTime != 0 && iter->second.endTime != 0)) {

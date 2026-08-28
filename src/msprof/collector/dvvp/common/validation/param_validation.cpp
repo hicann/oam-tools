@@ -34,7 +34,7 @@ using namespace analysis::dvvp::common::utils;
 using namespace Analysis::Dvvp::Common::Platform;
 
 constexpr int32_t MIN_INTERVAL = 1;
-constexpr int32_t MAX_INTERVAL = 15 * 24 * 3600 * 1000; // 15 * 24 * 3600 * 1000 = 15day's micro seconds
+constexpr int32_t MAX_INTERVAL = 15 * 24 * 3600 * 1000; // 15 days in milliseconds
 constexpr int32_t MAX_PERIOD = 30 * 24 * 3600;          // 30 * 24 * 3600 = 30day's seconds
 constexpr int32_t MAX_CORE_ID_SIZE = 80;                // ai core or aiv core id size
 constexpr int32_t BASE_HEX = 16;                        // hex to int
@@ -330,71 +330,74 @@ bool ParamValidation::CheckOpTypeIsValid(
 }
 
 bool ParamValidation::CheckProfilingIntervalIsValidTWO(
-    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
+    std::string *invalidKey, int32_t *invalidValue) const {
     if (params == nullptr) {
         MSPROF_LOGE("[CheckProfilingIntervalIsValidTWO]params is null");
         return false;
     }
-    if (!IsValidInterval(params->sys_sampling_interval, "sys_profiling")) {
+    if (!IsValidInterval(params->sys_sampling_interval, "sys_profiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->pid_sampling_interval, "pid_profiling")) {
+    if (!IsValidInterval(params->pid_sampling_interval, "pid_profiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->hardware_mem_sampling_interval, "hardware_mem")) {
+    if (!IsValidInterval(params->hardware_mem_sampling_interval, "hardware_mem", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->io_sampling_interval, "io_profiling")) {
+    if (!IsValidInterval(params->io_sampling_interval, "io_profiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->interconnection_sampling_interval, "interconnection_profiling")) {
+    if (!IsValidInterval(params->interconnection_sampling_interval, "interconnection_profiling",
+        invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->dvpp_sampling_interval, "dvpp_profiling")) {
+    if (!IsValidInterval(params->dvpp_sampling_interval, "dvpp_profiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->nicInterval, "nicProfiling")) {
+    if (!IsValidInterval(params->nicInterval, "nicProfiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->roceInterval, "roceProfiling")) {
+    if (!IsValidInterval(params->roceInterval, "roceProfiling", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->aicore_sampling_interval, "aicore_profiling")) {
+    if (!IsValidInterval(params->aicore_sampling_interval, "aicore_profiling", invalidKey, invalidValue)) {
         return false;
     }
     return true;
 }
 
 bool ParamValidation::CheckProfilingIntervalIsValid(
-    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const {
+    SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
+    std::string *invalidKey, int32_t *invalidValue) const {
     if (params == nullptr) {
         return false;
     }
-    if (!IsValidInterval(params->aiv_sampling_interval, "aiv")) {
+    if (!IsValidInterval(params->aiv_sampling_interval, "aiv", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->hccsInterval, "hccl")) {
+    if (!IsValidInterval(params->hccsInterval, "hccl", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->pcieInterval, "pcie")) {
+    if (!IsValidInterval(params->pcieInterval, "pcie", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->roceInterval, "roce")) {
+    if (!IsValidInterval(params->roceInterval, "roce", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->llc_interval, "llc")) {
+    if (!IsValidInterval(params->llc_interval, "llc", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->ddr_interval, "ddr")) {
+    if (!IsValidInterval(params->ddr_interval, "ddr", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->hbmInterval, "hbm")) {
+    if (!IsValidInterval(params->hbmInterval, "hbm", invalidKey, invalidValue)) {
         return false;
     }
-    if (!IsValidInterval(params->cpu_sampling_interval, "cpu_profiling")) {
+    if (!IsValidInterval(params->cpu_sampling_interval, "cpu_profiling", invalidKey, invalidValue)) {
         return false;
     }
-    return CheckProfilingIntervalIsValidTWO(params);
+    return CheckProfilingIntervalIsValidTWO(params, invalidKey, invalidValue);
 }
 
 bool ParamValidation::CheckSystemTraceSwitchProfiling(
@@ -626,7 +629,8 @@ bool ParamValidation::CheckAivEventCoresIsValid(const std::vector<int32_t> &core
 
 bool ParamValidation::CheckDdrEventsIsValid(const std::vector<std::string> &events) const {
     if (!CheckPmuEventSizeIsValid(events.size())) {
-        MSPROF_LOGE("ddr events size(%zu) is invalid.", events.size());
+        MSPROF_LOGE("Invalid DDR event count: %zu, valid range: [0, %hu].", events.size(),
+            Platform::instance()->GetMaxMonitorNumber());
         return false;
     }
     for (uint32_t i = 0; i < events.size(); ++i) {
@@ -639,7 +643,8 @@ bool ParamValidation::CheckDdrEventsIsValid(const std::vector<std::string> &even
 
 bool ParamValidation::CheckHbmEventsIsValid(const std::vector<std::string> &events) const {
     if (!CheckPmuEventSizeIsValid(events.size())) {
-        MSPROF_LOGE("hbm events size(%zu) is invalid.", events.size());
+        MSPROF_LOGE("Invalid HBM event count: %zu, valid range: [0, %hu].", events.size(),
+            Platform::instance()->GetMaxMonitorNumber());
         return false;
     }
     for (uint32_t i = 0; i < events.size(); ++i) {
@@ -773,8 +778,14 @@ bool ParamValidation::CheckProfilingParams(SHARED_PTR_ALIA<analysis::dvvp::messa
         MSPROF_LOGE("[CheckProfilingParams]llc_profiling_events is illegal");
         return false;
     }
-    if (!CheckProfilingIntervalIsValid(params)) {
-        MSPROF_LOGE("[CheckProfilingParams]profiling interval is illegal");
+    std::string invalidIntervalKey;
+    int32_t invalidIntervalValue = 0;
+    if (!CheckProfilingIntervalIsValid(params, &invalidIntervalKey, &invalidIntervalValue)) {
+        const std::string intervalUnit = invalidIntervalKey == "hardware_mem" ? "microseconds" : "milliseconds";
+        const std::string intervalKey = invalidIntervalKey.empty() ? "profiling" : invalidIntervalKey;
+        MSPROF_LOGE("[CheckProfilingParams] Invalid %s interval: %d %s, valid range: [%d, %d] %s.",
+            intervalKey.c_str(), invalidIntervalValue, intervalUnit.c_str(), MIN_INTERVAL, MAX_INTERVAL,
+            intervalUnit.c_str());
         return false;
     }
     if (!CheckProfilingSwitchIsValid(params)) {
@@ -802,9 +813,20 @@ int32_t ParamValidation::CheckEventsSize(const std::string &events) const {
     return PROFILING_SUCCESS;
 }
 
-bool ParamValidation::IsValidInterval(const int32_t interval, const std::string &logKey) const {
+bool ParamValidation::IsValidInterval(const int32_t interval, const std::string &logKey,
+    std::string *invalidKey, int32_t *invalidValue) const {
     if (interval < MIN_INTERVAL || interval > MAX_INTERVAL) {
-        MSPROF_LOGE("invalid %s interval: %d", logKey.c_str(), interval);
+        if (invalidKey != nullptr) {
+            *invalidKey = logKey;
+        }
+        if (invalidValue != nullptr) {
+            *invalidValue = interval;
+        }
+        if (invalidKey == nullptr && invalidValue == nullptr) {
+            const std::string intervalUnit = logKey == "hardware_mem" ? "microseconds" : "milliseconds";
+            MSPROF_LOGE("Invalid %s interval: %d %s, valid range: [%d, %d] %s.", logKey.c_str(), interval,
+                intervalUnit.c_str(), MIN_INTERVAL, MAX_INTERVAL, intervalUnit.c_str());
+        }
         return false;
     }
     return true;

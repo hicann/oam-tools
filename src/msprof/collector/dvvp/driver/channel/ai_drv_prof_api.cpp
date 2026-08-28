@@ -383,7 +383,8 @@ int32_t DrvSocPmuTaskStart(int32_t profDeviceId, AI_DRV_CHANNEL profChannel,
     std::vector<std::string> socPmuEventList = Utils::Split(multiSocPmuEvents, false, "", ";");
     for (uint32_t i = 0; i < static_cast<uint32_t>(socPmuEventList.size()); ++i) {
         if (configPos >= configSize) {
-            MSPROF_LOGW("Unable to pack soc pmu param, config pos: %zu, config size: %zu.", configPos, configSize);
+            MSPROF_LOGW("Unable to pack soc pmu param, config pos: %zu bytes, config size: %zu bytes.",
+                configPos, configSize);
             break;
         }
         DrvPackSocPmuParam(socPmuEventList[i], configP, configSize, configPos);
@@ -485,7 +486,7 @@ void DrvCopySocPmuSmmuDFXParam(void *configP, size_t configSize, size_t &configP
     const size_t cfgSize = GetSocPmuSmmuDFXConfigSize(SMMU_DFX_EVENT_NUM);
     void *infoPtr = Utils::ProfMalloc(cfgSize);
     if (infoPtr == nullptr) {
-        MSPROF_LOGE("Failed to malloc soc pmu smmu dfx param, size: %zu.", cfgSize);
+        MSPROF_LOGE("Failed to malloc soc pmu smmu dfx param, size: %zu bytes.", cfgSize);
         return;
     }
     auto *cfg = static_cast<SocPmuSmmuDFXConfig *>(infoPtr);
@@ -497,7 +498,8 @@ void DrvCopySocPmuSmmuDFXParam(void *configP, size_t configSize, size_t &configP
     MSPROF_LOGD("Pack soc pmu smmu dfx param, eventNum=%u, smmuOffset=0x%x, regMask=0x%x.",
         cfg->eventNum, cfg->smmuDFXEvent[0].smmuOffset, cfg->smmuDFXEvent[0].regMask);
     if ((configPos + cfgSize) > configSize) {
-        MSPROF_LOGW("Soc pmu smmu dfx param overflow, configSize: %zu, configPos: %zu.", configSize, configPos);
+        MSPROF_LOGW("Soc pmu smmu dfx param overflow, configSize: %zu bytes, configPos: %zu bytes.",
+            configSize, configPos);
         Utils::ProfFree(infoPtr);
         return;
     }

@@ -93,9 +93,12 @@ private:
     bool CheckControlSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
     bool CheckTsSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
     bool CheckPmuSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
-    bool IsValidInterval(const int32_t interval, const std::string &logKey) const;
-    bool CheckProfilingIntervalIsValid(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
-    bool CheckProfilingIntervalIsValidTWO(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
+    bool IsValidInterval(const int32_t interval, const std::string &logKey,
+        std::string *invalidKey = nullptr, int32_t *invalidValue = nullptr) const;
+    bool CheckProfilingIntervalIsValid(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
+        std::string *invalidKey = nullptr, int32_t *invalidValue = nullptr) const;
+    bool CheckProfilingIntervalIsValidTWO(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
+        std::string *invalidKey = nullptr, int32_t *invalidValue = nullptr) const;
     bool CheckSystemTraceSwitchProfiling(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
 };
 } // namespace validation

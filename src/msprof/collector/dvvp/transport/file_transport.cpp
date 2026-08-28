@@ -202,7 +202,7 @@ int32_t FILETransport::ParseTlvChunk(SHARED_PTR_ALIA<analysis::dvvp::ProfileFile
     // Cache last truncated struct data
     const uint32_t dataLeft = fileChunkReq->chunkSize - structNum * structSize;
     if (dataLeft != 0) {
-        MSPROF_LOGI("Cache truncated data, fileName: %s, cache size: %u", fileName.c_str(), dataLeft);
+        MSPROF_LOGI("Cache truncated data, fileName: %s, cache size: %u bytes", fileName.c_str(), dataLeft);
         channelBuffer_[fileName].reserve(structSize + 1);
         channelBuffer_[fileName].append(data, dataLeft);
     }

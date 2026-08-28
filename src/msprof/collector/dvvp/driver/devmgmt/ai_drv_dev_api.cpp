@@ -372,7 +372,7 @@ bool DrvGetHostFreq(std::string &freq)
     const auto ret = halGetDeviceInfo(0, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
         static_cast<int32_t>(INFO_TYPE_HOST_OSC_FREQUE), &hostFreq);
     if (ret == DRV_ERROR_NONE && hostFreq > 0) {
-        MSPROF_LOGI("Succeeded to DrvGetHostFreq frequency=%lld", hostFreq);
+        MSPROF_LOGI("Succeeded to DrvGetHostFreq frequency=%lld kHz", hostFreq);
         freq = std::to_string(static_cast<float>(hostFreq) / FREQUENCY_KHZ_TO_MHZ);
         return true;
     } else {
@@ -390,7 +390,7 @@ bool DrvGetDeviceFreq(uint32_t deviceId, std::string &freq)
     auto ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
         static_cast<int32_t>(INFO_TYPE_DEV_OSC_FREQUE), &deviceFreq);
     if (ret == DRV_ERROR_NONE && deviceFreq > 0) {
-        MSPROF_LOGI("Succeeded to DrvGetDeviceFreq frequency=%lld", deviceFreq);
+        MSPROF_LOGI("Succeeded to DrvGetDeviceFreq frequency=%lld kHz", deviceFreq);
         freq = std::to_string(static_cast<float>(deviceFreq) / FREQUENCY_KHZ_TO_MHZ);
         return true;
     } else {

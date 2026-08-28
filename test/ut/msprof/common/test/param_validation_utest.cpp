@@ -280,6 +280,85 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckHbmEventsIsValid) {
     EXPECT_EQ(true, entry->CheckHbmEventsIsValid(events));
 }
 
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, InvalidDdrEventCountLogIncludesCurrentValueAndRange) {
+    MOCKER_CPP(&Platform::GetMaxMonitorNumber).stubs().will(returnValue(MODENA_MAX_MONITOR_NUM));
+    const std::vector<std::string> events(MODENA_MAX_MONITOR_NUM + 1, "read");
+
+    testing::internal::CaptureStdout();
+    EXPECT_FALSE(ParamValidation::instance()->CheckDdrEventsIsValid(events));
+    const std::string log = testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(std::string::npos, log.find("Invalid DDR event count: 9, valid range: [0, " +
+        std::to_string(MODENA_MAX_MONITOR_NUM) + "]."));
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, InvalidHbmEventCountLogIncludesCurrentValueAndRange) {
+    MOCKER_CPP(&Platform::GetMaxMonitorNumber).stubs().will(returnValue(MODENA_MAX_MONITOR_NUM));
+    const std::vector<std::string> events(MODENA_MAX_MONITOR_NUM + 1, "read");
+
+    testing::internal::CaptureStdout();
+    EXPECT_FALSE(ParamValidation::instance()->CheckHbmEventsIsValid(events));
+    const std::string log = testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(std::string::npos, log.find("Invalid HBM event count: 9, valid range: [0, " +
+        std::to_string(MODENA_MAX_MONITOR_NUM) + "]."));
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, InvalidIntervalLogIncludesCurrentValueRangeAndUnit) {
+    testing::internal::CaptureStdout();
+    EXPECT_FALSE(ParamValidation::instance()->IsValidInterval(0, "ddr"));
+    EXPECT_TRUE(ParamValidation::instance()->IsValidInterval(1, "ddr"));
+    EXPECT_TRUE(ParamValidation::instance()->IsValidInterval(1296000000, "ddr"));
+    EXPECT_FALSE(ParamValidation::instance()->IsValidInterval(1296000001, "ddr"));
+    const std::string log = testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(std::string::npos,
+        log.find("Invalid ddr interval: 0 milliseconds, valid range: [1, " + std::to_string(15 * 24 * 3600 * 1000) +
+                 "] milliseconds."));
+    EXPECT_NE(std::string::npos,
+        log.find("Invalid ddr interval: 1296000001 milliseconds, valid range: [1, " +
+                 std::to_string(15 * 24 * 3600 * 1000) + "] milliseconds."));
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, InvalidProfilingParamsIntervalLogIncludesConfigValueAndRange) {
+    auto params = std::make_shared<analysis::dvvp::message::ProfileParams>();
+    params->devices = "all";
+    params->aiv_sampling_interval = 10;
+    params->hccsInterval = 10;
+    params->pcieInterval = 10;
+    params->roceInterval = 10;
+    params->llc_interval = 10;
+    params->hbmInterval = 10;
+    params->cpu_sampling_interval = 10;
+    params->sys_sampling_interval = 10;
+    params->pid_sampling_interval = 10;
+    params->hardware_mem_sampling_interval = 10;
+    params->io_sampling_interval = 10;
+    params->interconnection_sampling_interval = 10;
+    params->dvpp_sampling_interval = 10;
+    params->nicInterval = 10;
+    params->aicore_sampling_interval = 10;
+    params->ddr_interval = 0;
+
+    testing::internal::CaptureStdout();
+    EXPECT_FALSE(ParamValidation::instance()->CheckProfilingParams(params));
+    const std::string log = testing::internal::GetCapturedStdout();
+
+    EXPECT_NE(std::string::npos,
+        log.find("[CheckProfilingParams] Invalid ddr interval: 0 milliseconds, valid range: [1, " +
+                 std::to_string(15 * 24 * 3600 * 1000) + "] milliseconds."));
+}
+
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, InvalidProfilingParamsTwoIntervalLog) {
+    auto params = std::make_shared<analysis::dvvp::message::ProfileParams>();
+    params->devices = "all";
+    params->sys_sampling_interval = 0;
+    testing::internal::CaptureStdout();
+    EXPECT_FALSE(ParamValidation::instance()->CheckProfilingParams(params));
+    const std::string log = testing::internal::GetCapturedStdout();
+    EXPECT_NE(std::string::npos, log.find("Invalid sys_profiling interval: 0 milliseconds"));
+}
+
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckAivEventsIsValid) {
     auto entry = analysis::dvvp::common::validation::ParamValidation::instance();
     const std::vector<std::string> aiv;

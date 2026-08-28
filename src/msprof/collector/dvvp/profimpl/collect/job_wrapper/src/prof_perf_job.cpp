@@ -101,7 +101,7 @@ void PerfExtraTask::Run(const error_message::ErrorManagerContext &errorContext)
     }
 
     PerfScriptTask();
-    MSPROF_LOGI("PerfExtraTask the total data size: %lld", dataSize_);
+    MSPROF_LOGI("PerfExtraTask the total data size: %lld bytes", dataSize_);
 }
 
 void PerfExtraTask::PerfScriptTask()
@@ -177,8 +177,10 @@ void PerfExtraTask::StoreData(const std::string &fileName)
 
     const int64_t len = Utils::GetFileSize(fileName);
     if (len <= 0 || len > MSVP_LARGE_FILE_MAX_LEN) {
-        MSPROF_LOGE("data file size is invalid");
-        MSPROF_INNER_ERROR("EK9999", "data file size is invalid");
+        MSPROF_LOGE("Invalid data file size: %lld bytes, valid range: (0, %lld] bytes.",
+            len, MSVP_LARGE_FILE_MAX_LEN);
+        MSPROF_INNER_ERROR("EK9999", "Invalid data file size: %lld bytes, valid range: (0, %lld] bytes.",
+            len, MSVP_LARGE_FILE_MAX_LEN);
         return;
     }
 
@@ -220,7 +222,7 @@ void PerfExtraTask::StoreData(const std::string &fileName)
     }
 
     ifs.close();
-    MSPROF_LOGI("PerfExtraTask data size: %lld", dataSize_);
+    MSPROF_LOGI("PerfExtraTask data size: %lld bytes", dataSize_);
 }
 
 void PerfExtraTask::SetJobCtx(SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx)
@@ -578,7 +580,7 @@ void ProfAicpuHscbJob::SendData() const
                                                   collectionJobCfg_->comParams->jobCtx->dev_id);
         fileChunk->chunkModule = FileChunkDataModule::PROFILING_IS_FROM_DEVICE;
         if (AdprofCollectorProxy::instance()->AdprofStarted()) {
-            MSPROF_LOGI("Begin to send data of perf stat, datasize: %zu.", fileChunk->chunkSize);
+            MSPROF_LOGI("Begin to send data of perf stat, datasize: %zu bytes.", fileChunk->chunkSize);
             AdprofCollectorProxy::instance()->Report(fileChunk);
         }
     }

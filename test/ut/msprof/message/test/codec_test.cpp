@@ -122,6 +122,30 @@ TEST_F(MESSAGE_CODEC_TEST, EncodeMessageShared) {
     EXPECT_NE(nullptr, analysis::dvvp::message::EncodeMessageShared(message));
 }
 
+TEST_F(MESSAGE_CODEC_TEST, InvalidMessageTypeSizeLogIncludesCurrentValueAndRange) {
+    GlobalMockObject::verify();
+
+    std::shared_ptr<analysis::dvvp::proto::JobStartReq> message(
+        new analysis::dvvp::proto::JobStartReq);
+    const std::string oversizedType(1025, 'a');
+    google::protobuf::Message *baseMessage = message.get();
+    MOCKER_CPP_VIRTUAL(baseMessage, &google::protobuf::Message::GetTypeName)
+        .stubs()
+        .will(returnValue(oversizedType));
+
+    testing::internal::CaptureStdout();
+    const std::string encoded = analysis::dvvp::message::EncodeMessage(message);
+    const auto encodedShared = analysis::dvvp::message::EncodeMessageShared(message);
+    const std::string log = testing::internal::GetCapturedStdout();
+
+    EXPECT_TRUE(encoded.empty());
+    ASSERT_NE(nullptr, encodedShared);
+    EXPECT_TRUE(encodedShared->empty());
+    const std::string expected = "Invalid message type size: 1025 bytes, valid range: [0, 1024] bytes.";
+    EXPECT_NE(std::string::npos, log.find(expected));
+    EXPECT_NE(log.find(expected), log.rfind(expected));
+}
+
 TEST_F(MESSAGE_CODEC_TEST, decode_message_name_len) {
     GlobalMockObject::verify();
 

@@ -226,7 +226,7 @@ void InfoJson::AddSysTime(SHARED_PTR_ALIA<InfoMain> infoMain) const
 
     int64_t len = Utils::GetFileSize(PROF_PROC_UPTIME);
     if (len < 0 || len > MSVP_LARGE_FILE_MAX_LEN) {
-        MSPROF_LOGW("[AddSysTime] Proc file(%s) size(%lld)", PROF_PROC_UPTIME, len);
+        MSPROF_LOGW("[AddSysTime] Proc file(%s) size(%lld bytes)", PROF_PROC_UPTIME, len);
         return;
     }
     fin.open(PROF_PROC_UPTIME, std::ifstream::in);
@@ -247,7 +247,7 @@ void InfoJson::AddMemTotal(SHARED_PTR_ALIA<InfoMain> infoMain) const
 
     int64_t len = Utils::GetFileSize(PROF_PROC_MEM);
     if (len < 0 || len > MSVP_LARGE_FILE_MAX_LEN) {
-        MSPROF_LOGW("[AddMemTotal] Proc file(%s) size(%lld)", PROF_PROC_MEM, len);
+        MSPROF_LOGW("[AddMemTotal] Proc file(%s) size(%lld bytes)", PROF_PROC_MEM, len);
         return;
     }
     fin.open(PROF_PROC_MEM, std::ifstream::in);
@@ -304,7 +304,7 @@ void InfoJson::AddNetCardInfo(SHARED_PTR_ALIA<InfoMain> infoMain) const
         srcFile += MSVP_SLASH + *it + MSVP_SLASH + PROC_NET_SPEED;
         int64_t len = Utils::GetFileSize(srcFile);
         if (len < 0 || len > MSVP_LARGE_FILE_MAX_LEN) {
-            MSPROF_LOGW("[AddMemTotal] Proc file(%s) size(%lld)", srcFile.c_str(), len);
+            MSPROF_LOGW("[AddNetCardInfo] Proc file(%s) size(%lld bytes)", srcFile.c_str(), len);
             continue;
         }
         std::string canonicalizedPath = Utils::CanonicalizePath(srcFile);

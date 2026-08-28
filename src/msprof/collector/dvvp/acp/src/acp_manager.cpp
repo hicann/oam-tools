@@ -488,7 +488,7 @@ void AcpManager::SaveRtMallocAttr(AcpBackupAttr &attr)
         return;
     }
     mallocVec_.emplace_back(attr);
-    MSPROF_LOGI("Acp save malloc attr, addr: %p, size: %llu, type: %u, moduleId: %u.",
+    MSPROF_LOGI("Acp save malloc attr, addr: %p, size: %llu bytes, type: %u, moduleId: %u.",
         attr.addr, attr.size, attr.type, attr.moduleId);
 }
 
@@ -545,8 +545,8 @@ void AcpManager::SaveRtMallocMemory(rtStream_t stream)
         // save memory ptr in vector
         AcpBackupAttr attr = {ptr, it.size, it.type, it.moduleId};
         memoryVec_.emplace_back(attr);
-        MSPROF_LOGI("Acp save malloc memory, addr: %p, size: %llu, type: %u, moduleId: %u.", attr.addr, attr.size,
-            attr.type, attr.moduleId);
+        MSPROF_LOGI("Acp save malloc memory, addr: %p, size: %llu bytes, type: %u, moduleId: %u.",
+            attr.addr, attr.size, attr.type, attr.moduleId);
     }
     ret = AcpApiPlugin::instance()->ApiRtStreamSynchronize(stream);
     FUNRET_CHECK_EXPR_PRINT(ret != ACL_RT_SUCCESS, "Failed to execute rtStreamSynchronize.");
@@ -587,8 +587,8 @@ void AcpManager::ResetRtMallocMemory(rtStream_t stream)
         ret = rtMemcpyAsyncFunc_(mallocVec_[i].addr, mallocVec_[i].size, memoryVec_[i].addr, memoryVec_[i].size,
             RT_MEMCPY_DEVICE_TO_DEVICE, stream);
         FUNRET_CHECK_EXPR_ACTION(ret != ACL_RT_SUCCESS, break, "Failed to memcpy back up ptr, ret: %d.", ret);
-        MSPROF_LOGI("Acp reset malloc memory, addr: %p, size: %llu, type: %u, moduleId: %u.", mallocVec_[i].addr,
-            mallocVec_[i].size, mallocVec_[i].type, mallocVec_[i].moduleId);
+        MSPROF_LOGI("Acp reset malloc memory, addr: %p, size: %llu bytes, type: %u, moduleId: %u.",
+            mallocVec_[i].addr, mallocVec_[i].size, mallocVec_[i].type, mallocVec_[i].moduleId);
     }
     ret = AcpApiPlugin::instance()->ApiRtStreamSynchronize(stream);
     FUNRET_CHECK_EXPR_PRINT(ret != ACL_RT_SUCCESS, "Failed to execute rtStreamSynchronize.");
