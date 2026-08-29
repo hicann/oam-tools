@@ -144,6 +144,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - abseil >= 20230802.1
     - json >= 3.11.3
     - patch >= 2.7.6
+    - dpkg >= 1.19.0.5 (only required when building the deb package)
     - coverage (only required when running UT, recommended version 7.13.2)
     - googletest (only required when running UT, recommended version 1.14.0)
     - mockcpp (only required when running UT, recommended version 2.7)

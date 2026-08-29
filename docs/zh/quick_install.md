@@ -147,6 +147,7 @@ curl -fsSL https://raw.gitcode.com/cann/oam-tools/raw/master/init_env.sh | bash
     - abseil >= 20230802.1
     - json >= 3.11.3
     - patch >= 2.7.6
+    - dpkg >= 1.19.0.5（仅构建 deb 包时依赖）
     - coverage (仅执行UT时依赖，建议版本 7.13.2)
     - googletest（仅执行UT时依赖，建议版本 1.14.0）
     - mockcpp（仅执行UT时依赖，建议版本 2.7）
