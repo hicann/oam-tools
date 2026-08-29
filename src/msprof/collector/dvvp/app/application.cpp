@@ -105,7 +105,7 @@ int32_t Application::ResolveAppCmd(SHARED_PTR_ALIA<analysis::dvvp::message::Prof
     if (PrepareLaunchAppCmd(ssCmdApp, params) != PROFILING_SUCCESS) {
         return PROFILING_FAILED;
     }
-    MSPROF_LOGI("launch app cmd: %s", ssCmdApp.str().c_str());
+    MSPROF_LOGI("Launch application %s", Utils::BaseName(params->cmdPath).c_str());
     paramsCmd = analysis::dvvp::common::utils::Utils::Split(ssCmdApp.str());
     if (paramsCmd.empty()) {
         MSPROF_LOGE("[LaunchApp]paramsCmd is empty.");
@@ -155,12 +155,12 @@ int32_t Application::LaunchApp(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileP
 void Application::SetAppEnv(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
     std::vector<std::string> &envsV)
 {
-    MSPROF_LOGI("Handle app_env param %s", params->app_env.c_str());
     std::vector<std::string> appEnvs = analysis::dvvp::common::utils::Utils::Split(params->app_env, false, "", ";");
+    MSPROF_LOGI("Handle app_env parameter with %zu entries", appEnvs.size());
     for (auto appEnv : appEnvs) {
         if (!appEnv.empty()) {
             if (appEnv.find("=") == std::string::npos) {
-                MSPROF_LOGW("Invalid app_env params %s", appEnv.c_str());
+                MSPROF_LOGW("Invalid app_env parameter; expected KEY=VALUE");
                 continue;
             }
             envsV.push_back(appEnv);

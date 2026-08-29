@@ -31,7 +31,7 @@ using namespace analysis::dvvp::common::config;
 #define CHECK_JOB_EVENT_PARAM_RET(cfg, ACTION)  do {                                   \
     if ((cfg) == nullptr || (cfg)->comParams == nullptr ||                             \
         (cfg)->jobParams.events == nullptr || (cfg)->jobParams.events->size() == 0) {  \
-        MSPROF_LOGI("Job event parameter validation failed");                         \
+        MSPROF_LOGW("Job event parameter check found no usable parameters; return to caller"); \
         ACTION;                                                                        \
     }                                                                                  \
 } while (0)
@@ -39,14 +39,14 @@ using namespace analysis::dvvp::common::config;
 #define CHECK_JOB_CONTEXT_PARAM_RET(cfg, ACTION)  do {                                 \
     if ((cfg) == nullptr || (cfg)->comParams == nullptr ||                             \
         (cfg)->comParams->jobCtx == nullptr || (cfg)->comParams->params == nullptr) {  \
-        MSPROF_LOGI("Job check context param failed");                                 \
+        MSPROF_LOGW("Job context parameter check found no usable parameters; return to caller"); \
         ACTION;                                                                        \
     }                                                                                  \
 } while (0)
 
 #define CHECK_JOB_COMMON_PARAM_RET(cfg, ACTION) do {                                   \
     if ((cfg) == nullptr || (cfg)->comParams == nullptr) {                             \
-        MSPROF_LOGI("Job check comm param failed");                                    \
+        MSPROF_LOGW("Job common parameter check found no usable parameters; return to caller"); \
         ACTION;                                                                        \
     }                                                                                  \
 } while (0)

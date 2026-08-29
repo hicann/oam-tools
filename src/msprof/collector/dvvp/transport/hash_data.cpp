@@ -181,7 +181,7 @@ void HashData::FillPbData(const std::string &module, int32_t upDevId, const std:
 void HashData::SaveHashData(int32_t devId)
 {
     if ((devId != MSVP_MAX_DEV_NUM)) {
-        MSPROF_LOGI("HashData devId %d is invalid", devId);
+        MSPROF_LOGI("HashData received unsupported devId %d; skip saving.", devId);
         return;
     }
 

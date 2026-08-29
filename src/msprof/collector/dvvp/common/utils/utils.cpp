@@ -492,10 +492,8 @@ int32_t Utils::ExecCmd(const ExecCmdParams &execCmdParams,
         MSPROF_LOGE("invalid argv or envp size");
         return ret;
     }
-    UtilsStringBuilder<std::string> builder;
-    std::string argsStr = builder.Join(argv, " ");
-    MSPROF_LOGI("Execute cmd:\"%s %s\", stdoutRedirectFile=%s",
-                cmd.c_str(), argsStr.c_str(), stdoutRedirectFile.c_str());
+    MSPROF_LOGI("Execute command %s with %zu arguments, stdout redirection configured: %s",
+        BaseName(cmd).c_str(), argv.size(), stdoutRedirectFile.empty() ? "no" : "yes");
 
     do {
         uint32_t ii = 0;
@@ -906,7 +904,7 @@ std::string Utils::HandleEnvString(CONST_CHAR_PTR envPtr)
     }
     errno_t err = memcpy_s(val, envValMaxLen, envPtr, envLen);
     if (err != EOK) {
-        MSPROF_LOGE("Failed to copy the environment variable [%s], errno=%d.", envPtr, err);
+        MSPROF_LOGE("Failed to copy the environment variable, errno=%d.", err);
         return "";
     }
 

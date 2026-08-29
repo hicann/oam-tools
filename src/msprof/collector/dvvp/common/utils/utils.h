@@ -49,7 +49,7 @@ struct ProfileFileChunk {
     size_t chunkSize;                 // chunk size
     size_t offset;                    // flush chunk to file by offset
     std::string chunk;                // chunk data
-    std::string fileName;             // fulsh chunk to disks by "fileName.tag"
+    std::string fileName;             // flush chunk to disks by "fileName.tag"
     std::string extraInfo;            // report data fill suffix enum "jobId.devId"
     std::string id;                   // Identify where chunk from "devId.devPid"
 };

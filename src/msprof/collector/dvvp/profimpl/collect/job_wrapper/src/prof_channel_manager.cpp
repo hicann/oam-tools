@@ -46,7 +46,7 @@ int32_t ProfChannelManager::Init()
     MSVP_MAKE_SHARED0(drvChannelPoll_, ChannelPoll, return PROFILING_FAILED);
     int32_t ret = drvChannelPoll_->Start();
     if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGI("drvChannelPoll start thread pool failed");
+        MSPROF_LOGW("drvChannelPoll start thread pool result, ret=%d", ret);
         return ret;
     }
     MSPROF_LOGI("Init Poll Succ");

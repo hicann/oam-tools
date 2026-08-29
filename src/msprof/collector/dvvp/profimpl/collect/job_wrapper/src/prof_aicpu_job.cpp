@@ -86,7 +86,8 @@ int32_t ProfAicpuJob::Process()
     MSPROF_LOGI("Begin to start profiling aicpu");
 
     if (!eventAttr_.isChannelValid) {
-        MSPROF_LOGI("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId, channelId_);
+        MSPROF_LOGW("Channel is unavailable, devId:%d, channelId:%d; skip profiling.",
+            collectionJobCfg_->comParams->devId, channelId_);
         return PROFILING_SUCCESS;
     }
 

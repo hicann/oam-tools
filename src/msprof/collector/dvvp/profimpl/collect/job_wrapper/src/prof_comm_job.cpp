@@ -58,7 +58,8 @@ void ProfDrvJob::AddReader(const std::string &key, int32_t devId, AI_DRV_CHANNEL
     if (poll != nullptr) {
         (void)poll->AddReader(devId, channelId, reader);
     } else {
-        MSPROF_LOGI("ProfDrvJob AddReader failed, key:%s, devId:%d, channel:%d, filepath:%s",
+        MSPROF_LOGI("ProfDrvJob AddReader skipped because channel poller is unavailable, key:%s, devId:%d, "
+                    "channel:%d, filepath:%s",
                     key.c_str(), devId, channelId, Utils::BaseName(filePath).c_str());
     }
 }

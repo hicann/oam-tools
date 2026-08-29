@@ -542,7 +542,7 @@ int32_t HdcSessionConnect(int32_t peerNode, int32_t peerDevid, HDC_CLIENT client
     // hdc connect
     hdcError_t error = drvHdcSessionConnect(peerNode, peerDevid, client, session);
     if (error != DRV_ERROR_NONE || *session == nullptr) {
-        MSPROF_LOGI("Hdc Session Connect, ret: %d", error);
+        MSPROF_LOGI("Hdc Session Connect returned, ret: %d", error);
         return IDE_DAEMON_ERROR;
     }
 
@@ -581,7 +581,7 @@ int32_t HalHdcSessionConnect(int32_t peerNode, int32_t peerDevid,
     // hdc connect
     hdcError_t error = halHdcSessionConnectEx(peerNode, peerDevid, hostPid, client, session);
     if (error != DRV_ERROR_NONE || *session == nullptr) {
-        MSPROF_LOGI("Hdc Session Connect, ret: %d", error);
+        MSPROF_LOGI("Hdc Session Connect returned, ret: %d", error);
         return IDE_DAEMON_ERROR;
     }
 

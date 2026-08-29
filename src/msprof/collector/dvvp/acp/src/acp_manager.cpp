@@ -484,7 +484,7 @@ void AcpManager::RegisterRtMemcpyFunc(RtMemcpyAsyncFunc memcpyAsyncFunc)
 void AcpManager::SaveRtMallocAttr(AcpBackupAttr &attr)
 {
     if (attr.addr == nullptr) {
-        MSPROF_LOGI("Acp failed to save nullptr malloc attr.");
+        MSPROF_LOGI("Acp malloc attribute is null; skip saving.");
         return;
     }
     mallocVec_.emplace_back(attr);

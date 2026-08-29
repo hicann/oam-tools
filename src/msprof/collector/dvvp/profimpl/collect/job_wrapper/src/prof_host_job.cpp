@@ -687,7 +687,7 @@ int32_t ProfHostService::Uninit()
 {
     int32_t ret = KillToolAndWaitHostProcess();
     if (ret != PROFILING_SUCCESS) {
-        MSPROF_LOGI("Failed to kill process %s, ", toolName_.c_str());
+        MSPROF_LOGW("Kill process result for %s, ret=%d", toolName_.c_str(), ret);
         return ret;
     }
     MSPROF_LOGI("Succeeded to kill process %s", toolName_.c_str());
