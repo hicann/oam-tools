@@ -89,6 +89,19 @@ public:
     }
 };
 
+class ProfHostCpuFreqJob : public ProfHostDataBase {
+public:
+    ProfHostCpuFreqJob();
+    ~ProfHostCpuFreqJob() override;
+    int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) override;
+    int32_t Process() override;
+    int32_t Uninit() override;
+    bool IsGlobalJobLevel() override
+    {
+        return true;
+    }
+};
+
 class ProfHostMemJob : public ProfHostDataBase {
 public:
     ProfHostMemJob();

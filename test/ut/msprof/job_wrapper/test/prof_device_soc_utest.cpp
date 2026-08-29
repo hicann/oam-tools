@@ -496,4 +496,5 @@ TEST_F(PROF_DEVICE_SOC_UTEST, CreateCollectionJobArray)
         new analysis::dvvp::message::ProfileParams);
     jobDeviceSoc->collectionJobCommCfg_->params = params;
     EXPECT_EQ(jobDeviceSoc->CreateCollectionJobArray(), PROFILING_SUCCESS);
+    EXPECT_NE(jobDeviceSoc->collectionJobV_[HOST_CPU_FREQ_COLLECTION_JOB].collectionJob, nullptr);
 }

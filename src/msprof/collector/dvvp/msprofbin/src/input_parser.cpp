@@ -1139,6 +1139,7 @@ void InputParser::SetHostSysParam(const std::string hostSysParam)
 {
     if (hostSysParam.compare(HOST_SYS_CPU) == 0) {
         params_->host_cpu_profiling = ON;
+        params_->host_cpu_freq_profiling = ON;
     } else if (hostSysParam.compare(HOST_SYS_MEM) == 0) {
         params_->host_mem_profiling = ON;
     } else if (hostSysParam.compare(HOST_SYS_NETWORK) == 0) {

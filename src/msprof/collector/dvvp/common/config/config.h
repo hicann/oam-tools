@@ -143,6 +143,7 @@ constexpr int32_t PERIPHERAL_INTERVAL_MS_MAX   = 1000;
 const char * const PROF_SYS_CPU_USAGE_FILE = "SystemCpuUsage.data";
 const char * const PROF_SYS_MEM_FILE = "Memory.data";
 const char * const PROF_HOST_PROC_CPU_USAGE_FILE = "host_cpu.data";
+const char * const PROF_HOST_CPU_FREQ_FILE = "host_cpu_freq.data";
 const char * const PROF_HOST_PROC_MEM_USAGE_FILE = "host_mem.data";
 const char * const PROF_HOST_SYS_NETWORK_USAGE_FILE = "host_network.data";
 const char * const PROF_NETDEV_STATS_FILE = "netdev_stats.data";
@@ -184,7 +185,7 @@ constexpr size_t PROFTX_RING_BUFF_CAPACITY = 262144; // 262144:256K. Note:capaci
 constexpr size_t VARIABLE_ADDITIONAL_BUFF_CAPACITY = 65536; // 65536:64K. Note:capacity value must be 2^n
 
 // sender config
-constexpr int32_t SEND_BUFFER_LEN = 64 * 1024; // 64 * 1024 menas 64k
+constexpr int32_t SEND_BUFFER_LEN = 64 * 1024; // 64 * 1024 means 64k
 constexpr size_t SENDERPOOL_THREAD_QUEUE_SIZE = 8192;
 
 // transport config config

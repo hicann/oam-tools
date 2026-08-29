@@ -15,6 +15,7 @@
  */
 #include "gtest/gtest.h"
 #include "mockcpp/mockcpp.hpp"
+#include <cstdio>
 #include <mutex>
 #include "thread/thread.h"
 #include "prof_timer.h"
@@ -412,6 +413,162 @@ TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcTidStat) {
     hostCpuHandler.ParseProcTidStat(data);
     EXPECT_EQ(data, "PROF_HOST_CPU_HANDLER_TEST.ParseSysTime");
     analysis::dvvp::common::utils::Utils::RemoveDir("/tmp/PROF_HOST_CPU_HANDLER_TEST/");
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+class PROF_HOST_CPU_FREQ_HANDLER_TEST: public testing::Test {
+protected:
+    virtual void SetUp() {
+        param = std::make_shared<analysis::dvvp::message::ProfileParams>();
+        jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
+
+        auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
+                new analysis::dvvp::transport::HDCTransport(session));
+        upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
+    }
+    virtual void TearDown() {
+    }
+public:
+    unsigned int bufSize = 10;
+    unsigned int sampleIntervalMs = 20;
+    std::string retFileName = "retFileName";
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> param;
+    std::shared_ptr<analysis::dvvp::message::JobContext> jobCtx;
+
+    HDC_SESSION session = (HDC_SESSION)0x12345678;
+    std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
+};
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpu) {
+    GlobalMockObject::verify();
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+
+    int32_t cpuId = -1;
+    EXPECT_FALSE(hostCpuFreqHandler.GetThreadCpu("/tmp/not_exist_stat_file", cpuId));
+
+    std::ofstream invalidOfs("/tmp/prof_host_cpu_freq_invalid_stat");
+    invalidOfs << "invalid_stat_line" << std::endl;
+    invalidOfs.close();
+    EXPECT_FALSE(hostCpuFreqHandler.GetThreadCpu("/tmp/prof_host_cpu_freq_invalid_stat", cpuId));
+
+    std::ofstream validOfs("/tmp/prof_host_cpu_freq_valid_stat");
+    validOfs << "123 (worker) R";
+    for (int i = 0; i < 35; ++i) {
+        validOfs << " " << i;
+    }
+    validOfs << " 7" << std::endl;
+    validOfs.close();
+    EXPECT_TRUE(hostCpuFreqHandler.GetThreadCpu("/tmp/prof_host_cpu_freq_valid_stat", cpuId));
+    EXPECT_EQ(cpuId, 7);
+
+    remove("/tmp/prof_host_cpu_freq_invalid_stat");
+    remove("/tmp/prof_host_cpu_freq_valid_stat");
+}
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithoutCommandTerminator) {
+    GlobalMockObject::verify();
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+
+    std::ofstream invalidOfs("/tmp/prof_host_cpu_freq_no_command_end_stat");
+    invalidOfs << "123 worker R 0 1 2 3" << std::endl;
+    invalidOfs.close();
+
+    int32_t cpuId = -1;
+    EXPECT_FALSE(hostCpuFreqHandler.GetThreadCpu("/tmp/prof_host_cpu_freq_no_command_end_stat", cpuId));
+
+    remove("/tmp/prof_host_cpu_freq_no_command_end_stat");
+}
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithNegativeCpuId) {
+    GlobalMockObject::verify();
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+
+    std::ofstream invalidOfs("/tmp/prof_host_cpu_freq_negative_cpu_stat");
+    invalidOfs << "123 (worker) R";
+    for (int i = 0; i < 35; ++i) {
+        invalidOfs << " " << i;
+    }
+    invalidOfs << " -1" << std::endl;
+    invalidOfs.close();
+
+    int32_t cpuId = -1;
+    EXPECT_FALSE(hostCpuFreqHandler.GetThreadCpu("/tmp/prof_host_cpu_freq_negative_cpu_stat", cpuId));
+
+    remove("/tmp/prof_host_cpu_freq_negative_cpu_stat");
+}
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFile) {
+    GlobalMockObject::verify();
+
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
+        .stubs()
+        .will(returnValue(false))
+        .then(returnValue(true));
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+    EXPECT_EQ(PROFILING_FAILED, hostCpuFreqHandler.Init());
+    EXPECT_EQ(PROFILING_SUCCESS, hostCpuFreqHandler.Init());
+
+    analysis::dvvp::common::utils::Utils::CreateDir("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/task/100");
+    analysis::dvvp::common::utils::Utils::CreateDir(
+        "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/sys/devices/system/cpu/cpu7/cpufreq");
+    hostCpuFreqHandler.taskSrc_ = "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/task";
+    hostCpuFreqHandler.sysCpuRoot_ = "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/sys/devices/system/cpu";
+    hostCpuFreqHandler.cpuFreqAvailable_ = true;
+
+    std::ofstream validOfs("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/task/100/stat");
+    validOfs << "100 (worker) R";
+    for (int i = 0; i < 35; ++i) {
+        validOfs << " " << i;
+    }
+    validOfs << " 7" << std::endl;
+    validOfs.close();
+
+    std::ofstream freqOfs("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/sys/devices/system/cpu/cpu7/cpufreq/scaling_cur_freq");
+    freqOfs << "1234567" << std::endl;
+    freqOfs.close();
+
+    std::string data;
+    std::ifstream ifs;
+    hostCpuFreqHandler.ParseProcFile(ifs, data);
+    EXPECT_NE(data.find("time "), std::string::npos);
+    EXPECT_NE(data.find("7 1234567"), std::string::npos);
+
+    analysis::dvvp::common::utils::Utils::RemoveDir("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/");
+}
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCpuFreqUnsupported) {
+    GlobalMockObject::verify();
+
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
+        .stubs()
+        .will(returnValue(false))
+        .then(returnValue(true));
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+    EXPECT_EQ(PROFILING_FAILED, hostCpuFreqHandler.Init());
+    EXPECT_EQ(PROFILING_SUCCESS, hostCpuFreqHandler.Init());
+
+    hostCpuFreqHandler.cpuFreqAvailable_ = false;
+    hostCpuFreqHandler.taskSrc_ = "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST_UNSUPPORTED/task";
+
+    std::string data;
+    std::ifstream ifs;
+    hostCpuFreqHandler.ParseProcFile(ifs, data);
+    EXPECT_TRUE(data.empty());
 }
 ///////////////////////////////////////////////////////////////////////////////////
 class PROF_HOST_MEM_HANDLER_TEST: public testing::Test {

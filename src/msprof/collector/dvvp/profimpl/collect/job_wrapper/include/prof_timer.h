@@ -18,6 +18,7 @@
 
 #include <bitset>
 #include <map>
+#include <set>
 #include <mutex>
 #include <fstream>
 #include "memory/chunk_pool.h"
@@ -47,6 +48,7 @@ enum TimerHandlerTag {
     PROF_SYS_MEM,
     PROF_ALL_PID,
     PROF_HOST_PROC_CPU,
+    PROF_HOST_CPU_FREQ,
     PROF_HOST_PROC_MEM,
     PROF_HOST_ALL_PID,
     PROF_HOST_ALL_PID_CPU,
@@ -136,6 +138,24 @@ private:
 private:
     std::string sysTimeSrc_;
     std::string taskSrc_;
+};
+
+class ProcHostCpuFreqHandler : public ProcTimerHandler {
+public:
+    ProcHostCpuFreqHandler(SHARED_PTR_ALIA<TimerAttr> attr,
+                           SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+                           SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+                           SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader);
+    ~ProcHostCpuFreqHandler() override;
+
+private:
+    bool GetThreadCpu(const std::string &statFile, int32_t &cpuId) const;
+    void ParseProcFile(std::ifstream &ifs, std::string &data) override;
+
+private:
+    std::string taskSrc_;
+    std::string sysCpuRoot_;
+    bool cpuFreqAvailable_;
 };
 
 class ProcHostMemHandler : public ProcTimerHandler {

@@ -655,7 +655,10 @@ TEST_F(INPUT_PARSER_UTEST, SetHostSysParam) {
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     parser.SetHostSysParam("123");
+    parser.SetHostSysParam("cpu");
     parser.SetHostSysParam("osrt");
+    EXPECT_EQ(parser.params_->host_cpu_profiling, "on");
+    EXPECT_EQ(parser.params_->host_cpu_freq_profiling, "on");
     EXPECT_EQ(parser.params_->host_osrt_profiling, "on");
 }
 
