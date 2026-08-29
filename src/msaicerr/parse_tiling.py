@@ -46,7 +46,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-t", "--tiling_data", dest="tiling_data", default="", help=argparse.SUPPRESS, required=False)
-    args, unknown = parser.parse_known_args()
+    args, _ = parser.parse_known_args()
 
     if args.tiling_data:
         utils.print_info_log("Start to get tiling data.")

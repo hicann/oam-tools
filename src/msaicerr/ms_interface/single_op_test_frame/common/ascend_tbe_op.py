@@ -20,6 +20,7 @@
 ascend_tbe_op module
 """
 
+import importlib
 import math
 import os
 import struct
@@ -97,7 +98,7 @@ class AscendOpKernel:
         """
         parse json file
         """
-        with open(json_path) as json_f:
+        with open(json_path, encoding='utf-8') as json_f:
             json_str = json_f.read()
 
         json_obj = json.loads(json_str)
@@ -154,7 +155,7 @@ class AscendOpKernelParam:
             self._is_const = True
             self.shape = np_data.shape
             if str(np_data.dtype) == "|V2":
-                logger.log_info(f"self.dtype is None, MayBe bfloat16, same size with float16")
+                logger.log_info("self.dtype is None, MayBe bfloat16, same size with float16")
                 self.dtype = "float16"
             else:
                 self.dtype = dtype_trans.np_dtype_to_str(np_data.dtype)
@@ -228,7 +229,7 @@ class AscendOpKernelParam:
             else:
                 out_hbm_pointer = self._ascend_device.malloc(size_align_page)
             self._origin_pointer = ctypes.c_void_p(out_hbm_pointer.value)
-            out_hbm_pointer.value = out_hbm_pointer.value + size_align_page - self.size # -->> 63*4 252
+            out_hbm_pointer.value = out_hbm_pointer.value + size_align_page - self.size  # -->> 63*4 252
             self._hbm_pointer = out_hbm_pointer
         elif mode == "magic":
             _align_size = math.ceil(self.size / 32) * 32
@@ -261,7 +262,9 @@ class AscendOpKernelParam:
         release device
         """
         if self._ascend_device and self._origin_pointer is not None:
-            if self._origin_pointer.value:
+            # 显式与 0/None 比较：pylint 对 c_void_p.value 直接做真值测试会误判为常量
+            origin_addr = self._origin_pointer.value
+            if origin_addr is not None and origin_addr != 0:
                 self._ascend_device.free(self._origin_pointer)
             self._origin_pointer = None
             self._hbm_pointer = None
@@ -288,6 +291,15 @@ class AscendOpKernelParam:
     def hbm_pointer(self):
         if self._hbm_pointer.value is None:
             self._hbm_pointer = self._ascend_device.malloc(0x400)
+        return self._hbm_pointer
+
+    @property
+    def allocated_hbm_pointer(self):
+        """返回已分配的 HBM 指针，不触发分配。
+
+        与 hbm_pointer 的区别：后者在指针为空时会顺带 malloc(0x400)。
+        调用方只想读取现有指针时用本属性，避免多分配显存。
+        """
         return self._hbm_pointer
 
     @property
@@ -415,9 +427,10 @@ class AscendOpKernelRunner:
                                                    ascend_device=self.ascend_device,
                                                    hbm_pointer=None)
                 kernel_param.sync_to_device(self.ascend_device, mode)
-                wksp_hbm_p = kernel_param._hbm_pointer
+                # 用 allocated_hbm_pointer 只读现有指针（hbm_pointer 取值会顺带 malloc）
+                wksp_hbm_p = kernel_param.allocated_hbm_pointer
                 wksp_hbm_pointers.append(wksp_hbm_p)
-                kernel_args.append(kernel_param._hbm_pointer)
+                kernel_args.append(kernel_param.allocated_hbm_pointer)
             else:
                 data_dtype = kernel.parameters[param_index].get("dtype")
                 init_value = kernel.parameters[param_index].get("init_value")
@@ -426,8 +439,9 @@ class AscendOpKernelRunner:
                 data = (np.ones(shape) * init_value if init_value else np.zeros(shape)).astype(data_dtype)
                 kernel_param = AscendOpKernelParam.build_op_param_by_np_data(np_data=data)
                 kernel_param.sync_to_device(self.ascend_device, mode)
-                wksp_hbm_pointers.append(kernel_param._hbm_pointer)
-                kernel_args.append(kernel_param._origin_pointer)
+                # 同上：只读现有指针，不触发分配
+                wksp_hbm_pointers.append(kernel_param.allocated_hbm_pointer)
+                kernel_args.append(kernel_param.origin_pointer)
                 logger.log_info(f"Fill init_value[{init_value}] to parameters[{param_index}]")
             self._kernel_params.append(kernel_param)
 
@@ -499,7 +513,8 @@ class AscendOpKernelRunner:
             with open(tensor_file, 'rb') as bin_f:
                 return bin_f.read()
         try:
-            import bfloat16ext  # noqa: F401  register bfloat16 in numpy if available
+            # 仅为触发 numpy 注册 bfloat16（副作用导入），不需要绑定名字
+            importlib.import_module("bfloat16ext")
         except ImportError:
             pass
         try:
@@ -593,7 +608,7 @@ class AscendOpKernelRunner:
                             kernel_args: List, sub_ptr_addrs: dict, mode):
         args_list = sub_ptr_addrs.get("args_list")
         if args_list is None or len(args_list) == 0:
-            utils.print_error_log(f"Incorrect pointer tensor information, please check.")
+            utils.print_error_log("Incorrect pointer tensor information, please check.")
             return
         byte_size = utils.get_hexstr_value(args_list[0]) // 8 * 8 + dynamic_tensor_count * 8
         _align_size = math.ceil(byte_size / 32) * 32
@@ -609,7 +624,7 @@ class AscendOpKernelRunner:
             kernel_param.sync_to_device(self.ascend_device, mode=mode)
             self._kernel_params.append(kernel_param)
 
-            pointer_tmp = ctypes.c_void_p(out_hbm_pointer.value + (idx+len(args_list)) * 8)
+            pointer_tmp = ctypes.c_void_p(out_hbm_pointer.value + (idx + len(args_list)) * 8)
 
             self.ascend_device.memcpy(pointer_tmp, 8, np.array(kernel_param.hbm_pointer.value).tobytes(), 8,
                                    "RT_MEMCPY_HOST_TO_DEVICE")
@@ -703,7 +718,7 @@ class AscendOpKernelRunner:
         tiling_hbm = []
         self._fill_tiling(kernel, ascend_op_param.tiling_data, tiling_hbm, kernel_args)
         if None in [arg.value for arg in kernel_args]:
-            raise Exception(f"kernel_args: {kernel_args}")
+            raise RuntimeError(f"kernel_args: {kernel_args}")
 
         knl_args = []
         for _ in range(ascend_op_param.ffts_addrs_num):
@@ -735,7 +750,7 @@ class AscendOpKernelRunner:
             utils.print_debug_log("Start exec_single_case with magic...")
             _, [_, _, magic_ret] = self.exec_single_case(ascend_op_param, "magic")
             utils.print_debug_log("exec_single_case with magic over...")
-        except BaseException as e:
+        except (OSError, ValueError, RuntimeError, AttributeError, utils.AicErrException):
             return "Execute single op case failed, please check testcase file(test_single_op.py) or plog."
 
         if launch_ret != 0 or sync_ret != 0:

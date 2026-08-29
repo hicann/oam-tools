@@ -21,20 +21,21 @@ import subprocess
 import sys
 import shutil
 from pathlib import Path
-from collections import namedtuple
 
+# conftest 已把 MSAICERR_PATH 加入 sys.path，且其导入早于下面的 ms_interface
 from conftest import MSAICERR_PATH, RES_PATH
-cur_abspath = os.path.dirname(__file__)
-sys.path.append(MSAICERR_PATH)
-from ms_interface.single_op_test_frame.runtime import AscendRTSApi
-from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernel, AscendOpKernelRunner
-from ms_interface.golden_op import GoldenOp
 from ms_interface.constant import ModeCustom
+from ms_interface.golden_op import GoldenOp
+from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner
+from ms_interface.single_op_test_frame.runtime import AscendRTSApi
+
+cur_abspath = os.path.dirname(__file__)
 
 
 class TestGoldenOp:
 
-    def test_run_golden(self, monkeypatch, mocker, caplog):
+    @staticmethod
+    def test_run_golden(monkeypatch, mocker):
         custom_paths = [MSAICERR_PATH, f"{RES_PATH}/package"]
         monkeypatch.setattr(sys, "path", custom_paths)
         mocker.patch.object(AscendOpKernelRunner, 'run')
@@ -48,17 +49,17 @@ class TestGoldenOp:
         temp_dir = Path(cur_abspath).joinpath("../test_run_golden")
         mocker.patch.object(Path, "exists", return_value=False)
         mocker.patch("shutil.which", return_value=True)
-        res = subprocess.run('ls')
+        res = subprocess.run([sys.executable, '-c', ''], check=False)
         mocker.patch("subprocess.run", return_value=res)
         op_kernel_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'op_kernel')
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
         compile_file_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(
-            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test")
+            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test", encoding='utf-8')
         shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
                                                "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
         res = GoldenOp().run_golden_op("Ascend910B4", 0, temp_dir)

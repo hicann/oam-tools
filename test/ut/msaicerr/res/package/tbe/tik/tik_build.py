@@ -27,8 +27,11 @@ class for_range():
 class Tik():
     def __init__(self):
         self.for_range = for_range
+        self.last_tensor = {}
+        self.last_scalar = {}
 
     def Tensor(self, a, b, name, scope=None):
+        self.last_tensor = {"dtype": a, "shape": b, "name": name, "scope": scope}
         return [0]
 
     def vec_dup(self):
@@ -44,6 +47,7 @@ class Tik():
         pass
     
     def Scalar(self, a, init_value=0):
+        self.last_scalar = {"dtype": a, "init_value": init_value}
         return 0
 
 scope_gm = "tik"

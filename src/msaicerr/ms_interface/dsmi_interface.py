@@ -96,7 +96,7 @@ class DSMIInterface:
         try:
             ret = self.drvhal.halGetDeviceInfo(device_id, type_vector_core, type_core_num, p_veccore_count)
         except AttributeError:
-            logging.error(f"Failed to obtain core information.")
+            logging.error("Failed to obtain core information.")
             return 0
         if ret != 0:
             return 0
@@ -109,7 +109,7 @@ class DSMIInterface:
         try:
             ret = self.drvhal.halGetDeviceInfo(device_id, module_type_aicore, type_core_num, p_aicore_count)
         except AttributeError:
-            logging.error(f"Failed to obtain core information.")
+            logging.error("Failed to obtain core information.")
             return 0
         if ret != 0:
             return 0
@@ -120,17 +120,17 @@ class DSMIInterface:
     def _parse_error(error_code: int, function_name: str, allow_positive=False) -> bool:
         if error_code != 0:
             if allow_positive and error_code > 0:
-                logging.debug("DRV API Call %s() Success with return code %d" % (function_name, error_code))
+                logging.debug("DRV API Call %s() Success with return code %d", function_name, error_code)
             else:
                 try:
-                    logging.error(f"DSMI API Call {function_name} failed: {DsmiErrorCode(error_code).name}")
+                    logging.error("DSMI API Call %s failed: %s", function_name, DsmiErrorCode(error_code).name)
                     return True
                 except ValueError:
                     pass
-                logging.error(f"DSMI API Call {function_name} failed with unknown code: {error_code}")
+                logging.error("DSMI API Call %s failed with unknown code: %s", function_name, error_code)
                 return True
         else:
-            logging.debug("DSMI API Call %s() Success" % function_name)
+            logging.debug("DSMI API Call %s() Success", function_name)
         return False
 
 

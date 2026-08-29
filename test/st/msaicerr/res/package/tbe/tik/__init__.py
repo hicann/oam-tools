@@ -16,4 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+__all__ = ["Tik", "scope_gm", "scope_ubuf"]
+
 from .tik_build import Tik, scope_gm, scope_ubuf

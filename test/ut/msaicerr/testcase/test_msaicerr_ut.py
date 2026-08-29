@@ -108,14 +108,14 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(success_code, 8)
 
     def test_invlid_tiling_data_param(self, mocker):
-        s = DSMIInterface()
+        DSMIInterface()
         args = ['parse_tiling.py', '-t', INVLID_TILIGN_DATA_PARH]
         mocker.patch('sys.argv', args)
         error_code = parse_tiling.main()
         self.assertEqual(error_code, 0)
 
     def test_tiling_data_param(self, mocker):
-        s = DSMIInterface()
+        DSMIInterface()
         args = ['parse_tiling.py', '-t', TILIGN_DATA_PARH]
         mocker.patch('sys.argv', args)
         error_code = parse_tiling.main()
@@ -128,9 +128,9 @@ class TestUtilsMethods(CommonAssert):
         error_code = msaicerr.main()
         self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PATH_ERROR)
 
-    def test_path_with_same_prefix_is_not_sub_path(self):
-        self.assertEqual(msaicerr.is_sub_path('/tmp/report_output', '/tmp/report'), False)
-        self.assertEqual(msaicerr.is_sub_path('/tmp/report/output', '/tmp/report'), True)
+    def test_path_with_same_prefix_is_not_sub_path(self, tmp_path):
+        self.assertEqual(msaicerr.is_sub_path(str(tmp_path / "report_output"), str(tmp_path / "report")), False)
+        self.assertEqual(msaicerr.is_sub_path(str(tmp_path / "report/output"), str(tmp_path / "report")), True)
 
     def test_environment_invalid(self, mocker):
         args = ['msaicerr.py', '-p', ASYS_OUTPUT]
@@ -196,11 +196,11 @@ class TestUtilsMethods(CommonAssert):
 
     def test_check_env_fail(self, mocker):
         args = ['msaicerr.py', '-e']
-        mocker.patch('sys.argv', args),
+        mocker.patch('sys.argv', args)
         mock_stdout = mocker.patch("sys.stdout", new_callable=StringIO)
-        mocker.patch("msaicerr.get_soc_version", return_value=''),
+        mocker.patch("msaicerr.get_soc_version", return_value='')
         mocker.patch(
-            "ms_interface.aicore_error_parser.AicoreErrorParser.run_test_env", return_value=False),
+            "ms_interface.aicore_error_parser.AicoreErrorParser.run_test_env", return_value=False)
         mocker.patch("msaicerr.verify_device_id", return_value=True)
         msaicerr.main()
         self.assertEqual(
@@ -251,54 +251,3 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(
             "Invalid argument ['-foo', '-bar'], please run help to check the usage" in mock_stdout.getvalue(), True)
 
-    '''
-    def test_msaicerr_no_cce_objdump(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH_APPLOG,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_NONE_ERROR)
-
-    def test_msaicerr_path_invalid(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', 'xxxx', '-p', 'xxxx',
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PATH_ERROR)
-
-    def test_msaicerr_output_path_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', '', '-p', ' ',
-                '-out', ST_OUTPUT + ' ']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_output_path_special_character(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', '', '-p', ' ',
-                '-out', ';*']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_args_is_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_device_does_not_match_host(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_DOES_NOT_MATCH,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            with mock.patch('ms_interface.aicore_error_parser.'
-                            'AicoreErrorParser._decompile'):
-                error_code = msaicerr.main()
-        self.assertEqual(error_code,
-                         Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-    '''

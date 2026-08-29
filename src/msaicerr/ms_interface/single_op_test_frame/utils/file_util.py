@@ -34,7 +34,7 @@ class Constant:
 def _mkdir_without_file_exist_err(dir_path, mode):
     try:
         os.mkdir(dir_path, mode)
-    except FileExistsError as err:
+    except FileExistsError:
         pass
 
 

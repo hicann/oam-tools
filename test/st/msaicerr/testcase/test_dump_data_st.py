@@ -30,7 +30,7 @@ sys.path.append(MSAICERR_PATH)
 
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.constant import Constant
-from ms_interface.dump_data_parser import DumpDataParser, BigDumpDataParser
+from ms_interface.dump_data_parser import DumpDataParser
 
 dump_file = "exception_info.2.1.20250609144925349"
 
@@ -43,12 +43,14 @@ def create_dump_file(file_name, header_length, body_length):
 
 
 class Selflib():
-    def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
+    @staticmethod
+    def ParseDumpProtoToJson(_data_ptr, _data_size, _path_ptr):
         return 0
 
 
 class Selfliberr():
-    def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
+    @staticmethod
+    def ParseDumpProtoToJson(_data_ptr, _data_size, _path_ptr):
         return 1
 
 
@@ -58,13 +60,18 @@ class SelflibWriteJson():
     def __init__(self, dump_json):
         self.dump_json = dump_json
 
-    def ParseDumpProtoToJson(self, data_ptr, data_size, path_ptr):
-        with open(path_ptr.decode('utf-8'), 'w') as json_file:
+    def ParseDumpProtoToJson(self, _data_ptr, _data_size, path_ptr):
+        with open(path_ptr.decode('utf-8'), 'w', encoding='utf-8') as json_file:
             json_file.write(json.dumps(self.dump_json))
         return 0
 
 
 class TestUtilsMethods(CommonAssert):
+    # fixture/setup_method 中赋值，此处声明以明确实例属性集合
+    debug_info = None
+    old_cwd = None
+    temp = None
+
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
         self.old_cwd = os.getcwd()
@@ -78,7 +85,7 @@ class TestUtilsMethods(CommonAssert):
     def common_mock(mocker, dump_json):
         # mock通用方法
         mocker.patch('ctypes.CDLL', return_value=Selflib())
-        with open(f"{dump_file}.json", "w") as f:
+        with open(f"{dump_file}.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(dump_json))
 
     @staticmethod
@@ -104,7 +111,7 @@ class TestUtilsMethods(CommonAssert):
         self.common_mock(mocker, dump_json)
         create_dump_file(dump_file, 10, 200)
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         dump_data_parser = DumpDataParser(dump_file, info)
         dump_data_parser.parse()
         # info.result_info
@@ -144,7 +151,7 @@ class TestUtilsMethods(CommonAssert):
         with open(dump_file, 'wb') as f:
             f.write(struct.pack('Q', 8))
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         DumpDataParser(dump_file, info).parse()
         self.assertIn(capsys.readouterr().out, "invalid dump file")
 
@@ -156,7 +163,7 @@ class TestUtilsMethods(CommonAssert):
             f.write(struct.pack('Q', 100))
             f.write(struct.pack('Q', 10))
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         DumpDataParser(dump_file, info).parse()
         self.assertIn(capsys.readouterr().out, "Failed to read the dump file")
 
@@ -165,19 +172,19 @@ class TestUtilsMethods(CommonAssert):
         self.common_mock(mocker, dump_json)
         create_dump_file(dump_file, 10, 200)
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         DumpDataParser(dump_file, info).parse()
         self.assertIn(capsys.readouterr().out, "The size of exception_info.2.1.20250609144925349 is invalid, please check the dump file")
 
-    def test_parser_dump_file_not_dump_file_error(self, mocker):
+    def test_parser_dump_file_not_dump_file_error(self):
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         DumpDataParser("test.bin", info).parse()
         self.assertEqual(info.dump_info, "")
 
-    def test_parser_dump_file_not_dump_dir_error(self, mocker):
+    def test_parser_dump_file_not_dump_dir_error(self):
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         info.node_name = "test"
         with open("test.bin", "wb") as f:
             f.write(struct.pack("Q", 10))
@@ -198,7 +205,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertIn(info.dump_info, "If dtype is int32")
         self.assertIn(info.dump_info, "If dtype is int64")
 
-    def test_parser_dump_file_not_output(self, mocker, capsys):
+    def test_parser_dump_file_not_output(self, mocker):
         dump_json = {'version': '2.0', 'dump_time': '1749451765349986', 'input': [{'data_type': 0, 'format': 0, 'shape': {'dim': ['10240', '2048']}, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 0, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['2']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 1, 'input_type': 2}, {'data_type': 0, 'format': 0, 'shape': {'dim': ['1']}, 'data': '', 'size': '32', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 2, 'input_type': 2}, {'data_type': 0, 'format': 0, 'data': '', 'size': '10', 'sub_format': 0, 'address': '0', 'offset': '0', 'arg_index': 5, 'input_type': 7}], 'buffer': [], 'op_name': '', 'attr': [], 'space': [{'type': 0, 'data': '', 'size': '10'}], 'dfx_message': '[AIC_INFO] args(0 to 20) after execute:0x12c200000000, 0x12d340000000, 0x12c1c0000518, 0x12d340000200, 0x12d340004400, 0x12c1c0000438, 0x12c100011000, 0x285a, 0x2, 0x1, 0, 0x2000, 0x8, 0x1, 0x1, 0x2800, 0x2, 0x800, 0x1, 0x1, \n[AIC_INFO] args(20 to 39) after execute:0x2, 0x1, 0x1, 0x1, 0x1, 0x800, 0x1, 0x1, 0x2, 0x1, 0x2, 0xa5a5a5a500000000, 0, 0, 0, 0, 0, 0, 0, \n[Dump][Exception] begin to load normal tensor, index:0\n[Dump][Exception] exception info dump args data, addr:0x12c200000000; size:83886080 bytes\n[Dump][Exception] end to load normal tensor, index:0\n[Dump][Exception] begin to load normal tensor, index:1\n[Dump][Exception] exception info dump args data, addr:0x12d340000000; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:1\n[Dump][Exception] begin to load normal tensor, index:2\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000518; size:32 bytes\n[Dump][Exception] end to load normal tensor, index:2\n[Dump][Exception] begin to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340000200; size:16384 bytes\n[Dump][Exception] end to load normal tensor, index:3\n[Dump][Exception] exception info dump args data, addr:0x12d340004400; size:76832 bytes\n[Dump][Exception] exception info dump args data, addr:0x12c1c0000438; size:200 bytes\n'}
         self.common_mock(mocker, dump_json)
         create_dump_file(dump_file, 10, 200)
@@ -249,7 +256,7 @@ class TestUtilsMethods(CommonAssert):
         """需求2: numpy不支持的dtype仍保存为bin，且保留带真实dtype名的提示"""
         info = AicErrorInfo()
         parser = DumpDataParser(dump_file, info)
-        res = parser._save_data_to_bin_file(
+        res = getattr(parser, "_save_data_to_bin_file")(
             {'input': [{'data_type': 33, 'shape': {'dim': ['4']}, 'size': '4', 'data': b'\x01\x02\x03\x04'}]},
             'input', {'input': {}}, dump_file)
         assert parser.get_bin_data()[0].endswith("input.0.hifloat8.bin")
@@ -265,7 +272,7 @@ class TestUtilsMethods(CommonAssert):
         # 解析so会在dump文件同级生成json，此处在调用时写入，避免提前污染待匹配目录
         mocker.patch('ctypes.CDLL', return_value=SelflibWriteJson(dump_json))
         create_dump_file(str(dump_dir.joinpath(rename)), 10, 200)
-        dump_dir.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_dir.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         info = AicErrorInfo()
         info.node_name = "GatherV2"     # L1场景下node_name是plog中的短名，与映射key不同
         info.data_name = data_name
@@ -295,7 +302,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(os.path.isfile(npy_files[0]), True)
         self.assertEqual(str(np.load(npy_files[0]).dtype), "float32")
         # mapping.csv中记录了 {映射后},{映射前}
-        mapping_text = self.temp.joinpath(Constant.MAPPING_CSV_FILE).read_text()
+        mapping_text = self.temp.joinpath(Constant.MAPPING_CSV_FILE).read_text(encoding='utf-8')
         self.assertIn(mapping_text, f"{file_name},{info.kernel_name}.output.0.float32.npy")
 
     def test_parser_dump_file_bfloat16_dtype_success(self, mocker):
@@ -303,7 +310,7 @@ class TestUtilsMethods(CommonAssert):
         self.common_mock(mocker, dump_json)
         create_dump_file(dump_file, 10, 200)
         info = AicErrorInfo()
-        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json")) # 指定json文件路径
+        info.json_file = str(RES_PATH.joinpath("ori_data/collect_json/test.json"))  # 指定json文件路径
         DumpDataParser(dump_file, info).parse()
         # info.result_info
         self.assertIn(info.dump_info, 'exception_info.2.1.20250609144925349.output.0.bfloat16.bin')

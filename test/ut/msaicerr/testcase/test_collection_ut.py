@@ -36,6 +36,10 @@ from ms_interface.collection import Collection, is_sub_path
 
 class TestUtilsMethods(CommonAssert):
 
+    # fixture/setup_method 中赋值，此处声明以明确实例属性集合
+    debug_info = None
+    temp = None
+
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
         self.temp = tmp_path
@@ -108,10 +112,10 @@ class TestUtilsMethods(CommonAssert):
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         input_path.mkdir(parents=True, exist_ok=True)
         input_path.joinpath('exception_dump.log').write_text(
-            '[Dump][Exception]')
-        input_path.joinpath('aic_info.txt').write_text('[AIC_INFO] dev_func:')
+            '[Dump][Exception]', encoding='utf-8')
+        input_path.joinpath('aic_info.txt').write_text('[AIC_INFO] dev_func:', encoding='utf-8')
         input_path.joinpath('args_data.log').write_text(
-            'exception info dump args data')
+            'exception info dump args data', encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.check_argument_valid()
         collection.collect_plog_file()
@@ -139,7 +143,7 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         collection = Collection(input_path, output_path)
         collection.collect_level = collect_level
-        collection_plog_path.joinpath('ge_exception.log').write_text(plog)
+        collection_plog_path.joinpath('ge_exception.log').write_text(plog, encoding='utf-8')
         err_time, device_id, data_name = collection.get_dump_data_info()
         self.assertEqual(err_time, err_time_res)
         self.assertEqual(device_id, device_id_res)
@@ -253,7 +257,7 @@ class TestUtilsMethods(CommonAssert):
         collection = Collection(input_path, output_path)
         res = collection.check_host_and_device_kernel_name(data_name)
         self.assertEqual(res, True)
-        self.assertIn(self.debug_info.read_text(),
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       "Cannot find host kernel or device kernel")
 
     def test_check_host_and_device_kernel_name_device_not_in_host(self):
@@ -262,7 +266,7 @@ class TestUtilsMethods(CommonAssert):
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}/dump")
         input_path.mkdir(parents=True, exist_ok=True)
         input_path.joinpath(data_name).touch()
-        input_path.joinpath(f'GatherV3.GatherV31.1.12121212.o').touch()
+        input_path.joinpath('GatherV3.GatherV31.1.12121212.o').touch()
         input_path.joinpath(f'{data_name}_host.o').touch()
         collection = Collection(input_path, output_path)
         res = collection.check_host_and_device_kernel_name(data_name)
@@ -293,7 +297,7 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         collection_plog_path.joinpath("dump.log").write_text(
-            f"extra-info/data-dump/0/{data_name}")
+            f"extra-info/data-dump/0/{data_name}", encoding='utf-8')
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         input_path.joinpath(
             f"extra-info/data-dump/0/{data_name}").mkdir(parents=True, exist_ok=True)
@@ -309,9 +313,9 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
-                                                             f"[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
-                                                             f"[AIC_INFO] dev_func:te_gatherv2__1__kernel0")
+        collection_plog_path.joinpath("plog.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
+                                                             "[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
+                                                             "[AIC_INFO] dev_func:te_gatherv2__1__kernel0")
 
         collection_plog_path.joinpath("plog1.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.517.823 "
                                                               "[exception_dumper.cc:255]1432 LogExceptionTvmOpInfo:"
@@ -327,9 +331,9 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
-                                                             f"[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
-                                                             f"[AIC_INFO] dev_func:te_gatherv2_1_kernel0")
+        collection_plog_path.joinpath("plog.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
+                                                             "[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
+                                                             "[AIC_INFO] dev_func:te_gatherv2_1_kernel0")
 
         collection_plog_path.joinpath("plog1.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.517.823 "
                                                               "[exception_dumper.cc:255]1432 LogExceptionTvmOpInfo:"
@@ -345,9 +349,9 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
-                                                             f"[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
-                                                             f"[AIC_INFO] dev_func:te_gatherv2_1_kernel0")
+        collection_plog_path.joinpath("plog.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
+                                                             "[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
+                                                             "[AIC_INFO] dev_func:te_gatherv2_1_kernel0")
 
         collection_plog_path.joinpath("plog1.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.517.823 "
                                                               "[exception_dumper.cc:255]1432 LogExceptionTvmOpInfo:"
@@ -364,9 +368,9 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
-                                                             f"[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
-                                                             f"[AIC_INFO] dev_func_error:te_gatherv2_1_kernel0")
+        collection_plog_path.joinpath("plog.log").write_text("[INFO] GE(370,python3):2023-07-13-07:42:40.520.040 "
+                                                             "[exception_dumper.cc:274]1432 LogExceptionTvmOpInfo:"
+                                                             "[AIC_INFO] dev_func_error:te_gatherv2_1_kernel0")
         collection = Collection(input_path, output_path)
         with pytest.raises(utils.AicErrException) as e:
             collection.get_node_and_kernel_name_l1()
@@ -387,7 +391,7 @@ class TestUtilsMethods(CommonAssert):
         data_name = "GatherV2.GatherV21.1.1733469426252033"
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(plog_content)
+        collection_plog_path.joinpath("plog.log").write_text(plog_content, encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.ffts_flag = False
         kernel_name, node_name = collection.get_kernel_name_l0(data_name)
@@ -400,10 +404,10 @@ class TestUtilsMethods(CommonAssert):
         data_name = "GatherV2.GatherV21.1.1733469426252033"
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[ERROR] RUNTIME(8953,None):2020-12-24-01:10:54.177.528 "
-                                                             f"[../../../../../../runtime/feature/src/task.cc:544]8958 "
-                                                             f"PrintErrorInfo:execute failed, "
-                                                             f"fault kernel_name=-1_0_1_trans_TransData_0, ")
+        collection_plog_path.joinpath("plog.log").write_text("[ERROR] RUNTIME(8953,None):2020-12-24-01:10:54.177.528 "
+                                                             "[../../../../../../runtime/feature/src/task.cc:544]8958 "
+                                                             "PrintErrorInfo:execute failed, "
+                                                             "fault kernel_name=-1_0_1_trans_TransData_0, ")
         collection = Collection(input_path, output_path)
         collection.ffts_flag = False
         with pytest.raises(utils.AicErrException) as e:
@@ -417,19 +421,19 @@ class TestUtilsMethods(CommonAssert):
         data_name = "GatherV2.GatherV21.1.1733469426252033"
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07."
-                                                             f"468.642 [davinci_kernel_task.cc:1180]1592077 "
-                                                             f"PrintErrorInfoForDavinciTask:[INIT]"
-                                                             f"[DEFAULT]fftsplus task execute failed, device_id=0, "
-                                                             f"stream_id=42, report_stream_id=42, "
-                                                             f"task_id=1, flip_num=0, "
-                                                             f"fault kernel_name=FlashAttentionScore_"
-                                                             f"5881aeec01e51adb01fb1db8be1c04f0_"
-                                                             f"10000000000022420943_mix_aic, "
-                                                             f"fault kernel info "
-                                                             f"ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f"
-                                                             f"0_10000000000022420943_mix_aic, program id=0, "
-                                                             f"hash=1208019939949783628.")
+        collection_plog_path.joinpath("plog.log").write_text("[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07."
+                                                             "468.642 [davinci_kernel_task.cc:1180]1592077 "
+                                                             "PrintErrorInfoForDavinciTask:[INIT]"
+                                                             "[DEFAULT]fftsplus task execute failed, device_id=0, "
+                                                             "stream_id=42, report_stream_id=42, "
+                                                             "task_id=1, flip_num=0, "
+                                                             "fault kernel_name=FlashAttentionScore_"
+                                                             "5881aeec01e51adb01fb1db8be1c04f0_"
+                                                             "10000000000022420943_mix_aic, "
+                                                             "fault kernel info "
+                                                             "ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f"
+                                                             "0_10000000000022420943_mix_aic, program id=0, "
+                                                             "hash=1208019939949783628.")
         collection = Collection(input_path, output_path)
         collection.ffts_flag = True
         kernel_name, node_name = collection.get_kernel_name_l0(data_name)
@@ -443,19 +447,19 @@ class TestUtilsMethods(CommonAssert):
         data_name = "GatherV2.GatherV21.1.1733469426252033"
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("plog.log").write_text(f"[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07."
-                                                             f"468.642 [davinci_kernel_task.cc:1180]1592077 "
-                                                             f"PrintErrorInfoForDavinciTask:[INIT]"
-                                                             f"[DEFAULT]fftsplus task execute failed, device_id=0, "
-                                                             f"stream_id=42, report_stream_id=42, "
-                                                             f"task_id=1, flip_num=0, "
-                                                             f"fault kernel_name1=FlashAttentionScore_"
-                                                             f"5881aeec01e51adb01fb1db8be1c04f0_"
-                                                             f"10000000000022420943_mix_aic, "
-                                                             f"fault kernel info "
-                                                             f"ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f"
-                                                             f"0_10000000000022420943_mix_aic, program id=0, "
-                                                             f"hash=1208019939949783628.")
+        collection_plog_path.joinpath("plog.log").write_text("[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07."
+                                                             "468.642 [davinci_kernel_task.cc:1180]1592077 "
+                                                             "PrintErrorInfoForDavinciTask:[INIT]"
+                                                             "[DEFAULT]fftsplus task execute failed, device_id=0, "
+                                                             "stream_id=42, report_stream_id=42, "
+                                                             "task_id=1, flip_num=0, "
+                                                             "fault kernel_name1=FlashAttentionScore_"
+                                                             "5881aeec01e51adb01fb1db8be1c04f0_"
+                                                             "10000000000022420943_mix_aic, "
+                                                             "fault kernel info "
+                                                             "ext=FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f"
+                                                             "0_10000000000022420943_mix_aic, program id=0, "
+                                                             "hash=1208019939949783628.")
         collection = Collection(input_path, output_path)
         collection.ffts_flag = True
         with pytest.raises(utils.AicErrException) as e:
@@ -472,7 +476,7 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         collection_plog_path.joinpath("plog.log").write_text(
             "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
-            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.ffts_flag = False
         kernel_name, node_name = collection.get_kernel_name_l0(data_name)
@@ -483,11 +487,11 @@ class TestUtilsMethods(CommonAssert):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"
         kernel_name = kernel_name1.replace("__kernel0", "").replace("_mix_aic", "") \
             .replace("_mix_aiv", "")
-        input_path = self.temp.joinpath(f"input")
+        input_path = self.temp.joinpath("input")
         input_path.mkdir(parents=True, exist_ok=True)
         input_path.joinpath('test.log').write_text(f"{input_path}/{kernel_name}.o, "
                                                    f"{input_path}/{kernel_name}.json, "
-                                                   f"{input_path}/{kernel_name}.cce")
+                                                   f"{input_path}/{kernel_name}.cce", encoding='utf-8')
         input_path.joinpath(f"{kernel_name}.o").touch()
         input_path.joinpath(f"{kernel_name}.json").touch()
         input_path.joinpath(f"{kernel_name}.cce").touch()
@@ -501,9 +505,9 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(
             bool(list(output_path.rglob(f'{kernel_name}.cce'))), True)
 
-    def test_kernel_file_same_prefix_is_not_sub_path(self):
-        self.assertEqual(is_sub_path('/tmp/input_extra/kernel.o', '/tmp/input'), False)
-        self.assertEqual(is_sub_path('/tmp/input/kernel.o', '/tmp/input'), True)
+    def test_kernel_file_same_prefix_is_not_sub_path(self, tmp_path):
+        self.assertEqual(is_sub_path(str(tmp_path / "input_extra/kernel.o"), str(tmp_path / "input")), False)
+        self.assertEqual(is_sub_path(str(tmp_path / "input/kernel.o"), str(tmp_path / "input")), True)
 
     def test_collect_kernel_file_sk_only_host_o(self):
         # SK场景：只生成host.o，没有device .o/.json，仅校验host.o存在，不报error
@@ -511,7 +515,7 @@ class TestUtilsMethods(CommonAssert):
         host_name = f"{kernel_name}_xxx_host.o"
         input_path = self.temp.joinpath("input_sk")
         input_path.mkdir(parents=True, exist_ok=True)
-        input_path.joinpath('test.log').write_text(f"{input_path}/{host_name}")
+        input_path.joinpath('test.log').write_text(f"{input_path}/{host_name}", encoding='utf-8')
         input_path.joinpath(host_name).touch()
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         utils.ExceptionRootCause().cache_error = True
@@ -538,10 +542,10 @@ class TestUtilsMethods(CommonAssert):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"
         kernel_name = kernel_name1.replace("__kernel0", "").replace("_mix_aic", "") \
             .replace("_mix_aiv", "")
-        input_path = self.temp.joinpath(f"input")
+        input_path = self.temp.joinpath("input")
         input_path.mkdir(parents=True, exist_ok=True)
         input_path.joinpath('test.log').write_text(f"{input_path}/{kernel_name}.o, "
-                                                   f"{input_path}/{kernel_name}.cce")
+                                                   f"{input_path}/{kernel_name}.cce", encoding='utf-8')
         input_path.joinpath(f"{kernel_name}.o").touch()
         input_path.joinpath(f"{kernel_name}.cce").touch()
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
@@ -557,7 +561,7 @@ class TestUtilsMethods(CommonAssert):
 
     def test_collect_kernel_file_error(self):
         kernel_name1 = "FlashAttentionScore_5881aeec01e51adb01fb1db8be1c04f0_10000000000022420943_mix_aic"
-        input_path = self.temp.joinpath(f"input")
+        input_path = self.temp.joinpath("input")
         input_path.mkdir(parents=True, exist_ok=True)
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         utils.ExceptionRootCause().cache_error = True
@@ -577,7 +581,7 @@ class TestUtilsMethods(CommonAssert):
         测试超长名字长度初判的边界
         """
         collection = Collection(self.temp, self.temp)
-        self.assertEqual(collection._is_oversize_name("a" * name_len), expected)
+        self.assertEqual(getattr(collection, "_is_oversize_name")("a" * name_len), expected)
 
     def test_get_dump_mapping_csv_path(self):
         """
@@ -588,9 +592,9 @@ class TestUtilsMethods(CommonAssert):
         for device_id in ("0", "1"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n", encoding='utf-8')
         collection = Collection(input_path, output_path)
-        res = collection._get_dump_mapping_csv_path("1")
+        res = getattr(collection, "_get_dump_mapping_csv_path")("1")
         self.assertIn(res, "data-dump/1/mapping.csv")
 
     def test_get_dump_mapping_csv_path_device_id_prefix(self):
@@ -602,9 +606,9 @@ class TestUtilsMethods(CommonAssert):
         for device_id in ("01", "0"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n", encoding='utf-8')
         collection = Collection(input_path, output_path)
-        res = collection._get_dump_mapping_csv_path("0")
+        res = getattr(collection, "_get_dump_mapping_csv_path")("0")
         self.assertIn(res, "data-dump/0/mapping.csv")
         self.assertNotIn(res, "data-dump/01/mapping.csv")
 
@@ -616,7 +620,7 @@ class TestUtilsMethods(CommonAssert):
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         input_path.mkdir(parents=True, exist_ok=True)
         collection = Collection(input_path, output_path)
-        self.assertEqual(collection._get_dump_mapping_csv_path("0"), "")
+        self.assertEqual(getattr(collection, "_get_dump_mapping_csv_path")("0"), "")
 
     def test_get_dump_mapping_csv_path_other_device_only(self):
         """
@@ -627,10 +631,10 @@ class TestUtilsMethods(CommonAssert):
         for device_id in ("1", "2"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n")
+            dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"1234,{device_id}\n", encoding='utf-8')
         collection = Collection(input_path, output_path)
-        self.assertEqual(collection._get_dump_mapping_csv_path("0"), "")
-        self.assertIn(self.debug_info.read_text(),
+        self.assertEqual(getattr(collection, "_get_dump_mapping_csv_path")("0"), "")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       f"{Constant.MAPPING_CSV_FILE} of device 0 cannot be found in")
 
     def test_collect_oversize_scene_other_device_mapping_only(self):
@@ -646,7 +650,7 @@ class TestUtilsMethods(CommonAssert):
         dump_path = input_path.joinpath("extra-info/data-dump/1")
         dump_path.mkdir(parents=True, exist_ok=True)
         dump_path.joinpath(rename).touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         input_path.joinpath("plog.txt").write_text(
             "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
             "[tid:1592077] [Dump][Exception] dump exception to file, file: "
@@ -663,7 +667,7 @@ class TestUtilsMethods(CommonAssert):
         """
         collection = Collection(self.temp, self.temp)
         get_csv = mocker.patch.object(collection, "_get_dump_mapping_csv_path")
-        self.assertEqual(collection._resolve_dump_file_rename("0", "short_name"), "")
+        self.assertEqual(getattr(collection, "_resolve_dump_file_rename")("0", "short_name"), "")
         self.assertEqual(get_csv.called, False)
 
     def test_resolve_dump_file_rename_oversize_matched(self, mocker):
@@ -675,7 +679,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="mapping.csv")
         mocker.patch.object(utils, "parse_name_mapping_csv",
                             return_value={data_name: "1234567890123456"})
-        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "1234567890123456")
+        self.assertEqual(getattr(collection, "_resolve_dump_file_rename")("0", data_name), "1234567890123456")
         self.assertEqual(collection.dump_file_rename, "1234567890123456")
 
     def test_is_oversize_name_multi_byte(self):
@@ -685,7 +689,7 @@ class TestUtilsMethods(CommonAssert):
         collection = Collection(self.temp, self.temp)
         name = "算" * 100   # 100个字符，UTF-8编码为300字节
         self.assertEqual(len(name) > Constant.MAX_FILE_NAME_LEN, False)
-        self.assertEqual(collection._is_oversize_name(name), True)
+        self.assertEqual(getattr(collection, "_is_oversize_name")(name), True)
 
     def test_resolve_dump_file_rename_oversize_not_matched(self, mocker):
         """
@@ -695,8 +699,8 @@ class TestUtilsMethods(CommonAssert):
         collection = Collection(self.temp, self.temp)
         mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="mapping.csv")
         mocker.patch.object(utils, "parse_name_mapping_csv", return_value={"other": "1234"})
-        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "")
-        self.assertIn(self.debug_info.read_text(), "it is not recorded in mapping.csv")
+        self.assertEqual(getattr(collection, "_resolve_dump_file_rename")("0", data_name), "")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'), "it is not recorded in mapping.csv")
 
     def test_resolve_dump_file_rename_oversize_no_mapping_csv(self, mocker):
         """
@@ -705,8 +709,8 @@ class TestUtilsMethods(CommonAssert):
         data_name = "a" * 250 + ".42.1.1726159207469285"
         collection = Collection(self.temp, self.temp)
         mocker.patch.object(collection, "_get_dump_mapping_csv_path", return_value="")
-        self.assertEqual(collection._resolve_dump_file_rename("0", data_name), "")
-        self.assertIn(self.debug_info.read_text(),
+        self.assertEqual(getattr(collection, "_resolve_dump_file_rename")("0", data_name), "")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       f"but {Constant.MAPPING_CSV_FILE} cannot be found in")
 
     def test_check_dump_data_is_valid_with_rename(self):
@@ -754,7 +758,7 @@ class TestUtilsMethods(CommonAssert):
         dump_path = input_path.joinpath("extra-info/data-dump/0")
         dump_path.mkdir(parents=True, exist_ok=True)
         dump_path.joinpath(rename).touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.collect_data_dump("0", data_name, rename)
         self.assertEqual(
@@ -762,7 +766,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(
             bool(list(output_path.rglob(f'collection/dump/{Constant.MAPPING_CSV_FILE}'))), True)
 
-    def test_collect_data_dump_with_rename_multiple(self, mocker):
+    def test_collect_data_dump_with_rename_multiple(self):
         """
         测试超长场景下找到多个dump文件时，回查plog的grep关键字用原始名
         """
@@ -772,7 +776,7 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         collection_plog_path.joinpath("dump.log").write_text(
-            f"extra-info/data-dump/0/{data_name}")
+            f"extra-info/data-dump/0/{data_name}", encoding='utf-8')
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         for device_id in ("0", "1"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
@@ -782,7 +786,7 @@ class TestUtilsMethods(CommonAssert):
         collection.collect_data_dump("0", data_name, rename)
         self.assertEqual(
             bool(list(output_path.rglob(f'collection/dump/{rename}'))), True)
-        self.assertIn(self.debug_info.read_text(), f"Find dump file {rename}.")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'), f"Find dump file {rename}.")
 
     def test_collect_data_dump_multiple_no_plog_match(self):
         """
@@ -792,7 +796,7 @@ class TestUtilsMethods(CommonAssert):
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
-        collection_plog_path.joinpath("dump.log").write_text("no data-dump record here")
+        collection_plog_path.joinpath("dump.log").write_text("no data-dump record here", encoding='utf-8')
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         for device_id in ("0", "1"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
@@ -815,18 +819,18 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path = output_path.joinpath('collection/plog')
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         collection_plog_path.joinpath("dump.log").write_text(
-            f"extra-info/data-dump/{target_device}/{data_name}")
+            f"extra-info/data-dump/{target_device}/{data_name}", encoding='utf-8')
         input_path = self.temp.joinpath(f"asys_output_{CUR_TIME_STR}")
         for device_id in ("0", "1"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(data_name).write_text(f"device{device_id}")
+            dump_path.joinpath(data_name).write_text(f"device{device_id}", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.collect_data_dump(target_device, data_name)
         collected = list(output_path.rglob(f'collection/dump/{data_name}'))
         # 只收集报错device的那一份
         self.assertEqual(len(collected), 1)
-        self.assertEqual(collected[0].read_text(), f"device{target_device}")
+        self.assertEqual(collected[0].read_text(encoding='utf-8'), f"device{target_device}")
 
     def test_collect_data_dump_multiple_device_id_prefix(self):
         """
@@ -838,12 +842,12 @@ class TestUtilsMethods(CommonAssert):
         for device_id in ("01", "0"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(data_name).write_text(f"device{device_id}")
+            dump_path.joinpath(data_name).write_text(f"device{device_id}", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.collect_data_dump("0", data_name)
         collected = list(output_path.rglob(f'collection/dump/{data_name}'))
         self.assertEqual(len(collected), 1)
-        self.assertEqual(collected[0].read_text(), "device0")
+        self.assertEqual(collected[0].read_text(encoding='utf-8'), "device0")
 
     @pytest.mark.parametrize("target_device", ["0", "1"])
     def test_collect_data_dump_with_rename_multiple_device(self, target_device):
@@ -858,12 +862,12 @@ class TestUtilsMethods(CommonAssert):
         for device_id in ("0", "1"):
             dump_path = input_path.joinpath(f"extra-info/data-dump/{device_id}")
             dump_path.mkdir(parents=True, exist_ok=True)
-            dump_path.joinpath(rename).write_text(f"device{device_id}")
+            dump_path.joinpath(rename).write_text(f"device{device_id}", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.collect_data_dump(target_device, data_name, rename)
         collected = list(output_path.rglob(f'collection/dump/{rename}'))
         self.assertEqual(len(collected), 1)
-        self.assertEqual(collected[0].read_text(), f"device{target_device}")
+        self.assertEqual(collected[0].read_text(encoding='utf-8'), f"device{target_device}")
 
     def test_collect_oversize_scene(self):
         """
@@ -876,7 +880,7 @@ class TestUtilsMethods(CommonAssert):
         dump_path = input_path.joinpath("extra-info/data-dump/0")
         dump_path.mkdir(parents=True, exist_ok=True)
         dump_path.joinpath(rename).touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         input_path.joinpath("plog.txt").write_text(
             "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
             "[tid:1592077] [Dump][Exception] dump exception to file, file: "
@@ -901,7 +905,7 @@ class TestUtilsMethods(CommonAssert):
         dump_path = input_path.joinpath("extra-info/data-dump/0")
         dump_path.mkdir(parents=True, exist_ok=True)
         dump_path.joinpath(rename).touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         input_path.joinpath("plog.txt").write_text(
             "[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]"
             "[tid:1592077] [Dump][Exception] dump exception to file, file: "
@@ -925,9 +929,9 @@ class TestUtilsMethods(CommonAssert):
         dump_path = input_path.joinpath("extra-info/data-dump/0")
         dump_path.mkdir(parents=True, exist_ok=True)
         dump_path.joinpath(rename).touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         collection = Collection(input_path, output_path)
-        self.assertEqual(collection._mapping_csv_path, "")
+        self.assertEqual(getattr(collection, "_mapping_csv_path"), "")
         get_csv = mocker.spy(collection, "_get_dump_mapping_csv_path")
         collection.collect_data_dump("0", data_name, rename)
         self.assertEqual(get_csv.call_count, 1)
@@ -942,7 +946,7 @@ class TestUtilsMethods(CommonAssert):
         ]
     )
     def test_collect_ge_graph(self, graph_name, expected):
-        input_path = self.temp.joinpath(f"input")
+        input_path = self.temp.joinpath("input")
         input_path.mkdir(parents=True, exist_ok=True)
         input_path.joinpath(graph_name).touch()
         output_path = self.temp.joinpath(f"info_{CUR_TIME_STR}")

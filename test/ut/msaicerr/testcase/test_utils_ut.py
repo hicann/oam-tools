@@ -23,7 +23,6 @@ import sys
 import shutil
 import subprocess
 from unittest import mock
-from unittest.mock import Mock
 from pathlib import Path
 
 from ms_interface import utils
@@ -32,7 +31,7 @@ from ms_interface.constant import ModeCustom
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
-from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernel, AscendOpKernelRunner, AscendOpKernelParam
+from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner
 from ms_interface.run_dirty_ub import run_dirty_ub_tik
 
 from conftest import MSAICERR_PATH, CommonAssert
@@ -92,7 +91,7 @@ class TestUtilsMethods(CommonAssert):
         hexstr_value = utils.get_str_value("11")
         self.assertEqual(hexstr_value, 11)
 
-    def test_get_str_value_dec(self):
+    def test_get_str_value_float_invalid(self):
         hexstr_value = utils.get_str_value("1.34")
         self.assertEqual(hexstr_value, -1)
 
@@ -125,11 +124,17 @@ class TestUtilsMethods(CommonAssert):
                          Constant.MS_AICERR_EXECUTE_COMMAND_ERROR)
 
     def test_run_cmd_output_pass(self):
-        res = utils.run_cmd_output('ls')
+        res = utils.run_cmd_output(['ls'])
         assert res
 
     def test_run_cmd_output_failed(self):
-        res = utils.run_cmd_output('hello')
+        res = utils.run_cmd_output(['hello'])
+        assert not res
+
+    @staticmethod
+    def test_run_cmd_output_reject_str():
+        # shell=False 只接受参数列表；传字符串直接返回 False 而不是拼成单个可执行名。
+        res = utils.run_cmd_output('ls -l')
         assert not res
 
     def test_get_inquire_result_failed(self, mocker):
@@ -148,7 +153,7 @@ class TestUtilsMethods(CommonAssert):
         csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
         csv_path.write_text("1234567890123456,long_name_a\n"
                             "6543210987654321,long_name_b\n"
-                            "invalid_line_without_comma\n")
+                            "invalid_line_without_comma\n", encoding='utf-8')
         res = utils.parse_name_mapping_csv(str(csv_path))
         self.assertEqual(res, {"long_name_a": "1234567890123456",
                                "long_name_b": "6543210987654321"})
@@ -163,7 +168,7 @@ class TestUtilsMethods(CommonAssert):
         测试mapping.csv读取异常时返回空字典而非向上抛异常
         """
         csv_path = tmp_path.joinpath(Constant.MAPPING_CSV_FILE)
-        csv_path.write_text("1234567890123456,long_name_a\n")
+        csv_path.write_text("1234567890123456,long_name_a\n", encoding='utf-8')
         mocker.patch("csv.reader", side_effect=csv.Error("line contains NUL"))
         self.assertEqual(utils.parse_name_mapping_csv(str(csv_path)), {})
 
@@ -194,7 +199,7 @@ class TestUtilsMethods(CommonAssert):
         single_op_case = SingleOpCase(aic_err_info, 'op_test')
         config_file = single_op_case.generate_config()
         config_file.update({"compile_temp_dir": temp_dir})
-        res = subprocess.run('ls')
+        res = subprocess.run([sys.executable, '-c', ''], check=False)
         mocker.patch.object(Path, "exists", return_value=False)
         mocker.patch("shutil.which", return_value=True)
         mocker.patch("subprocess.run", return_value=res)
@@ -208,12 +213,12 @@ class TestUtilsMethods(CommonAssert):
         op_kernel_path = temp_dir.joinpath(
             ModeCustom.DIRTY_CUSTOM.value, 'op_kernel')
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
         compile_file_path = temp_dir.joinpath(ModeCustom.DIRTY_CUSTOM.value, 'build_out',
                                               'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(f'{ModeCustom.DIRTY_CUSTOM.value}_add_custom.o').write_text(
-            "test")
+            "test", encoding='utf-8')
         shutil.copy(Path(cur_abspath).joinpath(
             "../res/ori_data/collect_milan/collection",
             "DirtyCustom_ab1b6750d7f510985325b603cb06dc8b.json"),

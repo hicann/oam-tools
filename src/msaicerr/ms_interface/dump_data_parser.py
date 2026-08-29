@@ -21,6 +21,7 @@ DumpDataParser class. This class mainly involves the parser_dump_data function.
 Copyright Information:
 Huawei Technologies Co., Ltd. All Rights Reserved © 2020
 """
+import importlib
 import csv
 import json
 import os
@@ -131,6 +132,21 @@ class DumpDataParser:
         return self.dfx_message
 
     @staticmethod
+    def _register_ext_dtype():
+        """
+        Import bfloat16ext for its side effect: registering bfloat16 in numpy.
+        Any code doing astype("bfloat16") must call this first, otherwise numpy
+        raises TypeError: data type 'bfloat16' not understood.
+        @return: True when the dtype is available
+        """
+        try:
+            # 仅为触发 numpy dtype 注册（副作用导入），不需要绑定名字
+            importlib.import_module("bfloat16ext")
+            return True
+        except ImportError:
+            return False
+
+    @staticmethod
     def _to_numpy_dtype(dtype):
         """
         Convert a dump dtype name to the matching numpy dtype.
@@ -140,9 +156,7 @@ class DumpDataParser:
         if not dtype:
             return None
         if dtype in ConstManager.NUMPY_EXT_DTYPES:
-            try:
-                import bfloat16ext  # noqa: F401  register the dtype in numpy
-            except ImportError:
+            if not DumpDataParser._register_ext_dtype():
                 return None
         elif dtype not in ConstManager.NUMPY_NATIVE_DTYPES:
             return None
@@ -186,7 +200,8 @@ class DumpDataParser:
             result_info += f"If dtype is {dtype}, summary is: "
             try:
                 if dtype == "bfloat16":
-                    from bfloat16ext import bfloat16
+                    # 0. astype("bfloat16") 依赖 bfloat16ext 注册该 dtype，未注册会抛 TypeError
+                    DumpDataParser._register_ext_dtype()
                     # 1. 以int16读取，纯粹的字节拷贝，不会触发溢出异常
                     raw_data = np.fromfile(tensor_file, dtype=np.int16)
                     # 2. 先转为float32处理
@@ -204,7 +219,7 @@ class DumpDataParser:
                     mean_val = np.mean(arr, dtype=np.float64)
                     std_val = np.std(arr, dtype=np.float64)
                     result_info += f"Max: {np.max(arr)}, Min: {np.min(arr)}, Mean: {mean_val}, Std: {std_val}\n"
-            except Exception:
+            except (ValueError, TypeError, OSError):
                 result_info += f"Can not read with dtype {dtype}!\n"
         return result_info
 
@@ -226,7 +241,7 @@ class DumpDataParser:
             std_val = np.std(array, dtype=acc_dtype)
             return result_info + (f"Max: {np.max(array)}, Min: {np.min(array)}, "
                                   f"Mean: {mean_val}, Std: {std_val}\n")
-        except Exception:
+        except (ValueError, TypeError, OSError):
             # only swallow normal errors here, KeyboardInterrupt/SystemExit must propagate
             return result_info + f"Can not read with dtype {dtype}!\n"
 
@@ -257,7 +272,7 @@ class DumpDataParser:
         }
         if not os.path.exists(self.info.json_file):
             return json_dtypes
-        with open(self.info.json_file) as json_file:
+        with open(self.info.json_file, encoding='utf-8') as json_file:
             json_data = json.load(json_file)
         inputs_data = json_data.get('supportInfo', {}).get('inputs', [])
         outputs_data = json_data.get('supportInfo', {}).get('outputs', [])
@@ -318,7 +333,7 @@ class DumpDataParser:
     def _record_mapping(file_dir, renamed, original_name):
         # 追加一行 {映射后随机数字串},{映射前文件名} 到同级mapping.csv
         mapping_csv = os.path.join(file_dir, Constant.MAPPING_CSV_FILE)
-        with open(mapping_csv, 'a', newline='') as csv_file:
+        with open(mapping_csv, 'a', newline='', encoding='utf-8') as csv_file:
             csv.writer(csv_file).writerow([renamed, original_name])
 
     def _check_file_name_len(self, dst_file_name):
@@ -439,9 +454,15 @@ class DumpDataParser:
         npy_file_name = f"{file_base_name}.{self.dest_dtype}.npy"
         npy_file_path = os.path.join(output_dir, npy_file_name)
 
+        if self.dest_dtype == "bfloat16" and not DumpDataParser._register_ext_dtype():
+            # astype("bfloat16") 依赖 bfloat16ext 注册该 dtype，未注册会抛 TypeError。
+            # 本路径（-d xxx.bin -dtype bfloat16）不经过 _to_numpy_dtype，须自行注册。
+            utils.print_error_log(
+                "Can not convert to bfloat16: the bfloat16ext module is not installed.")
+            raise utils.AicErrException(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
+
         try:
             if self.dest_dtype == "bfloat16":
-                from bfloat16ext import bfloat16
                 raw_data = np.fromfile(self.dump_path, dtype=np.int16)
                 data_f32 = raw_data.astype(np.float32)
                 bf16_limit = 3.3895e+38
@@ -477,7 +498,8 @@ class DumpDataParser:
             for parse_type in self.parse_types:
                 result_info += self._save_data_to_bin_file(dump_json_data, parse_type, json_dtype, dump_file)
             self._save_dfx_message(dump_json_data)
-        except Exception as e:
+        except (OSError, ValueError, TypeError, KeyError, IndexError,
+                RuntimeError, utils.AicErrException) as e:
             utils.print_debug_log(traceback.format_exc())
             if str(e) == str(Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR):
                 e = "invalid dump file"
@@ -491,7 +513,7 @@ class DumpDataParser:
         # get parse data list
         if os.path.isfile(self.dump_path):
             if self.dump_path.endswith(".npy"):
-                utils.print_error_log(f"The dump file cannot be an npy file.")
+                utils.print_error_log("The dump file cannot be an npy file.")
                 return
             elif self.dump_path.endswith(".bin"):
                 self.info.dump_info = self.convert_bin_file_to_npy()
@@ -527,7 +549,7 @@ class DumpDataParser:
         if len(match_dump_list) == 0:
             utils.print_warn_log(f'There is no dump file for "{self.info.node_name}". Please check the dump path.')
         if result_info_list and result_info_list[-1]:
-            dump_file_path, dump_file_name = os.path.split(dump_file)
+            dump_file_path, _ = os.path.split(dump_file)
             utils.print_info_log(
                 f"Parse dump file finished, result path is: {self.output_path or os.path.abspath(dump_file_path)}"
             )
@@ -610,10 +632,10 @@ class BigDumpDataParser:
         res = dump_parse_cdll.ParseDumpProtoToJson(data_ptr, ctypes.c_size_t(len(binary_data)),
                                                    json_file.encode('utf-8'))
         if res != 0 or not os.path.isfile(json_file):
-            utils.print_error_log(f"Parse dump file to json failed.")
+            utils.print_error_log("Parse dump file to json failed.")
             raise utils.AicErrException(Constant.MS_AICERR_CONNECT_ERROR)
         try:
-            with open(json_file, 'r') as load_f:
+            with open(json_file, 'r', encoding='utf-8') as load_f:
                 self.dump_json_data = json.load(load_f)
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as error:
             utils.print_error_log(str(error))

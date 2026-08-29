@@ -90,7 +90,13 @@ class CompileOP:
         new_env["PATH"] = new_env["PATH"] + ":" + python_bin_path
         # 1、生成自定义算子模板
         utils.print_debug_log("Start run msopgen!")
-        cmd = f"msopgen gen -i {json_file} -c ai_core-{self.chip} -lan cpp -out {self.op_name}"
+        # G.EDV.05：用绝对路径调外部程序；msopgen 在上面拼进 PATH 的 python_bin_path 里。
+        msopgen_bin = shutil.which("msopgen", path=new_env["PATH"])
+        if not msopgen_bin:
+            utils.print_error_log("Cannot find msopgen in PATH!")
+            return False
+        cmd = [msopgen_bin, "gen", "-i", str(json_file), "-c", f"ai_core-{self.chip}",
+               "-lan", "cpp", "-out", self.op_name]
         res = utils.run_cmd_output(cmd, cwd=compile_temp_dir, env=new_env)
         utils.print_debug_log("Generating a custom operator Template")
         if not res:
@@ -102,7 +108,11 @@ class CompileOP:
                                                    kernel_info[self.op_name]["op_kernel_file"])
         op_kernel_file.write_text(kernel_info[self.op_name]["file_content"])
         #  3、编译自定义算子
-        res = utils.run_cmd_output("bash build.sh", cwd=compile_temp_dir.joinpath(self.op_name), env=new_env)
+        bash_bin = shutil.which("bash")
+        if not bash_bin:
+            utils.print_error_log("Cannot find bash in PATH!")
+            return False
+        res = utils.run_cmd_output([bash_bin, "build.sh"], cwd=compile_temp_dir.joinpath(self.op_name), env=new_env)
         utils.print_debug_log("Compiling the custom operator")
         if not res:
             utils.print_error_log("Compiling the operator failed. Check the environment.")
@@ -148,7 +158,9 @@ class CompileOP:
             return []
         # 4、记录本次编译产物所属芯片，供后续复用校验
         self._write_chip_marker(compile_temp_dir)
-        build_bin, build_json = find_res
+        # get_compile_file_from_temp 返回 [] 或 [bin, json]；上面已判非空，
+        # 此处按下标取值（pylint 无法从 [] 的初值推断长度，解包会误报）
+        build_bin, build_json = find_res[0], find_res[1]
         # 5、修改json
         with open(build_json, "r", encoding="utf-8") as f:
             data = json.load(f)

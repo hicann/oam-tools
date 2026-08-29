@@ -213,10 +213,10 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         int64_size = struct.calcsize('q')
         float16_size = struct.calcsize('e')
 
-        def parse_data(data, size, format):
+        def parse_data(data, size, fmt):
             try:
-                result = [struct.unpack(format, data[i:i + size])[0] for i in range(0, len(data), size)]
-            except Exception as e:
+                result = [struct.unpack(fmt, data[i:i + size])[0] for i in range(0, len(data), size)]
+            except struct.error:
                 result = "Cannot decode in this dtype"
             return result
 

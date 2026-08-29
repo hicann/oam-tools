@@ -88,7 +88,7 @@ class Constant:
                      "DT_COMPLEX128, 16}, {DT_QINT8": 1, "DT_QINT16": 2, "DT_QINT32": 4,
                      "DT_QUINT8": 1, "DT_QUINT16": 2, "DT_RESOURCE": -1, "DT_STRING_REF": -1,
                      "DT_DUAL": 5, "DT_BFLOAT16": 2, "DT_BF16": 2}
-    #aicore_error_parser
+    # aicore_error_parser
     OBJ_DUMP_FILE = "cce-objdump"
     NEW_DUMP_FILE = "llvm-objdump"
     GRAPH_FILE = 0

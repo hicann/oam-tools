@@ -91,36 +91,7 @@ class NumpyArrar:
         pass
 
 
-class DumpDataTest():
-    def __init__(self: any, input: list, output: list, buffer: list) -> None:
-        self.input = input
-        self.output = output
-        self.buffer = buffer
-
-
-class DumpDataSize():
-    def __init__(self: any, size: int) -> None:
-        self.size = size
-
-
 class TestUtilsMethods(CommonAssert):
-    '''
-    def test_msaicerr_no_device_aicerr(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH_NO_AICERR,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-
-    def test_msaicerr_no_applog(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-    '''
 
     @pytest.fixture(autouse=True)
     def clear_outpath(self):
@@ -159,14 +130,14 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(success_code, 8)
 
     def test_invlid_tiling_data_param(self, mocker):
-        s = DSMIInterface()
+        DSMIInterface()
         args = ['parse_tiling.py', '-t', INVLID_TILIGN_DATA_PARH]
         mocker.patch('sys.argv', args)
         error_code = parse_tiling.main()
         self.assertEqual(error_code, 0)
 
     def test_tiling_data_param(self, mocker):
-        s = DSMIInterface()
+        DSMIInterface()
         args = ['parse_tiling.py', '-t', TILIGN_DATA_PARH]
         mocker.patch('sys.argv', args)
         error_code = parse_tiling.main()
@@ -215,7 +186,7 @@ class TestUtilsMethods(CommonAssert):
     def test_check_env_invalid_dev(self, mocker):
         args = ['msaicerr.py', '-e', '-dev', '6']
         os.environ['ASCEND_OPP_PATH'] = '/'
-        mocker.patch('sys.argv', args),
+        mocker.patch('sys.argv', args)
         mock_stdout = mocker.patch("sys.stdout", new_callable=StringIO)
         mocker.patch("msaicerr.verify_device_id", return_value=False)
         msaicerr.main()
@@ -237,7 +208,7 @@ class TestUtilsMethods(CommonAssert):
 
     def test_check_env_fail(self, mocker):
         args = ['msaicerr.py', '-e']
-        mocker.patch('sys.argv', args),
+        mocker.patch('sys.argv', args)
         mock_stdout = mocker.patch("sys.stdout", new_callable=StringIO)
         mocker.patch("msaicerr.get_soc_version", return_value='')
         mocker.patch(
@@ -262,8 +233,8 @@ class TestUtilsMethods(CommonAssert):
 
     def test_only_dev_before(self, mocker):
         args = ['msaicerr.py', '-dev', '0', '-d', 'xxx']
-        mocker.patch('sys.argv', args),
-        mocker.patch('msaicerr.verify_device_id', return_value=True),
+        mocker.patch('sys.argv', args)
+        mocker.patch('msaicerr.verify_device_id', return_value=True)
         mock_stderr = mocker.patch("sys.stderr", new_callable=StringIO)
         try:
             msaicerr.main()
@@ -286,7 +257,7 @@ class TestUtilsMethods(CommonAssert):
 
     def test_unknown_arg(self, mocker):
         args = ['msaicerr.py', '-foo', '-bar']
-        mocker.patch('sys.argv', args),
+        mocker.patch('sys.argv', args)
         mocker.patch('msaicerr.verify_device_id', return_value=True)
         mock_stdout = mocker.patch("sys.stdout", new_callable=StringIO)
         msaicerr.main()
@@ -317,114 +288,6 @@ class TestUtilsMethods(CommonAssert):
         pattern = r"Analysis info is saved in (.*)"
         match = re.search(pattern, screen_print)
         info_path = match.group(1)
-        with open(info_path) as f:
+        with open(info_path, encoding='utf-8') as f:
             self.assertIn(f.read(), 'cce file          : \n')
 
-    '''
-    def test_msaicerr_no_cce_objdump(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH_APPLOG,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_NONE_ERROR)
-
-    def test_msaicerr_path_invalid(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', 'xxxx', '-p', 'xxxx',
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PATH_ERROR)
-
-    def test_msaicerr_output_path_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', '', '-p', ' ',
-                '-out', ST_OUTPUT + ' ']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_output_path_special_character(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', '', '-p', ' ',
-                '-out', ';*']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_output_is_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH_APPLOG,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            with mock.patch('os.path.realpath', return_value=''):
-                error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_path_special_character_is_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', '', '-p', '',
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_args_is_none(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py']
-        with mock.patch('sys.argv', args):
-            error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PARAM_ERROR)
-
-    def test_msaicerr_output_makedirs_oserror(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_PATH_APPLOG,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            with mock.patch('os.path.realpath', return_value='/home/result'):
-                with mock.patch('os.path.exists', return_value=False):
-                    with mock.patch('os.makedirs', side_effect=OSError):
-                        error_code = msaicerr.main()
-        self.assertEqual(error_code, Constant.MS_AICERR_INVALID_PATH_ERROR)
-
-    def test_msaicerr_device_does_not_match_host(self):
-        _clear_out_path(ST_OUTPUT)
-        args = ['msaicerr.py', '-f', COMPILE_PARH, '-p', REPORT_DOES_NOT_MATCH,
-                '-out', ST_OUTPUT]
-        with mock.patch('sys.argv', args):
-            with mock.patch('ms_interface.aicore_error_parser.'
-                            'AicoreErrorParser._decompile'):
-                error_code = msaicerr.main()
-        self.assertEqual(error_code,
-                         Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
-
-    def test_parse_and_get_dump_data(self):
-        data = struct.pack('Q', 10)
-        with pytest.raises(utils.AicErrException) as error:
-            with mock.patch('os.path.getsize', return_value=10):
-                with mock.patch('builtins.open', mock.mock_open(
-                        read_data=data)):
-                    dump_data = dump_data_parser.DumpDataParser('input_path',
-                                                                'op_name',
-                                                                '')
-                    dump_data._parse_and_get_dump_data('dump_file')
-        self.assertEqual(error.value.args[0],
-                         Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
-
-    def test_check_dump_data_vaild(self):
-        data_size = DumpDataSize(1)
-        data = [data_size, data_size, data_size]
-        dump_data_test = DumpDataTest(data, data, data)
-        header_length = 8
-        file_size = 8
-        with pytest.raises(utils.AicErrException) as error:
-            dump_data = dump_data_parser.DumpDataParser(
-                'input_path',
-                'op_name',
-                '')
-            dump_data._check_dump_data_vaild(dump_data_test, 'dump_file',
-                                             header_length, file_size)
-        self.assertEqual(error.value.args[0],
-                         Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR)
-    '''

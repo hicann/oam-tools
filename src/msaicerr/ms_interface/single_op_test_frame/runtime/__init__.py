@@ -16,4 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 """init"""
+__all__ = ["AscendRTSApi"]
+
 from .rts_api import AscendRTSApi

@@ -41,7 +41,7 @@ compile_op = CompileOP(op_name, inputs, outputs, 'Ascend950')
 class TestCompileOp():
 
     @staticmethod
-    def test_get_ub_size_not_tbe(monkeypatch, mocker):
+    def test_get_ub_size_not_tbe(monkeypatch):
         # 必须显式让 "from tbe.common import platform" 失败，不能依赖环境里
         # 恰好没有 tbe：CANN 自带 tbe，其导入会因缺 scipy 中途失败，留下
         # tbe=None 但 tbe.common 已被缓存为真模块（部分初始化的导入缓存）。
@@ -110,7 +110,7 @@ class TestCompileOp():
         # 写入与当前芯片一致的标记文件，命中复用分支
         marker_dir = temp_dir / op_name
         marker_dir.mkdir(parents=True, exist_ok=True)
-        (marker_dir / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
+        (marker_dir / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
         mocker.patch.object(Path, "rglob", return_value=['test.o'])
         build_res = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
@@ -125,7 +125,7 @@ class TestCompileOp():
         # 旧芯片残留的编译产物
         old_build = marker_dir / 'build_out' / 'op_kernel'
         old_build.mkdir(parents=True, exist_ok=True)
-        old_build.joinpath(f'{op_name}_add_custom.o').write_text("old")
+        old_build.joinpath(f'{op_name}_add_custom.o').write_text("old", encoding='utf-8')
         mocker.patch("shutil.which", return_value=False)
         other_chip_op = CompileOP(op_name, inputs, outputs, 'Ascend910_96', 'Ascend910_96')
         build_res = other_chip_op.get_compile_file(temp_dir)
@@ -145,22 +145,23 @@ class TestCompileOp():
         shutil.rmtree(temp_dir)
         assert build_res == []
 
-    def test_get_compile_file_temp_dir_not_exist(self, mocker, caplog):
+    @staticmethod
+    def test_get_compile_file_temp_dir_not_exist(mocker):
         temp_dir = Path(cur_abspath) / \
             "test_get_compile_file_temp_dir_not_exist"
         mocker.patch("shutil.which", return_value=True)
         mocker.patch.object(Path, "exists", return_value=False)
-        res = subprocess.run('ls')
+        res = subprocess.run([sys.executable, '-c', ''], check=False)
         mocker.patch("subprocess.run", return_value=res)
         op_kernel_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'op_kernel')
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
         compile_file_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(
-            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test")
+            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test", encoding='utf-8')
         shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
                                                "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
 
@@ -172,7 +173,7 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_get_compile_file_compile_failed"
         mocker.patch.object(Path, "rglob", return_value=['test.o'])
         mocker.patch("shutil.which", return_value=True)
-        res = subprocess.run('test')
+        res = subprocess.run([sys.executable, '-c', 'raise SystemExit(1)'], check=False)
         mocker.patch("subprocess.run", return_value=res)
         build_res = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
@@ -181,15 +182,15 @@ class TestCompileOp():
     def test_get_chip_marker_file(self):
         # 标记文件应位于 compile_temp_dir/{op_name}/.compile_chip
         temp_dir = Path(cur_abspath) / "test_get_chip_marker_file"
-        marker_file = compile_op._get_chip_marker_file(temp_dir)
+        marker_file = getattr(compile_op, "_get_chip_marker_file")(temp_dir)
         assert marker_file == temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER
 
     def test_write_chip_marker_success(self):
         # 写入标记文件后内容应为当前芯片
         temp_dir = Path(cur_abspath) / "test_write_chip_marker_success"
-        compile_op._write_chip_marker(temp_dir)
+        getattr(compile_op, "_write_chip_marker")(temp_dir)
         marker_file = temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER
-        assert marker_file.read_text() == "Ascend950"
+        assert marker_file.read_text(encoding='utf-8') == "Ascend950"
         shutil.rmtree(temp_dir)
 
     def test_write_chip_marker_oserror(self, mocker):
@@ -197,7 +198,7 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_write_chip_marker_oserror"
         mocker.patch.object(Path, "write_text", side_effect=OSError("mock"))
         warn_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_warn_log")
-        compile_op._write_chip_marker(temp_dir)
+        getattr(compile_op, "_write_chip_marker")(temp_dir)
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
         assert warn_log.called
@@ -207,33 +208,33 @@ class TestCompileOp():
         # 标记文件存在且与当前芯片一致时返回 True
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_true"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
-        assert compile_op._is_cache_chip_matched(temp_dir) is True
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
+        assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is True
         shutil.rmtree(temp_dir)
 
     def test_is_cache_chip_matched_no_marker(self):
         # 标记文件不存在时返回 False
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_no_marker"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        assert compile_op._is_cache_chip_matched(temp_dir) is False
+        assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is False
         shutil.rmtree(temp_dir)
 
     def test_is_cache_chip_matched_mismatch(self):
         # 标记文件记录的芯片与当前芯片不一致时返回 False
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_mismatch"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend910_96")
-        assert compile_op._is_cache_chip_matched(temp_dir) is False
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend910_96", encoding='utf-8')
+        assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is False
         shutil.rmtree(temp_dir)
 
     def test_is_cache_chip_matched_read_oserror(self, mocker):
         # 读取标记文件失败时返回 False 并告警
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_read_oserror"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
         mocker.patch.object(Path, "read_text", side_effect=OSError("mock"))
         warn_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_warn_log")
-        assert compile_op._is_cache_chip_matched(temp_dir) is False
+        assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is False
         shutil.rmtree(temp_dir)
         assert warn_log.called
         assert "Failed to read compile chip marker" in warn_log.call_args[0][0]
@@ -243,15 +244,15 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_clean_op_build_dir_exist"
         op_dir = temp_dir / op_name
         op_dir.mkdir(parents=True, exist_ok=True)
-        op_dir.joinpath("old.o").write_text("old")
-        assert compile_op._clean_op_build_dir(temp_dir) is True
+        op_dir.joinpath("old.o").write_text("old", encoding='utf-8')
+        assert getattr(compile_op, "_clean_op_build_dir")(temp_dir) is True
         assert not op_dir.exists()
         shutil.rmtree(temp_dir)
 
     def test_clean_op_build_dir_not_exist(self):
         # 目录不存在时为空操作，不应报错，返回 True
         temp_dir = Path(cur_abspath) / "test_clean_op_build_dir_not_exist"
-        assert compile_op._clean_op_build_dir(temp_dir) is True
+        assert getattr(compile_op, "_clean_op_build_dir")(temp_dir) is True
         assert not temp_dir.exists()
 
     def test_clean_op_build_dir_oserror(self, mocker):
@@ -260,7 +261,7 @@ class TestCompileOp():
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
         mocker.patch("shutil.rmtree", side_effect=OSError("mock"))
         error_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_error_log")
-        assert compile_op._clean_op_build_dir(temp_dir) is False
+        assert getattr(compile_op, "_clean_op_build_dir")(temp_dir) is False
         mocker.stopall()
         shutil.rmtree(temp_dir)
         assert error_log.called

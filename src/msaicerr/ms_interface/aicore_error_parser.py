@@ -18,7 +18,9 @@
 import copy
 import re
 import os
+import stat
 import subprocess
+import sys
 import time
 import json
 import platform
@@ -121,7 +123,7 @@ class AicoreErrorParser:
             if (not os.path.exists(file_name)) or file_name.endswith("_loc.json") or (not file_name.endswith(".json")):
                 continue
             json_file = os.path.join(kernel_path, file_name)
-            with open(json_file, 'r') as f:
+            with open(json_file, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
                 if not json_data:
                     continue
@@ -230,7 +232,7 @@ class AicoreErrorParser:
             kernel_name_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=(.*?),.*?hash=(\d+)"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if not kernel_name_ret and not sk_kernel_name:
-                utils.print_error_log(f"Failed to get \"fftsplus task execute failed\" in plog.")
+                utils.print_error_log("Failed to get \"fftsplus task execute failed\" in plog.")
                 return None
             if kernel_name_ret:
                 stream_id, task_id, kernel_name, hash_id = \
@@ -600,7 +602,7 @@ class AicoreErrorParser:
             if not os.path.exists(graph_file):
                 utils.print_warn_log(f'Failed to find graph_file: {graph_file}.')
                 return None
-            with open(graph_file, 'r') as graph:
+            with open(graph_file, 'r', encoding='utf-8') as graph:
                 text = graph.read()
                 regexp = r'(op\s+\{\s+name:\s+"%s".+?%s.+?\})\s+op\s+\{' % (node_name, kernel_name)
                 ret = re.findall(regexp, text, re.M | re.S)
@@ -608,7 +610,7 @@ class AicoreErrorParser:
                     utils.print_warn_log(f'Failed to get op for node({node_name}) kernel({kernel_name}).')
                     return None
                 return ret[0]
-        except BaseException as io_error:
+        except (OSError, UnicodeDecodeError, re.error):
             utils.print_warn_log(f'Failed to open file graph_file: {graph_file}.')
             return None
 
@@ -630,7 +632,7 @@ class AicoreErrorParser:
         current_path = os.getcwd()
         print_info_path = current_path + '/debug_info.txt'
         print_info_cmd = ['mv', print_info_path, self.collect_path]
-        _, rts_info = utils.execute_command(print_info_cmd)
+        utils.execute_command(print_info_cmd)
 
     def _get_atomic_err_log(self: any) -> list:
         cmd = ['grep', 'dha status 1', '-nr', self.collect_path]
@@ -670,7 +672,7 @@ class AicoreErrorParser:
     def _get_tiling_l0(self) -> tuple:
         if not self.ffts_flag:
             plog_path = os.path.join(self.collect_path, "collection", "plog")
-            aic_info_cmd = ['grep', '-r', f"tilingKey =", plog_path]
+            aic_info_cmd = ['grep', '-r', "tilingKey =", plog_path]
             _, aic_info = utils.execute_command(aic_info_cmd)
             tiling_key_regexp = r"tilingKey = (.*?),"
             tiling_key_ret = re.findall(tiling_key_regexp, aic_info, re.M)
@@ -690,7 +692,7 @@ class AicoreErrorParser:
             return tiling_key, block_dim
         else:
             plog_path = os.path.join(self.collect_path, "collection", "plog")
-            aic_info_cmd = ['grep', '-r', f"fftsplus aivector error", plog_path]
+            aic_info_cmd = ['grep', '-r', "fftsplus aivector error", plog_path]
             _, aic_info = utils.execute_command(aic_info_cmd)
             kernel_name_regexp = r"kernel_name=(.*?),"
             kernel_name_ret = re.findall(kernel_name_regexp, aic_info, re.M)
@@ -724,7 +726,7 @@ class AicoreErrorParser:
                     temp_tiling_data += tiling_data.replace(" 0x", "").replace("0x", "").strip()
                 try:
                     tiling_data = bytes.fromhex(temp_tiling_data)
-                except Exception as e:
+                except ValueError:
                     utils.print_warn_log(f"Failed to decode tiling_data {temp_tiling_data}")
                     tiling_data = bytes.fromhex("0000")
             else:
@@ -762,7 +764,7 @@ class AicoreErrorParser:
             info.tiling_data = target_bin
             utils.print_debug_log(f"Tiling data is saved to {target_bin} successfully.")
         else:
-            utils.print_debug_log(f"No tiling data is found in dump files and logs.")
+            utils.print_debug_log("No tiling data is found in dump files and logs.")
 
     def get_ffts_addrs_num(self):
         plog_path = os.path.join(self.collect_path, "collection", "plog")
@@ -812,7 +814,7 @@ class AicoreErrorParser:
         err_pc = ""
         try:
             err_pc = self._get_err_pc(info, current_pc5_value, start_pc5_value)
-        except BaseException:
+        except (ValueError, TypeError, IndexError, AttributeError):
             utils.print_debug_log("_get_err_pc failed")
         if err_pc == "":
             utils.print_debug_log("This aicore error has no estimated offset.")
@@ -914,7 +916,7 @@ class AicoreErrorParser:
 
     @staticmethod
     def _read_decompile_file(decompile_file: str, err_pc: str, info: any) -> str:
-        with open(decompile_file, 'r') as fo_file:
+        with open(decompile_file, 'r', encoding='utf-8') as fo_file:
             cce_code = ""
             cce_code_num = ""
             for line in fo_file.readlines():
@@ -933,7 +935,7 @@ class AicoreErrorParser:
 
     @staticmethod
     def _read_loc_json_file(loc_json_file: str, cce_code_num: str, info: any) -> None:
-        with open(loc_json_file, 'r') as load_f:
+        with open(loc_json_file, 'r', encoding='utf-8') as load_f:
             load_dict = json.load(load_f)
             for line in load_dict[0]['cce_line2loc']:
                 if str(line['cce_line']) == cce_code_num \
@@ -960,7 +962,7 @@ class AicoreErrorParser:
 
             cce_file = info.cce_file
             if os.path.exists(cce_file):
-                with open(cce_file, 'r') as f:
+                with open(cce_file, 'r', encoding='utf-8') as f:
                     for index, line in enumerate(f):
                         if int(cce_code_num) - 1 == index:
                             if "PIPE_ALL" in line:
@@ -984,7 +986,7 @@ exit()"""
 
         case_file = os.path.join(case_path, f"test_{op_test}.py")
         utils.print_debug_log(f"Generate case file {case_file}")
-        with open(case_file, 'w') as f:
+        with open(case_file, 'w', encoding='utf-8') as f:
             f.write(case_content)
         return case_file
 
@@ -1002,15 +1004,27 @@ exit()"""
         new_env = os.environ.copy()
         new_env["ASCEND_SLOG_PRINT_TO_STDOUT"] = "0"
         new_env['ASCEND_PROCESS_LOG_PATH'] = single_op_log_path
-        new_env['PYTHONPATH'] = new_env.get('PYTHONPATH') + ":" + os.path.dirname(current_path)
+        # or '' 兜底：干净环境未设 PYTHONPATH 时 get() 返回 None，直接 + 会抛 TypeError
+        new_env['PYTHONPATH'] = (new_env.get('PYTHONPATH') or '') + ":" + os.path.dirname(current_path)
 
         AicoreErrorParser.comment_cce_in_case(case_file)
-        _exec_run = subprocess.run(['python3', case_file], env=new_env, stdout=subprocess.PIPE)
-        _len = _exec_run.stdout.decode('utf-8').find("SingleOpCase.run Execute Info")
+        # G.EDV.05：用 sys.executable 绝对路径，避免依赖 PATH 里的 python3
+        _exec_run = subprocess.run([sys.executable, case_file], env=new_env, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, check=False)
+        _stdout = _exec_run.stdout.decode('utf-8')
+        _len = _stdout.find("SingleOpCase.run Execute Info")
         mem_key = "Access Memory without OverBoundary"
-        test_info: str = 'Out-of-bounds memory access.' if mem_key in _exec_run.stdout.decode('utf-8')[_len:] else ''
+        test_info: str = 'Out-of-bounds memory access.' if mem_key in _stdout[_len:] else ''
         single_op_ret = not AicoreErrorParser.search_aicerr_log(aic_info.kernel_name,
                                                                 single_op_log_path)
+        if _exec_run.returncode != 0 and single_op_ret:
+            # 用例进程非 0 退出、且日志里没有 aicore error：说明用例没真正跑起来
+            # （依赖缺失/语法错误等），不能按"执行成功"上报，否则掩盖故障原因。
+            utils.print_error_log(
+                f"The single op case {case_file} exited with code {_exec_run.returncode} "
+                f"and no aicore error was found in {single_op_log_path}. "
+                f"stdout: {_stdout}, stderr: {_exec_run.stderr.decode('utf-8')}")
+            return RetCode.FAILED, test_info, single_op_log_path
         if not single_op_ret:
             AicoreErrorParser.print_single_op_result(case_file)
             return RetCode.FAILED, test_info, single_op_log_path
@@ -1018,7 +1032,7 @@ exit()"""
 
     @staticmethod
     def comment_cce_in_case(case_file):
-        with open(case_file, "r+") as f:
+        with open(case_file, "r+", encoding="utf-8") as f:
             content = f.read().replace("\"cce_file\"", "# \"cce_file\"")
             f.seek(0)
             f.truncate(0)
@@ -1037,7 +1051,7 @@ exit()"""
     @staticmethod
     def _get_occur_before_mark(decompile_file: str, diff_str: str, info: any) -> bool:
         #      504:    04c20000    ST.b64         X1, [X0], #0
-        with open(decompile_file, "r") as fo_file:
+        with open(decompile_file, "r", encoding="utf-8") as fo_file:
             text = fo_file.read()
 
         regexp = r'(^\s+(\S+):\s+\S+\s+\S.+$)'
@@ -1079,7 +1093,7 @@ exit()"""
             if data_dump_ret == 0:
                 utils.print_warn_log("Data dump failed in exception dump. Please contact GE to resolve it!")
                 return False
-        except utils.AicErrException as e:
+        except utils.AicErrException:
             utils.print_error_log("Failed to dump data!")
         try:
             data_dump_failed_cmd1 = ['grep', r'\[Dump\]\[Exception\] D2H failed', '-nr', self.collect_path]
@@ -1089,7 +1103,7 @@ exit()"""
             if data_dump_ret1 == 0 or data_dump_ret2 == 0:
                 utils.print_warn_log("Data dump failed. Maybe memory is invalid. Search 'D2H failed' in plog!")
                 return False
-        except utils.AicErrException as e:
+        except utils.AicErrException:
             utils.print_error_log("Failed to dump data!")
         return True
 
@@ -1124,11 +1138,11 @@ exit()"""
         if not os.path.exists(json_file):
             utils.print_warn_log(f"Can not find {json_file}!")
             return False
-        with open(json_file, "r") as f:
+        with open(json_file, "r", encoding="utf-8") as f:
             json_obj = json.load(f)
             # compileInfo in json file means the kernel is dynamic
             if json_obj.get("compileInfo") is None and json_obj.get("compile_info") is None:
-                utils.print_debug_log(f"No compile_info found in json file, no need to check atomic clean!")
+                utils.print_debug_log("No compile_info found in json file, no need to check atomic clean!")
                 return False
             parameters = json_obj.get("parameters")
             for param in parameters:
@@ -1222,7 +1236,7 @@ exit()"""
                     continue
                 log_path = os.path.abspath(os.path.join(root, file))
                 AicoreErrorParser._wait_for_log_stabilization(log_path)
-                with open(log_path, "r") as f:
+                with open(log_path, "r", encoding="utf-8") as f:
                     content = f.read()
                 if AicoreErrorParser._check_file_content(kernel_name, content):
                     return True
@@ -1242,7 +1256,7 @@ exit()"""
                 if soc_version_ret[0] == "Ascend310B":
                     return "Ascend310B1"
                 return soc_version_ret[0]
-        except Exception:
+        except (OSError, UnicodeDecodeError, re.error):
             utils.GLOBAL_RESULT = False
         utils.print_warn_log(f'Can not get soc_version from cce file {cce_file}')
         return "Ascend910B2"
@@ -1256,10 +1270,12 @@ exit()"""
         new_env = os.environ.copy()
         new_env["ASCEND_SLOG_PRINT_TO_STDOUT"] = "0"
         new_env['ASCEND_PROCESS_LOG_PATH'] = golden_op_path
-        new_env['PYTHONPATH'] = new_env.get('PYTHONPATH') + ":" + os.path.dirname(current_path)
+        # or '' 兜底：干净环境未设 PYTHONPATH 时 get() 返回 None，直接 + 会抛 TypeError
+        new_env['PYTHONPATH'] = (new_env.get('PYTHONPATH') or '') + ":" + os.path.dirname(current_path)
 
-        cmd = ['python3', f'{current_path}/golden_op.py', soc_version, str(device_id), compile_temp_dir]
-        ret = subprocess.run(cmd, env=new_env)
+        # G.EDV.05：用 sys.executable 绝对路径，避免依赖 PATH 里的 python3
+        cmd = [sys.executable, f'{current_path}/golden_op.py', soc_version, str(device_id), compile_temp_dir]
+        ret = subprocess.run(cmd, env=new_env, check=False)
         if ret.returncode != 0:
             utils.print_error_log(
                 f"The built-in sample operator subprocess exited with code {ret.returncode}. "
@@ -1274,7 +1290,7 @@ exit()"""
                 f"Possible causes: soc_version mismatch (got '{soc_version}'), "
                 f"or CANN toolkit (atc/ccec) not correctly installed.")
             return False
-        with open(build_jsons[0], "r") as f:
+        with open(build_jsons[0], "r", encoding="utf-8") as f:
             data = json.load(f)
         # 删除临时文件夹
         if os.path.exists(compile_temp_dir):
@@ -1299,7 +1315,13 @@ exit()"""
         obj_dump_file = "cce-objdump_aarch64" if "aarch64" in platform.machine() else "cce-objdump"
         obj_dump_file = os.path.join(os.getcwd(), "tools", obj_dump_file)
         if os.path.exists(obj_dump_file):
-            os.system("chmod 755 " + obj_dump_file)
+            # 原实现用 os.system("chmod 755") 失败只回非零码不抛异常；改用 os.chmod 后
+            # 需自行兜住 OSError（文件刚被删、权限不足等），否则会中断整个分析流程。
+            try:
+                os.chmod(obj_dump_file,
+                         stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+            except OSError as error:
+                utils.print_warn_log(f"Failed to chmod {obj_dump_file}. {error}")
             os.environ["PATH"] = os.path.join(os.getcwd(), "tools") + ":" + os.environ["PATH"]
         else:
             cce_dump = shutil.which("cce-objdump") or shutil.which("llvm-objdump")
@@ -1328,7 +1350,7 @@ exit()"""
             return False
 
         if hash_id != kernel_name_ret[0]:
-            utils.print_warn_log(f"The hash_id from plog is different with the hash_id which from the device.")
+            utils.print_warn_log("The hash_id from plog is different with the hash_id which from the device.")
             return False
 
         return True
@@ -1337,7 +1359,7 @@ exit()"""
     def get_soc_version(cce_file):
         try:
             soc_version = DSMIInterface().get_chip_info(0).get_complete_platform()
-        except BaseException:
+        except (OSError, AttributeError, UnicodeDecodeError, IndexError):
             utils.print_error_log("Get soc_version form platform failed!")
             soc_version = None
         if not soc_version:
@@ -1348,20 +1370,20 @@ exit()"""
     def run_single_operator(self, info, err_i_folder):
         date_string = time.strftime("%Y%m%d%H%M%S", time.localtime(int(time.time())))
         compile_temp_dir = os.path.abspath(f"temp_{date_string}")
-        utils.print_info_log(f"Step 9. Verify a single operator.")
+        utils.print_info_log("Step 9. Verify a single operator.")
         # SK场景下只有host.o、没有json，仅校验bin_file；非SK场景校验bin_file+json_file
         if self.is_sk:
             kernel_file_exist = os.path.exists(info.bin_file)
         else:
             kernel_file_exist = os.path.exists(info.bin_file) and os.path.exists(info.json_file)
         if not kernel_file_exist:
-            utils.print_info_log(f"Skip exec single op case because the kernel file dose not exist.")
+            utils.print_info_log("Skip exec single op case because the kernel file dose not exist.")
         else:
             host_info = copy.deepcopy(info)
             compile_path = os.path.join(self.collect_path, "collection", "compile")
             host_info.bin_file = self._find_sk_host_o(compile_path, info.kernel_name)
             if host_info.bin_file and os.path.exists(host_info.bin_file):
-                host_op_test_result, host_op_test_mem_monitor, host_op_test_log_path = (
+                _, _, host_op_test_log_path = (
                     self._test_single_op(host_info, err_i_folder, compile_temp_dir, "host_single_op"))
                 if not self.check_hash_id(host_info.hash_id, host_op_test_log_path):
                     utils.print_error_log(
@@ -1378,7 +1400,7 @@ exit()"""
                 if info.single_op_test_result != RetCode.SUCCESS:
                     self.check_hash_id(info.hash_id, info.single_op_log_path)
                 else:
-                    error_op_test_result, error_op_test_mem_monitor, error_op_test_log_path = (
+                    _, _, error_op_test_log_path = (
                         self._test_single_op(info, err_i_folder, compile_temp_dir, "error_single_op"))
                     self.check_hash_id(info.hash_id, error_op_test_log_path)
 
@@ -1425,18 +1447,18 @@ exit()"""
         utils.check_path_valid(err_i_folder, isdir=True, output=True)
 
         # 3. 分析图中的算子信息(非必须)
-        utils.print_info_log(f"Step 3. Extract the node information of an operator in the GE graph.")
+        utils.print_info_log("Step 3. Extract the node information of an operator in the GE graph.")
         graph_file = self._get_graph_file()
         info.graph_file = graph_file if self._get_op_by_graph(graph_file, info.node_name, info.kernel_name) else None
 
         # 4. 分析args before 以及 args after的区别(非必须)
-        utils.print_info_log(f"Step 4. Extract and compare the data between 'args before' and 'args after'.")
+        utils.print_info_log("Step 4. Extract and compare the data between 'args before' and 'args after'.")
         info.args_after_list = self._get_args_after_exc()
         info.args_before_list = self._get_args_before_exc()
         info.check_args_result = self._check_args(info.args_before_list, info.args_after_list)
 
         # 5. 反编译kernel文件
-        utils.print_info_log(f"Step 5. Decompile the operator file, which triggers an instruction.")
+        utils.print_info_log("Step 5. Decompile the operator file, which triggers an instruction.")
         kernel_meta_path = os.path.join(self.collect_path, "collection", "compile")
         # 反编译  出错指令
         result = self._decompile(kernel_meta_path, err_i_folder, info)
@@ -1445,15 +1467,15 @@ exit()"""
                 {os.path.join(kernel_meta_path, info.kernel_name)}.o failed.")
 
         # 6. 检查框架是否正确插入memset
-        utils.print_info_log(f"Step 6. Check whether memset or atomic_clean is correctly inserted"
-                             f" before the operator in the graph.")
+        utils.print_info_log("Step 6. Check whether memset or atomic_clean is correctly inserted"
+                             " before the operator in the graph.")
         info.atomic_clean_check = self._check_atomic_clean(kernel_meta_path, info)
         # 日志报错有0x800000，并且插入了memset才进行累加误差相关的检查
         if ("0x800000" == info.aic_error_info.get('error_code', '')) and (not info.atomic_clean_check):
             info.atomic_add_err = self._get_atomic_err_log()
 
         # 7. 原方法检查输入输出地址是否在合法范围已放弃，使用exceptiondump是否成功来判断内存问题并解析dump数据, 并生成tiling data
-        utils.print_info_log(f"Step 7. Parse dump data and check whether flushing data to disk is normal.")
+        utils.print_info_log("Step 7. Parse dump data and check whether flushing data to disk is normal.")
         collect_dump_data = os.path.join(self.collect_path, "collection", "dump")
         dump_parser = DumpDataParser(collect_dump_data, info)
         dump_parser.parse()
@@ -1476,11 +1498,11 @@ exit()"""
         self.write_tiling_data_to_file(info)
 
         # 8. 解析二级指针
-        utils.print_info_log(f"Step 8. Check whether the pointer tensor exists.")
+        utils.print_info_log("Step 8. Check whether the pointer tensor exists.")
         if self.parse_level == 0:
             info.sub_ptr_addrs = self._get_sub_ptr(info)
         else:
-            utils.print_warn_log(f"The current Log is L1 exception."
+            utils.print_warn_log("The current Log is L1 exception."
                                  "If the operator contains pointer tensors,"
                                  "msaicerr tool does not support the operator.")
 
@@ -1488,11 +1510,11 @@ exit()"""
         self.run_single_operator(info, err_i_folder)
 
         # 10. 使用标杆算子测试环境
-        utils.print_info_log(f"Step 10. Verify the environment using the sample operator.")
+        utils.print_info_log("Step 10. Verify the environment using the sample operator.")
         soc_version = self.get_soc_version(info.cce_file)
         try:
             info.env_available = AicoreErrorParser.run_test_env(soc_version, self.device_id)
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, TypeError, utils.AicErrException):
             utils.print_info_log("run golden op failed.Test env skip!")
         # write info file
         utils.print_info_log(f"Step 11. Write the parsing result."
@@ -1602,7 +1624,7 @@ exit()"""
         kernel_name_regexp = r"dev_func:([a-zA-Z0-9_]{0,})$"
         kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
         if not kernel_name_ret:
-            utils.print_error_log(f"Failed to get \"[AIC_INFO] dev_func:\" in plog. Cannot run L1 test.")
+            utils.print_error_log("Failed to get \"[AIC_INFO] dev_func:\" in plog. Cannot run L1 test.")
             return None
 
         if "__" in kernel_name_ret[0]:
@@ -1616,7 +1638,7 @@ exit()"""
         regexp = r".+?node_name:(.*?),.*stream_id:(\d+)\s*.+?\s*task_id:(\d+)\s*"
         result = utils.get_inquire_result(node_name_cmd, regexp)
         if not result:
-            utils.print_error_log(f"Failed to get node name in plog. Cannot run L1 test.")
+            utils.print_error_log("Failed to get node name in plog. Cannot run L1 test.")
             return None
         node_name, stream_id, task_id = result[0]
         node_name = node_name.replace('/', '_').replace('.', '_')
@@ -1624,7 +1646,7 @@ exit()"""
         hash_id_regexp = r" stream_id=(\d+),.*?task_id=(\d+),.*?fault kernel_name=.*?,.*?hash=(\d+)"
         hash_id_ret = utils.get_inquire_result(hash_id_cmd, hash_id_regexp)
         if not hash_id_ret:
-            utils.print_error_log(f"Cannot get hash id in plog.")
+            utils.print_error_log("Cannot get hash id in plog.")
             return None
         hash_id = hash_id_ret[0][2]
         AicoreErrorInfo = namedtuple("AicoreErrorInfo",
@@ -1646,7 +1668,7 @@ exit()"""
         if error_stream_task is not None:
             for dump_info in dump_data_info_list:
                 thread_id, data_name = dump_info
-                if thread_id in error_stream_task.keys() and error_stream_task[tid] in data_name:
+                if thread_id in error_stream_task.keys() and error_stream_task[thread_id] in data_name:
                     dump_data_info = dump_info
         
         return error_stream_task, dump_data_info

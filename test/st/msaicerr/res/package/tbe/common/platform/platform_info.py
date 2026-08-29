@@ -16,9 +16,15 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# 桩记录最近一次入参，既供用例断言，也避免参数未使用
+LAST_CALL = {}
+
+
 def set_current_compile_soc_info(sco_version):
+    LAST_CALL["soc_version"] = sco_version
     return True
 
 
 def get_soc_spec(a):
+    LAST_CALL["soc_spec_key"] = a
     return 4096

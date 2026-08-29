@@ -26,7 +26,7 @@ from argparse import Namespace
 
 import pytest
 
-from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath, CommonAssert
+from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath
 
 sys.path.append(MSAICERR_PATH)
 sys.path.append(f'{cur_abspath}/../res/package')
@@ -54,19 +54,19 @@ class TestUtilsMethods():
 
     def test_check_file_content_false(self):
         single_op_case = SingleOpCase('collection', 'op_test')
-        flag = single_op_case._check_file_content('kernel_name', 'content')
+        flag = getattr(single_op_case, "_check_file_content")('kernel_name', 'content')
         assert not flag
 
     def test_check_file_content(self):
         single_op_case = SingleOpCase('collection', 'op_test')
-        flag = single_op_case._check_file_content(
+        flag = getattr(single_op_case, "_check_file_content")(
             'aicore exception', 'aicore exception')
         assert flag
 
     def test_wait_for_log_stabilization(self, mocker):
         mocker.patch('os.path.getsize', return_value=4)
         single_op_case = SingleOpCase('collection', 'op_test')
-        single_op_case._wait_for_log_stabilization(os.path.join(cur_abspath,
+        getattr(single_op_case, "_wait_for_log_stabilization")(os.path.join(cur_abspath,
                                                                 '../res/ori_data/complie_path'))
 
     def test_get_cce_file_cce_not_exist(self):
@@ -123,7 +123,7 @@ class TestUtilsMethods():
         single_op_case = SingleOpCase(aic_err_info, 'op_test')
         config_file = single_op_case.generate_config()
         config_file.update({"compile_temp_dir": temp_dir})
-        res = subprocess.run('ls')
+        res = subprocess.run([sys.executable, '-c', ''], check=False)
         mocker.patch.object(Path, "exists", return_value=False)
         mocker.patch("shutil.which", return_value=True)
         mocker.patch("subprocess.run", return_value=res)
@@ -137,12 +137,12 @@ class TestUtilsMethods():
         op_kernel_path = temp_dir.joinpath(
             ModeCustom.DIRTY_CUSTOM.value, 'op_kernel')
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
         compile_file_path = temp_dir.joinpath(ModeCustom.DIRTY_CUSTOM.value, 'build_out',
                                               'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(f'{ModeCustom.DIRTY_CUSTOM.value}_add_custom.o').write_text(
-            "test")
+            "test", encoding='utf-8')
         shutil.copy(Path(cur_abspath).joinpath(
             "../res/ori_data/collect_milan/collection",
             "DirtyCustom_ab1b6750d7f510985325b603cb06dc8b.json"),

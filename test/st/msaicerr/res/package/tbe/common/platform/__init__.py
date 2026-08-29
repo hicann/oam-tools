@@ -16,4 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+__all__ = ["set_current_compile_soc_info", "get_soc_spec"]
+
 from .platform_info import set_current_compile_soc_info, get_soc_spec

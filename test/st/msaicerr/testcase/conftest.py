@@ -18,6 +18,7 @@
 
 import json
 import os.path
+import sys
 import time
 from pathlib import Path
 import platform
@@ -25,6 +26,10 @@ import platform
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 MSAICERR_PATH = os.path.join(
     FILE_PATH, "../../../../src/msaicerr")
+# conftest 早于同目录测试模块加载，在此统一入 sys.path，
+# 用例文件即可把 ms_interface 的 import 写在顶部（无需 E402 豁免）。
+if MSAICERR_PATH not in sys.path:
+    sys.path.append(MSAICERR_PATH)
 RES_PATH = Path(FILE_PATH).joinpath("../res")
 TEST_CASE_TMP = Path(FILE_PATH).joinpath("../test_tmp")
 CUR_TIME_STR = time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -92,15 +97,15 @@ def mkdir_dump_file_path(node_name: str, input_path: Path):
     dump_path = input_path.joinpath("extra-info/data-dump/0/")
     dump_path.mkdir(parents=True, exist_ok=True)
     dump_path.joinpath(f"{node_name}").touch(exist_ok=True)
-    dump_path.joinpath(f"te_gatherv2.o").touch(exist_ok=True)
-    dump_path.joinpath(f"te_gatherv2_host.o").touch(exist_ok=True)
+    dump_path.joinpath("te_gatherv2.o").touch(exist_ok=True)
+    dump_path.joinpath("te_gatherv2_host.o").touch(exist_ok=True)
 
 
 def write_log_keyword_to_file(file_path: Path, keywords: list, file_name="test"):
     keyword_str = ""
     for keyword in keywords:
         keyword_str += keyword + "\n"
-    file_path.joinpath(f"plog_{file_name}.txt").write_text(keyword_str)
+    file_path.joinpath(f"plog_{file_name}.txt").write_text(keyword_str, encoding='utf-8')
 
 
 def mkdir_o_json_file(kernel_name: str, input_path: Path):
@@ -111,7 +116,7 @@ def mkdir_o_json_file(kernel_name: str, input_path: Path):
         "compileInfo": {},
         "parameters": ['null', 'null']
     }
-    with open(json_path, "w") as f:
+    with open(json_path, "w", encoding="utf-8") as f:
         json.dump(data, f)
 
 

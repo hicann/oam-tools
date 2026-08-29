@@ -26,7 +26,7 @@ from ms_interface.ascend950.ascend_c_template import ADD_OP_KERNEL_TEMPLATE, DIR
 
 class TestAscendCTemplateMethods(CommonAssert):
     def test_add_op_kernel_template_is_not_empty(self):
-        self.assertNotEqual(len(ADD_OP_KERNEL_TEMPLATE), 0)
+        assert len(ADD_OP_KERNEL_TEMPLATE) != 0
 
     def test_add_op_kernel_template_contains_keyword(self):
         self.assertIn(ADD_OP_KERNEL_TEMPLATE, "add_custom")
@@ -43,7 +43,7 @@ class TestAscendCTemplateMethods(CommonAssert):
         self.assertIn(ADD_OP_KERNEL_TEMPLATE, "DTYPE_Z")
 
     def test_dirty_op_kernel_template_is_not_empty(self):
-        self.assertNotEqual(len(DIRTY_OP_KERNEL_TEMPLATE), 0)
+        assert len(DIRTY_OP_KERNEL_TEMPLATE) != 0
 
     def test_dirty_op_kernel_template_contains_keyword(self):
         self.assertIn(DIRTY_OP_KERNEL_TEMPLATE, "dirty_custom")
@@ -56,4 +56,4 @@ class TestAscendCTemplateMethods(CommonAssert):
         self.assertIn(DIRTY_OP_KERNEL_TEMPLATE, "kernel_operator.h")
 
     def test_templates_have_different_content(self):
-        self.assertNotEqual(ADD_OP_KERNEL_TEMPLATE, DIRTY_OP_KERNEL_TEMPLATE)
+        assert ADD_OP_KERNEL_TEMPLATE != DIRTY_OP_KERNEL_TEMPLATE

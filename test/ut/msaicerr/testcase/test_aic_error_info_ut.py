@@ -104,61 +104,61 @@ class TestUtilsMethods(CommonAssert):
     def test_analyse_ifu_errinfo(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>IFU_ERR_INFO=0x13b023938000'
-        errinfo = aicerr_info._analyse_ifu_errinfo()
+        errinfo = getattr(aicerr_info, "_analyse_ifu_errinfo")()
         self.assertEqual(errinfo, IFU_ERROR)
 
     def test_analyse_mte_errinfo_err_bir_46(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>MTE_ERR_INFO=0x46'
-        errinfo = aicerr_info._analyse_mte_errinfo(46)
+        errinfo = getattr(aicerr_info, "_analyse_mte_errinfo")(46)
         self.assertEqual(errinfo, MTE_ERROR_46)
 
     def test_analyse_mte_errinfo_err_bir_34(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>MTE_ERR_INFO=0x34'
-        errinfo = aicerr_info._analyse_mte_errinfo(34)
+        errinfo = getattr(aicerr_info, "_analyse_mte_errinfo")(34)
         self.assertEqual(errinfo, MTE_ERROR_34)
 
     def test_analyse_mte_errinfo_err_bir_25(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>MTE_ERR_INFO=0x25'
-        errinfo = aicerr_info._analyse_mte_errinfo(25)
+        errinfo = getattr(aicerr_info, "_analyse_mte_errinfo")(25)
         self.assertEqual(errinfo, MTE_ERROR_25)
 
     def test_analyse_mte_errinfo_err_bir_23(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>MTE_ERR_INFO=0x23'
-        errinfo = aicerr_info._analyse_mte_errinfo(23)
+        errinfo = getattr(aicerr_info, "_analyse_mte_errinfo")(23)
         self.assertEqual(errinfo, MTE_ERROR_23)
 
     def test_analyse_mte_errinfo_err_bir_21(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>MTE_ERR_INFO=0x21'
-        errinfo = aicerr_info._analyse_mte_errinfo(21)
+        errinfo = getattr(aicerr_info, "_analyse_mte_errinfo")(21)
         self.assertEqual(errinfo, MTE_ERROR_21)
 
     def test_analyse_biu_errinfo(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>BIU_ERR_INFO=0x0'
-        errinfo = aicerr_info._analyse_biu_errinfo()
+        errinfo = getattr(aicerr_info, "_analyse_biu_errinfo")()
         self.assertEqual(errinfo, BIU_ERROR)
 
     def test_analyse_cube_errinfo(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>CUBE_ERR_INFO=0x3e'
-        errinfo = aicerr_info._analyse_cube_errinfo()
+        errinfo = getattr(aicerr_info, "_analyse_cube_errinfo")()
         self.assertEqual(errinfo, CUBE_ERROR)
 
     def test_analyse_vec_errinfo(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = 'VEC_ERR_INFO=0x3e27677'
-        errinfo = aicerr_info._analyse_vec_errinfo()
+        errinfo = getattr(aicerr_info, "_analyse_vec_errinfo")()
         self.assertEqual(errinfo, VEC_ERROR)
 
     def test_analyse_ccu_errinfo(self):
         aicerr_info = AicErrorInfo()
         aicerr_info.extra_info = '<exception_print>CCU_ERR_INFO=0x3e2767'
-        errinfo = aicerr_info._analyse_ccu_errinfo()
+        errinfo = getattr(aicerr_info, "_analyse_ccu_errinfo")()
         self.assertEqual(errinfo, CCU_ERROR)
 
     def test_get_conclusion_pc_err(self):
@@ -218,7 +218,7 @@ class TestUtilsMethods(CommonAssert):
         mock_data = struct.pack('q', int('1234567891234567'))
         mock_open = mocker.mock_open(read_data=mock_data)
         mocker.patch('builtins.open', mock_open)
-        res = aicerr_info._get_tiling_str()
+        res = getattr(aicerr_info, "_get_tiling_str")()
         self.assertIn(res, 'tiling data in int32: [1016835847, 287445]')
         self.assertIn(res, 'tiling data in int64: [1234567891234567]')
         self.assertIn(

@@ -207,6 +207,8 @@ def gen_shape(rank_range=None, size_range=None, dim_limit=None):
         rank_range = [1, 8]
     if dim_limit is None:
         dim_range = 2000000 - 1
+    else:
+        dim_range = dim_limit
     secret_gen = secrets.SystemRandom()
     rank = secret_gen.randint(*rank_range)
     size = secret_gen.randint(*size_range)

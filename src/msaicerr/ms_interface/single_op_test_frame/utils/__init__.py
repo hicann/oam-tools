@@ -16,4 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 """init"""
+__all__ = ["calc_shape_size"]
+
 from .shape_utils import calc_shape_size

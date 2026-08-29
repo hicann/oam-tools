@@ -21,7 +21,6 @@ import sys
 import shutil
 import pytest
 from pathlib import Path
-from collections import namedtuple
 
 from conftest import MSAICERR_PATH
 sys.path.append(MSAICERR_PATH)
@@ -38,7 +37,7 @@ cur_abspath = os.path.dirname(__file__)
 class TestAscend950Handler:
 
     @staticmethod
-    def test_get_compile_file(mocker, caplog):
+    def test_get_compile_file(mocker):
         mocker.patch.object(AscendOpKernelRunner, 'run')
         mocker.patch.object(AscendRTSApi, '_load_runtime_so')
         mocker.patch.object(AscendRTSApi, 'register_kernel_launch_fill_func')
@@ -51,17 +50,17 @@ class TestAscend950Handler:
         temp_dir = Path(cur_abspath).joinpath("../test_run_golden")
         mocker.patch.object(Path, "exists", return_value=False)
         mocker.patch("shutil.which", return_value=True)
-        res = subprocess.run('ls')
+        res = subprocess.run([sys.executable, '-c', ''], check=False)
         mocker.patch("subprocess.run", return_value=res)
         op_kernel_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'op_kernel')
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test")
+        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
         compile_file_path = temp_dir.joinpath(
             ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(
-            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test")
+            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test", encoding='utf-8')
         shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
                                                "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
         handler = Ascend950Handler()
@@ -75,10 +74,11 @@ class TestAscend950Handler:
         assert res
 
     @pytest.mark.parametrize("compile_file, log_content", [
-        (Exception('test'), "Compile dirty_ub op failed, skip dirty ub"),
+        (RuntimeError('test'), "Compile dirty_ub op failed, skip dirty ub"),
         ([[]], "Compile dirty_ub op failed, skip dirty ub")
     ])
-    def test_run_ascendc_with_diff_soc(self, mocker, compile_file, log_content, caplog):
+    @staticmethod
+    def test_run_ascendc_with_diff_soc(mocker, compile_file, log_content):
         mocker.patch.object(CompileOP, "get_ub_size", return_value=1)
         mocker.patch.object(CompileOP, 'get_compile_file', side_effect=compile_file)
         aic_err_info = AicErrorInfo()
@@ -89,5 +89,5 @@ class TestAscend950Handler:
         handler = Ascend950Handler()
         handler.run_dirty_ub(config_file, "Ascend910B1", 0)
         debug_info = Path(f"{os.getcwd()}/debug_info.txt")
-        assert log_content in debug_info.read_text()
+        assert log_content in debug_info.read_text(encoding='utf-8')
 

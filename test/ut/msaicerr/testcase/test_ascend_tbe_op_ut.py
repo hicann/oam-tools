@@ -521,7 +521,7 @@ def test_read_tensor_bytes_bin(tmp_path):
     """bin文件按原始字节读取"""
     bin_file = tmp_path.joinpath('a.input.0.int4.bin')
     bin_file.write_bytes(b'\x01\x02\x03\x04')
-    assert AscendOpKernelRunner._read_tensor_bytes(str(bin_file)) == b'\x01\x02\x03\x04'
+    assert getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(bin_file)) == b'\x01\x02\x03\x04'
 
 
 def test_read_tensor_bytes_npy_strips_header(tmp_path):
@@ -529,7 +529,7 @@ def test_read_tensor_bytes_npy_strips_header(tmp_path):
     array = np.arange(6, dtype=np.float32).reshape(2, 3)
     npy_file = tmp_path.joinpath('a.input.0.float32.npy')
     np.save(str(npy_file), array)
-    data = AscendOpKernelRunner._read_tensor_bytes(str(npy_file))
+    data = getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(npy_file))
     assert data == array.tobytes()
     # 直接读原始字节会多出npy头
     assert len(npy_file.read_bytes()) > len(data)
@@ -555,7 +555,7 @@ def test_read_tensor_bytes_npy_unregistered_dtype(tmp_path, dtype):
     array = np.arange(4, dtype=dtype)
     npy_file = tmp_path.joinpath('k.input.0.bfloat16.npy')
     _forge_npy_with_unknown_dtype(npy_file, array)
-    assert AscendOpKernelRunner._read_tensor_bytes(str(npy_file)) == array.tobytes()
+    assert getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(npy_file)) == array.tobytes()
 
 
 def test_read_npy_payload_invalid_magic(tmp_path):
@@ -563,7 +563,7 @@ def test_read_npy_payload_invalid_magic(tmp_path):
     bad = tmp_path.joinpath('bad.npy')
     bad.write_bytes(b'NOTANPY!' + b'\x00' * 16)
     with pytest.raises(utils.AicErrException):
-        AscendOpKernelRunner._read_npy_payload(str(bad))
+        getattr(AscendOpKernelRunner, "_read_npy_payload")(str(bad))
 
 
 @pytest.mark.parametrize('name, expected', [
@@ -587,7 +587,7 @@ def test_read_npy_payload_invalid_magic(tmp_path):
 ])
 def test_get_tensor_index(name, expected):
     """从dump文件名解析tensor下标，兼容带dtype/不带dtype/dtype为纯数字枚举等命名"""
-    assert AscendOpKernelRunner._get_tensor_index(name) == expected
+    assert getattr(AscendOpKernelRunner, "_get_tensor_index")(name) == expected
 
 
 def test_fill_binary_npy_input(mocker, tmp_path):

@@ -16,15 +16,13 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-from conftest import MSAICERR_PATH
-import sys
 import struct
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 
-sys.path.append(MSAICERR_PATH)
-from ms_interface.utils import ExceptionRootCause
+# conftest 已把 MSAICERR_PATH 加入 sys.path，且其导入早于下面的 ms_interface
 from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.utils import ExceptionRootCause
 
 class TestUtilsMethods(unittest.TestCase):
     def test_get_conclusion_pc_err(self):
@@ -79,12 +77,12 @@ class TestUtilsMethods(unittest.TestCase):
             res, 'The set_flag and wait_flag instructions are not used together in the operator code.\n')
 
     @patch('builtins.open')
-    def test_tiling_data(self, mock_open):
+    def test_tiling_data(self, mock_open_func):
         aicerr_info = AicErrorInfo()
         aicerr_info.tiling_data = 'tiling data'
-        mock_file = mock_open.return_value
+        mock_file = mock_open_func.return_value
         mock_file.read.return_value = struct.pack('q', int('1234567891234567'))
-        res = aicerr_info._get_tiling_str()
+        res = getattr(aicerr_info, "_get_tiling_str")()
         self.assertIn('tiling data in int32: [1016835847, 287445]', res)
         self.assertIn('tiling data in int64: [1234567891234567]', res)
         self.assertIn(

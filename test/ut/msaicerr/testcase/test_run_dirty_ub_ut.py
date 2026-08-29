@@ -29,14 +29,15 @@ sys.path.append(MSAICERR_PATH)
 TEST_SINGLE_OP = os.path.join(MSAICERR_PATH, "test_single_op.py")
 
 
-def test_run_dirty_ub_tik_import_error(mocker):
+def test_run_dirty_ub_tik_import_error(mocker, tmp_path):
+    # Force the `from tbe import tik` import to fail.
     mocker.patch.dict(sys.modules, {"tbe": None, "tbe.common": None,
                                     "tbe.common.platform": None})
-    result = rdu.run_dirty_ub_tik({"compile_temp_dir": "/tmp/x"}, "Ascend910B", 0)
+    result = rdu.run_dirty_ub_tik({"compile_temp_dir": str(tmp_path / "x")}, "Ascend910B", 0)
     assert result is False
 
 
-def test_run_dirty_ub_tik_attribute_error(mocker):
+def test_run_dirty_ub_tik_attribute_error(mocker, tmp_path):
     import builtins
     real_import = builtins.__import__
 
@@ -46,7 +47,7 @@ def test_run_dirty_ub_tik_attribute_error(mocker):
         return real_import(name, *args, **kwargs)
 
     mocker.patch("builtins.__import__", side_effect=mock_import)
-    result = rdu.run_dirty_ub_tik({"compile_temp_dir": "/tmp/x"}, "Ascend910B", 0)
+    result = rdu.run_dirty_ub_tik({"compile_temp_dir": str(tmp_path / "x")}, "Ascend910B", 0)
     assert result is False
 
 

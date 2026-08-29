@@ -63,7 +63,7 @@ class Collection:
         kernel_name_regexp = r"dev_func:([a-zA-Z0-9_]{0,})$"
         kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
         if not kernel_name_ret:
-            utils.print_error_log(f"Failed to get \"[AIC_INFO] dev_func:\" in plog. Cannot run L1 test.")
+            utils.print_error_log("Failed to get \"[AIC_INFO] dev_func:\" in plog. Cannot run L1 test.")
             raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
 
         if "__" in kernel_name_ret[0]:
@@ -77,7 +77,7 @@ class Collection:
         regexp = r".+?node_name:(.*?),"
         result = utils.get_inquire_result(node_name_cmd, regexp)
         if not result:
-            utils.print_error_log(f"Failed to get node name in plog. Cannot run L1 test.")
+            utils.print_error_log("Failed to get node name in plog. Cannot run L1 test.")
             raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
         node_name = result[0]
         node_name = node_name.replace('/', '_').replace('.', '_')
@@ -110,7 +110,7 @@ class Collection:
             kernel_name_regexp = r".*?fault kernel_name=(.*?),"
             kernel_name_ret = utils.get_inquire_result(kernel_name_cmd, kernel_name_regexp)
             if not kernel_name_ret:
-                utils.print_error_log(f"Failed to get \"fftsplus task execute failed\" in plog.")
+                utils.print_error_log("Failed to get \"fftsplus task execute failed\" in plog.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_SLOG_DATA_ERROR)
             kernel_name = kernel_name_ret[0]
 
@@ -135,7 +135,7 @@ class Collection:
             adump_dump_data_ret = utils.get_inquire_result(dump_data_cmd, adump_dump_data_regexp)
             ge_dump_data_ret = utils.get_inquire_result(dump_data_cmd, ge_dump_data_regexp)
             if not adump_dump_data_ret and not ge_dump_data_ret:
-                utils.print_error_log(f"Check whether open exception dump.")
+                utils.print_error_log("Check whether open exception dump.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
             if adump_dump_data_ret:
                 adump_dump_data_ret = sorted(adump_dump_data_ret, key=lambda x: x[0])
@@ -153,7 +153,7 @@ class Collection:
                                r".*?extra-info\/data-dump\/(\d)+\/([\w.]+)"
             dump_data_ret = utils.get_inquire_result(dump_data_cmd, dump_data_regexp)
             if not dump_data_ret:
-                utils.print_error_log(f"Check whether open exception dump.")
+                utils.print_error_log("Check whether open exception dump.")
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
             dump_data_ret = sorted(dump_data_ret, key=lambda x: x[0])
             err_time, device_id, data_name = dump_data_ret[0]
@@ -384,14 +384,14 @@ class Collection:
         """
         collect info
         """
-        utils.print_info_log(f'Check the validity of the input and output paths for file parsing.')
+        utils.print_info_log('Check the validity of the input and output paths for file parsing.')
         self.check_argument_valid()
         utils.print_info_log('******************Collection******************')
         collect_path = os.path.join(self.output_path, 'collection')
         utils.check_path_valid(collect_path, isdir=True, output=True)
 
         # collect plog
-        utils.print_info_log(f'Step 1. Check key information in the log and copy the log.')
+        utils.print_info_log('Step 1. Check key information in the log and copy the log.')
         self.collect_plog_file()
 
         # get dump data 
@@ -402,7 +402,7 @@ class Collection:
             self.check_dump_data_is_valid(err_time, data_name, rename)
             check_result = self.check_host_and_device_kernel_name(data_name, rename)
             if not check_result:
-                utils.print_error_log(f"The kernel load on the host is different from the device.")
+                utils.print_error_log("The kernel load on the host is different from the device.")
                 return False
         except utils.AicErrException:
             return False
@@ -414,7 +414,7 @@ class Collection:
         # get kernel_name
         utils.print_info_log('Step 4. Obtain the compilation file based on the operator name.')
         try:
-            kernel_name, node_name = self._get_node_and_kernel_name(data_name)
+            kernel_name, _ = self._get_node_and_kernel_name(data_name)
         except utils.AicErrException:
             kernel_name = None
 

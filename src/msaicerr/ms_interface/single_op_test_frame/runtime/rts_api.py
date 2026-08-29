@@ -30,6 +30,9 @@ from ms_interface.single_op_test_frame.common import logger
 from ms_interface import utils
 from . import rts_info
 
+# 无法映射到 rts_info.RT_ERROR_CODE_DICT 的错误码时返回的占位名。
+INVALID_VALUE = "INVALID_VALUE"
+
 
 # 'pylint: disable=too-few-public-methods,too-many-instance-attributes
 # 'pylint: disable=invalid-name,unused-variable,no-self-use
@@ -470,7 +473,7 @@ class AscendRTSApi:
         data = data + random_bytes
         try:
             c_memory_p = self.malloc(real_mem_len, "RT_MEMORY_HBM")
-        except BaseException as e:
+        except BaseException:
             utils.print_error_log("rtMalloc on HBM failed, HBM memory info:  %s" %
                                   str(self.get_memory_info_ex("RT_MEMORYINFO_HBM")))
             raise

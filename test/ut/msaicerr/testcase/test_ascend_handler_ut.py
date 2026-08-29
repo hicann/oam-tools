@@ -18,9 +18,6 @@
 
 import sys
 
-from unittest import mock
-from unittest.mock import Mock, patch
-import numpy as np
 import pytest
 
 from conftest import MSAICERR_PATH, CommonAssert
@@ -61,12 +58,13 @@ class TestAscendHandlerBaseMethods(CommonAssert):
         self.assertEqual(handler.handle_chip_pre, "")
 
     @pytest.mark.skip
-    def test_run_dirty_ub_success(self, mocker):
+    @staticmethod
+    def test_run_dirty_ub_success(mocker, tmp_path):
         from ms_interface.ascend_handler import AscendHandlerBase
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_ub_size",
                      return_value=1024)
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_compile_file",
-                     return_value=("/tmp/test.bin", "/tmp/test.json"))
+                     return_value=(str(tmp_path / "test.bin"), str(tmp_path / "test.json")))
         mocker.patch("ms_interface.single_op_test_frame.common.ascend_tbe_op.AscendOpKernelRunner.__enter__")
         mocker.patch("ms_interface.single_op_test_frame.common.ascend_tbe_op.AscendOpKernelRunner.__exit__")
         mock_runner = mocker.patch(
@@ -75,37 +73,40 @@ class TestAscendHandlerBaseMethods(CommonAssert):
 
         handler = AscendHandlerBase()
         handler.handle_chip_pre = "Ascend910B1"
-        configs = {"compile_temp_dir": "/tmp/compile"}
+        configs = {"compile_temp_dir": str(tmp_path / "compile")}
         result = handler.run_dirty_ub(configs, "Ascend910B1", 0)
         assert result
         mock_runner.assert_called_once()
 
     @pytest.mark.skip
-    def test_run_dirty_ub_ub_size_zero(self, mocker):
+    @staticmethod
+    def test_run_dirty_ub_ub_size_zero(mocker, tmp_path):
         from ms_interface.ascend_handler import AscendHandlerBase
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_ub_size",
                      return_value=0)
 
         handler = AscendHandlerBase()
-        configs = {"compile_temp_dir": "/tmp/compile"}
+        configs = {"compile_temp_dir": str(tmp_path / "compile")}
         result = handler.run_dirty_ub(configs, "Ascend910B1", 0)
         assert not result
 
     @pytest.mark.skip
-    def test_run_dirty_ub_compile_failure(self, mocker):
+    @staticmethod
+    def test_run_dirty_ub_compile_failure(mocker, tmp_path):
         from ms_interface.ascend_handler import AscendHandlerBase
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_ub_size",
                      return_value=1024)
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_compile_file",
-                     side_effect=Exception("compile failed"))
+                     side_effect=RuntimeError("compile failed"))
 
         handler = AscendHandlerBase()
-        configs = {"compile_temp_dir": "/tmp/compile"}
+        configs = {"compile_temp_dir": str(tmp_path / "compile")}
         result = handler.run_dirty_ub(configs, "Ascend910B1", 0)
         assert not result
 
     @pytest.mark.skip
-    def test_run_dirty_ub_no_build_result(self, mocker):
+    @staticmethod
+    def test_run_dirty_ub_no_build_result(mocker, tmp_path):
         from ms_interface.ascend_handler import AscendHandlerBase
         mocker.patch("ms_interface.ascend950.compile_op.CompileOP.get_ub_size",
                      return_value=1024)
@@ -113,39 +114,39 @@ class TestAscendHandlerBaseMethods(CommonAssert):
                      return_value=())
 
         handler = AscendHandlerBase()
-        configs = {"compile_temp_dir": "/tmp/compile"}
+        configs = {"compile_temp_dir": str(tmp_path / "compile")}
         result = handler.run_dirty_ub(configs, "Ascend910B1", 0)
         assert not result
 
     @pytest.mark.skip
-    def test_get_compile_file_success(self, mocker):
+    def test_get_compile_file_success(self, mocker, tmp_path):
         from ms_interface.ascend_handler import AscendHandlerBase
         mock_compile_op = mocker.patch(
             "ms_interface.ascend950.compile_op.CompileOP")
         mock_instance = mock_compile_op.return_value
-        mock_instance.get_compile_file.return_value = ("/tmp/test.bin", "/tmp/test.json")
+        mock_instance.get_compile_file.return_value = (str(tmp_path / "test.bin"), str(tmp_path / "test.json"))
 
         class TestHandler(AscendHandlerBase):
             handle_chip_pre = "Ascend910"
 
         handler = TestHandler()
-        result = handler.get_compile_file("Ascend910B1", "/tmp")
-        self.assertEqual(result, ("/tmp/test.bin", "/tmp/test.json"))
+        result = handler.get_compile_file("Ascend910B1", str(tmp_path))
+        self.assertEqual(result, (str(tmp_path / "test.bin"), str(tmp_path / "test.json")))
 
-    def test_get_compile_file_constructs_compile_op_correctly(self, mocker):
+    def test_get_compile_file_constructs_compile_op_correctly(self, mocker, tmp_path):
         # patch where CompileOP is used (in ascend_handler's namespace)
         mocker.patch("ms_interface.ascend_handler.CompileOP")
         from ms_interface.ascend_handler import AscendHandlerBase
         mock_compile_op = mocker.patch(
             "ms_interface.ascend_handler.CompileOP")
         mock_instance = mock_compile_op.return_value
-        mock_instance.get_compile_file.return_value = ("/tmp/test.bin", "/tmp/test.json")
+        mock_instance.get_compile_file.return_value = (str(tmp_path / "test.bin"), str(tmp_path / "test.json"))
 
         class TestHandler(AscendHandlerBase):
             handle_chip_pre = "Ascend910"
 
         handler = TestHandler()
-        handler.get_compile_file("Ascend910B1", "/tmp")
+        handler.get_compile_file("Ascend910B1", str(tmp_path))
         mock_compile_op.assert_called_once()
         call_args = mock_compile_op.call_args[0]
         self.assertEqual(call_args[0], "AddCustom")

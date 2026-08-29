@@ -19,8 +19,6 @@
 
 import os.path
 import re
-import struct
-from ast import literal_eval
 from ms_interface import utils
 
 
@@ -66,7 +64,7 @@ class TilingDataParser:
         get_io_ret = utils.get_inquire_result(get_io_cmd, get_io_regexp)
 
         if get_io_ret:
-            utils.print_info_log(f"The operator has sub_pointer tensor.")
+            utils.print_info_log("The operator has sub_pointer tensor.")
             for ret in get_io_ret:
                 get_key_regexp = r"begin to load .*? pointer tensor.*?addr:(.*?)$"
                 get_key_ret = re.findall(get_key_regexp, ret, re.M | re.S)
@@ -147,7 +145,7 @@ class TilingDataParser:
         tiling_datas = bytes.fromhex(ss_concate)
         return tiling_datas
 
-    def __get_files(self):
+    def _get_files(self):
         file_list = []
         for filepath, _, filenames in os.walk(self.file_path):
             for filename in filenames:
@@ -159,5 +157,5 @@ class TilingDataParser:
         if offset == -1:
             return ""
         tiling_data = self.__gen_tiling_data(key_word_list, int(offset))
-        utils.print_debug_log(f'Get tiling data success from the log!')
+        utils.print_debug_log('Get tiling data success from the log!')
         return tiling_data

@@ -17,11 +17,8 @@
 # ----------------------------------------------------------------------------
 
 import os
-import subprocess
 import sys
 import tempfile
-import shutil
-from pathlib import Path
 
 from conftest import MSAICERR_PATH
 sys.path.append(MSAICERR_PATH)
@@ -30,6 +27,14 @@ from ms_interface.utils import load_ascend_handlers
 
 
 class TestChipHandler():
+
+    # fixture/setup_method 中赋值，此处声明以明确实例属性集合
+    ascend_folder = None
+    bad_class_file = None
+    correct_file = None
+    invalid_file = None
+    tmp_dir = None
+    tmp_path = None
 
     def setup_method(self):
         # 创建临时文件夹
@@ -42,7 +47,7 @@ class TestChipHandler():
         
         # 创建正确的handler文件
         self.correct_file = os.path.join(self.ascend_folder, "ascend_testhandler.py")
-        with open(self.correct_file, 'w') as f:
+        with open(self.correct_file, 'w', encoding='utf-8') as f:
             f.write(
                 "class AscendTestHandler:\n"
                 "    def __init__(self):\n"
@@ -52,7 +57,7 @@ class TestChipHandler():
         
         # 创建一个没有正确类名的文件
         self.bad_class_file = os.path.join(self.ascend_folder, "ascend_badhandler.py")
-        with open(self.bad_class_file, 'w') as f:
+        with open(self.bad_class_file, 'w', encoding='utf-8') as f:
             f.write(
                 "class WrongName:\n"
                 "    pass\n"
@@ -60,7 +65,7 @@ class TestChipHandler():
         
         # 创建一个无效的Python文件
         self.invalid_file = os.path.join(self.ascend_folder, "ascend_errorhandler.py")
-        with open(self.invalid_file, 'w') as f:
+        with open(self.invalid_file, 'w', encoding='utf-8') as f:
             f.write("invalid syntax")
 
     def teardown_method(self):
@@ -68,7 +73,7 @@ class TestChipHandler():
         self.tmp_dir.cleanup()
 
     def assertTrue(self, value):
-        assert value == True
+        assert value is True
 
     def assertIsInstance(self, instance, cls_type):
         assert isinstance(instance, cls_type)
@@ -97,7 +102,7 @@ class TestChipHandler():
     @patch('importlib.import_module')
     @patch('os.listdir')
     @patch('os.path.dirname')
-    def test_load_ascend_handlers_module_not_found(self, mock_dirname, mock_listdir, mock_import_module, caplog):
+    def test_load_ascend_handlers_module_not_found(self, mock_dirname, mock_listdir, mock_import_module):
         # 模拟os.path.realpath的返回值
         mock_dirname.return_value = self.tmp_path
         mock_listdir.side_effect = [["ascend_test"], ["ascend_testhandler.py"]]

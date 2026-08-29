@@ -31,22 +31,23 @@ sys.modules['te'] = te
 sys.path.append(MSAICERR_PATH)
 
 
-@pytest.fixture
-def rts_api(mocker):
+@pytest.fixture(name="rts_api")
+def _rts_api(mocker):
     mocker.patch.object(AscendRTSApi, '_load_runtime_so', return_value=None)
     rtsapi = AscendRTSApi()
     rtsapi.rtsdll = Mock()
     return rtsapi
 
 
-@pytest.fixture
-def mdata():
+@pytest.fixture(name="mdata")
+def _mdata():
     return {'1': 1}
 
 
 class TestClassAscendOpKernelRunner:
 
-    def test_api_call(self, mocker):
+    @staticmethod
+    def test_get_c2c_ctrl_addr_without_api_call(mocker):
         mocker.patch.object(AscendRTSApi, '__init__', return_value=None)
         rtsapi = AscendRTSApi()
         mocker.patch.object(AscendRTSApi, 'api_call', return_value=None)
@@ -60,16 +61,13 @@ class TestClassAscendOpKernelRunner:
         rtsapi.rtsdll = mock_rtsdll
 
         mock_rtsdll.rtRegKernelLaunchFillFunc.return_value = 0
-        res = rtsapi.register_kernel_launch_fill_func()
-        assert res is None
+        rtsapi.register_kernel_launch_fill_func()
 
         mock_rtsdll.rtRegKernelLaunchFillFunc.return_value = 207000
-        res = rtsapi.register_kernel_launch_fill_func()
-        assert res is None
+        rtsapi.register_kernel_launch_fill_func()
 
         mock_rtsdll.rtRegKernelLaunchFillFunc.return_value = -1
-        res = rtsapi.register_kernel_launch_fill_func()
-        assert res is None
+        rtsapi.register_kernel_launch_fill_func()
 
         rtsapi.update_op_system_run_cfg_callback(None, 10)
 
@@ -92,7 +90,8 @@ class TestClassAscendOpKernelRunner:
     @pytest.mark.parametrize(
         "rt_error", [ctypes.c_uint64(0),
                      ctypes.c_uint64(1), 0x07000000])
-    def test_parse_error(self, mocker, rts_api, rt_error):
+    @staticmethod
+    def test_parse_error(rts_api, rt_error):
         res = rts_api.parse_error(rt_error, 'rtStreamDestroy')
         assert res is None
 
@@ -106,7 +105,7 @@ class TestClassAscendOpKernelRunner:
         mocker.patch.dict(os.environ, mock_environ, clear=False)
         mocker.patch('ctypes.CDLL', return_value=Mock())
         rtsapi = AscendRTSApi()
-        assert rtsapi._load_runtime_so() is None
+        assert getattr(rtsapi, "_load_runtime_so")() is None
 
     def test_memcpy(self, mocker, rts_api):
         mocker.patch.object(rts_api.rtsdll, 'rtMemcpy', return_value=0)
@@ -117,54 +116,54 @@ class TestClassAscendOpKernelRunner:
 
     def test_init_simulator_so_path(self, mocker, rts_api):
         with pytest.raises(RuntimeError):
-            rts_api._init_simulator_so_path('pv', 'soc_version', '/lib/path')
+            getattr(rts_api, "_init_simulator_so_path")('pv', 'soc_version', '/lib/path')
 
         mocker.patch('os.path.exists', return_value=True)
-        so_full_path_list, addition_ld_lib_path = rts_api._init_simulator_so_path(
+        so_full_path_list, addition_ld_lib_path = getattr(rts_api, "_init_simulator_so_path")(
             'pv', 'soc_version', '/lib/path')
         assert len(so_full_path_list) == 4
         assert addition_ld_lib_path == '/usr/lib/path/soc_version/lib:/usr/lib/path/common/data'
 
         with pytest.raises(RuntimeError):
             mocker.patch('os.path.exists', side_effect=[True, False, False])
-            rts_api._init_simulator_so_path('pv', 'soc_version', '/lib/path')
+            getattr(rts_api, "_init_simulator_so_path")('pv', 'soc_version', '/lib/path')
 
     def test_dll_simulator_so(self, mocker, rts_api):
         mock_environ = {'LD_LIBRARY_PATH': '/mock/lib/path'}
         mocker.patch.dict(os.environ, mock_environ, clear=False)
-        rts_api._simulator_dlls = []
+        setattr(rts_api, "_simulator_dlls", [])
 
         with pytest.raises(RuntimeError):
             mocker.patch('ctypes.CDLL', side_effect=[OSError(), Mock()])
-            rts_api._dll_simulator_so(['so_path1', 'so_path1'], 'ld_lib_paths',
+            getattr(rts_api, "_dll_simulator_so")(['so_path1', 'so_path1'], 'ld_lib_paths',
                                       'simulator_dump_path')
 
         with pytest.raises(RuntimeError):
             mocker.patch('ctypes.CDLL', side_effect=[Mock(), OSError()])
-            rts_api._dll_simulator_so(['so_path1', 'so_path1'], 'ld_lib_paths',
+            getattr(rts_api, "_dll_simulator_so")(['so_path1', 'so_path1'], 'ld_lib_paths',
                                       'simulator_dump_path')
 
         mocker.patch('ctypes.CDLL', return_value=Mock())
-        assert rts_api._dll_simulator_so(['so_path1', 'so_path1'],
+        assert getattr(rts_api, "_dll_simulator_so")(['so_path1', 'so_path1'],
                                          'ld_lib_paths',
                                          'simulator_dump_path') is None
 
     def test_load_simulator_so(self, mocker, rts_api):
         with pytest.raises(TypeError):
-            rts_api._load_simulator_so()
+            getattr(rts_api, "_load_simulator_so")()
 
         with pytest.raises(ValueError):
-            rts_api._load_simulator_so('simulator_mode')
+            getattr(rts_api, "_load_simulator_so")('simulator_mode')
 
         with pytest.raises(RuntimeError):
-            rts_api._load_simulator_so('pv')
+            getattr(rts_api, "_load_simulator_so")('pv')
 
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch.object(rts_api,
                             '_init_simulator_so_path',
                             return_value=(Mock(), Mock()))
         mocker.patch.object(rts_api, '_dll_simulator_so', return_value=None)
-        rts_api._load_simulator_so('pv', simulator_lib_path='/lib/path')
+        getattr(rts_api, "_load_simulator_so")('pv', simulator_lib_path='/lib/path')
 
     def test_get_device_info(self, mocker, rts_api):
         mocker.patch.object(rts_api.rtsdll, 'rtGetDeviceInfo', return_value=0)
@@ -355,5 +354,5 @@ class TestClassAscendOpKernelRunner:
     def test_clear_env(self, mocker, rts_api):
         mock_environ = {'LD_LIBRARY_PATH': '/mock/lib/path'}
         mocker.patch.dict(os.environ, mock_environ, clear=False)
-        rts_api._simulator_mode = 'mode1'
-        assert rts_api._clear_env() is None
+        setattr(rts_api, "_simulator_mode", 'mode1')
+        assert getattr(rts_api, "_clear_env")() is None

@@ -27,7 +27,7 @@ sys.path.append(MSAICERR_PATH)
 # of direct protected-member access.
 REVERSE = "_TilingDataParser__reverse_str"
 GEN = "_TilingDataParser__gen_tiling_data"
-GET_FILES = "_TilingDataParser__get_files"
+GET_FILES = "_get_files"
 GET_ARGS = "_TilingDataParser__get_args"
 
 

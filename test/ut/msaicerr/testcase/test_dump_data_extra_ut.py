@@ -16,7 +16,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+import os
 import sys
+import tempfile
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -29,7 +32,10 @@ from ms_interface.utils import AicErrException
 sys.path.append(MSAICERR_PATH)
 
 
-def _make_parser(dest_dtype="", output_path="", dump_path="/tmp/data.bin"):
+def _make_parser(dest_dtype="", output_path="", dump_path=None):
+    # 默认值在导入期求值，取不到 tmp_path fixture；用 gettempdir 避免硬编码 /tmp
+    if dump_path is None:
+        dump_path = os.path.join(tempfile.gettempdir(), "data.bin")
     return DumpDataParser(dump_path, AicErrorInfo(), dest_dtype, output_path)
 
 
@@ -72,5 +78,34 @@ def test_convert_failure_raises(mocker, tmp_path):
                           output_path=str(tmp_path),
                           dump_path=str(tmp_path / "data.bin"))
     mocker.patch("numpy.fromfile", side_effect=RuntimeError("boom"))
+    with pytest.raises(AicErrException):
+        parser.convert_bin_file_to_npy()
+
+
+def test_convert_bfloat16_registers_ext_dtype(mocker, tmp_path):
+    # -d xxx.bin -dtype bfloat16 这条路径不经过 _to_numpy_dtype，必须自行触发
+    # bfloat16ext 注册，否则 astype("bfloat16") 抛 TypeError: data type not understood。
+    parser = _make_parser(dest_dtype="bfloat16",
+                          output_path=str(tmp_path),
+                          dump_path=str(tmp_path / "data.bin"))
+    register = mocker.patch.object(DumpDataParser, "_register_ext_dtype", return_value=True)
+    # 注册由桩接管，故 astype("bfloat16") 也要绕开：用假数组顶掉 fromfile 的返回值，
+    # 这样用例在未装 bfloat16ext 的环境里也能跑（否则真 astype 会抛 TypeError）。
+    fake = Mock()
+    fake.astype.return_value = fake
+    mocker.patch("numpy.fromfile", return_value=fake)
+    mocker.patch("numpy.clip", return_value=fake)
+    mocker.patch("numpy.save")
+    parser.convert_bin_file_to_npy()
+    assert register.called
+    fake.astype.assert_any_call("bfloat16")
+
+
+def test_convert_bfloat16_without_ext_raises(mocker, tmp_path):
+    # bfloat16ext 未安装时给出明确报错，而不是让 astype 抛出难懂的 TypeError
+    parser = _make_parser(dest_dtype="bfloat16",
+                          output_path=str(tmp_path),
+                          dump_path=str(tmp_path / "data.bin"))
+    mocker.patch.object(DumpDataParser, "_register_ext_dtype", return_value=False)
     with pytest.raises(AicErrException):
         parser.convert_bin_file_to_npy()

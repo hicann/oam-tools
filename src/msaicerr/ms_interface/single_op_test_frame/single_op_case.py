@@ -20,7 +20,6 @@ import re
 import os
 import subprocess
 from time import sleep
-from pathlib import Path
 import shutil
 import platform
 from ms_interface.aic_error_info import AicErrorInfo
@@ -33,8 +32,10 @@ from ms_interface.run_dirty_ub import run_dirty_ub
 
 class SingleOpCase:
 
-    def __init__(self, aic_info: AicErrorInfo, op_test: "single_op_test") -> None:
+    def __init__(self, aic_info: AicErrorInfo, op_test: str) -> None:
         self.aic_info = aic_info
+        # 生成的用例文件按位置传入 op_test，存下来供需要时取用（也避免参数未使用）
+        self.op_test = op_test
 
     @staticmethod
     def _check_file_content(kernel_name, content):
@@ -67,7 +68,7 @@ class SingleOpCase:
                 log_path = os.path.abspath(os.path.join(root, file))
                 utils.print_info_log(f"The find single op log {log_path}")
                 SingleOpCase._wait_for_log_stabilization(log_path)
-                with open(log_path, "r") as f:
+                with open(log_path, "r", encoding="utf-8") as f:
                     content = f.read()
                 if SingleOpCase._check_file_content(kernel_name, content):
                     return True
@@ -95,8 +96,10 @@ class SingleOpCase:
 
     @staticmethod
     def get_soc_version_from_cce(cce_file):
+        # TypeError：config 缺字段时 cce_file 可能是 None，open(None) 即抛该异常，
+        # 须与其他读文件失败一样回退默认芯片版本，而不是让用例进程直接退出。
         try:
-            with open(cce_file, 'r') as f:
+            with open(cce_file, 'r', encoding='utf-8') as f:
                 content = f.read()
             soc_version_ret = re.findall(r'//.*?(Ascend.*?)"', content)
             if soc_version_ret:
@@ -111,7 +114,7 @@ class SingleOpCase:
                 utils.print_warn_log(
                     'Can not get soc_version from cce file {cce_file}')
                 return "Ascend310"
-        except Exception as e:
+        except (OSError, TypeError, UnicodeDecodeError, re.error):
             utils.print_warn_log(
                 'Can not get soc_version from cce file {cce_file}')
             return "Ascend310"
@@ -136,7 +139,7 @@ class SingleOpCase:
             utils.print_info_log("Does not get cce file !!!")
             return None
 
-        with open(cce_file, 'r') as f:
+        with open(cce_file, 'r', encoding='utf-8') as f:
             content = f.read()
         cce_pattern = r"(?<=//\s).+$"
         re_result = re.findall(cce_pattern, content)
@@ -150,7 +153,7 @@ class SingleOpCase:
             # guess where is ccec
             parent_path = "aarch64-linux" if "aarch64" in platform.machine() else "x86_64-linux"
             ccec_file_guess = os.path.join(
-                "usr", "local" "Ascend", "latest", parent_path, "ccec_compiler", "bin" "ccec")
+                os.sep, "usr", "local", "Ascend", "latest", parent_path, "ccec_compiler", "bin", "ccec")
             if shutil.which(ccec_file_guess):
                 ccec_file = ccec_file_guess
             else:
@@ -164,7 +167,7 @@ class SingleOpCase:
         cmd[3] = cce_file
         dst_bin_index = cmd.index("-o") + 1
         cmd[dst_bin_index] = rename_o_file
-        subprocess.run(cmd)
+        subprocess.run(cmd, check=False)
         return rename_o_file
 
     @staticmethod
@@ -244,7 +247,7 @@ class SingleOpCase:
     def run(configs: dict, op_test: str) -> str:
         try:
             soc_version = DSMIInterface().get_chip_info(0).get_complete_platform()
-        except BaseException:
+        except (OSError, AttributeError, UnicodeDecodeError, IndexError, RuntimeError):
             utils.print_warn_log("get soc_version form platform failed!")
             soc_version = None
         if not soc_version:
@@ -267,9 +270,9 @@ class SingleOpCase:
             utils.print_warn_log("device_id should be an integer, device set default 0")
             device_id = 0
         # set single op log path
-        utils.print_info_log(f"Start run dirty_ub test case...")
+        utils.print_info_log("Start run dirty_ub test case...")
         run_dirty_ub(configs, soc_version, device_id)
-        utils.print_info_log(f"Start run kernel test case...")
+        utils.print_info_log("Start run kernel test case...")
 
         ret = SingleOpCase.run_kernel(configs, op_test)
         ret_str = f"Execute {op_test} SingleOpCase.run_kernel result: \r\n{ret}"

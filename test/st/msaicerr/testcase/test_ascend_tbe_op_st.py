@@ -38,19 +38,25 @@ class AscendRTSApi:
     Class AscendRTSApi
     """
 
-    def __init__(self, simulator_mode: str = None, soc_version: str = None, simulator_lib_path: str = None,
+    def __init__(self, _simulator_mode: str = None, _soc_version: str = None, _simulator_lib_path: str = None,
                  simulator_dump_path: str = "./model"):
         self.rtsdll = None
+        # 记录入参供用例断言（也避免桩参数未使用）
+        self.simulator_dump_path = simulator_dump_path
+        self.last_memcpy = {}
 
     def malloc(self, memory_size: int) -> ctypes.c_void_p:
         c_memory_p = ctypes.c_void_p(memory_size)
         return c_memory_p
 
-    def free(self, c_memory_p: ctypes.c_void_p):
+    @staticmethod
+    def free(_c_memory_p: ctypes.c_void_p):
         return ctypes.c_void_p(None)
 
-    def memcpy(self, c_memory_p: ctypes.c_void_p, memory_size: int, data: Union[bytes, ctypes.c_void_p], data_size: int,
+    def memcpy(self, _c_memory_p: ctypes.c_void_p, _memory_size: int,
+               _data: Union[bytes, ctypes.c_void_p], _data_size: int,
                memcpy_kind: str = "RT_MEMCPY_HOST_TO_HOST", retry_count: int = 0):
+        self.last_memcpy = {"kind": memcpy_kind, "retry": retry_count}
         return
 
     def get_c2c_ctrl_addr(self):
@@ -67,7 +73,7 @@ class AscendOpKernel:
     ForwardDestroy = 1
     BackwardDestroy = 2
 
-    def __init__(self, bin_path: str, json_path: str):
+    def __init__(self, _bin_path: str, _json_path: str):
         self.block_dim = 8
 
 
@@ -77,8 +83,8 @@ class ChipInfoStub:
         return "Ascend310"
 
 
-@pytest.fixture()
-def mock_runner(mocker):
+@pytest.fixture(name="mock_runner")
+def _mock_runner(mocker):
     api_mock = Mock()
     api_mock.return_value = 1
     out_hbm_pointer_mock = Mock()
@@ -130,7 +136,7 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         runner.profiling = True
         kernel_mock = Mock()
         kernel_mock.is_registered_to_device.return_value = False
-        res = runner._execute_kernel(kernel_mock, [1, 1], 1, 'xxx')
+        res = getattr(runner, "_execute_kernel")(kernel_mock, [1, 1], 1, 'xxx')
         assert isinstance(res, list)
 
     def test_fill_workspace(self, mocker, mock_runner):
@@ -145,10 +151,11 @@ class TestClassAscendOpKernelRunner(CommonAssert):
             {'dtype': 'int8', 'init_value': 1}, None, None, None, None]
         mocker.patch.object(AscendOpKernelParam,
                             'sync_to_device', return_value=None)
-        runner._fill_workspace(
+        getattr(runner, "_fill_workspace")(
             kernel_mock, 0, wksp_hbm_pointers, kernel_args, mode)
 
-    def test_fill_workspace_no_parameter(self, mocker, mock_runner):
+    @staticmethod
+    def test_fill_workspace_no_parameter(mock_runner):
         kernel_mock = Mock()
         kernel_mock.workspace = [-1]
         kernel_mock.parameters = [None, None, None, None, None]
@@ -156,42 +163,47 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         kernel_args = []
         mode = 'tail'
         runner = mock_runner
-        runner._fill_workspace(
+        getattr(runner, "_fill_workspace")(
             kernel_mock, 0, wksp_hbm_pointers, kernel_args, mode)
 
     def test_fill_binary_subptr_no_args_list(self, mocker, mock_runner):
         mocker.patch.object(AscendOpKernelParam,
                             'sync_to_device', return_value=None)
         runner = mock_runner
-        runner._fill_binary_subptr(['xxx'], 1, [], {}, 'magic')
+        getattr(runner, "_fill_binary_subptr")(['xxx'], 1, [], {}, 'magic')
 
-    def test_fill_binary_subptr(self, mocker, mock_runner):
+    @staticmethod
+    def test_fill_binary_subptr(mocker, mock_runner):
+        # 必须用 mock_runner：该 fixture patch 了 get_rts_api，否则 __init__ 会去
+        # dlopen 真实 libruntime.so，用例退化为依赖环境的测试（本地有 so 就过、
+        # 云端没有就抛 RuntimeError）。
         mock_data = b'\xDE\xAD\xBE\xEF'
-        mock_open = mocker.mock_open(read_data=mock_data)
-        mocker.patch('builtins.open', mock_open)
-        runner = AscendOpKernelRunner()
-        assert runner._fill_binary_subptr(
+        open_mock = mocker.mock_open(read_data=mock_data)
+        mocker.patch('builtins.open', open_mock)
+        assert getattr(mock_runner, "_fill_binary_subptr")(
             ['xxx'], 1, [], {'args_list': ['1']}, 'magic') is None
 
-    def test_create_output_param_with_pages_no_param(self, mocker, mock_runner):
+    @staticmethod
+    def test_create_output_param_with_pages_no_param(mock_runner):
         kernel_mock = Mock()
         kernel_mock.workspace = []
         kernel_mock.parameters = [None]
         mode = 'tail'
         data_list = [{'size': 4, 'dtype': 'float32', 'shape': (1,)}, [], (1,)]
         runner = mock_runner
-        res = runner._create_output_param_with_pages(
+        res = getattr(runner, "_create_output_param_with_pages")(
             kernel_mock, data_list, mode)
         assert isinstance(res, AscendOpKernelParam)
 
-    def test_create_output_param_with_pages(self, mocker, mock_runner):
+    @staticmethod
+    def test_create_output_param_with_pages(mock_runner):
         kernel_mock = Mock()
         kernel_mock.workspace = [-1]
         kernel_mock.parameters = [{'dtype': 'int8', 'init_value': 1}]
         data_list = [{'size': 4, 'dtype': 'float32', 'shape': (1,)}, [], (1,)]
         mode = 'tail'
         runner = mock_runner
-        res = runner._create_output_param_with_pages(
+        res = getattr(runner, "_create_output_param_with_pages")(
             kernel_mock, data_list, mode)
         assert isinstance(res, AscendOpKernelParam)
 
@@ -199,18 +211,19 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         runner = mock_runner
 
         inputs = [AscendOpKernelParam(np_data=np.zeros(1))]
-        runner._fill_inputs(inputs, [], [], 'tail')
+        getattr(runner, "_fill_inputs")(inputs, [], [], 'tail')
 
         inputs = ['xxx.npy']
         mocker.patch('numpy.load', return_value=np.zeros(1))
-        runner._fill_inputs(inputs, [], [], 'tail')
+        getattr(runner, "_fill_inputs")(inputs, [], [], 'tail')
 
         inputs = ['file_path']
         mocker.patch.object(AscendOpKernelParam,
                             'build_op_param_by_data_file', return_value=Mock())
-        runner._fill_inputs(inputs, [], [], 'tail')
+        getattr(runner, "_fill_inputs")(inputs, [], [], 'tail')
 
-    def test_fill_outputs(self, mocker, mock_runner):
+    @staticmethod
+    def test_fill_outputs(mock_runner):
         kernel_mock = Mock()
         kernel_mock.workspace = [-1]
         kernel_mock.parameters = [{'dtype': 'int8', 'init_value': 1}]
@@ -220,28 +233,29 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         output_params = []
         kernel_args = []
         input_params = []
-        res = runner._fill_outputs(kernel_mock, output_input_ref, actual_output_info,
+        res = getattr(runner, "_fill_outputs")(kernel_mock, output_input_ref, actual_output_info,
                                    input_params, output_params, kernel_args, 'tail')
         assert res is None
 
-    def test_fill_tiling(self, mocker, mock_runner):
+    @staticmethod
+    def test_fill_tiling(mock_runner):
         runner = mock_runner
         kernel_mock = Mock()
-        runner._fill_tiling(kernel_mock, b'xx', [], [])
+        getattr(runner, "_fill_tiling")(kernel_mock, b'xx', [], [])
 
         kernel_mock.need_do_tiling = False
-        runner._fill_tiling(kernel_mock, b'xx', [], [])
+        getattr(runner, "_fill_tiling")(kernel_mock, b'xx', [], [])
 
-        runner._fill_tiling(Mock(), None, [], [])
+        getattr(runner, "_fill_tiling")(Mock(), None, [], [])
 
     def test_check_magic_memory(self, mocker, mock_runner):
         runner = mock_runner
-        runner._kernel_params = [Mock()]
-        assert runner._check_magic_memory() == 1
+        setattr(runner, "_kernel_params", [Mock()])
+        assert getattr(runner, "_check_magic_memory")() == 1
         mocker.patch.object(runner, '_check_magic', side_effect=[False, True])
-        assert runner._check_magic_memory() == 2
+        assert getattr(runner, "_check_magic_memory")() == 2
         mocker.patch.object(runner, '_check_magic', return_value=False)
-        assert runner._check_magic_memory() == 0
+        assert getattr(runner, "_check_magic_memory")() == 0
 
     def test_build_op_param_by_data_file(self, mocker):
         with pytest.raises(IOError):
@@ -285,16 +299,14 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         kernel = AscendRTSApi()
         runner = AscendOpKernelParam(s, (1,), "float32", kernel, c_memory_p)
         mocker.patch.object(AscendOpKernelParam, '__init__', return_value=None)
-        res = runner.sync_to_device(kernel, 'tail')
-        self.assertEqual(res, None)
+        runner.sync_to_device(kernel, 'tail')
 
     def test_sync_to_device_case(self, mocker):
         c_memory_p = ctypes.c_void_p(None)
         kernel = AscendRTSApi()
         runner = AscendOpKernelParam(None, (0,), "float32", kernel, c_memory_p)
         mocker.patch.object(AscendOpKernelParam, '__init__', return_value=None)
-        res = runner.sync_to_device(kernel, 'tail')
-        self.assertEqual(res, None)
+        runner.sync_to_device(kernel, 'tail')
 
     def test_is_in_device_case(self, mocker):
         c_memory_p = ctypes.c_void_p(10)
@@ -309,9 +321,8 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         kernel = AscendRTSApi()
         runner = AscendOpKernelParam(None, (1,), "float32", kernel, c_memory_p)
         mocker.patch.object(AscendOpKernelParam, '__init__', return_value=None)
-        res = runner.sync_to_device(kernel, 'tail')
-        res1 = runner.release_device()
-        self.assertEqual(res1, None)
+        runner.sync_to_device(kernel, 'tail')
+        runner.release_device()
 
     def test_run(self, mocker):
         mocker.patch.object(AscendOpKernelRunner,
@@ -347,7 +358,7 @@ class TestClassAscendOpKernelRunner(CommonAssert):
             'exec_single_case',
             side_effect=[
                 [None, [1, 0, 0]],
-                [None, [0, 0, 2]],  
+                [None, [0, 0, 2]],
             ]
         )
         ret_value = runner.run(Mock())
@@ -365,7 +376,7 @@ class TestClassAscendOpKernelRunner(CommonAssert):
                             '__init__', return_value=None)
         runner = AscendOpKernelRunner()
         runner.ascend_device = None
-        runner._kernel_params = []
+        setattr(runner, "_kernel_params", [])
         mocker.patch('builtins.open', new_callable=mock_open,
                      read_data=b'\x00')
         c_memory_p = ctypes.c_void_p(None)
@@ -374,19 +385,18 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         mocker.patch.object(AscendOpKernelParam,
                             'build_op_param_by_np_data', return_value=runner1)
         mocker.patch.object(runner1, 'sync_to_device', return_value=None)
-        res1 = runner._fill_binary("./", [], [], {}, "")
-        self.assertEqual(res1, None)
+        getattr(runner, "_fill_binary")("./", [], [], {}, "")
 
     def test_read_tensor_bytes(self, tmp_path):
         """dump解析出的npy需经numpy加载，bin按原始字节读取"""
         bin_file = tmp_path.joinpath("k.input.0.int4.bin")
         bin_file.write_bytes(b'\x01\x02\x03\x04')
-        self.assertEqual(AscendOpKernelRunner._read_tensor_bytes(str(bin_file)), b'\x01\x02\x03\x04')
+        self.assertEqual(getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(bin_file)), b'\x01\x02\x03\x04')
 
         array = np.arange(4, dtype=np.float32)
         npy_file = tmp_path.joinpath("k.input.1.float32.npy")
         np.save(str(npy_file), array)
-        data = AscendOpKernelRunner._read_tensor_bytes(str(npy_file))
+        data = getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(npy_file))
         self.assertEqual(data, array.tobytes())
         # npy头不能被当作tensor数据
         assert len(npy_file.read_bytes()) > len(data)
@@ -404,17 +414,17 @@ class TestClassAscendOpKernelRunner(CommonAssert):
         new_header = header.replace(real_descr, b"'bfloat16'").rstrip(b' \n')
         new_header = new_header + b' ' * (header_len - len(new_header) - 1) + b'\n'
         npy_file.write_bytes(bytes(raw[:10]) + new_header + body)
-        self.assertEqual(AscendOpKernelRunner._read_tensor_bytes(str(npy_file)), array.tobytes())
+        self.assertEqual(getattr(AscendOpKernelRunner, "_read_tensor_bytes")(str(npy_file)), array.tobytes())
 
     def test_get_tensor_index(self):
         """从dump文件名解析tensor下标"""
-        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.0.float32.npy"), 0)
-        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.11.int4.bin"), 11)
-        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.2.bin"), 2)
-        self.assertEqual(AscendOpKernelRunner._get_tensor_index("no_index.npy"), -1)
+        self.assertEqual(getattr(AscendOpKernelRunner, "_get_tensor_index")("k.input.0.float32.npy"), 0)
+        self.assertEqual(getattr(AscendOpKernelRunner, "_get_tensor_index")("k.input.11.int4.bin"), 11)
+        self.assertEqual(getattr(AscendOpKernelRunner, "_get_tensor_index")("k.input.2.bin"), 2)
+        self.assertEqual(getattr(AscendOpKernelRunner, "_get_tensor_index")("no_index.npy"), -1)
         # dtype枚举未知时dtype段为纯数字，不能被当成下标
-        self.assertEqual(AscendOpKernelRunner._get_tensor_index("k.input.0.99.bin"), 0)
+        self.assertEqual(getattr(AscendOpKernelRunner, "_get_tensor_index")("k.input.0.99.bin"), 0)
         # kernel名自身含数字段
         self.assertEqual(
-            AscendOpKernelRunner._get_tensor_index(
+            getattr(AscendOpKernelRunner, "_get_tensor_index")(
                 "exception_info.2.1.20250609144925349.input.0.99.bin"), 0)

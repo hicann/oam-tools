@@ -99,11 +99,20 @@ def _print_log(level: str, msg: str) -> None:
     sys.stdout.flush()
 
 
+def print_log_stdout_only(level: str, msg: str) -> None:
+    """只往 stdout 打印日志，不写 debug_info.txt。
+
+    供 debug_info.txt 不可写的场景使用（print_error_log 会尝试落盘该文件）。
+    这是 _print_log 的公开入口，避免跨模块访问受保护成员。
+    """
+    _print_log(level, msg)
+
+
 def _print_log_to_txt(level: str, msg: str) -> None:
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
     pid = os.getpid()
     print_info = current_time + " (" + str(pid) + ") - [" + level + "] " + msg + "\r\n"
-    with open('debug_info.txt', 'a') as file:
+    with open('debug_info.txt', 'a', encoding='utf-8') as file:
         file.write(print_info)
 
 
@@ -246,11 +255,24 @@ def execute_command(cmd: list, file_out: str = None) -> tuple:
 
 
 def run_cmd_output(command, cwd=None, env=None) -> bool:
-    """run linux cmd"""
+    """run linux cmd
+
+    command 须为参数列表（如 ["bash", "build.sh"]），不走 shell，避免命令注入。
+    """
+    if isinstance(command, str):
+        # shell=False 下字符串会被当成单个可执行文件名，必然 FileNotFoundError
+        # 并被吞成 False（编译流程静默失败），故显式报错点明契约。
+        print_error_log('Run command failed: command must be a list of args, got str: {0}'.format(command))
+        return False
     if not env:
         env = os.environ
-    ret = subprocess.run(command, shell=True, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         encoding='utf-8', env=env)
+    try:
+        ret = subprocess.run(command, shell=False, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             encoding='utf-8', env=env, check=False)
+    except (OSError, ValueError) as error:
+        # shell=False 下命令不存在/参数非法会抛异常，转为 False 保持原有返回语义。
+        print_error_log('Run command: {0} failed, {1}'.format(command, error))
+        return False
     if ret.returncode == 0:
         return True
     else:
@@ -268,10 +290,10 @@ def __copy_file(src: str, dest: str) -> None:
     """
     if os.path.exists(dest):
         base, extension = os.path.splitext(dest)
-        dir, file = os.path.split(base)
+        dir_name, file = os.path.split(base)
         counter = 1
         while os.path.exists(dest):
-            dest = os.path.join(dir, f"{file}_{counter}{extension}")
+            dest = os.path.join(dir_name, f"{file}_{counter}{extension}")
             counter += 1
     shutil.copy2(src, dest)
 
@@ -284,7 +306,7 @@ def copy_src_to_dest(src_file_list: list, dest_path: str):
     """
     check_path_valid(dest_path, isdir=True, output=True)
     if not src_file_list:
-        print_warn_log(f"Failed to copy file.")
+        print_warn_log("Failed to copy file.")
         return
     for file in src_file_list:
         dest_file = os.path.join(dest_path, os.path.basename(file))
@@ -440,7 +462,7 @@ def load_ascend_handlers():
         folder_path = os.path.join(current_dir, folder)
         if not os.path.isdir(folder_path) or not folder.startswith('ascend'):
             continue
-        
+
         for file in os.listdir(folder_path):
             if not (file.startswith('ascend') and file.endswith('handler.py')):
                 continue
@@ -457,6 +479,10 @@ def load_ascend_handlers():
                 cls = getattr(module, class_name)
                 instance = cls()
                 handlers.append(instance)
+            # pylint: disable=broad-exception-caught
+            # 插件式加载边界：handler 模块顶层代码可能抛任意异常（SyntaxError、
+            # OSError、第三方库自定义异常等）。单个坏 handler 只应被跳过，
+            # 不能中断整个 handler 发现流程，故保持宽捕获。
             except Exception as e:
                 print_error_log(f"Error loading {module_name}: {str(e)}")
     return handlers

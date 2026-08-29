@@ -71,12 +71,50 @@ def test_handle_exception_other(mocker):
     assert utils.GLOBAL_RESULT is False
 
 
+def _tar_member(name, sym=False, lnk=False, dev=False, fifo=False):
+    member = Mock()
+    member.name = name
+    member.issym.return_value = sym
+    member.islnk.return_value = lnk
+    member.isdev.return_value = dev
+    member.isfifo.return_value = fifo
+    return member
+
+
 def test_extract_tar(mocker):
     fake_tar = Mock()
+    fake_tar.getmembers.return_value = [_tar_member("data/a.txt")]
     mocker.patch("tarfile.open", return_value=fake_tar)
     msaicerr.extract_tar("a.tar", "/dest")
     assert fake_tar.extractall.called
     assert fake_tar.close.called
+
+
+def test_extract_tar_skips_path_traversal_and_links(mocker):
+    normal = _tar_member("data/a.txt")
+    escaping = _tar_member("../../etc/passwd")
+    symlink = _tar_member("data/evil", sym=True)
+    hardlink = _tar_member("data/evil2", lnk=True)
+    fake_tar = Mock()
+    fake_tar.getmembers.return_value = [normal, escaping, symlink, hardlink]
+    mocker.patch("tarfile.open", return_value=fake_tar)
+    msaicerr.extract_tar("a.tar", "/dest")
+    # 只有目标目录内的普通文件被解压，逃逸成员与链接类成员全部丢弃。
+    assert fake_tar.extractall.call_args.kwargs["members"] == [normal]
+    assert fake_tar.close.called
+
+
+def test_extract_tar_skips_absolute_path_and_special_files(mocker):
+    normal = _tar_member("data/a.txt")
+    absolute = _tar_member("/etc/passwd")
+    device = _tar_member("data/dev_node", dev=True)
+    fifo = _tar_member("data/pipe", fifo=True)
+    fake_tar = Mock()
+    fake_tar.getmembers.return_value = [normal, absolute, device, fifo]
+    mocker.patch("tarfile.open", return_value=fake_tar)
+    msaicerr.extract_tar("a.tar", "/dest")
+    # 绝对路径成员会落到 /dest 之外，设备节点/FIFO 不是采集数据的正常内容，均丢弃。
+    assert fake_tar.extractall.call_args.kwargs["members"] == [normal]
 
 
 def test_get_select_dir_single(mocker):
@@ -171,7 +209,8 @@ def test_analyse_aic_exception(mocker):
 
 
 def test_convert_dump_invalid_path(mocker):
-    mocker.patch("ms_interface.utils.check_path_valid", side_effect=Exception)
+    mocker.patch("ms_interface.utils.check_path_valid",
+                 side_effect=utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR))
     ret = msaicerr.convert_dump_data(_dump_args(), "/dump/data.bin")
     assert ret == Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR
 
@@ -216,4 +255,32 @@ def test_env_fail(mocker):
 def test_env_exception(mocker):
     mocker.patch("msaicerr.check_device_valid", return_value=True)
     mocker.patch("msaicerr.get_soc_version", side_effect=RuntimeError("boom"))
+    assert msaicerr.test_env(0) == Constant.MS_AICERR_HARDWARE_ERR
+
+
+def test_env_attribute_error(mocker):
+    # get_chip_info() 取芯片信息失败返回 None，get_soc_version() 对其取属性抛
+    # AttributeError，须按环境检查失败上报而非直接崩溃。
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.get_soc_version",
+                 side_effect=AttributeError("'NoneType' object has no attribute "
+                                            "'get_complete_platform'"))
+    assert msaicerr.test_env(0) == Constant.MS_AICERR_HARDWARE_ERR
+
+
+def test_formated_arg_falls_back_to_dest(mocker):
+    # 未经 _register_argument 登记的 dest（有人直接 add_argument）不应抛 KeyError，
+    # 而是回退成 --dest，保证参数校验的报错信息仍可读。
+    mocker.patch.dict(msaicerr.DEST_OPTIONS_MAP, {}, clear=True)
+    assert msaicerr.RequireOtherArgs.formated_arg("report_path", None) == "--report_path"
+
+
+def test_env_type_error(mocker):
+    # run_test_env() 拼 PYTHONPATH 等环境变量时若取到 None 会抛 TypeError，
+    # 须按环境检查失败上报而不是崩溃（根因已用 or '' 兜底，这里守边界）。
+    mocker.patch("msaicerr.check_device_valid", return_value=True)
+    mocker.patch("msaicerr.get_soc_version", return_value="Ascend910B")
+    mocker.patch("ms_interface.aicore_error_parser.AicoreErrorParser.run_test_env",
+                 side_effect=TypeError("unsupported operand type(s) for +: "
+                                       "'NoneType' and 'str'"))
     assert msaicerr.test_env(0) == Constant.MS_AICERR_HARDWARE_ERR

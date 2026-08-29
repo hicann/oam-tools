@@ -22,8 +22,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-__attribute__((visibility("default"))) int32_t ParseDumpProtoToJson(const char *data, size_t dataLength,
-                                                                    const char *path);
+__attribute__((visibility("default"))) int32_t ParseDumpProtoToJson(
+    const char *data, size_t dataLength, const char *path);
 #ifdef __cplusplus
 }
 #endif

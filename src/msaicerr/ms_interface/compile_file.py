@@ -16,7 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 from pathlib import Path
-import numpy as np
 
 from ms_interface import utils
 from ms_interface.constant import ModeCustom
@@ -24,7 +23,6 @@ from ms_interface.constant import ModeCustom
 
 def get_compile_from_tik(soc_version, compile_temp_dir):
     try:
-        from tbe.common import platform as cce
         from tbe.common.platform import set_current_compile_soc_info as te_set_version
         from tbe import tik
     except (ImportError, AttributeError) as e:

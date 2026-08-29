@@ -17,27 +17,23 @@
 # ----------------------------------------------------------------------------
 import os
 import sys
-import subprocess
 import shutil
-import inspect
 from pathlib import Path
-from argparse import Namespace
 
 import pytest
 
-from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath, CommonAssert
+from conftest import MSAICERR_PATH, TEST_CASE_TMP, cur_abspath
 
 sys.path.append(MSAICERR_PATH)
 sys.path.append(f'{cur_abspath}/../res/package')
 
 from ms_interface.ascend950.compile_op import CompileOP
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
-from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernel, AscendOpKernelRunner, AscendOpKernelParam
-from ms_interface.constant import ModeCustom
+from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.run_dirty_ub import run_dirty_ub
-from ms_interface.dsmi_interface import DSMIInterface, DsmiChipInfoStru
+from ms_interface.dsmi_interface import DSMIInterface
 
 
 def _detect_soc_version():
@@ -46,7 +42,8 @@ def _detect_soc_version():
         if info is None:
             return None
         return info.get_complete_platform()
-    except Exception:
+    # DSMIInterface() 走 ctypes.CDLL -> OSError；get_complete_platform 走 .decode()
+    except (OSError, AttributeError, UnicodeDecodeError):
         return None
 
 
@@ -96,7 +93,8 @@ class TestUtilsMethods():
         (Exception('test'), "Compile dirty_ub op failed, skip dirty ub"),
         ([[]], "Compile dirty_ub op failed, skip dirty ub")
     ])
-    def test_run_ascendc(self, mocker, compile_file, log_content, caplog):
+    @staticmethod
+    def test_run_ascendc(mocker, compile_file, log_content):
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch.object(AscendOpKernelRunner, 'run', return_value=None)
         mocker.patch.object(AscendOpKernelRunner, 'run')
@@ -115,4 +113,4 @@ class TestUtilsMethods():
         config_file = single_op_case.generate_config()
         run_dirty_ub(config_file, "Ascend950", 0)
         debug_info = Path(f"{os.getcwd()}/debug_info.txt")
-        assert log_content in debug_info.read_text()
+        assert log_content in debug_info.read_text(encoding='utf-8')

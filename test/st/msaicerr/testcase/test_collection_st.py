@@ -50,6 +50,11 @@ sys.path.append(MSAICERR_PATH)
 
 class TestUtilsMethods(CommonAssert):
 
+    # fixture/setup_method 中赋值，此处声明以明确实例属性集合
+    debug_info = None
+    old_cwd = None
+    temp = None
+
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
         self.old_cwd = os.getcwd()
@@ -83,7 +88,7 @@ class TestUtilsMethods(CommonAssert):
         input_path = RES_PATH.joinpath("ori_data/complie_path")
         collection = Collection(input_path, output_path)
         collection.collect()
-        self.assertIn(self.temp.joinpath("debug_info.txt").read_text(),
+        self.assertIn(self.temp.joinpath("debug_info.txt").read_text(encoding='utf-8'),
                       "Adump log '[Dump][Exception]' cannot be found")
 
     @pytest.mark.parametrize(
@@ -147,7 +152,7 @@ class TestUtilsMethods(CommonAssert):
         mkdir_dump_file_path(node_name, input_path)
         collection = Collection(input_path, output_path)
         collection.collect()
-        self.assertIn(self.debug_info.read_text(),
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       "AicoreError Found, kernel_name")
 
     def test_not_ffts_get_kernel_name_l0_get_node_name_failed(self):
@@ -196,7 +201,7 @@ class TestUtilsMethods(CommonAssert):
         mkdir_dump_file_path(node_name, input_path)
         collection = Collection(input_path, output_path)
         collection.collect()
-        self.assertIn(self.debug_info.read_text(),
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       "Failed to get \"fftsplus task execute failed\" in plog.")
 
     def test_sk_get_kernel_name_l0(self):
@@ -210,7 +215,7 @@ class TestUtilsMethods(CommonAssert):
         collection_plog_path.mkdir(parents=True, exist_ok=True)
         # 同时存在SK标志性打印和普通fault kernel_name，SK场景应优先返回SK的kernelName
         collection_plog_path.joinpath("plog.log").write_text(
-            f"{SK_DUMP_CALLBACK_EXCEPTION}\n{AICORE_KERNEL_EXECUTE_FAILED}")
+            f"{SK_DUMP_CALLBACK_EXCEPTION}\n{AICORE_KERNEL_EXECUTE_FAILED}", encoding='utf-8')
         collection = Collection(input_path, output_path)
         collection.ffts_flag = False
         kernel_name, node_name = collection.get_kernel_name_l0(data_name)
@@ -347,7 +352,7 @@ class TestUtilsMethods(CommonAssert):
         dump_path.joinpath(rename).touch()
         dump_path.joinpath("te_gatherv2.o").touch()
         dump_path.joinpath("te_gatherv2_host.o").touch()
-        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n")
+        dump_path.joinpath(Constant.MAPPING_CSV_FILE).write_text(f"{rename},{data_name}\n", encoding='utf-8')
         write_log_keyword_to_file(input_path, [
             DUMP_EXCEPTION_STR, EXCEPTION_INFO_DUMP_ARGS_DATA, AICORE_KERNEL_EXECUTE_FAILED,
             '[ERROR] IDEDD(1592077,python3):2024-09-12-16:40:08.360.226 [dump_args.cpp:807]'
@@ -399,5 +404,5 @@ class TestUtilsMethods(CommonAssert):
         mkdir_dump_file_path(node_name, input_path.joinpath("input2"))
         collection = Collection(input_path, output_path)
         collection.collect()
-        self.assertIn(self.debug_info.read_text(),
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
                       "Find dump file GatherV2.GatherV21.1.1733469426252033")

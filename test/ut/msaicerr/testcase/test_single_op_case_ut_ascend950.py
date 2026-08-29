@@ -17,13 +17,13 @@
 # -------
 from pathlib import Path
 
-from conftest import MSAICERR_PATH, cur_abspath, ori_data_path
+from conftest import MSAICERR_PATH, cur_abspath
 import os
 import sys
 import pytest
 
 from ms_interface.single_op_test_frame.runtime import AscendRTSApi
-from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner, AscendOpKernel
+from ms_interface.single_op_test_frame.common.ascend_tbe_op import AscendOpKernelRunner
 from ms_interface.aic_error_info import AicErrorInfo
 from ms_interface.single_op_test_frame.single_op_case import SingleOpCase
 from ms_interface.ascend950.compile_op import CompileOP
@@ -71,10 +71,11 @@ class TestUtilsMethods():
         assert res
 
     @pytest.mark.parametrize("compile_file, log_content", [
-        (Exception('test'), "Compile dirty_ub op failed, skip dirty ub"),
+        (RuntimeError('test'), "Compile dirty_ub op failed, skip dirty ub"),
         ([[]], "Compile dirty_ub op failed, skip dirty ub")
     ])
-    def test_run_ascendc(self, mocker, compile_file, log_content, caplog):
+    @staticmethod
+    def test_run_ascendc(mocker, compile_file, log_content):
         mocker.patch.object(CompileOP, "get_ub_size", return_value=1)
         mocker.patch.object(CompileOP, 'get_compile_file', side_effect=compile_file)
         aic_err_info = AicErrorInfo()
@@ -84,7 +85,7 @@ class TestUtilsMethods():
         config_file = single_op_case.generate_config()
         run_dirty_ub(config_file, "Ascend950", 0)
         debug_info = Path(f"{os.getcwd()}/debug_info.txt")
-        assert log_content in debug_info.read_text()
+        assert log_content in debug_info.read_text(encoding='utf-8')
 
     def test_run_dirty_ub_with_diff_soc(self, mocker):
         aic_err_info = AicErrorInfo()

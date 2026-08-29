@@ -17,10 +17,8 @@
 # ----------------------------------------------------------------------------
 import sys
 import numpy as np
-from pathlib import Path
 
 from ms_interface import utils
-from ms_interface.constant import ModeCustom
 from ms_interface.single_op_test_frame.common.ascend_tbe_op import (AscendOpKernel,
                                                                     AscendOpKernelRunner,
                                                                     AscendOpKernelRunnerParam)

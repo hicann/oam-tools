@@ -50,10 +50,35 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_exception
 
 
+def _is_safe_tar_member(member, path):
+    """校验解压成员不会逃逸出目标目录（防 tar-slip），且不是链接/特殊文件。"""
+    if member.issym() or member.islnk():
+        return False
+    if member.isdev() or member.isfifo():
+        # 设备节点/FIFO 不是采集数据的正常内容，高权限下解压会真的创建出来。
+        return False
+    dest = os.path.realpath(os.path.join(path, member.name))
+    base = os.path.realpath(path)
+    return dest == base or dest.startswith(base + os.sep)
+
+
+def safe_tar_members(tar, tar_file, path):
+    """筛掉会逃逸出 path 的成员，返回可安全解压的成员列表。"""
+    safe_members = []
+    for member in tar.getmembers():
+        if _is_safe_tar_member(member, path):
+            safe_members.append(member)
+        else:
+            utils.print_warn_log("Skip unsafe member %s in %s." % (member.name, tar_file))
+    return safe_members
+
+
 def extract_tar(tar_file, path):
     tar = tarfile.open(tar_file, "r")
-    tar.extractall(path)
-    tar.close()
+    try:
+        tar.extractall(path, members=safe_tar_members(tar, tar_file, path))
+    finally:
+        tar.close()
 
 
 def get_select_dir(path):
@@ -133,7 +158,7 @@ def convert_dump_data(args, data_path):
                 "The dump file directory will be used to as the output directory of the parsed results.")
         else:
             utils.check_path_valid(args.output_path, isdir=True, output=True)
-    except Exception:
+    except (OSError, ValueError, utils.AicErrException):
         return Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR
 
     try:
@@ -141,7 +166,8 @@ def convert_dump_data(args, data_path):
         DumpDataParser(data_path, info, args.dest_dtype, args.output_path).parse()
         utils.print_debug_log(info.dump_info)
         return Constant.MS_AICERR_NONE_ERROR
-    except BaseException:
+    except (OSError, ValueError, TypeError, KeyError, IndexError,
+            RuntimeError, utils.AicErrException):
         return Constant.MS_AICERR_INVALID_DUMP_DATA_ERROR
 
 
@@ -171,9 +197,29 @@ def test_env(device_id=0):
                 "The built-in sample operator running failed. See the detailed error logs above for "
                 "specific failure cause (e.g. chip incompatibility, driver issue, missing dependencies).")
             return Constant.MS_AICERR_HARDWARE_ERR
-    except BaseException as e:
+    # AttributeError：get_soc_version() 内 get_chip_info() 取芯片信息失败会返回
+    # None，对其取 get_complete_platform() 即抛该异常，需按环境检查失败上报。
+    # TypeError：run_test_env() 拼 PYTHONPATH 等环境变量时若取到 None 会抛该异常
+    # （根因已在 aicore_error_parser 用 or '' 兜底，此处作为边界兜底一并纳入）。
+    except (OSError, ValueError, RuntimeError, AttributeError, TypeError,
+            utils.AicErrException) as e:
         utils.print_error_log(f"Exception occurred during environment test: {str(e)}")
         return Constant.MS_AICERR_HARDWARE_ERR
+
+
+# 选项串与 dest 的双向映射，由 _register_argument 在注册参数时登记。
+# 有了它，RequireOtherArgs 无需读取 argparse 的内部属性 _option_string_actions。
+OPTION_DEST_MAP = {}
+DEST_OPTIONS_MAP = {}
+
+
+def _register_argument(parser, *option_strings, **kwargs):
+    """包装 parser.add_argument，同时登记 option_strings 与 dest 的映射。"""
+    action = parser.add_argument(*option_strings, **kwargs)
+    for opt in option_strings:
+        OPTION_DEST_MAP[opt] = action.dest
+    DEST_OPTIONS_MAP[action.dest] = list(option_strings)
+    return action
 
 
 class RequireOtherArgs(argparse.Action):
@@ -187,16 +233,21 @@ class RequireOtherArgs(argparse.Action):
         return [arg for arg in sys.argv[1:] if arg.startswith('-')]
 
     def inputted_dest(self, parser):
-        inputted_dest = set()
-        for arg in self.real_options:
-            if arg not in parser._option_string_actions.keys():
-                continue
-            inputted_dest.add(parser._option_string_actions[arg].dest)
-        return inputted_dest
+        """返回本次命令行里实际出现过的选项所对应的 dest 集合。
+
+        argparse 未提供公开接口暴露"选项串 -> action"的映射，故不读其内部属性，
+        改用注册参数时登记的 OPTION_DEST_MAP（见 _register_argument）。
+        """
+        del parser  # 保留签名兼容；映射由自建表提供
+        return {OPTION_DEST_MAP[arg] for arg in self.real_options if arg in OPTION_DEST_MAP}
 
     @staticmethod
     def formated_arg(dest, parser):
-        return '/'.join(parser._option_string_actions[f'--{dest}'].option_strings)
+        """把 dest 还原为用户可见的选项串，如 "-p/--report_path"。"""
+        del parser  # 同上
+        # 兜底 f'--{dest}'：若有人绕过 _register_argument 直接 add_argument，
+        # 这里不至于抛 KeyError 让报错信息不可读。
+        return '/'.join(DEST_OPTIONS_MAP.get(dest, [f'--{dest}']))
 
     def __call__(self, parser, namespace, values, option_string=None):
         has_args = [arg for arg in self.required_args if arg in self.inputted_dest(parser)]
@@ -212,26 +263,26 @@ def main() -> int:
     main function
     """
     parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]))
-    parser.add_argument(
+    _register_argument(parser,
         "-p", "--report_path", dest="report_path", default="",
         help="Specify the directory where the AI Core error information is stored when analyzing the AI Core error.",
         required=False)
-    parser.add_argument(
+    _register_argument(parser,
         "-d", "--data", dest="data", default="",
         help="Specify the dump file path when parsing the dump file.", required=False)
-    parser.add_argument(
+    _register_argument(parser,
         "-e", "--env", dest="env", action="store_true",
         help="Check the environment when running the built-in sample operator.", required=False)
-    parser.add_argument(
+    _register_argument(parser,
         "-out", "--output_path", dest="output_path", default="",
         help="Specify the output directory of the result. This argument is valid only for --report_path and --data.",
         required=False, action=RequireOtherArgs, required_args=['report_path', 'data'])
-    parser.add_argument(
+    _register_argument(parser,
         "-dev", "--device_id", dest="device_id", default=0, type=int,
         help="Specify the ID of the device for running the operator. Defaults to 0 if not specified. "
              "This argument is valid only for --report_path and --env.", required=False,
         action=RequireOtherArgs, required_args=['report_path', 'env'])
-    parser.add_argument(
+    _register_argument(parser,
         "-dtype", "--dest_dtype", dest="dest_dtype", default="",
         help="Specify the data type when parsing dump files. This argument is valid only for --data. ",
         required=False, action=RequireOtherArgs, required_args=['data'])
@@ -240,7 +291,7 @@ def main() -> int:
     if not ascend_opp_path:
         utils.print_error_log("Environment variable not set after the CANN software is installed.")
         return Constant.MS_AICERR_INVALID_PATH_ERROR
-    
+
     if len(sys.argv) <= 1:
         utils.print_error_log("Please execute : python msaicerr.py -h")
         parser.print_usage()
@@ -249,7 +300,10 @@ def main() -> int:
     args, unknown = parser.parse_known_args()
     debug_log = 'debug_info.txt'
     if not os.access(os.getcwd(), os.W_OK) or (os.path.exists(debug_log) and not os.access(debug_log, os.W_OK)):
-        utils._print_log("ERROR", "The current directory or debug_info.txt is immutable, Please check.")
+        # debug_info.txt 不可写，走只打 stdout 的公开入口；
+        # print_error_log 会再往 debug_info.txt 落盘，此处不能用。
+        utils.print_log_stdout_only(
+            "ERROR", "The current directory or debug_info.txt is immutable, Please check.")
         return Constant.MS_AICERR_INVALID_PATH_ERROR
 
     if args.data:

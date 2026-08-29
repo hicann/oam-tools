@@ -16,37 +16,41 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-from conftest import MSAICERR_PATH, CommonAssert, cur_abspath, ori_data_path
 import os
-import pytest
 import sys
-from unittest.mock import Mock, MagicMock
 from pathlib import Path
+from unittest.mock import Mock, MagicMock
 
+import pytest
+
+# conftest 已把 MSAICERR_PATH 加入 sys.path（其导入早于下面的 ms_interface），
+# 故此处无需重复 append；被测模块导入期也不依赖 te，import 可留在文件顶部。
+from conftest import CommonAssert, cur_abspath, ori_data_path
+from ms_interface import utils
+from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.aicore_error_parser import AicoreErrorParser
+from ms_interface.collection import Collection
+from ms_interface.constant import Constant, RegexPattern, RetCode
+from ms_interface.dump_data_parser import DumpDataParser
+from ms_interface.tiling_data_parser import TilingDataParser
+
+# te 仅在用例运行期被 mock 使用，桩放在 import 之后即可
 te = Mock(name="te")
 te.__name__ = "te"
 sys.modules['te'] = te
-sys.path.append(MSAICERR_PATH)
-
-cur_abspath = os.path.dirname(__file__)
-
-ori_data_path = Path(cur_abspath).joinpath('../res/ori_data/')
-from ms_interface.tiling_data_parser import TilingDataParser
-from ms_interface.dump_data_parser import DumpDataParser
-from ms_interface.aic_error_info import AicErrorInfo
-from ms_interface.constant import RegexPattern
-from ms_interface.collection import Collection
-from ms_interface.aicore_error_parser import AicoreErrorParser
-from ms_interface import utils
-from ms_interface.constant import Constant, RetCode
 
 class Selflib():
 
-    def rtGetAiCoreCount(self, driver_core_num):
+    @staticmethod
+    def rtGetAiCoreCount(_driver_core_num):
         return 0
 
 
 class TestUtilsMethods(CommonAssert):
+
+    # fixture/setup_method 中赋值，此处声明以明确实例属性集合
+    debug_info = None
+    temp = None
 
     @pytest.fixture(autouse=True)
     def change_test_dir(self, tmp_path):
@@ -61,19 +65,19 @@ class TestUtilsMethods(CommonAssert):
                                 os.path.join(cur_abspath, '../res/ori_data/complie_path'))
         collection.collect_plog_path = 'dest_path'
         parser = AicoreErrorParser(collection)
-        atomic_err_log = parser._get_atomic_err_log()
+        atomic_err_log = getattr(parser, "_get_atomic_err_log")()
         self.assertEqual(atomic_err_log, False)
 
     def test_check_addr_in_range_hex(self):
-        flag = AicoreErrorParser._check_addr_in_range(1, 24, [('0x0', 256)])
+        flag = getattr(AicoreErrorParser, "_check_addr_in_range")(1, 24, [('0x0', 256)])
         self.assertEqual(flag, True)
 
     def test_check_addr_in_range_dec(self):
-        flag = AicoreErrorParser._check_addr_in_range(1, 24, [('0', 256)])
+        flag = getattr(AicoreErrorParser, "_check_addr_in_range")(1, 24, [('0', 256)])
         self.assertEqual(flag, True)
 
     def test_check_addr_in_range_error(self):
-        flag = AicoreErrorParser._check_addr_in_range(1, 256, [('0', 24)])
+        flag = getattr(AicoreErrorParser, "_check_addr_in_range")(1, 256, [('0', 24)])
         self.assertEqual(flag, False)
 
     def test_get_info_for_decompile(self, mocker):
@@ -83,12 +87,12 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.aic_error_info['current_pc'] = 'x1435'
         info.aic_error_info['start_pc'] = 'x0123'
-        diff_str, err_pc = parser._get_info_for_decompile(info)
+        diff_str, err_pc = getattr(parser, "_get_info_for_decompile")(info)
         self.assertEqual((diff_str, err_pc), ('1312', '1176'))
 
     def test_get_cce_tbe_code_number_decompile_not_exist(self):
         parser = AicoreErrorParser('collection')
-        flag = parser._get_cce_tbe_code_number(
+        flag = getattr(parser, "_get_cce_tbe_code_number")(
             'decompile_file', 'loc_json_file', 'err_pc', 'info')
         self.assertEqual(flag, False)
 
@@ -97,7 +101,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('ms_interface.aicore_error_parser.'
                      'AicoreErrorParser._read_decompile_file', return_value='0x1234')
         parser = AicoreErrorParser('collection')
-        flag = parser._get_cce_tbe_code_number(
+        flag = getattr(parser, "_get_cce_tbe_code_number")(
             'decompile_file', 'loc_json_file', 'err_pc', 'info')
         self.assertEqual(flag, True)
 
@@ -106,7 +110,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('os.path.exists', side_effect=[True, True])
         mocker.patch.object(parser, '_read_decompile_file', return_value='')
         mocker.patch.object(parser, '_read_loc_json_file', return_value=None)
-        flag = parser._get_cce_tbe_code_number(
+        flag = getattr(parser, "_get_cce_tbe_code_number")(
             'decompile_file', 'loc_json_file', 'err_pc', 'info')
         self.assertEqual(flag, False)
 
@@ -122,14 +126,14 @@ class TestUtilsMethods(CommonAssert):
                                 os.path.join(cur_abspath, '../res/ori_data/complie_path'))
         collection.collect_plog_path = 'dest_path'
         parser = AicoreErrorParser(collection)
-        flag = parser._get_data_dump_result()
+        flag = getattr(parser, "_get_data_dump_result")()
         self.assertEqual(flag, False)
 
     def test_need_atomic_clean(self):
         info = AicErrorInfo()
         info.kernel_name = 'kernel_name'
         parser = AicoreErrorParser('collection')
-        flag = parser._need_atomic_clean(os.path.join(
+        flag = getattr(parser, "_need_atomic_clean")(os.path.join(
             cur_abspath, '../res/ori_data/complie_path'), info)
         self.assertEqual(flag, False)
 
@@ -176,7 +180,7 @@ class TestUtilsMethods(CommonAssert):
         plog_path.mkdir(parents=True, exist_ok=True)
         plog_path.joinpath("plog.log").write_text(
             "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
-            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.", encoding='utf-8')
         parser = AicoreErrorParser(str(collect_path))
         aic_info = parser.get_kernel_name_l0("node_name")
         self.assertEqual(aic_info.kernel_name, "Add_sk_kernel_900016000")
@@ -189,7 +193,7 @@ class TestUtilsMethods(CommonAssert):
         plog_path.mkdir(parents=True, exist_ok=True)
         plog_path.joinpath("plog.log").write_text(
             "[Dump][Exception] Begin to dump callback exception. coreType=0, coreId=1, argAddr=0x1, "
-            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.")
+            "argSize=64, binHandle=0x2, extraTensorNum=2, kernelName=Add_sk_kernel_900016000.", encoding='utf-8')
         parser = AicoreErrorParser(str(collect_path))
         # data_name 形如 name.stream_id.task_id.timestamp，可解析出 stream_id=42, task_id=1
         aic_info = parser.get_kernel_name_l0("exception_info.42.1.1726159207469285")
@@ -210,7 +214,7 @@ class TestUtilsMethods(CommonAssert):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts'))
         dump_data_info_list = parser.get_dump_data_info()
-        thread_id, data_name = dump_data_info_list[0]
+        thread_id, _ = dump_data_info_list[0]
         self.assertEqual(thread_id, '1592077')
 
     def test_collect_driver_aicore_number(self, mocker):
@@ -227,16 +231,16 @@ class TestUtilsMethods(CommonAssert):
     def test_invalid_args_compare(self):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts1/'))
-        res = parser._get_args_from_info('\[AIC_INFO\] args.*after execute')
+        res = getattr(parser, "_get_args_from_info")(r'\[AIC_INFO\] args.*after execute')
         self.assertEqual(res[0], 255085623939072)
 
-    def test_get_atomic_err_log(self):
+    def test_get_atomic_err_log_ffts(self):
         info = AicErrorInfo()
         info.kernel_name = 'kernel_name'
         info.node_name = 'node_name'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts1/'))
-        res = parser._get_atomic_err_log()
+        res = getattr(parser, "_get_atomic_err_log")()
         self.assertEqual(res, True)
 
     def test_update_err_pc(self, mocker):
@@ -245,10 +249,10 @@ class TestUtilsMethods(CommonAssert):
         info.node_name = 'node_name'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts1/'))
-        res = parser._update_err_pc('0x0', '/', info.node_name)
+        res = getattr(parser, "_update_err_pc")('0x0', '/', info.node_name)
         self.assertEqual(res, '0x0')
         mocker.patch.object(utils, 'get_inquire_result', return_value="111")
-        res = parser._update_err_pc('0x1', "", "")
+        res = getattr(parser, "_update_err_pc")('0x1', "", "")
 
     def test_ffts_get_kernel_name_l0_task_id(self):
         info = AicErrorInfo()
@@ -256,14 +260,14 @@ class TestUtilsMethods(CommonAssert):
         info.node_name = 'node_name'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser.check_plog_info()
+        parser.check_plog_info()
         aic_info = parser.get_kernel_name_l0(info.node_name)
         self.assertEqual(aic_info.task_id, '1')
 
     def test_cal_shape_size(self):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser._cal_shape_size("[]")
+        res = getattr(parser, "_cal_shape_size")("[]")
         self.assertEqual(res, 1)
 
     def test_get_err_pc(self, mocker):
@@ -274,7 +278,7 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.aic_error_info['current_pc'] = 'x1435'
         info.aic_error_info['start_pc'] = 'x0123'
-        diff_str, err_pc = parser._get_info_for_decompile(info)
+        diff_str, err_pc = getattr(parser, "_get_info_for_decompile")(info)
         self.assertEqual((diff_str, err_pc), ('1312', ''))
 
     def test_update_err_pc_data(self, mocker):
@@ -284,17 +288,17 @@ class TestUtilsMethods(CommonAssert):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
         mocker.patch.object(utils, 'get_inquire_result', return_value="111")
-        res = parser._update_err_pc('0x1', "", "")
+        res = getattr(parser, "_update_err_pc")('0x1', "", "")
         self.assertEqual(res, '2')
 
-    def test_need_atomic_clean(self):
+    def test_need_atomic_clean_ffts(self):
         info = AicErrorInfo()
         info.kernel_name = 'te_assign_d623a1e1b515a45cdc8c9658e58e2860034dbfbd9ab35f92e1415a0fda9d35c1_1'
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
         abs_path = os.path.join(
             cur_abspath, '../res/ori_data/asys_output_20230713074104794/dfx/ops/0/')
-        res = parser._need_atomic_clean(abs_path, info)
+        res = getattr(parser, "_need_atomic_clean")(abs_path, info)
         self.assertEqual(res, False)
 
     def test_get_sub_ptr(self):
@@ -302,7 +306,7 @@ class TestUtilsMethods(CommonAssert):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
         info.bin_list = ['xxx']
-        res = parser._get_sub_ptr(info)
+        res = getattr(parser, "_get_sub_ptr")(info)
         self.assertEqual(res, {})
 
     @pytest.mark.skip
@@ -313,13 +317,13 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/collect/ffts/'))
         abs_path = os.path.join(cur_abspath,
                                 '../res/ori_data/asys_output_20230713074104794/dfx/ops/0/te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1.cce')
-        res = parser._read_decompile_file(abs_path, '', info)
+        res = getattr(parser, "_read_decompile_file")(abs_path, '', info)
         self.assertEqual(res, '')
 
     def test_get_kernel_and_json_file(self):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser._get_kernel_and_json_file('kernel_name', 'tiling_key')
+        res = getattr(parser, "_get_kernel_and_json_file")('kernel_name', 'tiling_key')
         self.assertEqual(res, None)
 
     def test_get_kernel_and_json_file_in_collect_path(self, mocker):
@@ -331,7 +335,7 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/asys_output_20230713074104794/dfx/ops/0/te_gatherv2_657cb48fa1743a43209d7bc779fe8c294760a5b09b3079a3323fdf18376fc408_1.o')
         mocker.patch.object(utils, 'get_inquire_result', return_value=[
                             json_path, o_path_out_collection])
-        res = parser._get_kernel_and_json_file(
+        res = getattr(parser, "_get_kernel_and_json_file")(
             'GatherV3_9e31943a1a48bf81ddff1fc6379e0be3_high_performance', 'tiling_key')
         self.assertEqual(res.json_file != '', True)
         self.assertEqual(res.bin_file == '', True)
@@ -425,7 +429,7 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/collect/hash_check'))
         parser.parse_level = 0
         with pytest.raises(utils.AicErrException) as error:
-            res = parser.get_dump_data_info()
+            parser.get_dump_data_info()
         self.assertEqual(error.value.args[0],
                          Constant.MS_AICERR_INVALID_PATH_ERROR)
 
@@ -434,7 +438,7 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/collect/hash_check'))
         parser.parse_level = 1
         with pytest.raises(utils.AicErrException) as error:
-            res = parser.get_dump_data_info()
+            parser.get_dump_data_info()
         self.assertEqual(error.value.args[0],
                          Constant.MS_AICERR_INVALID_PATH_ERROR)
 
@@ -459,18 +463,32 @@ class TestUtilsMethods(CommonAssert):
                                                                     '../res/ori_data/collect/ffts/collection/plog/test_hash_id.log'))
         self.assertEqual(res, False)
 
-    def test_test_single_op(self):
+    def test_test_single_op(self, mocker):
+        # 用例进程正常退出(0)且日志无 aicore error，才算单算子执行成功。
+        mocker.patch('subprocess.run', return_value=Mock(
+            returncode=0, stdout=b'', stderr=b''))
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
         info = AicErrorInfo()
-        res = parser._test_single_op(info, '', 'temp_dir', 'single_op')
+        res = getattr(parser, "_test_single_op")(info, '', 'temp_dir', 'single_op')
         self.assertEqual(res[0], RetCode.SUCCESS)
+
+    def test_test_single_op_subprocess_failed(self, mocker):
+        # 用例进程非 0 退出、日志里也没有 aicore error：用例没真正跑起来，
+        # 不能按执行成功上报（否则掩盖依赖缺失/语法错误等真实原因）。
+        mocker.patch('subprocess.run', return_value=Mock(
+            returncode=1, stdout=b'', stderr=b'ModuleNotFoundError: No module named tbe'))
+        parser = AicoreErrorParser(os.path.join(
+            cur_abspath, '../res/ori_data/collect/ffts/'))
+        info = AicErrorInfo()
+        res = getattr(parser, "_test_single_op")(info, '', 'temp_dir', 'single_op')
+        self.assertEqual(res[0], RetCode.FAILED)
 
     def test_get_extra_info(self):
         aic_error = "vec error info: 0x51000070f7, mte error info: 0x500300004d, ifu error info: 0x29883d2080000, ccu error info: 0x22c090001000046, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c1c0000400."
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser._get_extra_info(aic_error)
+        res = getattr(parser, "_get_extra_info")(aic_error)
         data = "extra info:\nIFU_ERR_INFO=0x29883d2080000\nCCU_ERR_INFO=0x22c090001000046\nBIU_ERR_INFO=0\nCUBE_ERR_INFO=0\nMTE_ERR_INFO=0x500300004d\nVEC_ERR_INFO=0x51000070f7\n"
         self.assertEqual(res, data)
 
@@ -478,7 +496,7 @@ class TestUtilsMethods(CommonAssert):
         aic_error = "mte error info: 0x500300004d, ccu error info: 0x22c090001000046, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c1c0000400."
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser._get_extra_info(aic_error)
+        res = getattr(parser, "_get_extra_info")(aic_error)
         data = "extra info:\nCCU_ERR_INFO=0x22c090001000046\nBIU_ERR_INFO=0\nCUBE_ERR_INFO=0\nMTE_ERR_INFO=0x500300004d\n"
         self.assertEqual(res, data)
 
@@ -497,14 +515,14 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/collect_milan'))
         mocker.patch.object(parser, '_get_aic_info',
                             return_value='[AIC_INFO] aaa: 0')
-        self.assertEqual(parser._get_tiling_data_l1('a'), '')
+        self.assertEqual(getattr(parser, "_get_tiling_data_l1")('a'), '')
 
     def test_get_tiling_data_value(self, mocker):
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect_milan'))
         mocker.patch.object(parser, '_get_aic_info',
                             return_value='[AIC_INFO] tiling_data:0x0001')
-        self.assertEqual(parser._get_tiling_data_l1('a'),
+        self.assertEqual(getattr(parser, "_get_tiling_data_l1")('a'),
                          bytes.fromhex('0001'))
 
     def test_get_tiling_data_other(self, mocker):
@@ -512,7 +530,7 @@ class TestUtilsMethods(CommonAssert):
             cur_abspath, '../res/ori_data/collect_milan'))
         mocker.patch.object(parser, '_get_aic_info',
                             return_value='[AIC_INFO] tiling_data:1')
-        self.assertEqual(parser._get_tiling_data_l1('a'),
+        self.assertEqual(getattr(parser, "_get_tiling_data_l1")('a'),
                          bytes('1', 'utf-8'))
 
     def test_get_tiling_data(self, mocker):
@@ -522,14 +540,14 @@ class TestUtilsMethods(CommonAssert):
         tiling_data = parser.get_tiling_data('a')
         self.assertEqual(tiling_data, b'0x1')
 
-    def test_tiling_data_success(self, mocker):
+    def test_tiling_data_success(self):
         info = AicErrorInfo()
         info.kernel_path = self.temp
         info.tiling_data_bytes = b'0x1'
         info.kernel_name = 'test'
         parser = AicoreErrorParser('')
         parser.write_tiling_data_to_file(info)
-        self.assertIn(self.debug_info.read_text(), "Tiling data is saved to")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'), "Tiling data is saved to")
 
     @pytest.mark.parametrize(
         "test_single_mock, dump_result, expect_log_level",
@@ -608,19 +626,19 @@ class TestUtilsMethods(CommonAssert):
             (True, '//soc_version Ascend910B1"', 'Ascend910B1'),
         ]
     )
-    def test_get_soc_version_from_cce(self, mocker, cce_exist, content, result):
+    def test_get_soc_version_from_cce(self, mocker, cce_exist, content, result, tmp_path):
         mocker.patch('os.path.isfile', return_value=cce_exist)
         mocker.patch.object(Path, 'read_text', return_value=content)
         parser = AicoreErrorParser(os.path.join(
             cur_abspath, '../res/ori_data/collect/ffts/'))
-        res = parser.get_soc_version_from_cce('/tmp/cce.txt')
+        res = parser.get_soc_version_from_cce(str(tmp_path / "cce.txt"))
         self.assertEqual(res, result)
 
     def test_aicerr_regexp(self):
         log = 'RUNTIME(200280,python3):2025-07-07-10:12:17.088.944 [device_error_core_proc.cc:314]201695 ProcessStarsCoreErrorInfo:[EXEC][EXEC]The error from device(chipId:0, dieId:0), serial number is 31, there is an exception of aivec error, core id is 36, error code = 0, dump info: pc start: 0x12400001638c, current: 0x1240000167bc, vec error info: 0x6106ff4758, mte error info: 0x302aa40, ifu error info: 0x2000017df8400, ccu error info: 0x482a21100000000, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12d0c0000800.'
         aic_err_ret = utils.regexp_match_dict(
             RegexPattern.AICORE_ERR_OCCUR, log)
-        self.assertNotEqual(aic_err_ret, [])
+        assert aic_err_ret != []
         aic_err_map = aic_err_ret[0]
         self.assertEqual(aic_err_map['err_time'], '2025-07-07-10:12:17.088.944')
         self.assertEqual(aic_err_map['dev_id'], 'chipId:0, dieId:0')
@@ -681,27 +699,27 @@ class TestUtilsMethods(CommonAssert):
         aic_info.node_name = "test"
         aic_info.kernel_name = "test"
         self.temp.joinpath(f"{aic_info.node_name}.json").write_text(
-            '{"compile_info": "1","parameters": ["1", "2", "3"]}')
-        self.temp.joinpath("test.plog").write_text(plog_content)
+            '{"compile_info": "1","parameters": ["1", "2", "3"]}', encoding='utf-8')
+        self.temp.joinpath("test.plog").write_text(plog_content, encoding='utf-8')
         parser = AicoreErrorParser(self.temp)
-        res = parser._check_atomic_clean(str(self.temp), aic_info)
+        res = getattr(parser, "_check_atomic_clean")(str(self.temp), aic_info)
         self.assertEqual(res, result)
 
     @pytest.mark.parametrize(
         "log_content, kernel_name, result",
         [
-            (f"there is an aivec error exception,  test_mix_aic", "test_mix_aic", True),
-            (f"there is an aicore error exception,  test_mix_aic", "test_mix_aic", True),
-            (f"there is an exception of aivec error,  test_mix_aic", "test_mix_aic", True),
-            (f"there is an exception of aicore error,  test_mix_aic",
+            ("there is an aivec error exception,  test_mix_aic", "test_mix_aic", True),
+            ("there is an aicore error exception,  test_mix_aic", "test_mix_aic", True),
+            ("there is an exception of aivec error,  test_mix_aic", "test_mix_aic", True),
+            ("there is an exception of aicore error,  test_mix_aic",
              "test_mix_aic", True),
-            (f"aicore exception,  test_mix_aic", "test_mix_aic", True),
-            (f"there is an aivec error exception,  aaa_mix_aic", "test_mix_aic", False),
-            (f"there is not error exception,  test_mix_aic", "test_mix_aic", False),
+            ("aicore exception,  test_mix_aic", "test_mix_aic", True),
+            ("there is an aivec error exception,  aaa_mix_aic", "test_mix_aic", False),
+            ("there is not error exception,  test_mix_aic", "test_mix_aic", False),
         ]
     )
     def test_search_aicerr_log(self, log_content, kernel_name, result):
-        self.temp.joinpath("test.log").write_text(log_content)
+        self.temp.joinpath("test.log").write_text(log_content, encoding='utf-8')
         parser = AicoreErrorParser(self.temp)
         self.assertEqual(parser.search_aicerr_log(
             kernel_name, self.temp), result)
@@ -709,7 +727,8 @@ class TestUtilsMethods(CommonAssert):
     def test_get_occur_before_mark(self):
         decompile_file = ori_data_path.joinpath(
             'decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o.txt')
-        self.assertEqual(AicoreErrorParser._get_occur_before_mark(decompile_file, '430', AicErrorInfo()), True)
+        occur_before_mark = getattr(AicoreErrorParser, "_get_occur_before_mark")
+        self.assertEqual(occur_before_mark(decompile_file, '430', AicErrorInfo()), True)
 
     def test_get_tiling_l0_ffts(self, mocker):
         log = '[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.023 [device_error_proc.cc:1402]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial number is 87, there is an fftsplus aivector error exception, core id is 0, error code = 0, dump info: pc start: 0x12c042d73754, current: 0x12c042d75b18, vec error info: 0x99000000a2, mte error info: 0x5003000031, ifu error info: 0x200000007ffc0, ccu error info: 0x280d00000084, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c040569000.'
@@ -717,7 +736,7 @@ class TestUtilsMethods(CommonAssert):
                      return_value=('', log))
         parser = AicoreErrorParser('')
         mocker.patch.object(parser, 'ffts_flag', True)
-        res = parser._get_tiling_l0()
+        res = getattr(parser, "_get_tiling_l0")()
         self.assertEqual(res, (0, 0))
 
     def test_get_tiling_l1_success(self, mocker):
@@ -730,7 +749,7 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('ms_interface.utils.execute_command',
                      return_value=(0, log))
         parser = AicoreErrorParser('')
-        res = parser._get_tiling_l1(
+        res = getattr(parser, "_get_tiling_l1")(
             'GatherV2_daad10a93d32be95786cd6e84e734751_high_precision')
         self.assertEqual(res, (900016000, 1))
 
@@ -739,17 +758,18 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch('shutil.which', return_value='')
         with pytest.raises(utils.AicErrException):
             AicoreErrorParser.add_objdump_to_path()
-        self.assertIn(self.debug_info.read_text(), 'Cannot find cce-objdump! please add cce-objdump path in env PATH')
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'),
+                      'Cannot find cce-objdump! please add cce-objdump path in env PATH')
 
     def test_get_data_dump_result(self, mocker):
         mocker.patch('ms_interface.utils.execute_command',
                      side_effect=[(1, ''), (1, ''), (1, '')])
         parser = AicoreErrorParser('')
-        self.assertEqual(parser._get_data_dump_result(), True)
+        self.assertEqual(getattr(parser, "_get_data_dump_result")(), True)
 
         mocker.patch('ms_interface.utils.execute_command',
                      side_effect=[(1, ''), (0, ''), (0, '')])
-        self.assertEqual(parser._get_data_dump_result(), False)
+        self.assertEqual(getattr(parser, "_get_data_dump_result")(), False)
 
     def test_decompile(self, mocker):
         parser = AicoreErrorParser('')
@@ -760,9 +780,9 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.bin_file = str(ori_data_path.joinpath(
             'decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o'))
-        self.assertEqual(parser._decompile('', '', info), False)
+        self.assertEqual(getattr(parser, "_decompile")('', '', info), False)
 
-    def test_get_kernel_and_json_file_sk(self, mocker):
+    def test_get_kernel_and_json_file_sk(self):
         # SK场景：bin_file指向<kernel_name>*_host.o，json/cce为空
         kernel_name = "Add_sk_kernel_900016000"
         compile_path = self.temp.joinpath("collection/compile")
@@ -771,7 +791,7 @@ class TestUtilsMethods(CommonAssert):
         host_file.touch()
         parser = AicoreErrorParser(str(self.temp))
         parser.is_sk = True
-        kernel_file = parser._get_kernel_and_json_file(kernel_name, "0")
+        kernel_file = getattr(parser, "_get_kernel_and_json_file")(kernel_name, "0")
         self.assertEqual(kernel_file.bin_file, str(host_file))
         self.assertEqual(kernel_file.json_file, '')
         self.assertEqual(kernel_file.cce_file, '')
@@ -787,21 +807,21 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.bin_file = str(ori_data_path.joinpath(
             'decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o'))
-        self.assertEqual(parser._decompile('', '', info), True)
+        self.assertEqual(getattr(parser, "_decompile")('', '', info), True)
         # SK下只复制host.o一个文件
         copy_mock.assert_called_once_with([info.bin_file], '')
 
-    def test_get_v300_error_code(self, mocker):
+    def test_get_v300_error_code(self):
         parser = AicoreErrorParser('')
         parser.collect_path = str(ori_data_path.joinpath('collect_milan'))
-        self.assertEqual(parser._get_v300_error_code(), '0x200000000')
+        self.assertEqual(getattr(parser, "_get_v300_error_code")(), '0x200000000')
 
     @pytest.mark.parametrize(
         'get_dump_data_info, get_inquire_result, execute_command, log_res',
         [
-            ([('1', 'data_name')], [], ['',''], "Aicore error exception does not match"),
-            ([('1', 'data_name')], [{'thread_id': '2'}], ['',''], "Dump data pid is not the same with rts pid."),
-            ([('1', 'data_name')], [{'thread_id': '1'}], ['aa','aa'], "Get runtime block_dim failed"),
+            ([('1', 'data_name')], [], ['', ''], "Aicore error exception does not match"),
+            ([('1', 'data_name')], [{'thread_id': '2'}], ['', ''], "Dump data pid is not the same with rts pid."),
+            ([('1', 'data_name')], [{'thread_id': '1'}], ['aa', 'aa'], "Get runtime block_dim failed"),
         ]
     )
     def test_get_op_info_failed(self, mocker, get_dump_data_info, get_inquire_result, execute_command, log_res):
@@ -810,18 +830,19 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch("ms_interface.utils.get_inquire_result", return_value=get_inquire_result)
         mocker.patch("ms_interface.utils.execute_command", return_value=execute_command)
         parser.get_op_info()
-        self.assertIn(self.debug_info.read_text(), log_res)
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'), log_res)
 
     def test_collect_driver_aicore_number_filed(self, mocker):
         self.assertEqual(True, True)
         parser = AicoreErrorParser('')
 
-        class Selflib():
+        class SelflibCoreNumOne():
 
-            def rtGetAiCoreCount(self, driver_core_num):
+            @staticmethod
+            def rtGetAiCoreCount(_driver_core_num):
                 return 1
         mocker.patch('ms_interface.aicore_error_parser._find_runtime_so')
-        mocker.patch('ctypes.cdll.LoadLibrary', return_value=Selflib())
+        mocker.patch('ctypes.cdll.LoadLibrary', return_value=SelflibCoreNumOne())
         try:
             parser.collect_driver_aicore_number()
         except utils.AicErrException as e:
@@ -836,5 +857,5 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch("ms_interface.utils.execute_command", return_value=(0, ''))
         mocker.patch("re.findall", return_value=task_info)
         result = parser.get_is_concurrentexe_value('')
-        self.assertIn(self.debug_info.read_text(), "3 tasks detected")
+        self.assertIn(self.debug_info.read_text(encoding='utf-8'), "3 tasks detected")
         self.assertEqual(result, {})

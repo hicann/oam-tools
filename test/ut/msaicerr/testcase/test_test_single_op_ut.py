@@ -18,7 +18,6 @@
 
 import sys
 
-from unittest.mock import Mock, patch
 import pytest
 
 from conftest import MSAICERR_PATH, CommonAssert
