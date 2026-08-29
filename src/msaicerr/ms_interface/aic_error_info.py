@@ -19,7 +19,51 @@
 import re
 import struct
 from ms_interface import utils
-from ms_interface.constant import Constant, RetCode
+from ms_interface.constant import ChipType, Constant, RetCode
+
+
+def detect_chip_type(error_code: str) -> ChipType:
+    """Tell the two `error code = ...` dialects apart.
+
+    910B (Stars architecture) prints the raw aicError[0] register value via
+    %#PRIx64, so a non-zero code always carries the 0x prefix. 950 (David
+    architecture) prints the already resolved bit numbers as a decimal,
+    comma-separated list. A bare "0" is the 950 no-error marker, but 910B
+    renders 0 the same way (%#x drops the prefix for zero), so it is left to
+    the 910B path where the existing trap_or_timeout fallback handles it.
+    """
+    error_code = error_code.strip()
+    if error_code.lower().startswith("0x") or error_code == "0":
+        return ChipType.ASCEND_910B
+    if re.fullmatch(r"\d+(?:\s*,\s*\d+)*", error_code):
+        return ChipType.ASCEND_950
+    return ChipType.ASCEND_910B
+
+
+def parse_stars_error_bits(error_code: str) -> list:
+    """Bit-scan a 910B error code into bit numbers.
+
+    Returns an empty list when no bit is set, and also when the code is blank
+    or unparsable: get_hexstr_value reports those as -1, whose two's-complement
+    binary form would otherwise be mistaken for bit 0 being set.
+    """
+    if utils.get_hexstr_value(error_code) <= 0:
+        return []
+    return utils.hexstr_to_list_bin(error_code)
+
+
+def parse_david_error_codes(error_code: str) -> list:
+    """Split a 950 error code into bit numbers, preserving runtime order."""
+    codes = []
+    for part in error_code.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            codes.append(int(part))
+        except ValueError:
+            utils.print_warn_log(f"Failed to parse 950 error code {part}.")
+    return codes
 
 
 class AicErrorInfo:
@@ -287,11 +331,36 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         return result_str
 
     def _get_aicerror_info(self: any) -> str:
+        error_code = self.aic_error_info.get('error_code', '')
+        if detect_chip_type(error_code) is ChipType.ASCEND_950:
+            return self._get_david_error_info(error_code)
+        return self._get_stars_error_info(error_code)
+
+    def _get_david_error_info(self: any, error_code: str) -> str:
+        """Resolve a David/950 error code.
+
+        The runtime has already bit-scanned and masked the six error registers,
+        so error_code is a comma-separated list of absolute bit numbers.
+        """
+        aicerror_info_list = []
+        for code in parse_david_error_codes(error_code):
+            entry = Constant.AIC_ERROR_INFO_DICT_DAVID.get(code)
+            if entry is None:
+                # Bit is set but absent from g_davidErrorMapInfo; the runtime
+                # skips these too, so only note the bit number.
+                aicerror_info_list.append(f"\nunknown error bit {code}")
+            else:
+                aicerror_info_list.append(f"\n{entry.get('name')}, {entry.get('desc')}")
+            aicerror_info_list.append("\n\n")
+        return "".join(aicerror_info_list).strip("\n")
+
+    def _get_stars_error_info(self: any, error_code: str) -> str:
         aicerror_info_list = []
         handled_err_type = []
-        ret = utils.hexstr_to_list_bin(self.aic_error_info.get('error_code', ''))
+        ret = parse_stars_error_bits(error_code)
         if not ret:
-            ret = [0]
+            # No error bit set at all, which is distinct from bit 0 being set.
+            return Constant.NO_ERROR_BIT_INFO
         for i in ret:
             aicerr_info = Constant.AIC_ERROR_INFO_DICT.get(i)
             err_type = aicerr_info.split('_')[0].lower()
@@ -320,9 +389,18 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         """
         find extra pc
         """
-        ret = utils.hexstr_to_list_bin(self.aic_error_info.get('error_code', ''))
+        error_code = self.aic_error_info.get('error_code', '')
+        if detect_chip_type(error_code) is ChipType.ASCEND_950:
+            # The 950 log has no *_ERR_INFO registers in extra_info, so there
+            # is no [9:2] fragment to recover.
+            return ""
+        ret = parse_stars_error_bits(error_code)
         if not ret:
-            ret = [0]
+            # No error bit set, so no module register to read the fragment from.
+            # Previously this aliased to bit 0, which only returned "" because
+            # bit 0 held the trap_or_timeout placeholder; now that bit 0 is
+            # biu_l2_read_oob the sentinel has to be explicit.
+            return ""
         extra_err_key = ""
         key_map = {
             "vec": Constant.VEC_KEY,
