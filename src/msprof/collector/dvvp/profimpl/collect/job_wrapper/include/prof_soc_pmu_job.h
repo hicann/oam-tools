@@ -33,7 +33,7 @@ public:
     int32_t Uninit() override;
 };
 
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis
 #endif

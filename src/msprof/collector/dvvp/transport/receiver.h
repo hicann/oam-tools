@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_DEVICE_RECEIVER_H
 #define ANALYSIS_DVVP_DEVICE_RECEIVER_H
 
@@ -38,8 +38,9 @@ public:
     const SHARED_PTR_ALIA<analysis::dvvp::transport::AdxTransport> GetTransport();
     int32_t SendMessage(SHARED_PTR_ALIA<google::protobuf::Message> message);
     void SetDevIdOnHost(int32_t devIdOnHost);
+
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext);
+    void Run(const error_message::ErrorManagerContext& errorContext);
 
 private:
     SHARED_PTR_ALIA<analysis::dvvp::message::MsgDispatcher> dispatcher_;
@@ -48,8 +49,8 @@ private:
     int32_t devIdOnHost_;
     volatile bool inited_;
 };
-}  // namespace device
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace device
+} // namespace dvvp
+} // namespace analysis
 
 #endif

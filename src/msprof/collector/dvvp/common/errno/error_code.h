@@ -27,9 +27,9 @@ constexpr int32_t PROFILING_SUCCESS = 0;
 constexpr int32_t PROFILING_FAILED = -1;
 constexpr int32_t PROFILING_NOTSUPPORT = -2;
 constexpr int32_t PROFILING_IN_WARMUP = -3;
-}  // namespace error
-}  // namespace common
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace error
+} // namespace common
+} // namespace dvvp
+} // namespace analysis
 
 #endif

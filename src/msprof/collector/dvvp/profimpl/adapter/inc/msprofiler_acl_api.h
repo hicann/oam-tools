@@ -24,7 +24,7 @@
 #include "transport/transport.h"
 #include "prof_acl_mgr.h"
 
-using PROF_CONFIG_CONST_PTR = const ProfConfig *;
+using PROF_CONFIG_CONST_PTR = const ProfConfig*;
 
 namespace Msprofiler {
 namespace AclApi {
@@ -36,15 +36,16 @@ aclError ProfInit(ProfType type, CONST_CHAR_PTR profilerResultPath, size_t lengt
 aclError ProfStart(ProfType type, PROF_CONFIG_CONST_PTR profilerConfig);
 aclError ProfStop(ProfType type, PROF_CONFIG_CONST_PTR profilerConfig);
 aclError ProfFinalize(ProfType type);
-aclError ProfSetConfig(aclprofConfigType configType, const char *config, size_t configLength);
-aclError ProfModelSubscribe(ProfType type, const uint32_t modelId, const aclprofSubscribeConfig *profSubscribeConfig);
+aclError ProfSetConfig(aclprofConfigType configType, const char* config, size_t configLength);
+aclError ProfModelSubscribe(ProfType type, const uint32_t modelId, const aclprofSubscribeConfig* profSubscribeConfig);
 aclError ProfModelUnSubscribe(ProfType type, const uint32_t modelId);
-aclError ProfOpSubscribe(uint32_t devId, const aclprofSubscribeConfig *profSubscribeConfig);
+aclError ProfOpSubscribe(uint32_t devId, const aclprofSubscribeConfig* profSubscribeConfig);
 aclError ProfOpUnSubscribe(uint32_t devId);
-aclError ProfSubscribe(ProfType type, const Msprofiler::Api::ProfSubscribeKey &subscribeKey, const uint32_t devId,
-                       const aclprofSubscribeConfig *profSubscribeConfig);
-aclError ProfUnSubscribe(ProfType type, const Msprofiler::Api::ProfSubscribeKey &subscribeKey);
-aclError ProfCheckModelLoaded(const uint32_t modelId, uint32_t &devId);
+aclError ProfSubscribe(
+    ProfType type, const Msprofiler::Api::ProfSubscribeKey& subscribeKey, const uint32_t devId,
+    const aclprofSubscribeConfig* profSubscribeConfig);
+aclError ProfUnSubscribe(ProfType type, const Msprofiler::Api::ProfSubscribeKey& subscribeKey);
+aclError ProfCheckModelLoaded(const uint32_t modelId, uint32_t& devId);
 aclError ProfGetOpDescSize(SIZE_T_PTR opDescSize);
 aclError ProfGetOpNum(CONST_VOID_PTR opInfo, size_t opInfoLen, UINT32_T_PTR opNumber);
 aclError ProfGetOpTypeLen(CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index, SIZE_T_PTR opTypeLen);
@@ -54,12 +55,12 @@ aclError ProfGetOpName(CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index, 
 int32_t ProfAclDrvGetDevNum(void);
 size_t ProfGetModelId(ProfType type, CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index);
 uint64_t ProfAclGetOpTime(uint32_t type, CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index);
-int32_t ProfAclGetOpVal(uint32_t type, CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index,
-                        VOID_PTR data, size_t len);
-const char *ProfAclGetOpAttriVal(uint32_t type, const void *opInfo, size_t opInfoLen, uint32_t index, uint32_t attri);
+int32_t ProfAclGetOpVal(
+    uint32_t type, CONST_VOID_PTR opInfo, size_t opInfoLen, uint32_t index, VOID_PTR data, size_t len);
+const char* ProfAclGetOpAttriVal(uint32_t type, const void* opInfo, size_t opInfoLen, uint32_t index, uint32_t attri);
 SHARED_PTR_ALIA<analysis::dvvp::transport::ITransport> CreateParserTransport();
 void ProfRegisterTransport(ProfCreateTransportFunc callback);
-aclError ProfAclGetCompatibleFeatures(size_t *featuresSize, void **featuresData);
-}
-}
+aclError ProfAclGetCompatibleFeatures(size_t* featuresSize, void** featuresData);
+} // namespace AclApi
+} // namespace Msprofiler
 #endif

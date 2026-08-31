@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #ifndef ANALYSIS_DVVP_MSPROFBIN_MSOPPROF_MANAGER_H_
 #define ANALYSIS_DVVP_MSPROFBIN_MSOPPROF_MANAGER_H_
 
@@ -27,7 +26,7 @@
 namespace Analysis {
 namespace Dvvp {
 namespace Msopprof {
-using CONST_CHAR_PTR = const char *;
+using CONST_CHAR_PTR = const char*;
 using namespace analysis::dvvp::common::config;
 
 class MsopprofManager : public analysis::dvvp::common::singleton::Singleton<MsopprofManager> {
@@ -38,9 +37,10 @@ public:
     OsalProcess GetMsopprofPid() const { return msopprofPid_; }
     bool IsMsopprofExist() const;
 
- private:
-    bool CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[], std::vector<std::string> &opArgv) const;
-    void ExecuteMsopprof(const std::vector<std::string> &opArgv);
+private:
+    bool CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[], std::vector<std::string>& opArgv) const;
+    void ExecuteMsopprof(const std::vector<std::string>& opArgv);
+
 private:
     std::string msopprofPath_;
     OsalProcess msopprofPid_;
@@ -50,4 +50,4 @@ private:
 } // namespace Dvvp
 } // namespace Analysis
 
-#endif  // ANALYSIS_DVVP_MSPROFBIN_MSOPPROF_MANAGER_H_
+#endif // ANALYSIS_DVVP_MSPROFBIN_MSOPPROF_MANAGER_H_

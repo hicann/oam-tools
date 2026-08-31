@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "uploader.h"
 #include "config/config.h"
 #include "errno/error_code.h"
@@ -29,13 +29,9 @@ using namespace Analysis::Dvvp::MsprofErrMgr;
 
 Uploader::Uploader(SHARED_PTR_ALIA<analysis::dvvp::transport::ITransport> transport)
     : transport_(transport), queue_(nullptr), isInited_(false), forceQuit_(false), isStopped_(false)
-{
-}
+{}
 
-Uploader::~Uploader()
-{
-    Uinit();
-}
+Uploader::~Uploader() { Uinit(); }
 
 int32_t Uploader::Init(size_t size)
 {
@@ -112,7 +108,7 @@ int32_t Uploader::UploadData(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> f
     return PROFILING_SUCCESS;
 }
 
-void Uploader::Run(const error_message::ErrorManagerContext &errorContext)
+void Uploader::Run(const error_message::ErrorManagerContext& errorContext)
 {
     MsprofErrorManager::instance()->SetErrorContext(errorContext);
     if (!isInited_) {
@@ -139,10 +135,11 @@ void Uploader::Run(const error_message::ErrorManagerContext &errorContext)
                 pipeTransport_->SendBuffer(fileChunkReq->chunk.c_str(), fileChunkReq->chunkSize);
             }
             if (sentLen != static_cast<int32_t>(fileChunkReq->chunkSize)) {
-                MSPROF_LOGE("Failed to upload data, data_len=%zu bytes, sent len=%d bytes",
-                    fileChunkReq->chunkSize, sentLen);
-                MSPROF_INNER_ERROR("EK9999", "Failed to upload data, data_len=%zu bytes, sent len=%d bytes",
-                    fileChunkReq->chunkSize, sentLen);
+                MSPROF_LOGE(
+                    "Failed to upload data, data_len=%zu bytes, sent len=%d bytes", fileChunkReq->chunkSize, sentLen);
+                MSPROF_INNER_ERROR(
+                    "EK9999", "Failed to upload data, data_len=%zu bytes, sent len=%d bytes", fileChunkReq->chunkSize,
+                    sentLen);
             }
         } else {
             if (transport_->SendBuffer(fileChunkReq) != PROFILING_SUCCESS) {
@@ -160,7 +157,6 @@ void Uploader::Run(const error_message::ErrorManagerContext &errorContext)
 
     MSPROF_LOGI("queue size remaining: %zu, force_quit:%d", queue_->Size(), (forceQuit_ ? 1 : 0));
 }
-
 
 // Before you invoke stop, all data should already been enqueued
 int32_t Uploader::Stop(bool force)
@@ -182,14 +178,9 @@ int32_t Uploader::Stop(bool force)
     return PROFILING_SUCCESS;
 }
 
-void Uploader::SetTransportStopped()
-{
-    transport_->SetStopped();
-}
+void Uploader::SetTransportStopped() { transport_->SetStopped(); }
 
-void Uploader::SetPipeTransport(SHARED_PTR_ALIA<ITransport> trans) {
-    pipeTransport_ = trans;
-}
+void Uploader::SetPipeTransport(SHARED_PTR_ALIA<ITransport> trans) { pipeTransport_ = trans; }
 
 int32_t Uploader::RegisterPipeTransportCallback(MsprofRawDataCallback callback)
 {
@@ -227,10 +218,7 @@ void Uploader::Flush() const
     }
 }
 
-SHARED_PTR_ALIA<analysis::dvvp::transport::ITransport> Uploader::GetTransport()
-{
-    return transport_;
-}
-}  // namespace transport
-}  // namespace dvvp
-}  // namespace analysis
+SHARED_PTR_ALIA<analysis::dvvp::transport::ITransport> Uploader::GetTransport() { return transport_; }
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

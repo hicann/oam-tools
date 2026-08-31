@@ -85,7 +85,7 @@ DavidV121Platform::DavidV121Platform()
 
 void DavidV121Platform::InsertSysFeature()
 {
-    const auto sysFeature =  {
+    const auto sysFeature = {
         // System-device
         PLATFORM_SYS_DEVICE_SYS_CPU_MEM_USAGE,
         PLATFORM_SYS_DEVICE_ALL_PID_CPU_MEM_USAGE,
@@ -118,50 +118,23 @@ void DavidV121Platform::InsertSysFeature()
     supportedFeature_.insert(sysFeature.begin(), sysFeature.end());
 }
 
-uint16_t DavidV121Platform::GetMaxMonitorNumber() const
-{
-    return MAX_DAVID_MONITOR_NUM;
-}
+uint16_t DavidV121Platform::GetMaxMonitorNumber() const { return MAX_DAVID_MONITOR_NUM; }
 
-uint16_t DavidV121Platform::GetQosMonitorNumber() const
-{
-    return MAX_QOS_MONITOR_NUM;
-}
+uint16_t DavidV121Platform::GetQosMonitorNumber() const { return MAX_QOS_MONITOR_NUM; }
 
-std::string DavidV121Platform::GetPipeUtilizationMetrics()
-{
-    return DAVID_V121_PIPEUTILIZATION;
-}
+std::string DavidV121Platform::GetPipeUtilizationMetrics() { return DAVID_V121_PIPEUTILIZATION; }
 
-std::string DavidV121Platform::GetMemoryMetrics()
-{
-    return DAVID_V121_MEMORY;
-}
+std::string DavidV121Platform::GetMemoryMetrics() { return DAVID_V121_MEMORY; }
 
-std::string DavidV121Platform::GetMemoryL0Metrics()
-{
-    return DAVID_V121_MEMORYL0;
-}
+std::string DavidV121Platform::GetMemoryL0Metrics() { return DAVID_V121_MEMORYL0; }
 
-std::string DavidV121Platform::GetMemoryUBMetrics()
-{
-    return DAVID_V121_MEMORYUB;
-}
+std::string DavidV121Platform::GetMemoryUBMetrics() { return DAVID_V121_MEMORYUB; }
 
-std::string DavidV121Platform::GetArithmeticUtilizationMetrics()
-{
-    return DAVID_V121_AIRTHMETICUTILIZATION;
-}
+std::string DavidV121Platform::GetArithmeticUtilizationMetrics() { return DAVID_V121_AIRTHMETICUTILIZATION; }
 
-std::string DavidV121Platform::GetResourceConflictRatioMetrics()
-{
-    return DAVID_V121_RESOURCECONFLICTRATIO;
-}
+std::string DavidV121Platform::GetResourceConflictRatioMetrics() { return DAVID_V121_RESOURCECONFLICTRATIO; }
 
-std::string DavidV121Platform::GetL2CacheMetrics()
-{
-    return DAVID_V121_L2CACHE;
-}
+std::string DavidV121Platform::GetL2CacheMetrics() { return DAVID_V121_L2CACHE; }
 
 int32_t DavidV121Platform::InitOnlineAnalyzer()
 {
@@ -169,10 +142,7 @@ int32_t DavidV121Platform::InitOnlineAnalyzer()
     return 0;
 }
 
-std::string DavidV121Platform::GetL2CacheEvents()
-{
-    return DAVID_V121_L2CACHEEVENT;
-}
-}
-}
-}
+std::string DavidV121Platform::GetL2CacheEvents() { return DAVID_V121_L2CACHEEVENT; }
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp

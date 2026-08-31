@@ -16,9 +16,7 @@
 #include "ide-cmd-stub.h"
 #include <cstdlib>
 #include <memory>
-int CommandRes(struct IdeSockHandle, int cmd_or_file) {
-    return 0;
-}
+int CommandRes(struct IdeSockHandle, int cmd_or_file) { return 0; }
 
 void* IdeXmalloc(size_t size)
 {
@@ -47,4 +45,3 @@ void IdeXfree(void* ptr)
         ptr = nullptr;
     }
 }
-

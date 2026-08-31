@@ -29,9 +29,7 @@ OpTransport::OpTransport()
     MSPROF_LOGI("OpTransport create successfully.");
 }
 
-OpTransport::~OpTransport()
-{
-}
+OpTransport::~OpTransport() {}
 
 int32_t OpTransport::SendBuffer(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq)
 {
@@ -51,10 +49,7 @@ int32_t OpTransport::SendBuffer(CONST_VOID_PTR buffer, int32_t length)
     return PROFILING_SUCCESS;
 }
 
-int32_t OpTransport::CloseSession()
-{
-    return PROFILING_SUCCESS;
-}
+int32_t OpTransport::CloseSession() { return PROFILING_SUCCESS; }
 
 void OpTransport::WriteDone()
 {
@@ -66,7 +61,7 @@ void OpTransport::WriteDone()
     analyzer_->WaitOpDone();
 }
 
-void OpTransport::SetDevId(const std::string &deviceId)
+void OpTransport::SetDevId(const std::string& deviceId)
 {
     if (analyzer_ == nullptr) {
         MSPROF_LOGW("Analyzer is not init.");
@@ -76,13 +71,13 @@ void OpTransport::SetDevId(const std::string &deviceId)
     analyzer_->InitAnalyzerByDeviceId(deviceId);
 }
 
-SHARED_PTR_ALIA<ITransport> OpTransportFactory::CreateOpTransport(const std::string &deviceId) const
+SHARED_PTR_ALIA<ITransport> OpTransportFactory::CreateOpTransport(const std::string& deviceId) const
 {
     SHARED_PTR_ALIA<OpTransport> transport = nullptr;
     MSVP_MAKE_SHARED0(transport, OpTransport, return transport);
     transport->SetDevId(deviceId);
     return transport;
 }
-}  // namespace transport
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

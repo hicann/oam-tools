@@ -31,5 +31,7 @@ public:
 protected:
     int32_t InitOnlineAnalyzer() override;
 };
-}}}
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp
 #endif

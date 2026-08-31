@@ -31,6 +31,7 @@ class DynProfMgr : public analysis::dvvp::common::singleton::Singleton<DynProfMg
 public:
     DynProfMgr();
     ~DynProfMgr() override;
+
 public:
     int32_t StartDynProf();
     void StopDynProf();
@@ -45,7 +46,7 @@ private:
     SHARED_PTR_ALIA<DynProfServer> dynProfSrv_;
     SHARED_PTR_ALIA<DynProfThread> dynProfThread_;
 };
-} // DynProf
-} // Dvvp
-} // Collect
+} // namespace DynProf
+} // namespace Dvvp
+} // namespace Collector
 #endif

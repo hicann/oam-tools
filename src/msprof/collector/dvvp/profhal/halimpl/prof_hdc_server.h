@@ -27,26 +27,17 @@
 namespace Dvvp {
 namespace Hal {
 namespace Server {
-using CONST_VOID_PTR = const void *;
+using CONST_VOID_PTR = const void*;
 class ProfHdcServer : public analysis::dvvp::common::thread::Thread {
 public:
     ProfHdcServer();
     ~ProfHdcServer() override;
     int32_t Init(const int32_t logicDevId);
     int32_t UnInit();
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
-    void SetFlushModuleCallback(const ProfHalFlushModuleCallback func)
-    {
-        flushModuleCallback_ = func;
-    }
-    void SetSendAicpuDataCallback(const ProfHalSendAicpuDataCallback func)
-    {
-        sendAicpuDataCallback_ = func;
-    }
-    void SetHelperDirCallback(const ProfHalHelperDirCallback func)
-    {
-        setHelperDirCallback_ = func;
-    }
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
+    void SetFlushModuleCallback(const ProfHalFlushModuleCallback func) { flushModuleCallback_ = func; }
+    void SetSendAicpuDataCallback(const ProfHalSendAicpuDataCallback func) { sendAicpuDataCallback_ = func; }
+    void SetHelperDirCallback(const ProfHalHelperDirCallback func) { setHelperDirCallback_ = func; }
 
 private:
     int32_t ReceiveStreamData(CONST_VOID_PTR data, uint32_t dataLen);
@@ -60,7 +51,7 @@ private:
     ProfHalHelperDirCallback setHelperDirCallback_;
     std::vector<std::future<int32_t>> result_;
 };
-}
-}
-}
+} // namespace Server
+} // namespace Hal
+} // namespace Dvvp
 #endif

@@ -28,18 +28,16 @@ using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::message;
 using namespace Analysis::Dvvp::JobWrapper;
 
-class PROF_DEVICE_RPC_UTEST: public testing::Test {
+class PROF_DEVICE_RPC_UTEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
-    virtual void TearDown() {
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 
-    }
 public:
-
 };
 
-TEST_F(PROF_DEVICE_RPC_UTEST, StartProf) {
+TEST_F(PROF_DEVICE_RPC_UTEST, StartProf)
+{
     GlobalMockObject::verify();
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
     params->FromString("{\"result_dir\":\"/tmp/\", \"devices\":\"1\", \"job_id\":\"1\"}");
@@ -51,7 +49,8 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StartProf) {
     EXPECT_EQ(PROFILING_SUCCESS, jobDeviceRpc->StartProf(params));
 }
 
-TEST_F(PROF_DEVICE_RPC_UTEST, BuildStartReplayMessage) {
+TEST_F(PROF_DEVICE_RPC_UTEST, BuildStartReplayMessage)
+{
     GlobalMockObject::verify();
     auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);
     std::shared_ptr<analysis::dvvp::proto::ReplayStartReq> req(new analysis::dvvp::proto::ReplayStartReq);
@@ -72,7 +71,8 @@ TEST_F(PROF_DEVICE_RPC_UTEST, BuildStartReplayMessage) {
     jobDeviceRpc->BuildStartReplayMessage(cfg, req);
 }
 
-TEST_F(PROF_DEVICE_RPC_UTEST, StartProf1) {
+TEST_F(PROF_DEVICE_RPC_UTEST, StartProf1)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
@@ -81,7 +81,7 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StartProf1) {
     auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);
 
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StartProf(params));
-    
+
     jobDeviceRpc->params_ = params;
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StartProf(params));
     MOCKER_CPP(&Analysis ::Dvvp::JobWrapper::JobDeviceRpc::SendMsgAndHandleResponse)
@@ -91,7 +91,8 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StartProf1) {
     EXPECT_EQ(PROFILING_SUCCESS, jobDeviceRpc->StartProf(params));
 }
 
-TEST_F(PROF_DEVICE_RPC_UTEST, StopProf) {
+TEST_F(PROF_DEVICE_RPC_UTEST, StopProf)
+{
     GlobalMockObject::verify();
     auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StopProf());
@@ -104,11 +105,11 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StopProf) {
     EXPECT_EQ(PROFILING_SUCCESS, jobDeviceRpc->StopProf());
 }
 
-
-TEST_F(PROF_DEVICE_RPC_UTEST, StopProf2) {
+TEST_F(PROF_DEVICE_RPC_UTEST, StopProf2)
+{
     GlobalMockObject::verify();
-    auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);\
-        std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
+    auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
     params->FromString("{\"result_dir\":\"/tmp/\", \"devices\":\"1\", \"job_id\":\"1\"}");
     jobDeviceRpc->params_ = params;
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->StopProf());
@@ -120,17 +121,18 @@ TEST_F(PROF_DEVICE_RPC_UTEST, StopProf2) {
     EXPECT_EQ(PROFILING_SUCCESS, jobDeviceRpc->StopProf());
 }
 
-TEST_F(PROF_DEVICE_RPC_UTEST, SendMsgAndHandleResponse) {
+TEST_F(PROF_DEVICE_RPC_UTEST, SendMsgAndHandleResponse)
+{
     GlobalMockObject::verify();
     auto jobDeviceRpc = std::make_shared<Analysis::Dvvp::JobWrapper::JobDeviceRpc>(0);
-        std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
     params->FromString("{\"result_dir\":\"/tmp/\", \"devices\":\"1\", \"job_id\":\"1\"}");
     jobDeviceRpc->params_ = params;
-    std::shared_ptr<analysis::dvvp::proto::JobStartReq> message(
-        new analysis::dvvp::proto::JobStartReq);
+    std::shared_ptr<analysis::dvvp::proto::JobStartReq> message(new analysis::dvvp::proto::JobStartReq);
     EXPECT_EQ(-1, jobDeviceRpc->SendMsgAndHandleResponse(message));
     HDC_CLIENT client;
-    std::shared_ptr<analysis::dvvp::transport::IDeviceTransport> deviceTransport = std::make_shared<analysis::dvvp::transport::DeviceTransport>(client,"123", "0", "def_mode");
+    std::shared_ptr<analysis::dvvp::transport::IDeviceTransport> deviceTransport =
+        std::make_shared<analysis::dvvp::transport::DeviceTransport>(client, "123", "0", "def_mode");
 
     std::shared_ptr<analysis::dvvp::transport::IDeviceTransport> mockTransport;
     mockTransport.reset();
@@ -149,7 +151,3 @@ TEST_F(PROF_DEVICE_RPC_UTEST, SendMsgAndHandleResponse) {
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->SendMsgAndHandleResponse(message));
     EXPECT_EQ(PROFILING_FAILED, jobDeviceRpc->SendMsgAndHandleResponse(message));
 }
-
-
-
-

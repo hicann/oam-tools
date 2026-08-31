@@ -41,7 +41,7 @@ struct CalculateAttr {
     float scalar;
 };
 
-using CalculatePmuFunc = float (*)(const CalculateAttr &attr, uint64_t pmu, uint64_t cycle, double freq);
+using CalculatePmuFunc = float (*)(const CalculateAttr& attr, uint64_t pmu, uint64_t cycle, double freq);
 class PmuCalculator {
 public:
     PmuCalculator() {}
@@ -56,15 +56,14 @@ public:
         return static_cast<float>(FLOAT_BIT * cycle / freq / blockDim * coreRate);
     }
     // calculate with freq: mhz
-    static float CalculateWithFreq(const CalculateAttr &attr, uint64_t pmu, uint64_t cycle, double freq)
+    static float CalculateWithFreq(const CalculateAttr& attr, uint64_t pmu, uint64_t cycle, double freq)
     {
         if (cycle <= 0 || freq <= 0) {
             return 0;
         }
         return (FLOAT_BIT * attr.pipe * attr.scalar * pmu * MHZ_CONVERT_HZ) / (cycle / freq) / FREQ_CONVERT;
     }
-    static float CalculateWithoutFreq(const CalculateAttr &attr, uint64_t pmu, uint64_t cycle,
-        double freq)
+    static float CalculateWithoutFreq(const CalculateAttr& attr, uint64_t pmu, uint64_t cycle, double freq)
     {
         UNUSED(attr);
         UNUSED(freq);
@@ -73,8 +72,7 @@ public:
         }
         return (FLOAT_BIT * pmu) / cycle;
     }
-    static float CalculateSelf(const CalculateAttr &attr, uint64_t pmu, uint64_t cycle,
-        double freq)
+    static float CalculateSelf(const CalculateAttr& attr, uint64_t pmu, uint64_t cycle, double freq)
     {
         UNUSED(attr);
         UNUSED(freq);
@@ -82,8 +80,8 @@ public:
         return (FLOAT_BIT * pmu);
     }
 };
-}
-}
-}
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp
 
 #endif

@@ -24,7 +24,7 @@
 namespace Analysis {
 namespace Dvvp {
 namespace MsprofbinTest {
-inline int32_t PopResult(std::vector<int32_t> &results)
+inline int32_t PopResult(std::vector<int32_t>& results)
 {
     if (results.empty()) {
         return analysis::dvvp::common::error::PROFILING_SUCCESS;

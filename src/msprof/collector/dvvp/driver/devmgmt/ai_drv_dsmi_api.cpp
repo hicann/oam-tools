@@ -23,13 +23,14 @@ namespace Driver {
 using namespace analysis::dvvp::common::error;
 using namespace Analysis::Dvvp::Common::Config;
 
-int32_t DrvGetAicoreInfo(int32_t deviceId, int64_t &freq)
+int32_t DrvGetAicoreInfo(int32_t deviceId, int64_t& freq)
 {
     if (deviceId < 0) {
         return PROFILING_FAILED;
     }
-    return static_cast<int32_t>(halGetDeviceInfo(static_cast<uint32_t>(deviceId),
-        static_cast<int32_t>(MODULE_TYPE_AICORE), static_cast<int32_t>(INFO_TYPE_FREQUE), &freq));
+    return static_cast<int32_t>(halGetDeviceInfo(
+        static_cast<uint32_t>(deviceId), static_cast<int32_t>(MODULE_TYPE_AICORE),
+        static_cast<int32_t>(INFO_TYPE_FREQUE), &freq));
 }
 
 std::string DrvGeAicFrq(int32_t deviceId)
@@ -60,8 +61,9 @@ std::string DrvGeAivFrq(int32_t deviceId)
         return defAivFrq;
     }
     int64_t freq = 0;
-    const int32_t ret = static_cast<int32_t>(halGetDeviceInfo(static_cast<uint32_t>(deviceId),
-        static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE), static_cast<int32_t>(INFO_TYPE_FREQUE), &freq));
+    const int32_t ret = static_cast<int32_t>(halGetDeviceInfo(
+        static_cast<uint32_t>(deviceId), static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE),
+        static_cast<int32_t>(INFO_TYPE_FREQUE), &freq));
     if (ret != DRV_ERROR_NONE || freq == 0) {
         MSPROF_LOGW("An anomaly was detected during DrvGetAiVectorCoreInfo, ret:%d", ret);
         return defAivFrq;
@@ -70,6 +72,6 @@ std::string DrvGeAivFrq(int32_t deviceId)
     MSPROF_LOGI("DrvGetAiVectorCoreInfo curFreq %" PRId64 ".", freq);
     return std::to_string(freq);
 }
-}
-}
-}
+} // namespace Driver
+} // namespace Dvvp
+} // namespace Analysis

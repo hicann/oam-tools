@@ -31,40 +31,51 @@ extern "C" {
 #define MSPROF_MODULE_NAME PROFILING
 #ifdef OSAL
 
-#define MSPROF_EVENT(format, ...) do {                                                                     \
-    DlogRecord(MSPROF_MODULE_NAME, DLOG_EVENT, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__);  \
-} while (0)
-#define MSPROF_LOGE(format, ...) do {                                                                      \
-    DlogRecord(MSPROF_MODULE_NAME, DLOG_ERROR, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__);  \
-} while (0)
-#define MSPROF_LOGW(format, ...) do {                                                                      \
-    DlogRecord(MSPROF_MODULE_NAME, DLOG_WARN, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__);   \
-} while (0)
-#define MSPROF_LOGI(format, ...) do {                                                                      \
-    DlogRecord(MSPROF_MODULE_NAME, DLOG_INFO, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__);   \
-} while (0)
-#define MSPROF_LOGD(format, ...) do {                                                                      \
-    DlogRecord(MSPROF_MODULE_NAME, DLOG_DEBUG, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__);  \
-} while (0)
+#define MSPROF_EVENT(format, ...)                                                                             \
+    do {                                                                                                      \
+        DlogRecord(MSPROF_MODULE_NAME, DLOG_EVENT, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGE(format, ...)                                                                              \
+    do {                                                                                                      \
+        DlogRecord(MSPROF_MODULE_NAME, DLOG_ERROR, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGW(format, ...)                                                                             \
+    do {                                                                                                     \
+        DlogRecord(MSPROF_MODULE_NAME, DLOG_WARN, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGI(format, ...)                                                                             \
+    do {                                                                                                     \
+        DlogRecord(MSPROF_MODULE_NAME, DLOG_INFO, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGD(format, ...)                                                                              \
+    do {                                                                                                      \
+        DlogRecord(MSPROF_MODULE_NAME, DLOG_DEBUG, "[%s:%d]" format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
 
 #else
 
-#define MSPROF_LOGD(format, ...) do {                                                                      \
-    dlog_debug(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__);         \
-} while (0)
-#define MSPROF_LOGI(format, ...) do {                                                                      \
-    dlog_info(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__);          \
-} while (0)
-#define MSPROF_LOGW(format, ...) do {                                                                      \
-    dlog_warn(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__);          \
-} while (0)
-#define MSPROF_LOGE(format, ...) do {                                                                      \
-    dlog_error(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__);         \
-} while (0)
-#define MSPROF_EVENT(format, ...) do {                                                                     \
-    dlog_info(static_cast<int32_t>(static_cast<uint32_t>(MSPROF_MODULE_NAME) | RUN_LOG_MASK),              \
-        " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__);                                    \
-} while (0)
+#define MSPROF_LOGD(format, ...)                                                                       \
+    do {                                                                                               \
+        dlog_debug(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGI(format, ...)                                                                      \
+    do {                                                                                              \
+        dlog_info(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGW(format, ...)                                                                      \
+    do {                                                                                              \
+        dlog_warn(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_LOGE(format, ...)                                                                       \
+    do {                                                                                               \
+        dlog_error(MSPROF_MODULE_NAME, " (tid:%ld) " format "\n", syscall(SYS_gettid), ##__VA_ARGS__); \
+    } while (0)
+#define MSPROF_EVENT(format, ...)                                                                                      \
+    do {                                                                                                               \
+        dlog_info(                                                                                                     \
+            static_cast<int32_t>(static_cast<uint32_t>(MSPROF_MODULE_NAME) | RUN_LOG_MASK), " (tid:%ld) " format "\n", \
+            syscall(SYS_gettid), ##__VA_ARGS__);                                                                       \
+    } while (0)
 
 #endif
 
@@ -72,4 +83,4 @@ extern "C" {
 }
 #endif
 
-#endif  // MSPROF_LOG_H
+#endif // MSPROF_LOG_H

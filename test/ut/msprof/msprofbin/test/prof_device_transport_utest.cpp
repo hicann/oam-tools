@@ -30,14 +30,10 @@ using namespace analysis::dvvp::common::error;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 
 namespace {
-class HOST_PROF_DEVICE_TRANSPORT_UTEST: public testing::Test {
+class HOST_PROF_DEVICE_TRANSPORT_UTEST : public testing::Test {
 protected:
-
-    void SetUp() override {
-    }
-    void TearDown() override {
-
-    }
+    void SetUp() override {}
+    void TearDown() override {}
 
 public:
     HDC_CLIENT client = (HDC_CLIENT)0x12345678;
@@ -90,10 +86,7 @@ public:
         return result;
     }
 
-    void DestroyPacket(TLV_REQ_PTR packet) override
-    {
-        (void)packet;
-    }
+    void DestroyPacket(TLV_REQ_PTR packet) override { (void)packet; }
 
     std::vector<int32_t> sendResults_;
     std::vector<int32_t> recvResults_;
@@ -101,44 +94,48 @@ public:
     uint32_t closeSessionTimes_{0};
 };
 
-TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, CreateCoparamsnn){
+TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, CreateCoparamsnn)
+{
     GlobalMockObject::verify();
 
     dev_tran = std::make_shared<DeviceTransport>(nullptr, "-1", "123", "def_mode");
 
     std::shared_ptr<analysis::dvvp::proto::DataChannelHandshake> data_message(
-            new analysis::dvvp::proto::DataChannelHandshake());
+        new analysis::dvvp::proto::DataChannelHandshake());
     EXPECT_EQ(nullptr, dev_tran->CreateConn());
 }
 
-TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, init_ctrl_tran) {
-
+TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, init_ctrl_tran)
+{
     GlobalMockObject::verify();
 
     dev_tran = std::make_shared<DeviceTransport>(client, "-1", "123", "def_mode");
     EXPECT_EQ(PROFILING_FAILED, dev_tran->Init());
 }
 
-TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, DoInit) {
+TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, DoInit)
+{
     auto entry = analysis::dvvp::transport::DevTransMgr::instance();
     EXPECT_EQ(PROFILING_FAILED, entry->Init("123", -1, "def_mode", 0));
 }
 
-TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, init_data_tran) {
+TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, init_data_tran)
+{
     GlobalMockObject::verify();
 
     dev_tran = std::make_shared<DeviceTransport>(client, "-1", "123", "def_mode");
     EXPECT_EQ(PROFILING_FAILED, dev_tran->Init());
 }
 
-TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, run) {
+TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, run)
+{
     GlobalMockObject::verify();
 
     dev_tran = std::make_shared<DeviceTransport>(client, dev_id, "123", "def_mode");
 
     auto fakeTransport = std::make_shared<FakeAdxTransport>();
     data_tran = fakeTransport;
-    //dataInitialized_ false
+    // dataInitialized_ false
     auto errorContext = MsprofErrorManager::instance()->GetErrorManagerContext();
     dev_tran->Run(errorContext);
     EXPECT_FALSE(dev_tran->dataInitialized_);
@@ -149,19 +146,19 @@ TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, run) {
     fakeTransport->recvPackets_ = {packet, packet};
 
     dev_tran->quit_ = true;
-    //RecvPacket failed
+    // RecvPacket failed
     dev_tran->dataInitialized_ = true;
     dev_tran->dataTran_ = data_tran;
     dev_tran->Run(errorContext);
     EXPECT_FALSE(dev_tran->dataInitialized_);
 
-    //ReceiveStreamData faield
+    // ReceiveStreamData failed
     dev_tran->dataInitialized_ = true;
     dev_tran->dataTran_ = data_tran;
     dev_tran->Run(errorContext);
     EXPECT_FALSE(dev_tran->dataInitialized_);
 
-    //success
+    // success
     dev_tran->dataInitialized_ = true;
     dev_tran->dataTran_ = data_tran;
     dev_tran->Run(errorContext);
@@ -180,7 +177,7 @@ TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, SendMsgAndRecvResponse)
     dev_tran->ctrlTran_ = ctrl_tran;
     std::string msg = "profiling msg";
 
-    struct tlv_req **packetFake = nullptr;
+    struct tlv_req** packetFake = nullptr;
     struct tlv_req* packet = nullptr;
 
     // invalid parameter
@@ -192,7 +189,7 @@ TEST_F(HOST_PROF_DEVICE_TRANSPORT_UTEST, SendMsgAndRecvResponse)
     fakeTransport->recvResults_ = {PROFILING_SUCCESS};
     fakeTransport->recvPackets_ = {new struct tlv_req};
 
-    //received succ
+    // received succ
     EXPECT_EQ(PROFILING_SUCCESS, dev_tran->SendMsgAndRecvResponse(msg, &packet));
     delete packet;
 }

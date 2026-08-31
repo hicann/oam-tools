@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_COMMON_QUEUE_BOUND_QUEUE_H
 #define ANALYSIS_DVVP_COMMON_QUEUE_BOUND_QUEUE_H
 
@@ -28,10 +28,10 @@ namespace analysis {
 namespace dvvp {
 namespace common {
 namespace queue {
-constexpr int32_t QUEUE_INFO_PRINT_FREQUENCY = 500;  // 500 : print freq
+constexpr int32_t QUEUE_INFO_PRINT_FREQUENCY = 500; // 500 : print freq
 constexpr int32_t QUEUE_CAPACITY_SIZE = 100;
 
-template<class T>
+template <class T>
 class QueueBase {
 public:
     explicit QueueBase(size_t capacity) : capacity_(capacity) {}
@@ -42,36 +42,29 @@ protected:
     {
         bool isFull = (queue_.size() == capacity_);
         if (isFull) {
-            MSPROF_LOGW("IsFULL, QueueName: %s, QueueCapacity:%zu, QueueSize:%zu",
-                        queueName_.c_str(), capacity_, capacity_);
+            MSPROF_LOGW(
+                "IsFULL, QueueName: %s, QueueCapacity:%zu, QueueSize:%zu", queueName_.c_str(), capacity_, capacity_);
         }
         return isFull;
     }
 
-    bool IsQueueEmpty() const
-    {
-        return queue_.empty();
-    }
+    bool IsQueueEmpty() const { return queue_.empty(); }
 
     size_t capacity_;
     std::queue<T> queue_;
     std::string queueName_;
 };
 
-template<class T>
+template <class T>
 class BoundQueue : public QueueBase<T> {
 public:
-    explicit BoundQueue(size_t capacity)
-        : QueueBase<T>(capacity),
-          quit_(false),
-          pushCnt_(0),
-          hisMaxCnt_(0)
+    explicit BoundQueue(size_t capacity) : QueueBase<T>(capacity), quit_(false), pushCnt_(0), hisMaxCnt_(0)
     {
         static const std::string BOUND_QUEUE_NAME = "BoundQueue";
         this->queueName_ = BOUND_QUEUE_NAME;
     }
 
-    bool TryPush(const T &data)
+    bool TryPush(const T& data)
     {
         std::lock_guard<std::mutex> lk(mtx_);
 
@@ -84,7 +77,7 @@ public:
         return true;
     }
 
-    bool Push(const T &data)
+    bool Push(const T& data)
     {
         std::unique_lock<std::mutex> lk(mtx_);
         pushCnt_++;
@@ -93,15 +86,16 @@ public:
         if ((pushCnt_ % QUEUE_INFO_PRINT_FREQUENCY) == 0) {
             pushCnt_ = 0;
             if (this->capacity_ > 0) {
-                MSPROF_LOGI("QueueName: %s, QueueCapacity:%zu, QueueSize:%zu, HisMaxCut:%zu, Percent:%-7.4f%%",
+                MSPROF_LOGI(
+                    "QueueName: %s, QueueCapacity:%zu, QueueSize:%zu, HisMaxCut:%zu, Percent:%-7.4f%%",
                     this->queueName_.c_str(), this->capacity_, size, hisMaxCnt_,
                     (static_cast<double>(size) / this->capacity_) * QUEUE_CAPACITY_SIZE);
             }
         }
         if (this->IsQueueFull() && (this->capacity_ > 0)) {
-            MSPROF_LOGW("QueueFull,QueueName: %s, QueueCapacity:%zu, QueueSize:%zu, Percent:%-7.4f%%",
-                this->queueName_.c_str(), this->capacity_, size,
-                (static_cast<double>(size) / this->capacity_) * QUEUE_CAPACITY_SIZE);
+            MSPROF_LOGW(
+                "QueueFull,QueueName: %s, QueueCapacity:%zu, QueueSize:%zu, Percent:%-7.4f%%", this->queueName_.c_str(),
+                this->capacity_, size, (static_cast<double>(size) / this->capacity_) * QUEUE_CAPACITY_SIZE);
         }
         // if queue is full, wait until notify from pop, then check again
         cvPop_.wait(lk, [this] { return !this->IsQueueFull() || quit_; });
@@ -114,7 +108,7 @@ public:
         return false;
     }
 
-    bool TryPop(T &data)
+    bool TryPop(T& data)
     {
         std::lock_guard<std::mutex> lk(mtx_);
 
@@ -129,7 +123,7 @@ public:
         return true;
     }
 
-    bool TryBatchPop(int32_t batchCount, std::vector<T> &data)
+    bool TryBatchPop(int32_t batchCount, std::vector<T>& data)
     {
         std::lock_guard<std::mutex> lk(mtx_);
 
@@ -149,7 +143,7 @@ public:
         return true;
     }
 
-    bool Pop(T &data)
+    bool Pop(T& data)
     {
         std::unique_lock<std::mutex> lk(mtx_);
 
@@ -194,7 +188,7 @@ public:
         return this->queue_.size();
     }
 
-    void SetQueueName(const std::string &name)
+    void SetQueueName(const std::string& name)
     {
         std::lock_guard<std::mutex> lk(mtx_);
         if (!name.empty()) {
@@ -210,9 +204,9 @@ private:
     std::condition_variable cvPush_;
     std::condition_variable cvPop_;
 };
-}  // namespace queue
-}  // namespace common
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace queue
+} // namespace common
+} // namespace dvvp
+} // namespace analysis
 
 #endif

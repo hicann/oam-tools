@@ -78,14 +78,14 @@ int32_t MsprofDiagnostic::Start()
     return PROFILING_SUCCESS;
 }
 
-void MsprofDiagnostic::Run(const error_message::ErrorManagerContext &errorContext)
+void MsprofDiagnostic::Run(const error_message::ErrorManagerContext& errorContext)
 {
     MsprofErrorManager::instance()->SetErrorContext(errorContext);
     do {
         dsmi_event event;
         (void)memset_s(&event, sizeof(event), 0, sizeof(event));
         dsmi_event_filter filter = {0, 0, 0, 0, {0}}; // Do not use filtering
-        const int32_t timeout = 20; // waiting for 20ms
+        const int32_t timeout = 20;                   // waiting for 20ms
         int32_t ret = dsmiReadFaultEvent_(-1, timeout, filter, &event);
         if (ret == DRV_ERROR_WAIT_TIMEOUT) {
             continue;
@@ -112,17 +112,17 @@ int32_t MsprofDiagnostic::Stop()
     return PROFILING_SUCCESS;
 }
 
-void MsprofDiagnostic::EventHandler(struct dsmi_event *event) const
+void MsprofDiagnostic::EventHandler(struct dsmi_event* event) const
 {
     MSPROF_LOGI("Received an exception message from dsmi_subscribe_fault_event.");
     if (event == nullptr) {
         MSPROF_LOGW("Received an nullptr exception message.");
         return;
     }
-    if (event->type != DMS_FAULT_EVENT ||
-        g_eventIdSet.find(event->event_t.dms_event.event_id) == g_eventIdSet.end() ||
+    if (event->type != DMS_FAULT_EVENT || g_eventIdSet.find(event->event_t.dms_event.event_id) == g_eventIdSet.end() ||
         event->event_t.dms_event.deviceid >= MSVP_MAX_DEV_NUM) {
-        MSPROF_LOGD("This exception message types[%d] with event id[%u] in device[%hu] do not need to be processed.",
+        MSPROF_LOGD(
+            "This exception message types[%d] with event id[%u] in device[%hu] do not need to be processed.",
             event->type, event->event_t.dms_event.event_id, event->event_t.dms_event.deviceid);
         return;
     }
@@ -139,9 +139,11 @@ void MsprofDiagnostic::EventHandler(struct dsmi_event *event) const
 void MsprofDiagnostic::DumpData(dms_fault_event dmsEvent) const
 {
     MSPROF_LOGI("Start to dump data to additional struct.");
-    std::string faultData = Utils::PackDotInfo(std::string(dmsEvent.event_name, strlen(dmsEvent.event_name)),
+    std::string faultData = Utils::PackDotInfo(
+        std::string(dmsEvent.event_name, strlen(dmsEvent.event_name)),
         std::string(dmsEvent.additional_info, strlen(dmsEvent.additional_info)));
-    ProfFaultEvent faultEvent = {dmsEvent.severity, dmsEvent.assertion, dmsEvent.deviceid, dmsEvent.event_id,
+    ProfFaultEvent faultEvent = {
+        dmsEvent.severity, dmsEvent.assertion, dmsEvent.deviceid, dmsEvent.event_id,
         HashData::instance()->GenHashId(faultData)};
 
     MsprofAdditionalInfo additionalInfo;
@@ -158,7 +160,7 @@ void MsprofDiagnostic::DumpData(dms_fault_event dmsEvent) const
     DataTransport(additionalInfo);
 }
 
-void MsprofDiagnostic::DataTransport(MsprofAdditionalInfo &additionalInfo) const
+void MsprofDiagnostic::DataTransport(MsprofAdditionalInfo& additionalInfo) const
 {
     MSPROF_LOGI("Start to dump data to additional struct.");
     SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk = nullptr;
@@ -200,9 +202,7 @@ bool MsprofDiagnostic::IsTriggered()
     return false;
 }
 
-ProfDiagnostic::ProfDiagnostic() : diagnostic_(nullptr)
-{
-}
+ProfDiagnostic::ProfDiagnostic() : diagnostic_(nullptr) {}
 
 /*
  * @brief Depends on the startup of host collection and the platform feature.
@@ -211,8 +211,7 @@ ProfDiagnostic::ProfDiagnostic() : diagnostic_(nullptr)
  */
 int32_t ProfDiagnostic::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 {
-    if (!(cfg->comParams->params->hostProfiling) ||
-        cfg->comParams->params->pureCpu.compare(MSVP_PROF_ON) == 0 ||
+    if (!(cfg->comParams->params->hostProfiling) || cfg->comParams->params->pureCpu.compare(MSVP_PROF_ON) == 0 ||
         !Platform::instance()->CheckIfSupport(PLATFORM_DIAGNOSTIC_COLLECTION)) {
         MSPROF_LOGI("Current thread does not support diagnostic collection.");
         return PROFILING_NOTSUPPORT;
@@ -241,6 +240,6 @@ int32_t ProfDiagnostic::Uninit()
     return diagnostic_->Stop();
 }
 
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

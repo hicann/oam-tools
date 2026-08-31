@@ -70,18 +70,10 @@ MiniV3Platform::MiniV3Platform()
         PLATFORM_SYS_DEVICE_DVPP_EX,
     };
 
-    epSupportFeature_ = {
-        // System-host
-        PLATFORM_SYS_HOST_ONE_PID_CPU,
-        PLATFORM_SYS_HOST_ALL_PID_CPU,
-        PLATFORM_SYS_HOST_ONE_PID_MEM,
-        PLATFORM_SYS_HOST_ALL_PID_MEM,
-        PLATFORM_SYS_HOST_ONE_PID_DISK,
-        PLATFORM_SYS_HOST_ONE_PID_OSRT,
-        PLATFORM_SYS_HOST_NETWORK,
-        PLATFORM_SYS_HOST_SYS_CPU,
-        PLATFORM_SYS_HOST_SYS_MEM
-    };
+    epSupportFeature_ = {// System-host
+                         PLATFORM_SYS_HOST_ONE_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_CPU,  PLATFORM_SYS_HOST_ONE_PID_MEM,
+                         PLATFORM_SYS_HOST_ALL_PID_MEM, PLATFORM_SYS_HOST_ONE_PID_DISK, PLATFORM_SYS_HOST_ONE_PID_OSRT,
+                         PLATFORM_SYS_HOST_NETWORK,     PLATFORM_SYS_HOST_SYS_CPU,      PLATFORM_SYS_HOST_SYS_MEM};
 }
 
 bool MiniV3Platform::FeatureIsSupport(const PlatformFeature feature) const
@@ -92,10 +84,7 @@ bool MiniV3Platform::FeatureIsSupport(const PlatformFeature feature) const
     return (supportedFeature_.count(feature) > 0);
 }
 
-std::string MiniV3Platform::GetMemoryUBMetrics()
-{
-    return MINI_V3_MEMORYUB;
-}
-}
-}
-}
+std::string MiniV3Platform::GetMemoryUBMetrics() { return MINI_V3_MEMORYUB; }
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp

@@ -23,11 +23,11 @@
 #include "thread/thread.h"
 
 class DevprofDrvAicpu : public analysis::dvvp::common::singleton::Singleton<DevprofDrvAicpu>,
-    public analysis::dvvp::common::thread::Thread {
+                        public analysis::dvvp::common::thread::Thread {
 public:
     DevprofDrvAicpu();
     ~DevprofDrvAicpu() override;
-    int32_t Init(const struct AicpuStartPara *para);
+    int32_t Init(const struct AicpuStartPara* para);
     int32_t Start() override;
     int32_t Stop() override;
     bool IsRegister(void) const;
@@ -37,7 +37,7 @@ public:
     bool CheckProfilingIsOn(uint64_t profConfig);
     int32_t ReportAdditionalInfo(uint32_t agingFlag, ConstVoidPtr data, uint32_t length);
     size_t GetBatchReportMaxSize(uint32_t type) const;
-    int32_t AdprofInit(const AicpuStartPara *para);
+    int32_t AdprofInit(const AicpuStartPara* para);
     int32_t ModuleRegisterCallback(uint32_t moduleId, ProfCommandHandle commandHandle);
     void DoCallbackHandle(uint32_t moduleId, ProfCommandHandle commandHandle);
     void CommandHandleLaunch();
@@ -51,7 +51,7 @@ public:
 #endif
 
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
 
 private:
     int32_t RegisterDrvChannel(uint32_t devId, uint32_t channelId);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "codec.h"
 #include <cstdio>
 #include <google/protobuf/util/json_util.h>
@@ -25,18 +25,18 @@ namespace dvvp {
 namespace message {
 using namespace analysis::dvvp::common::config;
 
-const google::protobuf::Descriptor *FindMessageTypeByName(const std::string &name)
+const google::protobuf::Descriptor* FindMessageTypeByName(const std::string& name)
 {
     return google::protobuf::DescriptorPool::generated_pool()->FindMessageTypeByName(name);
 }
 
-SHARED_PTR_ALIA<google::protobuf::Message> CreateMessage(const std::string &name)
+SHARED_PTR_ALIA<google::protobuf::Message> CreateMessage(const std::string& name)
 {
     SHARED_PTR_ALIA<google::protobuf::Message> message = nullptr;
     /* to fix FindMessageTypeByName sometimes returns nullptr */
     std::string descripterStr = name;
     descripterStr.assign(name.c_str());
-    const google::protobuf::Descriptor *descriptor = FindMessageTypeByName(descripterStr);
+    const google::protobuf::Descriptor* descriptor = FindMessageTypeByName(descripterStr);
     if (descriptor == nullptr) {
         descriptor = FindMessageTypeByName(descripterStr);
     }
@@ -44,7 +44,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> CreateMessage(const std::string &name
     if (descriptor != nullptr) {
         auto generatedFactory = google::protobuf::MessageFactory::generated_factory();
         if (generatedFactory != nullptr) {
-            const google::protobuf::Message *prototype = generatedFactory->GetPrototype(descriptor);
+            const google::protobuf::Message* prototype = generatedFactory->GetPrototype(descriptor);
             if (prototype != nullptr) {
                 message = SHARED_PTR_ALIA<google::protobuf::Message>(prototype->New());
             } else {
@@ -64,7 +64,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> CreateMessage(const std::string &name
 |---    4   ---|--- \0 ---|---      xxx      ---|
 |---NAME LEN---|---NAME---|---PROTO BUF DATA ---|
 */
-bool AppendMessage(std::string &out, SHARED_PTR_ALIA<google::protobuf::Message> message)
+bool AppendMessage(std::string& out, SHARED_PTR_ALIA<google::protobuf::Message> message)
 {
     if (message == nullptr) {
         return false;
@@ -81,10 +81,11 @@ std::string EncodeMessage(SHARED_PTR_ALIA<google::protobuf::Message> message)
         return out;
     }
 
-    const std::string &type = message->GetTypeName();
+    const std::string& type = message->GetTypeName();
 
     if (type.size() > analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN) {
-        MSPROF_LOGE("Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
+        MSPROF_LOGE(
+            "Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
             analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN);
         return out;
     }
@@ -97,7 +98,7 @@ std::string EncodeMessage(SHARED_PTR_ALIA<google::protobuf::Message> message)
         uint32_t nameLen;
     };
 
-    UnionData ud = { {0} };
+    UnionData ud = {{0}};
     ud.nameLen = nameLenN;
     out.append(ud.data, intSize);
     out.append(type.c_str(), nameLen);
@@ -121,10 +122,11 @@ SHARED_PTR_ALIA<std::string> EncodeMessageShared(SHARED_PTR_ALIA<google::protobu
 
     MSVP_MAKE_SHARED0(out, std::string, return out);
 
-    const std::string &type = message->GetTypeName();
+    const std::string& type = message->GetTypeName();
 
     if (type.size() > analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN) {
-        MSPROF_LOGE("Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
+        MSPROF_LOGE(
+            "Invalid message type size: %zu bytes, valid range: [0, %d] bytes.", type.size(),
             analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN);
         return out;
     }
@@ -141,7 +143,7 @@ SHARED_PTR_ALIA<std::string> EncodeMessageShared(SHARED_PTR_ALIA<google::protobu
     return out;
 }
 
-SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
+SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string& buf)
 {
     if (buf.size() > analysis::dvvp::common::config::MSVP_DECODE_MESSAGE_MAX_LEN) {
         MSPROF_LOGE("[DecodeMessage] buf size(%zu) is too big.", buf.size());
@@ -157,7 +159,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
         MSPROF_LOGE("bufLen is less than name len, bufLen=%d, expected_len=%d", bufLen, sizeof(uint32_t));
         return message;
     }
-    uint32_t nameLen = ::ntohl(*(reinterpret_cast<const uint32_t *>(buf.c_str())));
+    uint32_t nameLen = ::ntohl(*(reinterpret_cast<const uint32_t*>(buf.c_str())));
     if (nameLen > analysis::dvvp::common::config::MSVP_MESSAGE_TYPE_NAME_MAX_LEN + 1) { // 1 :typename + \0
         MSPROF_LOGE("[DecodeMessage] buf size(%u) is too big.", nameLen);
         return nullptr;
@@ -166,8 +168,7 @@ SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
 
     // parse name
     if (bufLen < (currLen + nameLen)) {
-        MSPROF_LOGE("bufLen is less than name, bufLen=%d, expected_len=%d",
-            bufLen, currLen + nameLen);
+        MSPROF_LOGE("bufLen is less than name, bufLen=%d, expected_len=%d", bufLen, currLen + nameLen);
         return message;
     }
     std::string name(buf.begin() + currLen, buf.begin() + currLen + nameLen);
@@ -192,6 +193,6 @@ SHARED_PTR_ALIA<google::protobuf::Message> DecodeMessage(const std::string &buf)
     return message;
 }
 
-}  // namespace message
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace message
+} // namespace dvvp
+} // namespace analysis

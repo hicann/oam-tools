@@ -27,17 +27,12 @@
 #endif
 
 const std::map<int, std::string> LOG_LEVEL_INFO = {
-    {DLOG_DEBUG, "DEBUG"},
-    {DLOG_INFO,  "INFO"},
-    {DLOG_WARN,  "WARNING"},
-    {DLOG_ERROR, "ERROR"},
-    {DLOG_EVENT, "EVENT"}
-};
+    {DLOG_DEBUG, "DEBUG"}, {DLOG_INFO, "INFO"}, {DLOG_WARN, "WARNING"}, {DLOG_ERROR, "ERROR"}, {DLOG_EVENT, "EVENT"}};
 
 namespace {
 constexpr size_t LOG_BUFFER_SIZE = 4096;
 
-bool FormatLog(char *buffer, size_t bufferSize, const char *format, va_list args)
+bool FormatLog(char* buffer, size_t bufferSize, const char* format, va_list args)
 {
     if (buffer == nullptr || bufferSize == 0 || format == nullptr) {
         return false;
@@ -46,7 +41,8 @@ bool FormatLog(char *buffer, size_t bufferSize, const char *format, va_list args
 }
 } // namespace
 
-void DlogErrorInner(int moduleId, const char *format, ...) {
+void DlogErrorInner(int moduleId, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -61,7 +57,8 @@ void DlogErrorInner(int moduleId, const char *format, ...) {
     printf("[ERROR]%s\n", buffer);
 }
 
-void DlogInfoInner(int moduleId, const char *format, ...) {
+void DlogInfoInner(int moduleId, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -76,7 +73,8 @@ void DlogInfoInner(int moduleId, const char *format, ...) {
     printf("[INFO]%s\n", buffer);
 }
 
-void DlogWarnInner(int moduleId, const char *format, ...) {
+void DlogWarnInner(int moduleId, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -91,7 +89,8 @@ void DlogWarnInner(int moduleId, const char *format, ...) {
     printf("[WARN]%s\n", buffer);
 }
 
-void DlogEventInner(int moduleId, const char *format, ...) {
+void DlogEventInner(int moduleId, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -106,7 +105,8 @@ void DlogEventInner(int moduleId, const char *format, ...) {
     printf("[EVENT]%s\n", buffer);
 }
 
-void DlogDebugInner(int moduleId, const char *format, ...) {
+void DlogDebugInner(int moduleId, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -121,11 +121,11 @@ void DlogDebugInner(int moduleId, const char *format, ...) {
     printf("[DEBUG]%s\n", buffer);
 }
 
-void DlogRecord(int module_id, int level, const char *fmt, ...){
+void DlogRecord(int module_id, int level, const char* fmt, ...)
+{
     auto iter = LOG_LEVEL_INFO.find(level);
     std::string levelStr;
-    if (iter != LOG_LEVEL_INFO.end())
-    {
+    if (iter != LOG_LEVEL_INFO.end()) {
         levelStr = iter->second;
     }
 
@@ -141,11 +141,10 @@ void DlogRecord(int module_id, int level, const char *fmt, ...){
     printf("[%s][pid:%d]%s", levelStr.c_str(), getpid(), buffer);
 }
 
-void DlogFlush(void)
-{
-}
+void DlogFlush(void) {}
 
-void ide_log(int priority, const char *format, ...) {
+void ide_log(int priority, const char* format, ...)
+{
     va_list args;
 
     char buffer[LOG_BUFFER_SIZE] = {0};
@@ -160,7 +159,4 @@ void ide_log(int priority, const char *format, ...) {
     printf("[IDE]%s\n", buffer);
 }
 
-int CheckLogLevel(int moduleId, int level)
-{
-    return 1;
-}
+int CheckLogLevel(int moduleId, int level) { return 1; }

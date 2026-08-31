@@ -20,11 +20,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void *IdeXmalloc (int size);
-void IdeXfree (void *ptr);
-void *GetIdeDaemonHdcClient();
+void* IdeXmalloc(int size);
+void IdeXfree(void* ptr);
+void* GetIdeDaemonHdcClient();
 #ifdef __cplusplus
 }
 #endif
 #endif
-

@@ -68,24 +68,21 @@ private:
     std::string originalType_;
 };
 
-int32_t DrvInfoOk(uint32_t, int64_t &out)
+int32_t DrvInfoOk(uint32_t, int64_t& out)
 {
     out = 0;
     return PROFILING_SUCCESS;
 }
 
-int32_t DrvInfoFail(uint32_t, int64_t &)
-{
-    return PROFILING_FAILED;
-}
+int32_t DrvInfoFail(uint32_t, int64_t&) { return PROFILING_FAILED; }
 
-int32_t DrvInfoOne(uint32_t, int64_t &out)
+int32_t DrvInfoOne(uint32_t, int64_t& out)
 {
     out = 1;
     return PROFILING_SUCCESS;
 }
 
-int32_t DrvInfoA55(uint32_t, int64_t &out)
+int32_t DrvInfoA55(uint32_t, int64_t& out)
 {
     out = 0x41d05;
     return PROFILING_SUCCESS;
@@ -104,9 +101,10 @@ void MockSuccessfulDeviceInfo()
     MOCKER_CPP(&analysis::dvvp::driver::DrvGetAiCoreId).stubs().will(invoke(DrvInfoOk));
     MOCKER_CPP(&analysis::dvvp::driver::DrvGetAiCoreNum).stubs().will(invoke(DrvInfoOk));
 }
-}  // namespace
+} // namespace
 
-TEST(INFO_JSON_TEST, GetHwtsFreq) {
+TEST(INFO_JSON_TEST, GetHwtsFreq)
+{
     GlobalMockObject::verify();
     ConfigTypeGuard guard(PlatformType::CHIP_CLOUD_V3);
     InfoJson infoJson("1", "0", 1);
@@ -116,14 +114,16 @@ TEST(INFO_JSON_TEST, GetHwtsFreq) {
     EXPECT_EQ("1000.1", infoJson.GetHwtsFreq(freq));
 }
 
-TEST(INFO_JSON_TEST, GetHwtsFreqNotCloudV3) {
+TEST(INFO_JSON_TEST, GetHwtsFreqNotCloudV3)
+{
     GlobalMockObject::verify();
     ConfigTypeGuard guard(PlatformType::CHIP_V4_1_0);
     InfoJson infoJson("1", "0", 1);
     EXPECT_EQ("9999", infoJson.GetHwtsFreq("9999"));
 }
 
-TEST(INFO_JSON_TEST, SetPidInfo) {
+TEST(INFO_JSON_TEST, SetPidInfo)
+{
     GlobalMockObject::verify();
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
     MSVP_MAKE_SHARED0(infoMain, InfoMain, return);
@@ -136,7 +136,8 @@ TEST(INFO_JSON_TEST, SetPidInfo) {
     EXPECT_EQ("123", infoMain->pid);
 }
 
-TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsNotSet) {
+TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsNotSet)
+{
     GlobalMockObject::verify();
 
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -145,15 +146,14 @@ TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsNotSet) 
     std::string emptyAscendHome = "";
     InfoJson infoJson("1", "0", 1);
 
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(emptyAscendHome));
+    MOCKER_CPP(&Utils::HandleEnvString).stubs().will(returnValue(emptyAscendHome));
 
     infoJson.SetCannVersion(infoMain);
     EXPECT_EQ("", infoMain->cannVersion);
 }
 
-TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsInvalid) {
+TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsInvalid)
+{
     GlobalMockObject::verify();
 
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -162,15 +162,14 @@ TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenAscendHomePathIsInvalid)
     std::string invalidAscendHome = "/////";
     InfoJson infoJson("1", "0", 1);
 
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(invalidAscendHome));
+    MOCKER_CPP(&Utils::HandleEnvString).stubs().will(returnValue(invalidAscendHome));
 
     infoJson.SetCannVersion(infoMain);
     EXPECT_EQ("", infoMain->cannVersion);
 }
 
-TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileIsNotAccessible) {
+TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileIsNotAccessible)
+{
     GlobalMockObject::verify();
 
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -181,16 +180,15 @@ TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileIsNotAccessib
     Utils::RemoveDir(utAscendHome);
     InfoJson infoJson("1", "0", 1);
 
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(utAscendHome));
+    MOCKER_CPP(&Utils::HandleEnvString).stubs().will(returnValue(utAscendHome));
 
     infoJson.SetCannVersion(infoMain);
     EXPECT_EQ("", infoMain->cannVersion);
     Utils::RemoveDir(utAscendHome);
 }
 
-TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileContentIsInvalid) {
+TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileContentIsInvalid)
+{
     GlobalMockObject::verify();
 
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -206,9 +204,7 @@ TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileContentIsInva
 
     InfoJson infoJson("1", "0", 1);
 
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(utAscendHome));
+    MOCKER_CPP(&Utils::HandleEnvString).stubs().will(returnValue(utAscendHome));
 
     infoJson.SetCannVersion(infoMain);
     EXPECT_EQ("", infoMain->cannVersion);
@@ -229,7 +225,8 @@ TEST(INFO_JSON_TEST, SetCannVersionWillNotSetVersionWhenVersionFileContentIsInva
     Utils::RemoveDir(utAscendHome);
 }
 
-TEST(INFO_JSON_TEST, SetCannVersionWillSetVersionWhenVersionFileContentIsValid) {
+TEST(INFO_JSON_TEST, SetCannVersionWillSetVersionWhenVersionFileContentIsValid)
+{
     GlobalMockObject::verify();
 
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -245,9 +242,7 @@ TEST(INFO_JSON_TEST, SetCannVersionWillSetVersionWhenVersionFileContentIsValid) 
 
     InfoJson infoJson("1", "0", 1);
 
-    MOCKER_CPP(&Utils::HandleEnvString)
-        .stubs()
-        .will(returnValue(utAscendHome));
+    MOCKER_CPP(&Utils::HandleEnvString).stubs().will(returnValue(utAscendHome));
 
     infoJson.SetCannVersion(infoMain);
     EXPECT_EQ("9.1.0", infoMain->cannVersion);
@@ -262,22 +257,24 @@ TEST(INFO_JSON_TEST, SetCannVersionWillSetVersionWhenVersionFileContentIsValid) 
     Utils::RemoveDir(utAscendHome);
 }
 
-TEST(INFO_JSON_TEST, EncodeInfoMainJsonNull) {
+TEST(INFO_JSON_TEST, EncodeInfoMainJsonNull)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("1", "0", 1);
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
     EXPECT_EQ("", infoJson.EncodeInfoMainJson(infoMain));
 }
 
-TEST(INFO_JSON_TEST, EncodeInfoMainJsonFilled) {
+TEST(INFO_JSON_TEST, EncodeInfoMainJsonFilled)
+{
     GlobalMockObject::verify();
     ConfigTypeGuard guard(PlatformType::CHIP_V4_1_0);
     InfoJson infoJson("1", "0", 1);
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
     MSVP_MAKE_SHARED0(infoMain, InfoMain, return);
 
-    infoMain->deviceInfos.push_back({1, 0, 4, 1, 4, 4, 4, 0, 0, 0, 4, "ARMv8", "0,1,2,3", "0,1,2,3",
-        "1000", "1500", "1500"});
+    infoMain->deviceInfos.push_back(
+        {1, 0, 4, 1, 4, 4, 4, 0, 0, 0, 4, "ARMv8", "0,1,2,3", "0,1,2,3", "1000", "1500", "1500"});
     infoMain->netCardInfos.push_back({"eth0", 100});
     infoMain->infoCpus.push_back({0, "ARM", "1.5GHz", "8", "armv8"});
     infoMain->memoryTotal = 1024;
@@ -295,7 +292,8 @@ TEST(INFO_JSON_TEST, EncodeInfoMainJsonFilled) {
     EXPECT_NE(std::string::npos, content.find("CPU"));
 }
 
-TEST(INFO_JSON_TEST, InitDeviceIdsBranches) {
+TEST(INFO_JSON_TEST, InitDeviceIdsBranches)
+{
     GlobalMockObject::verify();
     InfoJson validInfoJson("", "0,1", 1);
     EXPECT_EQ(PROFILING_SUCCESS, validInfoJson.InitDeviceIds());
@@ -313,7 +311,8 @@ TEST(INFO_JSON_TEST, InitDeviceIdsBranches) {
     EXPECT_EQ(PROFILING_FAILED, invalidInfoJson.InitDeviceIds());
 }
 
-TEST(INFO_JSON_TEST, GetRankIdBranches) {
+TEST(INFO_JSON_TEST, GetRankIdBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
 
@@ -334,7 +333,8 @@ TEST(INFO_JSON_TEST, GetRankIdBranches) {
     unsetenv("RANK_ID");
 }
 
-TEST(INFO_JSON_TEST, SetVersionInfoPlatformVersionAndDrvVersion) {
+TEST(INFO_JSON_TEST, SetVersionInfoPlatformVersionAndDrvVersion)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -350,7 +350,8 @@ TEST(INFO_JSON_TEST, SetVersionInfoPlatformVersionAndDrvVersion) {
     EXPECT_EQ(0x12345u, infoMain->drvVersion);
 }
 
-TEST(INFO_JSON_TEST, OscFrequencyGetters) {
+TEST(INFO_JSON_TEST, OscFrequencyGetters)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
 
@@ -362,7 +363,8 @@ TEST(INFO_JSON_TEST, OscFrequencyGetters) {
     EXPECT_EQ("67890", infoJson.GetDeviceOscFrequency(0u, "1000"));
 }
 
-TEST(INFO_JSON_TEST, GetCtrlCpuInfoBranches) {
+TEST(INFO_JSON_TEST, GetCtrlCpuInfoBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     DeviceInfo devInfo;
@@ -388,7 +390,8 @@ TEST(INFO_JSON_TEST, GetCtrlCpuInfoBranches) {
     EXPECT_EQ(PROFILING_SUCCESS, infoJson.GetCtrlCpuInfo(0, devInfo));
 }
 
-TEST(INFO_JSON_TEST, GetDevInfoFailureBranches) {
+TEST(INFO_JSON_TEST, GetDevInfoFailureBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     DeviceInfo devInfo;
@@ -419,7 +422,8 @@ TEST(INFO_JSON_TEST, GetDevInfoFailureBranches) {
     EXPECT_EQ(PROFILING_FAILED, infoJson.GetDevInfo(0, devInfo));
 }
 
-TEST(INFO_JSON_TEST, GetDevInfoAiCpuCoreIdAndSuccessBranches) {
+TEST(INFO_JSON_TEST, GetDevInfoAiCpuCoreIdAndSuccessBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     DeviceInfo devInfo;
@@ -438,7 +442,8 @@ TEST(INFO_JSON_TEST, GetDevInfoAiCpuCoreIdAndSuccessBranches) {
     EXPECT_EQ(PROFILING_SUCCESS, infoJson.GetDevInfo(0, devInfo));
 }
 
-TEST(INFO_JSON_TEST, GetDevInfoLateFailureBranches) {
+TEST(INFO_JSON_TEST, GetDevInfoLateFailureBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     DeviceInfo devInfo;
@@ -489,7 +494,8 @@ TEST(INFO_JSON_TEST, GetDevInfoLateFailureBranches) {
     EXPECT_EQ(PROFILING_FAILED, infoJson.GetDevInfo(0, devInfo));
 }
 
-TEST(INFO_JSON_TEST, AddDeviceInfoBranches) {
+TEST(INFO_JSON_TEST, AddDeviceInfoBranches)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     EXPECT_EQ(PROFILING_SUCCESS, infoJson.InitDeviceIds());
@@ -509,7 +515,8 @@ TEST(INFO_JSON_TEST, AddDeviceInfoBranches) {
     EXPECT_EQ(PROFILING_FAILED, failedInfoJson.AddDeviceInfo(infoMain));
 }
 
-TEST(INFO_JSON_TEST, AddDeviceInfoCpuTypeMatchesMap) {
+TEST(INFO_JSON_TEST, AddDeviceInfoCpuTypeMatchesMap)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     EXPECT_EQ(PROFILING_SUCCESS, infoJson.InitDeviceIds());
@@ -534,7 +541,8 @@ TEST(INFO_JSON_TEST, AddDeviceInfoCpuTypeMatchesMap) {
     EXPECT_EQ("ARMv8_Cortex_A55", infoMain->deviceInfos[0].ctrlCpuId);
 }
 
-TEST(INFO_JSON_TEST, AddOtherInfoBranches) {
+TEST(INFO_JSON_TEST, AddOtherInfoBranches)
+{
     GlobalMockObject::verify();
     InfoJson emptyJobInfoJson("", "0", 1);
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -547,7 +555,8 @@ TEST(INFO_JSON_TEST, AddOtherInfoBranches) {
     EXPECT_EQ("myJob", infoMain->jobInfo);
 }
 
-TEST(INFO_JSON_TEST, AddSysConfSysTimeMemTotalAndNetCardInfo) {
+TEST(INFO_JSON_TEST, AddSysConfSysTimeMemTotalAndNetCardInfo)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "0", 1);
     SHARED_PTR_ALIA<InfoMain> infoMain = nullptr;
@@ -562,9 +571,7 @@ TEST(INFO_JSON_TEST, AddSysConfSysTimeMemTotalAndNetCardInfo) {
     infoJson.AddMemTotal(infoMain);
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::GetFileSize)
-        .stubs()
-        .will(returnValue(static_cast<int64_t>(-1)));
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::GetFileSize).stubs().will(returnValue(static_cast<int64_t>(-1)));
     infoJson.AddSysTime(infoMain);
     infoJson.AddMemTotal(infoMain);
     GlobalMockObject::verify();
@@ -572,7 +579,8 @@ TEST(INFO_JSON_TEST, AddSysConfSysTimeMemTotalAndNetCardInfo) {
     infoJson.AddNetCardInfo(infoMain);
 }
 
-TEST(INFO_JSON_TEST, GenerateInitDevicesFail) {
+TEST(INFO_JSON_TEST, GenerateInitDevicesFail)
+{
     GlobalMockObject::verify();
     InfoJson infoJson("", "abc", 1);
     std::string content;

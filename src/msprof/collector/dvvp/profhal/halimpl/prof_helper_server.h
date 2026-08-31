@@ -28,30 +28,21 @@
 namespace Dvvp {
 namespace Hal {
 namespace Server {
-using CONST_VOID_PTR = const void *;
+using CONST_VOID_PTR = const void*;
 class ProfHelperServer : public analysis::dvvp::common::thread::Thread {
 public:
     ProfHelperServer();
     ~ProfHelperServer() override;
     int32_t Init(const int32_t logicDevId);
     int32_t UnInit();
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
-    void SetFlushModuleCallback(const ProfHalFlushModuleCallback func)
-    {
-        flushModuleCallback_ = func;
-    }
-    void SetSendHelperDataCallback(const ProfHalSendHelperDataCallback func)
-    {
-        sendHelperDataCallback_ = func;
-    }
-    void SetHelperDirCallback(const ProfHalHelperDirCallback func)
-    {
-        setHelperDirCallback_ = func;
-    }
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
+    void SetFlushModuleCallback(const ProfHalFlushModuleCallback func) { flushModuleCallback_ = func; }
+    void SetSendHelperDataCallback(const ProfHalSendHelperDataCallback func) { sendHelperDataCallback_ = func; }
+    void SetHelperDirCallback(const ProfHalHelperDirCallback func) { setHelperDirCallback_ = func; }
 
 private:
     int32_t ReceiveStreamData(CONST_VOID_PTR data, uint32_t dataLen);
-    int32_t PackSampleJsonFile(std::string id, const ProfHalStruct *message);
+    int32_t PackSampleJsonFile(std::string id, const ProfHalStruct* message);
     bool dataInitialized_;
     int32_t logicDevId_;
     std::vector<SHARED_PTR_ALIA<analysis::dvvp::transport::HelperTransport>> dataTran_;
@@ -63,7 +54,7 @@ private:
     std::vector<std::future<int32_t>> result_;
     std::unordered_map<std::string, std::string> sampleJsonMap_;
 };
-}
-}
-}
+} // namespace Server
+} // namespace Hal
+} // namespace Dvvp
 #endif

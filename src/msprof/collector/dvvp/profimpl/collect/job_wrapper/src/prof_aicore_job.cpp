@@ -27,12 +27,8 @@ using namespace Msprofiler::Parser;
 
 ProfAicoreJob::ProfAicoreJob()
     : period_(DEFAULT_PERIOD_TIME), channelId_(PROF_CHANNEL_AI_CORE) // 10 is the default period
-{
-}
-ProfAicoreJob::~ProfAicoreJob()
-{
-}
-
+{}
+ProfAicoreJob::~ProfAicoreJob() {}
 
 int32_t ProfAicoreJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 {
@@ -58,14 +54,14 @@ int32_t ProfAicoreJob::Process()
 {
     CHECK_JOB_EVENT_PARAM_RET(collectionJobCfg_, return PROFILING_FAILED);
     if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
-        MSPROF_LOGW("Channel is invalid, devId:%d, channelId_:%d", collectionJobCfg_->comParams->devId,
-            channelId_);
+        MSPROF_LOGW("Channel is invalid, devId:%d, channelId_:%d", collectionJobCfg_->comParams->devId, channelId_);
         return PROFILING_SUCCESS;
     }
     std::string eventsStr = GetEventsStr(*collectionJobCfg_->jobParams.events);
     std::string coresStr = analysis::dvvp::common::utils::Utils::GetCoresStr(*collectionJobCfg_->jobParams.cores);
-    MSPROF_LOGI("Begin to start profiling ai core, taskType:%s, events:%s, cores:%s",
-        taskType_.c_str(), eventsStr.c_str(), coresStr.c_str());
+    MSPROF_LOGI(
+        "Begin to start profiling ai core, taskType:%s, events:%s, cores:%s", taskType_.c_str(), eventsStr.c_str(),
+        coresStr.c_str());
 
     std::string filePath = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath);
 
@@ -74,7 +70,7 @@ int32_t ProfAicoreJob::Process()
     DrvPeripheralProfileCfg drvPeripheralProfileCfg;
     drvPeripheralProfileCfg.profDeviceId = collectionJobCfg_->comParams->devId;
     drvPeripheralProfileCfg.profChannel = channelId_;
-    drvPeripheralProfileCfg.profSamplePeriod = period_;  // int32_t prof_sample_period,
+    drvPeripheralProfileCfg.profSamplePeriod = period_; // int32_t prof_sample_period,
     const uint32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId_);
     const uint32_t bufferLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId_);
     if (period != 0) {
@@ -83,16 +79,17 @@ int32_t ProfAicoreJob::Process()
     if (bufferLen != 0) {
         drvPeripheralProfileCfg.bufLen = bufferLen;
     }
-    std::string fileName = GenerateFileName(filePath,
-        collectionJobCfg_->comParams->devIdOnHost);
+    std::string fileName = GenerateFileName(filePath, collectionJobCfg_->comParams->devIdOnHost);
     drvPeripheralProfileCfg.profDataFilePath = "";
 
-    int32_t ret = DrvAicoreStart(drvPeripheralProfileCfg,
-                             *collectionJobCfg_->jobParams.cores,  // const std::vector<int32_t>& prof_cores,
-                             *collectionJobCfg_->jobParams.events);  // std::vector<std::string> &prof_events,
+    int32_t ret = DrvAicoreStart(
+        drvPeripheralProfileCfg,
+        *collectionJobCfg_->jobParams.cores,   // const std::vector<int32_t>& prof_cores,
+        *collectionJobCfg_->jobParams.events); // std::vector<std::string> &prof_events,
 
-    MSPROF_LOGI("start profiling ai core, taskType:%s, events:%s, cores:%s, ret=%d", taskType_.c_str(),
-        eventsStr.c_str(), coresStr.c_str(), ret);
+    MSPROF_LOGI(
+        "start profiling ai core, taskType:%s, events:%s, cores:%s, ret=%d", taskType_.c_str(), eventsStr.c_str(),
+        coresStr.c_str(), ret);
 
     FUNRET_CHECK_RET_VAL(ret != PROFILING_SUCCESS);
     return ret;
@@ -104,8 +101,7 @@ int32_t ProfAicoreJob::Uninit()
 
     std::string eventsStr = GetEventsStr(*collectionJobCfg_->jobParams.events);
     if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
-        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
-            channelId_);
+        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId, channelId_);
         return PROFILING_SUCCESS;
     }
     MSPROF_LOGI("begin to stop profiling %s, events:%s", taskType_.c_str(), eventsStr.c_str());
@@ -121,13 +117,8 @@ int32_t ProfAicoreJob::Uninit()
     return ret;
 }
 
-ProfAivJob::ProfAivJob()
-{
-}
-ProfAivJob::~ProfAivJob()
-{
-}
-
+ProfAivJob::ProfAivJob() {}
+ProfAivJob::~ProfAivJob() {}
 
 int32_t ProfAivJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 {
@@ -151,14 +142,8 @@ int32_t ProfAivJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     return PROFILING_SUCCESS;
 }
 
-
-ProfAicoreTaskBasedJob::ProfAicoreTaskBasedJob()
-    : channelId_(PROF_CHANNEL_AI_CORE)
-{
-}
-ProfAicoreTaskBasedJob::~ProfAicoreTaskBasedJob()
-{
-}
+ProfAicoreTaskBasedJob::ProfAicoreTaskBasedJob() : channelId_(PROF_CHANNEL_AI_CORE) {}
+ProfAicoreTaskBasedJob::~ProfAicoreTaskBasedJob() {}
 
 int32_t ProfAicoreTaskBasedJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 {
@@ -182,22 +167,21 @@ int32_t ProfAicoreTaskBasedJob::Process()
 {
     CHECK_JOB_EVENT_PARAM_RET(collectionJobCfg_, return PROFILING_FAILED);
     if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
-        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
-            channelId_);
+        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId, channelId_);
         return PROFILING_SUCCESS;
     }
     std::string eventsStr = GetEventsStr(*collectionJobCfg_->jobParams.events);
-    MSPROF_LOGI("Begin to start profiling AicoreTaskBase, taskType:%s, events:%s",
-        taskType_.c_str(), eventsStr.c_str());
+    MSPROF_LOGI(
+        "Begin to start profiling AicoreTaskBase, taskType:%s, events:%s", taskType_.c_str(), eventsStr.c_str());
 
     std::string filePath = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath);
 
     AddReader(collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId_, filePath);
-    int32_t ret = DrvAicoreTaskBasedStart(collectionJobCfg_->comParams->devId, channelId_,
-        *collectionJobCfg_->jobParams.events);
+    int32_t ret =
+        DrvAicoreTaskBasedStart(collectionJobCfg_->comParams->devId, channelId_, *collectionJobCfg_->jobParams.events);
 
-    MSPROF_LOGI("start profiling AicoreTaskBase, taskType:%s, events:%s, ret=%d",
-        taskType_.c_str(), eventsStr.c_str(), ret);
+    MSPROF_LOGI(
+        "start profiling AicoreTaskBase, taskType:%s, events:%s, ret=%d", taskType_.c_str(), eventsStr.c_str(), ret);
 
     FUNRET_CHECK_RET_VAL(ret != PROFILING_SUCCESS);
     return ret;
@@ -207,26 +191,21 @@ int32_t ProfAicoreTaskBasedJob::Uninit()
 {
     CHECK_JOB_EVENT_PARAM_RET(collectionJobCfg_, return PROFILING_SUCCESS);
     if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
-        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
-            channelId_);
+        MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId, channelId_);
         return PROFILING_SUCCESS;
     }
     std::string eventsStr = GetEventsStr(*collectionJobCfg_->jobParams.events);
     int32_t ret = DrvStop(collectionJobCfg_->comParams->devId, channelId_);
-    MSPROF_LOGI("stop profiling AicoreTaskBase, taskType:%s, events:%s, ret=%d",
-                taskType_.c_str(), eventsStr.c_str(), ret);
+    MSPROF_LOGI(
+        "stop profiling AicoreTaskBase, taskType:%s, events:%s, ret=%d", taskType_.c_str(), eventsStr.c_str(), ret);
     RemoveReader(collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId_);
     collectionJobCfg_->jobParams.events.reset();
 
     return PROFILING_SUCCESS;
 }
 
-ProfAivTaskBasedJob::ProfAivTaskBasedJob()
-{
-}
-ProfAivTaskBasedJob::~ProfAivTaskBasedJob()
-{
-}
+ProfAivTaskBasedJob::ProfAivTaskBasedJob() {}
+ProfAivTaskBasedJob::~ProfAivTaskBasedJob() {}
 
 int32_t ProfAivTaskBasedJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 {
@@ -247,6 +226,6 @@ int32_t ProfAivTaskBasedJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     return PROFILING_SUCCESS;
 }
 
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

@@ -28,7 +28,7 @@ using namespace analysis::dvvp::driver;
 using namespace analysis::dvvp::common::config;
 
 namespace {
-const char *const JSON_PARSER_TEST_FILE = "./prof_json_parser_utest.json";
+const char* const JSON_PARSER_TEST_FILE = "./prof_json_parser_utest.json";
 
 class JSON_PARSER_UTEST : public testing::Test {
 protected:
@@ -44,7 +44,7 @@ protected:
         std::remove(JSON_PARSER_TEST_FILE);
     }
 
-    void WriteJson(const std::string &content) const
+    void WriteJson(const std::string& content) const
     {
         std::ofstream jsonFile(JSON_PARSER_TEST_FILE);
         jsonFile << content;

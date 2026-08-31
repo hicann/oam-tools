@@ -55,15 +55,9 @@ public:
     {}
     ~FakeRunningMode() override = default;
 
-    int32_t ModeParamsCheck() override
-    {
-        return PopModeResult();
-    }
+    int32_t ModeParamsCheck() override { return PopModeResult(); }
 
-    int32_t RunModeTasks() override
-    {
-        return PopRunResult();
-    }
+    int32_t RunModeTasks() override { return PopRunResult(); }
 
     std::vector<int32_t> modeResults_;
     std::vector<int32_t> runResults_;
@@ -87,17 +81,13 @@ private:
 class MSPROF_MANAGER_UTEST : public testing::Test {
 protected:
     void SetUp() override {}
-    void TearDown() override
-    {
-        GlobalMockObject::verify();
-    }
+    void TearDown() override { GlobalMockObject::verify(); }
 };
 
-
-TEST_F(MSPROF_MANAGER_UTEST, Init) {
+TEST_F(MSPROF_MANAGER_UTEST, Init)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
 
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
@@ -116,12 +106,11 @@ TEST_F(MSPROF_MANAGER_UTEST, Init) {
     msprofManager->UnInit();
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, NotifyStop) {
+TEST_F(MSPROF_MANAGER_UTEST, NotifyStop)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
-    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(
-    new Collector::Dvvp::Msprofbin::AppMode("app", params));
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(new Collector::Dvvp::Msprofbin::AppMode("app", params));
     auto msprofManager = MsprofManager::instance();
 
     msprofManager->rMode_ = nullptr;
@@ -134,8 +123,7 @@ TEST_F(MSPROF_MANAGER_UTEST, NotifyStop) {
 
 TEST_F(MSPROF_MANAGER_UTEST, AppOnlyOptionsAreInAppModeWhitelist)
 {
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
     Collector::Dvvp::Msprofbin::AppMode appMode("app", params);
     Collector::Dvvp::Msprofbin::SystemMode systemMode("system", params);
 
@@ -145,10 +133,10 @@ TEST_F(MSPROF_MANAGER_UTEST, AppOnlyOptionsAreInAppModeWhitelist)
     EXPECT_TRUE(systemMode.whiteSet_.find(ARGS_AICORE_SHAPE) == systemMode.whiteSet_.end());
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, MsProcessCmd) {
+TEST_F(MSPROF_MANAGER_UTEST, MsProcessCmd)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
     auto rMode = std::make_shared<FakeRunningMode>(params);
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
@@ -160,12 +148,11 @@ TEST_F(MSPROF_MANAGER_UTEST, MsProcessCmd) {
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->MsProcessCmd());
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, GetTask) {
+TEST_F(MSPROF_MANAGER_UTEST, GetTask)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
-    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(
-    new Collector::Dvvp::Msprofbin::AppMode("app", params));
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<Collector::Dvvp::Msprofbin::AppMode> rMode(new Collector::Dvvp::Msprofbin::AppMode("app", params));
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
     EXPECT_EQ(nullptr, msprofManager->GetTask("1"));
@@ -175,12 +162,12 @@ TEST_F(MSPROF_MANAGER_UTEST, GetTask) {
     EXPECT_EQ(info, msprofManager->GetTask("1"));
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMode) {
+TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMode)
+{
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
     Platform::instance()->runSide_ = SysPlatformType::HOST;
     params->app = "main";
     msprofManager->params_ = params;
@@ -208,10 +195,10 @@ TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMode) {
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper) {
+TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper)
+{
     auto msprofManager = MsprofManager::instance();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
 
     msprofManager->UnInit();
     params->devices = "0";
@@ -220,9 +207,9 @@ TEST_F(MSPROF_MANAGER_UTEST, GenerateRunningMod_helper) {
     EXPECT_EQ(PROFILING_FAILED, msprofManager->GenerateRunningMode());
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, SystemModeDataWillBeCollected) {
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+TEST_F(MSPROF_MANAGER_UTEST, SystemModeDataWillBeCollected)
+{
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
     Collector::Dvvp::Msprofbin::SystemMode rMode("system", params);
 
     EXPECT_EQ(false, rMode.DataWillBeCollected());
@@ -243,10 +230,10 @@ TEST_F(MSPROF_MANAGER_UTEST, SystemModeDataWillBeCollected) {
     EXPECT_EQ(true, rMode.DataWillBeCollected());
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, ParamsCheck) {
+TEST_F(MSPROF_MANAGER_UTEST, ParamsCheck)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-    new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
     auto rMode = std::make_shared<FakeRunningMode>(params);
     auto msprofManager = MsprofManager::instance();
     msprofManager->UnInit();
@@ -259,7 +246,8 @@ TEST_F(MSPROF_MANAGER_UTEST, ParamsCheck) {
     EXPECT_EQ(PROFILING_SUCCESS, msprofManager->ParamsCheck());
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, GetRankId) {
+TEST_F(MSPROF_MANAGER_UTEST, GetRankId)
+{
     GlobalMockObject::verify();
     std::string start_time = "1539226807454372";
     std::string end_time = "1539226807454380";
@@ -273,14 +261,13 @@ TEST_F(MSPROF_MANAGER_UTEST, GetRankId) {
 
 drvError_t g_error = static_cast<drvError_t>(0);
 
-drvError_t HalGetDeviceInfoByBuffStub(uint32_t devId, int32_t moduleType, int32_t infoType,
-    void *value, int32_t *len)
+drvError_t HalGetDeviceInfoByBuffStub(uint32_t devId, int32_t moduleType, int32_t infoType, void* value, int32_t* len)
 {
     (void)devId;
     (void)infoType;
     (void)len;
     if (moduleType == MODULE_TYPE_QOS) {
-        auto *info = static_cast<QosProfileInfo *>(value);
+        auto* info = static_cast<QosProfileInfo*>(value);
         if (info->mode == QOS_MODE_MPAM_LIST) {
             info->streamNum = DAVID_STREAM_NUM;
             for (uint16_t index = 0; index < DAVID_STREAM_NUM; ++index) {
@@ -298,7 +285,8 @@ drvError_t HalGetDeviceInfoByBuffStub(uint32_t devId, int32_t moduleType, int32_
     return g_error;
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, PlatformDavidGetQosProfileInfo) {
+TEST_F(MSPROF_MANAGER_UTEST, PlatformDavidGetQosProfileInfo)
+{
     GlobalMockObject::verify();
     // david
     Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
@@ -316,7 +304,8 @@ TEST_F(MSPROF_MANAGER_UTEST, PlatformDavidGetQosProfileInfo) {
     Platform::instance()->Uninit();
 }
 
-TEST_F(MSPROF_MANAGER_UTEST, PlatformMilanGetQosProfileInfo) {
+TEST_F(MSPROF_MANAGER_UTEST, PlatformMilanGetQosProfileInfo)
+{
     GlobalMockObject::verify();
     // milan
     Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =

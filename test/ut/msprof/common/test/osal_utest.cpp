@@ -45,10 +45,10 @@ TEST_F(OSAL_TEST, OsalSocketApis)
     OsalSockHandle fd = OsalSocket(AF_INET, SOCK_STREAM, 0);
     EXPECT_EQ(OSAL_EN_ERROR, fd);
 
-    EXPECT_EQ(OSAL_EN_ERROR, OsalBind(fd, reinterpret_cast<OsalSockAddr *>(&servAddr), addrLen));
+    EXPECT_EQ(OSAL_EN_ERROR, OsalBind(fd, reinterpret_cast<OsalSockAddr*>(&servAddr), addrLen));
     EXPECT_EQ(OSAL_EN_ERROR, OsalListen(fd, 5));
     EXPECT_EQ(OSAL_EN_ERROR, OsalAccept(fd, nullptr, nullptr));
-    EXPECT_EQ(OSAL_EN_ERROR, OsalConnect(fd, reinterpret_cast<OsalSockAddr *>(&servAddr), addrLen));
+    EXPECT_EQ(OSAL_EN_ERROR, OsalConnect(fd, reinterpret_cast<OsalSockAddr*>(&servAddr), addrLen));
 
     char buf[16] = "send";
     EXPECT_EQ(OSAL_EN_ERROR, OsalSocketSend(-1, buf, sizeof(buf), 0));
@@ -93,7 +93,7 @@ TEST_F(OSAL_TEST, OsalGetOsVersion)
 
 TEST_F(OSAL_TEST, OsalGetCpuInfo)
 {
-    OsalCpuDesc *desc = nullptr;
+    OsalCpuDesc* desc = nullptr;
     int32_t count = 0;
     EXPECT_EQ(OSAL_EN_OK, OsalGetCpuInfo(&desc, &count));
     EXPECT_EQ(OSAL_EN_OK, OsalCpuInfoFree(desc, count));

@@ -35,8 +35,8 @@
 namespace {
 std::vector<int32_t> g_startedChannels;
 
-int32_t DrvInstrProfileStartStub(const uint32_t devId, const analysis::dvvp::driver::AI_DRV_CHANNEL channelId,
-    void *userData, size_t dataSize)
+int32_t DrvInstrProfileStartStub(
+    const uint32_t devId, const analysis::dvvp::driver::AI_DRV_CHANNEL channelId, void* userData, size_t dataSize)
 {
     (void)devId;
     (void)userData;
@@ -48,8 +48,8 @@ int32_t DrvInstrProfileStartStub(const uint32_t devId, const analysis::dvvp::dri
 // Records the config size received by DrvInstrProfileStart, used to verify the struct chosen for
 // new/old driver versions.
 size_t g_lastConfigSize = 0;
-int32_t DrvInstrProfileStartSizeStub(const uint32_t devId, const analysis::dvvp::driver::AI_DRV_CHANNEL channelId,
-    void *userData, size_t dataSize)
+int32_t DrvInstrProfileStartSizeStub(
+    const uint32_t devId, const analysis::dvvp::driver::AI_DRV_CHANNEL channelId, void* userData, size_t dataSize)
 {
     (void)devId;
     (void)channelId;
@@ -57,7 +57,7 @@ int32_t DrvInstrProfileStartSizeStub(const uint32_t devId, const analysis::dvvp:
     g_lastConfigSize = dataSize;
     return analysis::dvvp::common::error::PROFILING_SUCCESS;
 }
-}
+} // namespace
 
 using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::message;
@@ -67,32 +67,35 @@ using namespace Analysis::Dvvp::MsprofErrMgr;
 using namespace Analysis::Dvvp::Common::Platform;
 using namespace analysis::dvvp::transport;
 
-class JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST: public testing::Test {
+class JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         collectionJobCfg_ = std::make_shared<Analysis::Dvvp::JobWrapper::CollectionJobCfg>();
-        std::shared_ptr<analysis::dvvp::message::ProfileParams> params(
-            new analysis::dvvp::message::ProfileParams);
-        std::shared_ptr<analysis::dvvp::message::JobContext> jobCtx(
-            new analysis::dvvp::message::JobContext);
+        std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams);
+        std::shared_ptr<analysis::dvvp::message::JobContext> jobCtx(new analysis::dvvp::message::JobContext);
         auto comParams = std::make_shared<Analysis::Dvvp::JobWrapper::CollectionJobCommonParams>();
         comParams->params = params;
         comParams->jobCtx = jobCtx;
         collectionJobCfg_->comParams = comParams;
         collectionJobCfg_->jobParams.events = std::make_shared<std::vector<std::string> >(0);
     }
-    virtual void TearDown() {
+    virtual void TearDown()
+    {
         collectionJobCfg_.reset();
         GlobalMockObject::verify();
         GlobalMockObject::reset();
     }
+
 public:
     std::shared_ptr<Analysis::Dvvp::JobWrapper::CollectionJobCfg> collectionJobCfg_;
 };
 
-TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch) {
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch)
+{
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
     auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
@@ -116,8 +119,9 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch) {
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelistChannels)
 {
     g_startedChannels.clear();
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
     std::vector<BiuPerfChannelInfo> platformChannels = {
@@ -126,9 +130,10 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelis
         {3, 0, 3, 20},
         {5, 0, 5, 26},
     };
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
-        std::vector<BiuPerfChannelInfo> (Analysis::Dvvp::Common::Platform::Platform::*)(
-            const std::vector<uint32_t> &, uint32_t) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
+        std::vector<BiuPerfChannelInfo>(Analysis::Dvvp::Common::Platform::Platform::*)(
+            const std::vector<uint32_t>&, uint32_t) const)
         .stubs()
         .will(returnValue(platformChannels));
     int64_t aiCoreNum = 8;
@@ -136,12 +141,8 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelis
         .stubs()
         .with(any(), outBound(aiCoreNum))
         .will(returnValue(PROFILING_SUCCESS));
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
-        .stubs()
-        .will(invoke(DrvInstrProfileStartStub));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid).stubs().will(returnValue(true));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart).stubs().will(invoke(DrvInstrProfileStartStub));
 
     auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
     collectionJobCfg_->comParams->params->instrProfiling = "on";
@@ -157,17 +158,19 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelis
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, BiuPerfJobErrorBranches)
 {
     g_startedChannels.clear();
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
     std::vector<BiuPerfChannelInfo> platformChannels = {
         {0, 0, 0, 11},
         {1, 0, 1, 14},
     };
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
-        std::vector<BiuPerfChannelInfo> (Analysis::Dvvp::Common::Platform::Platform::*)(
-            const std::vector<uint32_t> &, uint32_t) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::GetBiuPerfChannelInfos,
+        std::vector<BiuPerfChannelInfo>(Analysis::Dvvp::Common::Platform::Platform::*)(
+            const std::vector<uint32_t>&, uint32_t) const)
         .stubs()
         .will(returnValue(platformChannels));
     int64_t aiCoreNum = 8;
@@ -186,12 +189,8 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, BiuPerfJobErrorBranches)
         .then(returnValue(false))
         .then(returnValue(true))
         .then(returnValue(false));
-    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
-        .stubs()
-        .will(returnValue(PROFILING_FAILED));
-    MOCKER(prof_stop)
-        .stubs()
-        .will(returnValue(PROF_ERROR));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart).stubs().will(returnValue(PROFILING_FAILED));
+    MOCKER(prof_stop).stubs().will(returnValue(PROF_ERROR));
 
     auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
     collectionJobCfg_->comParams->params->instrProfiling = "on";
@@ -230,8 +229,9 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_InitFailed_WhenHostProfi
 
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_InitFailed_WhenNotEnabled)
 {
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(false));
     auto job = std::make_shared<Analysis::Dvvp::JobWrapper::ProfInstrPerfJob>();
@@ -243,19 +243,14 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_InitFailed_WhenNotEnable
 
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_ProcessCoversStartBufferLog)
 {
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(prof_stop)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid).stubs().will(returnValue(true));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(prof_stop).stubs().will(returnValue(PROFILING_SUCCESS));
 
     auto job = std::make_shared<Analysis::Dvvp::JobWrapper::ProfInstrPerfJob>();
     ASSERT_NE(job, nullptr);
@@ -268,8 +263,9 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, InstrPerfJob_ProcessCoversStartBuffer
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV2ConfigOnNewDriver)
 {
     g_lastConfigSize = 0;
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
     int64_t aiCoreNum = 8;
@@ -277,16 +273,11 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV2ConfigOnNewDriver)
         .stubs()
         .with(any(), outBound(aiCoreNum))
         .will(returnValue(PROFILING_SUCCESS));
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid).stubs().will(returnValue(true));
     MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::DrvGetApiVersion)
         .stubs()
-        .will(returnValue(static_cast<uint32_t>(
-            Analysis::Dvvp::Common::Platform::BIU_REPORT_DATA_LOSS_API_VERSION)));
-    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
-        .stubs()
-        .will(invoke(DrvInstrProfileStartSizeStub));
+        .will(returnValue(static_cast<uint32_t>(Analysis::Dvvp::Common::Platform::BIU_REPORT_DATA_LOSS_API_VERSION)));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart).stubs().will(invoke(DrvInstrProfileStartSizeStub));
 
     auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
     collectionJobCfg_->comParams->params->instrProfiling = "on";
@@ -300,8 +291,9 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV2ConfigOnNewDriver)
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV1ConfigOnOldDriver)
 {
     g_lastConfigSize = 0;
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
-        bool (Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
+    MOCKER_CPP(
+        &Analysis::Dvvp::Common::Platform::Platform::CheckIfSupport,
+        bool(Analysis::Dvvp::Common::Platform::Platform::*)(const Dvvp::Collect::Platform::PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
     int64_t aiCoreNum = 8;
@@ -309,16 +301,12 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV1ConfigOnOldDriver)
         .stubs()
         .with(any(), outBound(aiCoreNum))
         .will(returnValue(PROFILING_SUCCESS));
-    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid)
-        .stubs()
-        .will(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::driver::DrvChannelsMgr::ChannelIsValid).stubs().will(returnValue(true));
     MOCKER_CPP(&Analysis::Dvvp::Common::Platform::Platform::DrvGetApiVersion)
         .stubs()
-        .will(returnValue(static_cast<uint32_t>(
-            Analysis::Dvvp::Common::Platform::BIU_REPORT_DATA_LOSS_API_VERSION) - 1));
-    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart)
-        .stubs()
-        .will(invoke(DrvInstrProfileStartSizeStub));
+        .will(
+            returnValue(static_cast<uint32_t>(Analysis::Dvvp::Common::Platform::BIU_REPORT_DATA_LOSS_API_VERSION) - 1));
+    MOCKER(analysis::dvvp::driver::DrvInstrProfileStart).stubs().will(invoke(DrvInstrProfileStartSizeStub));
 
     auto profBiuPerfJob = std::make_shared<Analysis::Dvvp::JobWrapper::ProfBiuPerfJob>();
     collectionJobCfg_->comParams->params->instrProfiling = "on";
@@ -331,16 +319,14 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, ProcessUsesV1ConfigOnOldDriver)
 
 TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, DrvBiuPerfStopReturnsSuccessOnDataLoss)
 {
-    MOCKER(prof_stop)
-        .stubs()
-        .will(returnValue(0x916));
-    EXPECT_EQ(PROFILING_SUCCESS,
+    MOCKER(prof_stop).stubs().will(returnValue(0x916));
+    EXPECT_EQ(
+        PROFILING_SUCCESS,
         analysis::dvvp::driver::DrvBiuPerfStop(0, static_cast<analysis::dvvp::driver::AI_DRV_CHANNEL>(0)));
 
     GlobalMockObject::verify();
-    MOCKER(prof_stop)
-        .stubs()
-        .will(returnValue(-1));
-    EXPECT_EQ(PROFILING_FAILED,
+    MOCKER(prof_stop).stubs().will(returnValue(-1));
+    EXPECT_EQ(
+        PROFILING_FAILED,
         analysis::dvvp::driver::DrvBiuPerfStop(0, static_cast<analysis::dvvp::driver::AI_DRV_CHANNEL>(0)));
 }

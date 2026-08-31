@@ -24,10 +24,7 @@ extern "C" {
 
 #define MAX_FILE_CHUNK_NAME_LENGTH 128U
 
-typedef enum {
-    FILE_TRANSPORT,
-    FLSH_TRANSPORT
-} TransportType;
+typedef enum { FILE_TRANSPORT, FLSH_TRANSPORT } TransportType;
 
 typedef enum {
     PROF_CTRL_DATA = 2,
@@ -41,12 +38,12 @@ typedef struct {
     uint16_t chunkType;
     uint64_t chunkSize;
     uint32_t offset;
-    uint8_t *chunk;
+    uint8_t* chunk;
     char fileName[MAX_FILE_CHUNK_NAME_LENGTH];
 } ProfFileChunk;
 
 typedef struct {
-    int32_t (*SendBuffer)(ProfFileChunk *chunk, const char *dir);
+    int32_t (*SendBuffer)(ProfFileChunk* chunk, const char* dir);
     int32_t (*Flush)();
 } Transport;
 

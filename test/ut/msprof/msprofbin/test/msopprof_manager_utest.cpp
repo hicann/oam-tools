@@ -31,9 +31,7 @@ using namespace Analysis::Dvvp::App;
 class MSOPPROF_MANAGER_UTEST : public testing::Test {
 protected:
     virtual void SetUp() override {}
-    virtual void TearDown() override {
-        GlobalMockObject::verify();
-    }
+    virtual void TearDown() override { GlobalMockObject::verify(); }
 };
 
 TEST_F(MSOPPROF_MANAGER_UTEST, CheckMsopprofIfExistWillReturnFalseWhenNotInputOpArgs)
@@ -85,10 +83,8 @@ TEST_F(MSOPPROF_MANAGER_UTEST, CheckMsopprofIfExistWillParseAllArgsWhenInputOpAr
 
 TEST_F(MSOPPROF_MANAGER_UTEST, MsopprofProcessWillReturnFailedWhrnCheckArgsFail)
 {
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckInputArgsLength)
-        .stubs()
-        .will(returnValue(false));
-    
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckInputArgsLength).stubs().will(returnValue(false));
+
     const char* argv[] = {"bin"};
     int argc = 1;
     int ret = MsopprofManager::instance()->MsopprofProcess(argc, argv);
@@ -106,10 +102,8 @@ TEST_F(MSOPPROF_MANAGER_UTEST, MsopprofProcessWillNotExecuteOpprofAndReturnFaile
 
 TEST_F(MSOPPROF_MANAGER_UTEST, MsopprofProcessWillNotExecuteOpprofAndReturnSuccessWhenInputOpCmdAndOpprofNotExist)
 {
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckBinValid)
-        .stubs()
-        .will(returnValue(false));
-    
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckBinValid).stubs().will(returnValue(false));
+
     MsopprofManager::instance()->msopprofPath_ = "/ut/test/msopprof/bin/msopprof";
     const char* argv[] = {"bin", "op", "-a"};
     int argc = 3;
@@ -119,12 +113,9 @@ TEST_F(MSOPPROF_MANAGER_UTEST, MsopprofProcessWillNotExecuteOpprofAndReturnSucce
 
 TEST_F(MSOPPROF_MANAGER_UTEST, MsopprofProcessWillExecuteMsopprofAndReturnSuccessWhenInputOpCmdAndOpprofExists)
 {
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckBinValid)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER_CPP(&Analysis::Dvvp::Msopprof::MsopprofManager::ExecuteMsopprof)
-        .stubs();
-    
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckBinValid).stubs().will(returnValue(true));
+    MOCKER_CPP(&Analysis::Dvvp::Msopprof::MsopprofManager::ExecuteMsopprof).stubs();
+
     MsopprofManager::instance()->msopprofPath_ = "/ut/test/msopprof/bin/msopprof";
     const char* argv[] = {"bin", "op", "-a"};
     int argc = 3;
@@ -136,10 +127,8 @@ TEST_F(MSOPPROF_MANAGER_UTEST, ExecuteMsopprofWillExecuteOpprofFailWhenExecCmdFa
 {
     std::vector<std::string> params{"-a"};
 
-    MOCKER_CPP(&Analysis::Dvvp::App::EnvManager::GetGlobalEnv)
-        .stubs().will(returnValue(std::vector<std::string>()));
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::ExecCmd)
-        .stubs().will(returnValue(PROFILING_FAILED));
+    MOCKER_CPP(&Analysis::Dvvp::App::EnvManager::GetGlobalEnv).stubs().will(returnValue(std::vector<std::string>()));
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::ExecCmd).stubs().will(returnValue(PROFILING_FAILED));
 
     MsopprofManager::instance()->ExecuteMsopprof(params);
 }
@@ -148,12 +137,9 @@ TEST_F(MSOPPROF_MANAGER_UTEST, ExecuteMsopprofWillExecuteOpprofFailWhenWaitProce
 {
     std::vector<std::string> params{"-a"};
 
-    MOCKER_CPP(&Analysis::Dvvp::App::EnvManager::GetGlobalEnv)
-        .stubs().will(returnValue(std::vector<std::string>()));
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::ExecCmd)
-        .stubs().will(returnValue(PROFILING_SUCCESS));
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::WaitProcess)
-        .stubs().will(returnValue(PROFILING_FAILED));
+    MOCKER_CPP(&Analysis::Dvvp::App::EnvManager::GetGlobalEnv).stubs().will(returnValue(std::vector<std::string>()));
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::ExecCmd).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::WaitProcess).stubs().will(returnValue(PROFILING_FAILED));
     MsopprofManager::instance()->ExecuteMsopprof(params);
 }
 

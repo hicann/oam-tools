@@ -36,8 +36,7 @@ int32_t DrvGetDevNum(void)
     }
     if (ret != DRV_ERROR_NONE || numDev > DEV_NUM) {
         MSPROF_LOGE("Failed to drvGetDevNum, ret=%d, num=%u", static_cast<int32_t>(ret), numDev);
-        MSPROF_CALL_ERROR("EK9999", "Failed to drvGetDevNum, ret=%d, num=%u",
-            static_cast<int32_t>(ret), numDev);
+        MSPROF_CALL_ERROR("EK9999", "Failed to drvGetDevNum, ret=%d, num=%u", static_cast<int32_t>(ret), numDev);
         return PROFILING_FAILED;
     }
 
@@ -45,7 +44,7 @@ int32_t DrvGetDevNum(void)
     return static_cast<int32_t>(numDev);
 }
 
-int32_t DrvGetDevIds(int32_t numDevices, std::vector<int32_t> &devIds)
+int32_t DrvGetDevIds(int32_t numDevices, std::vector<int32_t>& devIds)
 {
     devIds.clear();
 
@@ -53,12 +52,11 @@ int32_t DrvGetDevIds(int32_t numDevices, std::vector<int32_t> &devIds)
         return PROFILING_FAILED;
     }
 
-    uint32_t devices[DEV_NUM] = { 0 };
+    uint32_t devices[DEV_NUM] = {0};
     const drvError_t ret = drvGetDevIDs(devices, static_cast<uint32_t>(numDevices));
     if (ret != DRV_ERROR_NONE) {
         MSPROF_LOGE("Failed to drvGetDevIDs, ret=%d", static_cast<int32_t>(ret));
-        MSPROF_CALL_ERROR("EK9999", "Failed to drvGetDevIDs, ret=%d",
-            static_cast<int32_t>(ret));
+        MSPROF_CALL_ERROR("EK9999", "Failed to drvGetDevIDs, ret=%d", static_cast<int32_t>(ret));
         return PROFILING_FAILED;
     }
 
@@ -70,229 +68,245 @@ int32_t DrvGetDevIds(int32_t numDevices, std::vector<int32_t> &devIds)
     return PROFILING_SUCCESS;
 }
 
-int32_t DrvGetPlatformInfo(uint32_t &platformInfo)
+int32_t DrvGetPlatformInfo(uint32_t& platformInfo)
 {
     drvError_t ret = drvGetPlatformInfo(&platformInfo);
     if (ret != DRV_ERROR_NONE) {
         if (ret != MSPROF_HELPER_HOST) {
             MSPROF_LOGE("Failed to drvGetPlatformInfo, ret=%d", static_cast<int32_t>(ret));
-            MSPROF_CALL_ERROR("EK9999", "Failed to drvGetPlatformInfo, ret=%d",
-                static_cast<int32_t>(ret));
+            MSPROF_CALL_ERROR("EK9999", "Failed to drvGetPlatformInfo, ret=%d", static_cast<int32_t>(ret));
             return PROFILING_FAILED;
         }
     }
     return PROFILING_SUCCESS;
 }
 
-int32_t DrvGetEnvType(uint32_t deviceId, int64_t &envType)
+int32_t DrvGetEnvType(uint32_t deviceId, int64_t& envType)
 {
-    const drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
-        static_cast<int32_t>(INFO_TYPE_ENV), &envType);
+    const drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM), static_cast<int32_t>(INFO_TYPE_ENV), &envType);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetEnvType, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetEnvType by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetEnvType by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetEnvType, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetEnvType, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetEnvType, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetCtrlCpuId(uint32_t deviceId, int64_t &ctrlCpuId)
+int32_t DrvGetCtrlCpuId(uint32_t deviceId, int64_t& ctrlCpuId)
 {
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU),
-        static_cast<int32_t>(INFO_TYPE_ID), &ctrlCpuId);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU), static_cast<int32_t>(INFO_TYPE_ID), &ctrlCpuId);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetCtrlCpuId, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetCtrlCpuId by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetCtrlCpuId by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetCtrlCpuId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetCtrlCpuId, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetCtrlCpuId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetCtrlCpuCoreNum(uint32_t deviceId, int64_t &ctrlCpuCoreNum)
+int32_t DrvGetCtrlCpuCoreNum(uint32_t deviceId, int64_t& ctrlCpuCoreNum)
 {
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU),
-        static_cast<int32_t>(INFO_TYPE_CORE_NUM), &ctrlCpuCoreNum);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU), static_cast<int32_t>(INFO_TYPE_CORE_NUM), &ctrlCpuCoreNum);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetCtrlCpuCoreNum, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetCtrlCpuCoreNum by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetCtrlCpuCoreNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetCtrlCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetCtrlCpuCoreNum, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetCtrlCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetCtrlCpuEndianLittle(uint32_t deviceId, int64_t &ctrlCpuEndianLittle)
+int32_t DrvGetCtrlCpuEndianLittle(uint32_t deviceId, int64_t& ctrlCpuEndianLittle)
 {
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU),
-        static_cast<int32_t>(INFO_TYPE_ENDIAN), &ctrlCpuEndianLittle);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_CCPU), static_cast<int32_t>(INFO_TYPE_ENDIAN), &ctrlCpuEndianLittle);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetCtrlCpuEndianLittle, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetCtrlCpuEndianLittle by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetCtrlCpuEndianLittle by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetCtrlCpuEndianLittle, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetCtrlCpuEndianLittle, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetCtrlCpuEndianLittle, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAiCpuCoreNum(uint32_t deviceId, int64_t &aiCpuCoreNum)
+int32_t DrvGetAiCpuCoreNum(uint32_t deviceId, int64_t& aiCpuCoreNum)
 {
-    const drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU),
-        static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aiCpuCoreNum);
+    const drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU), static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aiCpuCoreNum);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetAiCpuCoreNum, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAiCpuCoreNum by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAiCpuCoreNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetAiCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCpuCoreNum, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetAiCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAiCpuCoreId(uint32_t deviceId, int64_t &aiCpuCoreId)
+int32_t DrvGetAiCpuCoreId(uint32_t deviceId, int64_t& aiCpuCoreId)
 {
-    const drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU),
-        static_cast<int32_t>(INFO_TYPE_ID), &aiCpuCoreId);
+    const drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU), static_cast<int32_t>(INFO_TYPE_ID), &aiCpuCoreId);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetAiCpuCoreId, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAiCpuCoreId by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAiCpuCoreId by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetAiCpuCoreId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCpuCoreId, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetAiCpuCoreId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAiCpuOccupyBitmap(uint32_t deviceId, int64_t &aiCpuOccupyBitmap)
+int32_t DrvGetAiCpuOccupyBitmap(uint32_t deviceId, int64_t& aiCpuOccupyBitmap)
 {
-    const drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU),
-        static_cast<int32_t>(INFO_TYPE_OCCUPY), &aiCpuOccupyBitmap);
+    const drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_AICPU), static_cast<int32_t>(INFO_TYPE_OCCUPY), &aiCpuOccupyBitmap);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetAiCpuOccupyBitmap, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAiCpuOccupyBitmap by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAiCpuOccupyBitmap by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetAiCpuOccupyBitmap, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCpuOccupyBitmap, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetAiCpuOccupyBitmap, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetTsCpuCoreNum(uint32_t deviceId, int64_t &tsCpuCoreNum)
+int32_t DrvGetTsCpuCoreNum(uint32_t deviceId, int64_t& tsCpuCoreNum)
 {
     drvError_t ret = halGetDeviceInfo(deviceId, MODULE_TYPE_TSCPU, INFO_TYPE_CORE_NUM, &tsCpuCoreNum);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetTsCpuCoreNum, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetTsCpuCoreNum by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetTsCpuCoreNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetTsCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetTsCpuCoreNum, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR(
+        "EK9999", "Failed to DrvGetTsCpuCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAiCoreId(uint32_t deviceId, int64_t &aiCoreId)
+int32_t DrvGetAiCoreId(uint32_t deviceId, int64_t& aiCoreId)
 {
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_AICORE),
-        static_cast<int32_t>(INFO_TYPE_ID), &aiCoreId);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_AICORE), static_cast<int32_t>(INFO_TYPE_ID), &aiCoreId);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetAiCoreId, deviceId=%u", deviceId);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAiCoreId by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAiCoreId by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetAiCoreId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCoreId, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCoreId, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAiCoreNum(uint32_t deviceId, int64_t &aiCoreNum)
+int32_t DrvGetAiCoreNum(uint32_t deviceId, int64_t& aiCoreNum)
 {
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_AICORE),
-        static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aiCoreNum);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_AICORE), static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aiCoreNum);
     if (ret == DRV_ERROR_NONE) {
         MSPROF_LOGI("Succeeded to DrvGetAiCoreNum, deviceId=%u, aicNum=%lld", deviceId, aiCoreNum);
         return PROFILING_SUCCESS;
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAiCoreNum by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAiCoreNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     }
 
     MSPROF_LOGE("Failed to DrvGetAiCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCoreNum, deviceId=%u, ret=%d",
-        deviceId, static_cast<int32_t>(ret));
+    MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAiCoreNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
     return PROFILING_FAILED;
 }
 
-int32_t DrvGetAivNum(uint32_t deviceId, int64_t &aivNum)
+int32_t DrvGetAivNum(uint32_t deviceId, int64_t& aivNum)
 {
-    const std::set<PlatformType> unsupportTypeSet{PlatformType::MINI_TYPE,
-        PlatformType::CLOUD_TYPE, PlatformType::DC_TYPE};
+    const std::set<PlatformType> unsupportTypeSet{
+        PlatformType::MINI_TYPE, PlatformType::CLOUD_TYPE, PlatformType::DC_TYPE};
     auto type = ConfigManager::instance()->GetPlatformType();
     if (unsupportTypeSet.find(type) != unsupportTypeSet.cend()) {
         aivNum = 0;
         MSPROF_LOGI("Driver doesn't support DrvGetAivNum by halGetDeviceInfo interface");
         return PROFILING_SUCCESS;
     }
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE),
-    static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aivNum);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE), static_cast<int32_t>(INFO_TYPE_CORE_NUM), &aivNum);
     if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetAivNum by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetAivNum by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
         return PROFILING_SUCCESS;
     } else if (ret != DRV_ERROR_NONE) {
         MSPROF_LOGE("Failed to DrvGetAivNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
-        MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAivNum, deviceId=%u, ret=%d",
-            deviceId, static_cast<int32_t>(ret));
+        MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetAivNum, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
         return PROFILING_FAILED;
     }
 
@@ -300,39 +314,40 @@ int32_t DrvGetAivNum(uint32_t deviceId, int64_t &aivNum)
     return PROFILING_SUCCESS;
 }
 
-int32_t DrvGetDeviceTime(uint32_t deviceId, uint64_t &startMono, uint64_t &cntvct)
+int32_t DrvGetDeviceTime(uint32_t deviceId, uint64_t& startMono, uint64_t& cntvct)
 {
     int64_t time = 0;
-    drvError_t ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
-        static_cast<int32_t>(INFO_TYPE_MONOTONIC_RAW), &time);
+    drvError_t ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM), static_cast<int32_t>(INFO_TYPE_MONOTONIC_RAW), &time);
     if (ret == DRV_ERROR_NONE) {
-        MSPROF_LOGI("Succeeded to DrvGetDeviceTime startMono, devId=%u, startMono=%llu ns",
-            deviceId, startMono);
+        MSPROF_LOGI("Succeeded to DrvGetDeviceTime startMono, devId=%u, startMono=%llu ns", deviceId, startMono);
         startMono = static_cast<uint64_t>(time);
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetDeviceTime startMono by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetDeviceTime startMono by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
     } else {
-        MSPROF_LOGE("Failed to DrvGetDeviceTime startMono, deviceId=%u, ret=%d",
-            deviceId, static_cast<int32_t>(ret));
-        MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetDeviceTime startMono, deviceId=%u, ret=%d",
-            deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGE("Failed to DrvGetDeviceTime startMono, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_CALL_ERROR(
+            "EK9999", "Failed to DrvGetDeviceTime startMono, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
         return PROFILING_FAILED;
     }
 
-    ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
-        static_cast<int32_t>(INFO_TYPE_SYS_COUNT), &time);
+    ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM), static_cast<int32_t>(INFO_TYPE_SYS_COUNT), &time);
     if (ret == DRV_ERROR_NONE) {
         cntvct = static_cast<uint64_t>(time);
         MSPROF_LOGI("Succeeded to DrvGetDeviceTime cntvct, devId=%u, cntvct=%" PRIu64, deviceId, cntvct);
     } else if (ret == DRV_ERROR_NOT_SUPPORT) {
-        MSPROF_LOGW("Driver doesn't support DrvGetDeviceTime cntvct by halGetDeviceInfo interface, "
-            "deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetDeviceTime cntvct by halGetDeviceInfo interface, "
+            "deviceId=%u, ret=%d",
+            deviceId, static_cast<int32_t>(ret));
     } else {
-        MSPROF_LOGE("Failed to DrvGetDeviceTime cntvct, deviceId=%u, ret=%d",
-            deviceId, static_cast<int32_t>(ret));
-        MSPROF_CALL_ERROR("EK9999", "Failed to DrvGetDeviceTime cntvct, deviceId=%u, ret=%d",
-            deviceId, static_cast<int32_t>(ret));
+        MSPROF_LOGE("Failed to DrvGetDeviceTime cntvct, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
+        MSPROF_CALL_ERROR(
+            "EK9999", "Failed to DrvGetDeviceTime cntvct, deviceId=%u, ret=%d", deviceId, static_cast<int32_t>(ret));
         return PROFILING_FAILED;
     }
 
@@ -366,36 +381,37 @@ bool DrvCheckIfHelperHost()
     return false;
 }
 
-bool DrvGetHostFreq(std::string &freq)
+bool DrvGetHostFreq(std::string& freq)
 {
     int64_t hostFreq = 0;
-    const auto ret = halGetDeviceInfo(0, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
-        static_cast<int32_t>(INFO_TYPE_HOST_OSC_FREQUE), &hostFreq);
+    const auto ret = halGetDeviceInfo(
+        0, static_cast<int32_t>(MODULE_TYPE_SYSTEM), static_cast<int32_t>(INFO_TYPE_HOST_OSC_FREQUE), &hostFreq);
     if (ret == DRV_ERROR_NONE && hostFreq > 0) {
         MSPROF_LOGI("Succeeded to DrvGetHostFreq frequency=%lld kHz", hostFreq);
         freq = std::to_string(static_cast<float>(hostFreq) / FREQUENCY_KHZ_TO_MHZ);
         return true;
     } else {
-        MSPROF_LOGW("Driver doesn't support DrvGetHostFreq by halGetDeviceInfo interface, ret=%d",
-            static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetHostFreq by halGetDeviceInfo interface, ret=%d", static_cast<int32_t>(ret));
         freq = NOT_SUPPORT_FREQUENCY;
     }
 
     return false;
 }
 
-bool DrvGetDeviceFreq(uint32_t deviceId, std::string &freq)
+bool DrvGetDeviceFreq(uint32_t deviceId, std::string& freq)
 {
     int64_t deviceFreq = 0;
-    auto ret = halGetDeviceInfo(deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM),
-        static_cast<int32_t>(INFO_TYPE_DEV_OSC_FREQUE), &deviceFreq);
+    auto ret = halGetDeviceInfo(
+        deviceId, static_cast<int32_t>(MODULE_TYPE_SYSTEM), static_cast<int32_t>(INFO_TYPE_DEV_OSC_FREQUE),
+        &deviceFreq);
     if (ret == DRV_ERROR_NONE && deviceFreq > 0) {
         MSPROF_LOGI("Succeeded to DrvGetDeviceFreq frequency=%lld kHz", deviceFreq);
         freq = std::to_string(static_cast<float>(deviceFreq) / FREQUENCY_KHZ_TO_MHZ);
         return true;
     } else {
-        MSPROF_LOGW("Driver doesn't support DrvGetDeviceFreq by halGetDeviceInfo interface, ret=%d",
-            static_cast<int32_t>(ret));
+        MSPROF_LOGW(
+            "Driver doesn't support DrvGetDeviceFreq by halGetDeviceInfo interface, ret=%d", static_cast<int32_t>(ret));
     }
 
     return false;
@@ -423,6 +439,6 @@ bool DrvGetDeviceStatus(const uint32_t deviceId)
     return true;
 }
 
-}  // namespace driver
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace driver
+} // namespace dvvp
+} // namespace analysis

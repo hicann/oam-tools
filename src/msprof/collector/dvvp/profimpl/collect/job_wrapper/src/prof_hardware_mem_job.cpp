@@ -36,10 +36,7 @@ using namespace Analysis::Dvvp::Common::Config;
 /*
  * @berif  : Collect DDR profiling data
  */
-ProfDdrJob::ProfDdrJob()
-{
-    channelId_ = PROF_CHANNEL_DDR;
-}
+ProfDdrJob::ProfDdrJob() { channelId_ = PROF_CHANNEL_DDR; }
 
 ProfDdrJob::~ProfDdrJob() {}
 
@@ -83,8 +80,8 @@ int32_t ProfDdrJob::SetPeripheralConfig()
         sizeof(TagDdrProfileConfig) + (sizeof(uint32_t) * GetEventSize(*(collectionJobCfg_->jobParams.events)));
     CHECK_JOB_CONFIG_UNSIGNED_SIZE_RET(configSize, return PROFILING_FAILED);
 
-    TagDdrProfileConfig *configP =
-        static_cast<TagDdrProfileConfig *>(Utils::ProfMalloc(static_cast<size_t>(configSize)));
+    TagDdrProfileConfig* configP =
+        static_cast<TagDdrProfileConfig*>(Utils::ProfMalloc(static_cast<size_t>(configSize)));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfDdrJob ProfMalloc TagDdrProfileConfig failed");
         return PROFILING_FAILED;
@@ -98,7 +95,7 @@ int32_t ProfDdrJob::SetPeripheralConfig()
             configP->event[configP->eventNum++] = PERIPHERAL_EVENT_READ;
         } else if ((*collectionJobCfg_->jobParams.events)[i].compare("write") == 0) {
             configP->event[configP->eventNum++] = PERIPHERAL_EVENT_WRITE;
-        } else if ((*collectionJobCfg_->jobParams.events)[i].compare("master_id") == 0) {  // master id
+        } else if ((*collectionJobCfg_->jobParams.events)[i].compare("master_id") == 0) { // master id
             configP->masterId = static_cast<uint32_t>(collectionJobCfg_->comParams->params->ddr_master_id);
         } else {
             MSPROF_LOGW("DDR event:%s is not supported", (*collectionJobCfg_->jobParams.events)[i].c_str());
@@ -113,10 +110,7 @@ int32_t ProfDdrJob::SetPeripheralConfig()
 /*
  * @berif  : Collect HBM profiling data
  */
-ProfHbmJob::ProfHbmJob()
-{
-    channelId_ = PROF_CHANNEL_HBM;
-}
+ProfHbmJob::ProfHbmJob() { channelId_ = PROF_CHANNEL_HBM; }
 ProfHbmJob::~ProfHbmJob() {}
 
 /*
@@ -160,7 +154,7 @@ int32_t ProfHbmJob::SetPeripheralConfig()
         sizeof(TagTsHbmProfileConfig) + (sizeof(uint32_t) * GetEventSize(*(collectionJobCfg_->jobParams.events)));
     CHECK_JOB_CONFIG_UNSIGNED_SIZE_RET(configSize, return PROFILING_FAILED);
 
-    TagTsHbmProfileConfig *configP = static_cast<TagTsHbmProfileConfig *>(Utils::ProfMalloc(configSize));
+    TagTsHbmProfileConfig* configP = static_cast<TagTsHbmProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfHbmJob ProfMalloc TagTsHbmProfileConfig failed");
         return PROFILING_FAILED;
@@ -187,10 +181,7 @@ int32_t ProfHbmJob::SetPeripheralConfig()
 /*
  * @berif  : Collect Application Memory profiling data
  */
-ProfAppMemJob::ProfAppMemJob()
-{
-    channelId_ = PROF_CHANNEL_NPU_APP_MEM;
-}
+ProfAppMemJob::ProfAppMemJob() { channelId_ = PROF_CHANNEL_NPU_APP_MEM; }
 
 ProfAppMemJob::~ProfAppMemJob() {}
 
@@ -227,7 +218,7 @@ int32_t ProfAppMemJob::SetPeripheralConfig()
 {
     samplePeriod_ = collectionJobCfg_->comParams->params->memInterval;
     const uint32_t configSize = sizeof(TagMemProfileConfig);
-    TagMemProfileConfig *configP = static_cast<TagMemProfileConfig *>(Utils::ProfMalloc(configSize));
+    TagMemProfileConfig* configP = static_cast<TagMemProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfAppMemJob ProfMalloc TagMemProfileConfig failed");
         return PROFILING_FAILED;
@@ -246,10 +237,7 @@ int32_t ProfAppMemJob::SetPeripheralConfig()
 /*
  * @berif  : Collect Device Memory profiling data
  */
-ProfDevMemJob::ProfDevMemJob()
-{
-    channelId_ = PROF_CHANNEL_NPU_MEM;
-}
+ProfDevMemJob::ProfDevMemJob() { channelId_ = PROF_CHANNEL_NPU_MEM; }
 
 ProfDevMemJob::~ProfDevMemJob() {}
 
@@ -285,7 +273,7 @@ int32_t ProfDevMemJob::SetPeripheralConfig()
 {
     samplePeriod_ = collectionJobCfg_->comParams->params->memInterval;
     uint32_t configSize = sizeof(TagMemProfileConfig);
-    TagMemProfileConfig *configP = static_cast<TagMemProfileConfig *>(Utils::ProfMalloc(configSize));
+    TagMemProfileConfig* configP = static_cast<TagMemProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfDevMemJob ProfMalloc TagMemProfileConfig failed");
         return PROFILING_FAILED;
@@ -304,10 +292,7 @@ int32_t ProfDevMemJob::SetPeripheralConfig()
 /*
  * @berif  : Collect ai stack memory profiling data
  */
-ProfAiStackMemJob::ProfAiStackMemJob()
-{
-    channelId_ = PROF_CHANNEL_AISTACK_MEM;
-}
+ProfAiStackMemJob::ProfAiStackMemJob() { channelId_ = PROF_CHANNEL_AISTACK_MEM; }
 
 ProfAiStackMemJob::~ProfAiStackMemJob() {}
 
@@ -343,7 +328,7 @@ int32_t ProfAiStackMemJob::SetPeripheralConfig()
 {
     samplePeriod_ = collectionJobCfg_->comParams->params->memInterval;
     const uint32_t configSize = sizeof(TagMemProfileConfig);
-    TagMemProfileConfig *configP = static_cast<TagMemProfileConfig *>(Utils::ProfMalloc(configSize));
+    TagMemProfileConfig* configP = static_cast<TagMemProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfAiStackMemJob ProfMalloc TagMemProfileConfig failed");
         return PROFILING_FAILED;
@@ -362,10 +347,7 @@ int32_t ProfAiStackMemJob::SetPeripheralConfig()
 /*
  * @berif  : Collect LLC profiling data
  */
-ProfLlcJob::ProfLlcJob()
-{
-    channelId_ = PROF_CHANNEL_LLC;
-}
+ProfLlcJob::ProfLlcJob() { channelId_ = PROF_CHANNEL_LLC; }
 
 ProfLlcJob::~ProfLlcJob() {}
 
@@ -411,7 +393,7 @@ int32_t ProfLlcJob::SetPeripheralConfig()
 
     eventsStr_ = GetEventsStr(*(collectionJobCfg_->jobParams.events));
     const uint32_t configSize = sizeof(TagLlcProfileConfig);
-    TagLlcProfileConfig *configP = static_cast<TagLlcProfileConfig *>(Utils::ProfMalloc(configSize));
+    TagLlcProfileConfig* configP = static_cast<TagLlcProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfLlcJob ProfMalloc TagLlcProfileConfig failed");
         return PROFILING_FAILED;
@@ -436,18 +418,12 @@ int32_t ProfLlcJob::SetPeripheralConfig()
     return PROFILING_SUCCESS;
 }
 
-bool ProfLlcJob::IsGlobalJobLevel()
-{
-    return false;
-}
+bool ProfLlcJob::IsGlobalJobLevel() { return false; }
 
 /*
  * @berif  : Collect qos data
  */
-ProfQosJob::ProfQosJob()
-{
-    channelId_ = PROF_CHANNEL_QOS;
-}
+ProfQosJob::ProfQosJob() { channelId_ = PROF_CHANNEL_QOS; }
 
 ProfQosJob::~ProfQosJob() {}
 
@@ -484,7 +460,7 @@ int32_t ProfQosJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 int32_t ProfQosJob::SetPeripheralConfig()
 {
     const uint32_t configSize = sizeof(QosProfileConfig);
-    QosProfileConfig *configP = static_cast<QosProfileConfig *>(Utils::ProfMalloc(configSize));
+    QosProfileConfig* configP = static_cast<QosProfileConfig*>(Utils::ProfMalloc(configSize));
     if (configP == nullptr) {
         MSPROF_LOGE("ProfQosJob ProfMalloc QosProfileConfig failed");
         return PROFILING_FAILED;
@@ -499,6 +475,6 @@ int32_t ProfQosJob::SetPeripheralConfig()
     peripheralCfg_.configSize = configSize;
     return PROFILING_SUCCESS;
 }
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

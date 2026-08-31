@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_STREAMIO_EPOLL_OPERATION_H
 #define ANALYSIS_DVVP_STREAMIO_EPOLL_OPERATION_H
 
@@ -43,12 +43,12 @@ private:
     OsalSockHandle maxFd_;
     fd_set readfd_;
 
-    SelectOperation &operator=(const SelectOperation &op);
-    SelectOperation(const SelectOperation &op);
+    SelectOperation& operator=(const SelectOperation& op);
+    SelectOperation(const SelectOperation& op);
 };
-}  // namespace common
-}  // namespace streamio
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace common
+} // namespace streamio
+} // namespace dvvp
+} // namespace analysis
 
 #endif

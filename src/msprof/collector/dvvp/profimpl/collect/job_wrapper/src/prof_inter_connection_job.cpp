@@ -32,10 +32,7 @@ using namespace Analysis::Dvvp::Common::Platform;
 /**
  * @brief  : Collect HCCS profiling data
  */
-ProfHccsJob::ProfHccsJob()
-{
-    channelId_ = PROF_CHANNEL_HCCS;
-}
+ProfHccsJob::ProfHccsJob() { channelId_ = PROF_CHANNEL_HCCS; }
 
 ProfHccsJob::~ProfHccsJob() {}
 
@@ -77,10 +74,7 @@ int32_t ProfHccsJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 /**
  * @brief  : Collect PCIE profiling data
  */
-ProfPcieJob::ProfPcieJob()
-{
-    channelId_ = PROF_CHANNEL_PCIE;
-}
+ProfPcieJob::ProfPcieJob() { channelId_ = PROF_CHANNEL_PCIE; }
 
 ProfPcieJob::~ProfPcieJob() {}
 
@@ -122,10 +116,7 @@ int32_t ProfPcieJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
 /**
  * @brief  : Collect ub profiling data
  */
-ProfUbJob::ProfUbJob()
-{
-    channelId_ = PROF_CHANNEL_UB;
-}
+ProfUbJob::ProfUbJob() { channelId_ = PROF_CHANNEL_UB; }
 
 ProfUbJob::~ProfUbJob() {}
 
@@ -158,6 +149,6 @@ int32_t ProfUbJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     peripheralCfg_.configSize = 0;
     return PROFILING_SUCCESS;
 }
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_ENV_MANAGER_H
 #define ANALYSIS_DVVP_ENV_MANAGER_H
 #include <iostream>
@@ -25,15 +25,16 @@ namespace Dvvp {
 namespace App {
 class EnvManager : public analysis::dvvp::common::singleton::Singleton<EnvManager> {
 public:
-    void SetGlobalEnv(std::vector<std::string> &envList);
+    void SetGlobalEnv(std::vector<std::string>& envList);
     const std::vector<std::string> GetGlobalEnv();
     void SetParamEnv(std::string paramEnv);
     std::string GetParamEnv();
+
 private:
     std::vector<std::string> envList_;
     std::string paramEnv_;
 };
-}
-}
-}
+} // namespace App
+} // namespace Dvvp
+} // namespace Analysis
 #endif

@@ -42,5 +42,7 @@ protected:
 private:
     void InsertSysFeature();
 };
-}}}
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp
 #endif

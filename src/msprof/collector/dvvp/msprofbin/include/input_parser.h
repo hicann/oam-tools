@@ -32,9 +32,9 @@ namespace Msprof {
 using namespace analysis::dvvp::common::validation;
 using namespace analysis::dvvp::common::utils;
 
-using MsprofStringBuffer = char *;
-using MsprofString = const char *;
-using MsprofStrBufAddrT = char **;
+using MsprofStringBuffer = char*;
+using MsprofString = const char*;
+using MsprofStrBufAddrT = char**;
 
 enum MsprofArgsType {
     ARGS_HELP = 0,
@@ -120,7 +120,7 @@ enum MsprofArgsType {
 };
 
 struct MsprofCmdInfo {
-    char *args[NR_ARGS];
+    char* args[NR_ARGS];
 };
 
 const OsalStructOption LONG_OPTIONS[] = {
@@ -149,7 +149,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"optype", OSAL_OPTIONAL_ARG, nullptr, ARGS_OP_TYPE},
     {"rule", OSAL_OPTIONAL_ARG, nullptr, ARGS_RULE},
     // switch
-    {"ascendcl", OSAL_OPTIONAL_ARG, nullptr, ARGS_ASCENDCL},               // the default value is on
+    {"ascendcl", OSAL_OPTIONAL_ARG, nullptr, ARGS_ASCENDCL}, // the default value is on
     {"ai-core", OSAL_OPTIONAL_ARG, nullptr, ARGS_AI_CORE},
     {"ai-vector-core", OSAL_OPTIONAL_ARG, nullptr, ARGS_AIV},
     {"model-execution", OSAL_OPTIONAL_ARG, nullptr, ARGS_MODEL_EXECUTION}, // the default value is off
@@ -158,7 +158,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"task-time", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TIME},             // the default value is on
     {"aicore-shape", OSAL_REQUIRED_ARG, nullptr, ARGS_AICORE_SHAPE},
     {"ge-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_GE_API},
-    {"task-memory", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_MEMORY},         // the default value is off
+    {"task-memory", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_MEMORY}, // the default value is off
     {"aicpu", OSAL_OPTIONAL_ARG, nullptr, ARGS_AICPU},
     {"msproftx", OSAL_OPTIONAL_ARG, nullptr, ARGS_MSPROFTX},
     {"mstx-domain-include", OSAL_OPTIONAL_ARG, nullptr, ARGS_MSTX_DOMAIN_INCLUDE},
@@ -172,7 +172,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"dvpp-profiling", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_PROFILING},
     {"task-block", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_BLOCK},
     {"sys-lp", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_LOW_POWER},
-    {"hccl", OSAL_OPTIONAL_ARG, nullptr, ARGS_HCCL},                       // the default value is off
+    {"hccl", OSAL_OPTIONAL_ARG, nullptr, ARGS_HCCL}, // the default value is off
     {"instr-profiling", OSAL_OPTIONAL_ARG, nullptr, ARGS_INSTR_PROFILING},
     {"l2", OSAL_OPTIONAL_ARG, nullptr, ARGS_L2_PROFILING},
     {"parse", OSAL_OPTIONAL_ARG, nullptr, ARGS_PARSE},
@@ -203,8 +203,7 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"host-sys-usage", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE},
     {"nts-metrics", OSAL_REQUIRED_ARG, nullptr, ARGS_NTS_METRICS},
     // end
-    {nullptr, OSAL_NO_ARG, nullptr, ARGS_HELP}
-};
+    {nullptr, OSAL_NO_ARG, nullptr, ARGS_HELP}};
 
 class InputParser {
 public:
@@ -216,68 +215,68 @@ public:
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> MsprofGetOpts(int32_t argc, MsprofString argv[]);
 
 private:
-    void SplitApplicationArgv(int32_t argc, CONST_CHAR_PTR argv[], int32_t &argCount);
+    void SplitApplicationArgv(int32_t argc, CONST_CHAR_PTR argv[], int32_t& argCount);
     void HandleApp();
-    int32_t CheckPythonPathValid(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckAnalysisOutputValid(const std::string &path, const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckOutputValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckStorageLimitValid(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t GetAppParam(const std::string &appParams);
-    int32_t CheckAppValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckEnvironmentValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckDynProfValid(struct MsprofCmdInfo &cmdInfo) const;
-    bool CheckDynaProfPidValid(const std::string &pid, std::vector<int32_t> &validPids) const;
-    bool CheckDynConflict(struct MsprofCmdInfo &cmdInfo) const;
-    bool ConflictChecking(struct MsprofCmdInfo &cmdInfo, int32_t opt, const std::string &conflictArgs) const;
-    int32_t CheckOptionValueNotNull(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckSampleModeValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckArgOnOff(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckArgRange(const struct MsprofCmdInfo &cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
-    int32_t CheckNpuEventsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckNtsMetricsValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckNtsCustomMetricsValid(const std::string &ntsMetrics);
-    int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckAiCoreMetricsValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
+    int32_t CheckPythonPathValid(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckAnalysisOutputValid(const std::string& path, const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckOutputValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckStorageLimitValid(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t GetAppParam(const std::string& appParams);
+    int32_t CheckAppValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckEnvironmentValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckDynProfValid(struct MsprofCmdInfo& cmdInfo) const;
+    bool CheckDynaProfPidValid(const std::string& pid, std::vector<int32_t>& validPids) const;
+    bool CheckDynConflict(struct MsprofCmdInfo& cmdInfo) const;
+    bool ConflictChecking(struct MsprofCmdInfo& cmdInfo, int32_t opt, const std::string& conflictArgs) const;
+    int32_t CheckOptionValueNotNull(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t CheckSampleModeValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t CheckArgOnOff(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t CheckArgRange(const struct MsprofCmdInfo& cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
+    int32_t CheckNpuEventsValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t CheckNtsMetricsValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckNtsCustomMetricsValid(const std::string& ntsMetrics);
+    int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckAiCoreMetricsValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
     std::string GeneratePrompts() const;
-    int32_t CheckArgsIsNumber(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t CheckExportSummaryFormat(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckExportType(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckReports(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckMemServiceflow(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckAnalyzeRuleSwitch(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckLlcProfilingValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckSysPeriodValid(const struct MsprofCmdInfo &cmdInfo) const;
-    int32_t CheckSysDevicesValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckTaskBlockValid(const std::string &switchName, const std::string &config) const;
-    int32_t CheckHostSysValid(const struct MsprofCmdInfo &cmdInfo);
+    int32_t CheckArgsIsNumber(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t CheckExportSummaryFormat(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckExportType(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckReports(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckMemServiceflow(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckAnalyzeRuleSwitch(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckLlcProfilingValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckSysPeriodValid(const struct MsprofCmdInfo& cmdInfo) const;
+    int32_t CheckSysDevicesValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckTaskBlockValid(const std::string& switchName, const std::string& config) const;
+    int32_t CheckHostSysValid(const struct MsprofCmdInfo& cmdInfo);
     int32_t CheckHostSysToolsValid() const;
-    int32_t CheckHostSysPidValid(const struct MsprofCmdInfo &cmdInfo);
-    int32_t CheckHostSysUsageValid(const struct MsprofCmdInfo &cmdInfo);
-    void SetHostSysUsageParam(const std::string &hostSysUsageParam);
-    int32_t MsprofCmdCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    int32_t MsprofCmdCheckValid2(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    int32_t MsprofFreqCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    int32_t MsprofFreqCheckValidTwo(const struct MsprofCmdInfo &cmdInfo, int32_t opt) const;
-    int32_t MsprofHostCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    void MsprofFreqUpdateParams(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    void MsprofFreqTransferParams(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    int32_t MsprofSwitchCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    int32_t MsprofDynamicCheckValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    void MsprofDynamicUpdateParams(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    bool SetBasicSwitchParam(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
+    int32_t CheckHostSysPidValid(const struct MsprofCmdInfo& cmdInfo);
+    int32_t CheckHostSysUsageValid(const struct MsprofCmdInfo& cmdInfo);
+    void SetHostSysUsageParam(const std::string& hostSysUsageParam);
+    int32_t MsprofCmdCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    int32_t MsprofCmdCheckValid2(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    int32_t MsprofFreqCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    int32_t MsprofFreqCheckValidTwo(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
+    int32_t MsprofHostCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    void MsprofFreqUpdateParams(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    void MsprofFreqTransferParams(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    int32_t MsprofSwitchCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    int32_t MsprofDynamicCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    void MsprofDynamicUpdateParams(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    bool SetBasicSwitchParam(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
     int32_t CheckSysCpu();
     int32_t CheckMstxValid();
-    void ParamsSwitchValid(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    void ParamsSwitchValid2(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
-    void ParamsSwitchValid3(const struct MsprofCmdInfo &cmdInfo, int32_t opt);
+    void ParamsSwitchValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    void ParamsSwitchValid2(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
+    void ParamsSwitchValid3(const struct MsprofCmdInfo& cmdInfo, int32_t opt);
     void AiCoreFreqCheckValid(const int32_t intervalTransfer);
-    int32_t CheckLlcProfilingIsValid(const std::string &llcProfiling) const;
-    int32_t PreCheckApp(const std::string &appDir, const std::string &appName) const;
-    int32_t CheckUserCmdValid(const std::string &usrCmdPath);
-    int32_t CheckAppParamValid(std::string &appParam) const;
+    int32_t CheckLlcProfilingIsValid(const std::string& llcProfiling) const;
+    int32_t PreCheckApp(const std::string& appDir, const std::string& appName) const;
+    int32_t CheckUserCmdValid(const std::string& usrCmdPath);
+    int32_t CheckAppParamValid(std::string& appParam) const;
     int32_t ParamsCheck() const;
     int32_t HostAndDevParamsCheck();
-    int32_t ProcessOptions(int32_t opt, struct MsprofCmdInfo &cmdInfo);
+    int32_t ProcessOptions(int32_t opt, struct MsprofCmdInfo& cmdInfo);
     void SetTaskTimeSwitch(const std::string timeSwitch);
     int32_t CheckHostSysToolsIsExist(const std::string toolName, const std::string exeCmd) const;
     void SetHostSysParam(const std::string hostSysParam);
@@ -287,7 +286,8 @@ private:
     int32_t UninitCheckHostSysCmd(const OsalProcess checkProcess) const;
     int32_t PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[]);
     std::vector<MsprofArgsType> GeneratePlatSwithList() const;
-    std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> GenerateChipV2PlatSwithMap() const;
+    std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> GenerateChipV2PlatSwithMap()
+        const;
 
 private:
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params_;
@@ -295,14 +295,14 @@ private:
 
 class Args {
 public:
-    Args(const std::string &name, const std::string &detail);
-    Args(const std::string &name, const std::string &detail, const std::string &defaultValue);
-    Args(const std::string &name, const std::string &detail, const std::string &defaultValue, int32_t optional);
+    Args(const std::string& name, const std::string& detail);
+    Args(const std::string& name, const std::string& detail, const std::string& defaultValue);
+    Args(const std::string& name, const std::string& detail, const std::string& defaultValue, int32_t optional);
     virtual ~Args();
 
 public:
     void PrintHelp();
-    void SetDetail(const std::string &detail);
+    void SetDetail(const std::string& detail);
 
 private:
     std::string name_;
@@ -318,7 +318,7 @@ public:
     ~ArgsManager() override;
 
 public:
-    void AddArgs(const Args &args);
+    void AddArgs(const Args& args);
     void PrintHelp();
 
 private:

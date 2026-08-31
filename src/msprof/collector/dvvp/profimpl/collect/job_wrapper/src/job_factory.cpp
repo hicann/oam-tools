@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "job_factory.h"
 #include "job_device_soc.h"
-
 
 namespace Analysis {
 namespace Dvvp {
 namespace JobWrapper {
 using namespace Analysis::Dvvp::JobWrapper;
 
-JobFactory::JobFactory()
-{
-}
+JobFactory::JobFactory() {}
 
-JobFactory::~JobFactory()
-{
-}
+JobFactory::~JobFactory() {}
 
-JobSocFactory::JobSocFactory()
-{}
-JobSocFactory::~JobSocFactory()
-{}
+JobSocFactory::JobSocFactory() {}
+JobSocFactory::~JobSocFactory() {}
 
 SHARED_PTR_ALIA<JobAdapter> JobSocFactory::CreateJobAdapter(int32_t devIndexId) const
 {
@@ -42,4 +35,6 @@ SHARED_PTR_ALIA<JobAdapter> JobSocFactory::CreateJobAdapter(int32_t devIndexId) 
     MSVP_MAKE_SHARED1(job, JobDeviceSoc, devIndexId, return nullptr);
     return job;
 }
-}}}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

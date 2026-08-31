@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_PROFILER_MSPROF_REPORTER_H
 #define ANALYSIS_DVVP_PROFILER_MSPROF_REPORTER_H
 
@@ -59,7 +59,7 @@ private:
 void FlushAllModule();
 void FlushModule();
 int32_t SendAiCpuData(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk);
-}  // namespace Engine
-}  // namespace Msprof
+} // namespace Engine
+} // namespace Msprof
 
 #endif

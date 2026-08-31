@@ -72,6 +72,6 @@ void IdeXfree(IdeMemHandle ptr)
         ptr = nullptr;
     }
 }
-}   // namespace Adx
-}   // namespace Dvvp
-}   // namespace Analysis
+} // namespace Adx
+} // namespace Dvvp
+} // namespace Analysis

@@ -80,7 +80,7 @@ int32_t MsprofManager::MsProcessCmd() const
     return rMode_->RunModeTasks();
 }
 
-SHARED_PTR_ALIA<MsprofTask> MsprofManager::GetTask(const std::string &jobId)
+SHARED_PTR_ALIA<MsprofTask> MsprofManager::GetTask(const std::string& jobId)
 {
     if (rMode_ == nullptr) {
         MSPROF_LOGE("[MsprocessCmd] Get running mode failed");
@@ -97,8 +97,7 @@ int32_t MsprofManager::GenerateRunningMode()
         return PROFILING_FAILED;
     }
 
-    if (GenerateCollectRunningMode() == PROFILING_SUCCESS ||
-        GenerateAnalyzeRunningMode() == PROFILING_SUCCESS) {
+    if (GenerateCollectRunningMode() == PROFILING_SUCCESS || GenerateAnalyzeRunningMode() == PROFILING_SUCCESS) {
         return PROFILING_SUCCESS;
     }
 
@@ -106,7 +105,7 @@ int32_t MsprofManager::GenerateRunningMode()
         CmdLog::CmdErrorLog("No valid argument found in --application --sys-devices");
     } else {
         CmdLog::CmdErrorLog("No valid argument found in --application "
-            "--sys-devices --host-sys --host-sys-usage --parse --query --export --analyze");
+                            "--sys-devices --host-sys --host-sys-usage --parse --query --export --analyze");
     }
 
     ArgsManager::instance()->PrintHelp();
@@ -191,6 +190,6 @@ int32_t MsprofManager::ParamsCheck() const
     }
     return PROFILING_SUCCESS;
 }
-}
-}
-}
+} // namespace Msprof
+} // namespace Dvvp
+} // namespace Analysis

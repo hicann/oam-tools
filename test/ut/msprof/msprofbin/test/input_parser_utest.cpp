@@ -51,11 +51,13 @@ constexpr int32_t APP_PARAM_EXCEED_MAX_LEN = analysis::dvvp::common::config::MAX
 constexpr int32_t OP_TYPE_EXCEED_MAX_LEN = 300;
 constexpr PlatformType TARGET_CHIP_TYPE = PlatformType::CHIP_MDC_V2;
 
-void SetPlatformTypeForTest(PlatformType platformType) {
+void SetPlatformTypeForTest(PlatformType platformType)
+{
     ConfigManager::instance()->configMap_["type"] = std::to_string(static_cast<int32_t>(platformType));
 }
 
-void RefreshArgsManagerForTest() {
+void RefreshArgsManagerForTest()
+{
     ArgsManager::instance()->argsList_.clear();
     ArgsManager::instance()->AddArgs();
 }
@@ -66,7 +68,8 @@ protected:
     void TearDown() override { GlobalMockObject::verify(); }
 };
 
-TEST_F(INPUT_PARSER_UTEST, ProcessOptions) {
+TEST_F(INPUT_PARSER_UTEST, ProcessOptions)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -86,27 +89,30 @@ TEST_F(INPUT_PARSER_UTEST, ProcessOptions) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.ProcessOptions(ARGS_HOST_SYS, cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, SplitApplicationArgv) {
+TEST_F(INPUT_PARSER_UTEST, SplitApplicationArgv)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     int32_t argc = 4;
-    const char *argv[] = {"msprof", "--output=./", "app", "arg1"};
+    const char* argv[] = {"msprof", "--output=./", "app", "arg1"};
     int32_t argCount = 1;
     parser.SplitApplicationArgv(argc, argv, argCount);
     EXPECT_EQ(SPLIT_APP_ARG_COUNT, argCount);
 }
 
-TEST_F(INPUT_PARSER_UTEST, SplitApplicationArgvWithHelpOnly) {
+TEST_F(INPUT_PARSER_UTEST, SplitApplicationArgvWithHelpOnly)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     int32_t argc = 2;
-    const char *argv[] = {"msprof", "--help"};
+    const char* argv[] = {"msprof", "--help"};
     int32_t argCount = 1;
     parser.SplitApplicationArgv(argc, argv, argCount);
     EXPECT_EQ(SPLIT_APP_ARG_COUNT, argCount);
 }
 
-TEST_F(INPUT_PARSER_UTEST, HandleApp) {
+TEST_F(INPUT_PARSER_UTEST, HandleApp)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     parser.params_->application.emplace_back("app");
@@ -118,7 +124,8 @@ TEST_F(INPUT_PARSER_UTEST, HandleApp) {
     EXPECT_TRUE(parser.params_->app.compare("test") == 0);
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckSysCpu) {
+TEST_F(INPUT_PARSER_UTEST, CheckSysCpu)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     parser.params_->cpu_profiling = "on";
@@ -130,7 +137,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckSysCpu) {
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
-TEST_F(INPUT_PARSER_UTEST, MsprofHostCheckValid) {
+TEST_F(INPUT_PARSER_UTEST, MsprofHostCheckValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -166,7 +174,8 @@ TEST_F(INPUT_PARSER_UTEST, MsprofHostCheckValid) {
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofHostCheckValid(cmdInfo, ARGS_HOST_SYS_USAGE));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckHostSysCmdOutIsExist) {
+TEST_F(INPUT_PARSER_UTEST, CheckHostSysCmdOutIsExist)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     std::string tempFile = "./CheckHostSysCmdOutIsExist";
@@ -178,7 +187,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckHostSysCmdOutIsExist) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckHostSysCmdOutIsExist(tempFile, toolName, tmpProcess));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckHostOutString) {
+TEST_F(INPUT_PARSER_UTEST, CheckHostOutString)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     std::string tmpStr = "";
@@ -190,7 +200,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckHostOutString) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckHostOutString(tmpStr, toolName));
 }
 
-TEST_F(INPUT_PARSER_UTEST, UninitCheckHostSysCmd) {
+TEST_F(INPUT_PARSER_UTEST, UninitCheckHostSysCmd)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     mmProcess checkProcess = INVALID_PROCESS;
@@ -198,12 +209,11 @@ TEST_F(INPUT_PARSER_UTEST, UninitCheckHostSysCmd) {
     EXPECT_EQ(PROFILING_FAILED, parser.UninitCheckHostSysCmd(checkProcess));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckOutputValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckOutputValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
-    struct MsprofCmdInfo cmdInfo = {
-        {nullptr, nullptr}
-    };
+    struct MsprofCmdInfo cmdInfo = {{nullptr, nullptr}};
 
     EXPECT_EQ(PROFILING_FAILED, parser.CheckOutputValid(cmdInfo));
     cmdInfo.args[ARGS_OUTPUT] = "";
@@ -212,7 +222,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckOutputValid) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckOutputValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckStorageLimitValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckStorageLimitValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -226,7 +237,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckStorageLimitValid) {
     EXPECT_EQ(PROFILING_FAILED, parser.CheckStorageLimitValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, GetAppParam) {
+TEST_F(INPUT_PARSER_UTEST, GetAppParam)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     std::remove("./GetAppParam");
@@ -240,7 +252,8 @@ TEST_F(INPUT_PARSER_UTEST, GetAppParam) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.GetAppParam("./GetAppParam a"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckAppValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckAppValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -271,7 +284,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckAppValid) {
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAppValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckEnvironmentValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckEnvironmentValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -284,7 +298,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckEnvironmentValid) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckEnvironmentValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckPythonPathValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckPythonPathValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -320,7 +335,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckPythonPathValid) {
     std::remove(fakePython.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, ParamsCheck) {
+TEST_F(INPUT_PARSER_UTEST, ParamsCheck)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     auto pp = parser.params_;
@@ -346,16 +362,18 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheck) {
     const std::string workPath = "/tmp/msprof_work_path";
     setenv("ASCEND_WORK_PATH", workPath.c_str(), 1);
     EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
-    EXPECT_EQ(analysis::dvvp::common::utils::Utils::CanonicalizePath(workPath + "/profiling_data"),
+    EXPECT_EQ(
+        analysis::dvvp::common::utils::Utils::CanonicalizePath(workPath + "/profiling_data"),
         parser.params_->result_dir);
     unsetenv("ASCEND_WORK_PATH");
     Utils::RemoveDir(workPath);
 }
 
-TEST_F(INPUT_PARSER_UTEST, WorkPathEnv) {
+TEST_F(INPUT_PARSER_UTEST, WorkPathEnv)
+{
     std::string resultDir("/tmp/test/profiling");
     setenv("ASCEND_WORK_PATH", resultDir.c_str(), 1);
-    const char *argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -363,8 +381,9 @@ TEST_F(INPUT_PARSER_UTEST, WorkPathEnv) {
     unsetenv("ASCEND_WORK_PATH");
 }
 
-TEST_F(INPUT_PARSER_UTEST, OutputPriorityOverWorkPathEnv) {
-    const char *oldWorkPathEnv = getenv("ASCEND_WORK_PATH");
+TEST_F(INPUT_PARSER_UTEST, OutputPriorityOverWorkPathEnv)
+{
+    const char* oldWorkPathEnv = getenv("ASCEND_WORK_PATH");
     const bool hasOldWorkPathEnv = (oldWorkPathEnv != nullptr);
     const std::string oldWorkPathEnvValue = hasOldWorkPathEnv ? oldWorkPathEnv : "";
 
@@ -373,7 +392,7 @@ TEST_F(INPUT_PARSER_UTEST, OutputPriorityOverWorkPathEnv) {
     const std::string outputArg = "--output=" + outputPath;
     setenv("ASCEND_WORK_PATH", workPathEnv.c_str(), 1);
 
-    const char *argv[] = {"msprof", outputArg.c_str(), "--aicpu=on", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", outputArg.c_str(), "--aicpu=on", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(5, argv);
@@ -393,8 +412,9 @@ TEST_F(INPUT_PARSER_UTEST, OutputPriorityOverWorkPathEnv) {
     Utils::RemoveDir(outputPath);
 }
 
-TEST_F(INPUT_PARSER_UTEST, DefaultOutput) {
-    const char *argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
+TEST_F(INPUT_PARSER_UTEST, DefaultOutput)
+{
+    const char* argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -402,8 +422,9 @@ TEST_F(INPUT_PARSER_UTEST, DefaultOutput) {
     EXPECT_EQ(true, params->result_dir == result);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsDefaultIsEmpty) {
-    const char *argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsDefaultIsEmpty)
+{
+    const char* argv[] = {"msprof", "--aicpu=on", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -411,8 +432,9 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsDefaultIsEmpty) {
     EXPECT_TRUE(params->ntsMetrics.empty());
 }
 
-TEST_F(INPUT_PARSER_UTEST, SysCpuFreqIsParsedFromCommandLine) {
-    const char *argv[] = {"msprof", "--sys-cpu-freq=10", "python3", "test.py", nullptr};
+TEST_F(INPUT_PARSER_UTEST, SysCpuFreqIsParsedFromCommandLine)
+{
+    const char* argv[] = {"msprof", "--sys-cpu-freq=10", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -420,17 +442,19 @@ TEST_F(INPUT_PARSER_UTEST, SysCpuFreqIsParsedFromCommandLine) {
     EXPECT_EQ(CPU_SAMPLING_INTERVAL_FOR_FREQ_TEN, params->cpu_sampling_interval);
 }
 
-TEST_F(INPUT_PARSER_UTEST, MsprofGetOptsRejectsPidSeparatedBySpace) {
+TEST_F(INPUT_PARSER_UTEST, MsprofGetOptsRejectsPidSeparatedBySpace)
+{
     SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
-    const char *argv[] = {"msprof", "--pid", "5", "--sys-devices=0", "--output=./", "--ai-core=on", nullptr};
+    const char* argv[] = {"msprof", "--pid", "5", "--sys-devices=0", "--output=./", "--ai-core=on", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     EXPECT_EQ(nullptr, parser.MsprofGetOpts(6, argv));
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsPipeUtilization) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsPipeUtilization)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -438,9 +462,10 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsPipeUtilization) {
     EXPECT_EQ("PipeUtilization", params->ntsMetrics);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomPassThrough) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomPassThrough)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=Custom:0x301,0x312,789", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:0x301,0x312,789", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -452,9 +477,10 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomPassThrough) {
     EXPECT_EQ(std::string::npos, serializedParams.find("ntsPmuProfilingEvents"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomDecimalPassThrough) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomDecimalPassThrough)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=Custom:769,786,789", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:769,786,789", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -463,9 +489,10 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomDecimalPassThrough) {
     EXPECT_EQ("0x301,0x312,0x315", params->ntsPmuEvents);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomTenEvents) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomTenEvents)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=Custom:1,2,3,4,5,6,7,8,9,10", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:1,2,3,4,5,6,7,8,9,10", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -473,9 +500,10 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomTenEvents) {
     EXPECT_EQ("0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xa", params->ntsPmuEvents);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsBoundaryEvents) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsBoundaryEvents)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=Custom:0,0x71b,1819", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:0,0x71b,1819", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -483,10 +511,10 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsBoundaryEvents) {
     EXPECT_EQ("0x0,0x71b,0x71b", params->ntsPmuEvents);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsExplicitPositiveEvents) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsExplicitPositiveEvents)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {
-        "msprof", "--nts-metrics=Custom:+1,+0x10,+0,+0x71b", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:+1,+0x10,+0,+0x71b", "python3", "test.py", nullptr};
     optind = 1;
     InputParser parser = InputParser();
     auto params = parser.MsprofGetOpts(MSPROF_APP_ARGC, argv);
@@ -494,81 +522,82 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsCustomAllowsExplicitPositiveEvents) {
     EXPECT_EQ("0x1,0x10,0x0,0x71b", params->ntsPmuEvents);
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectInvalidValues) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectInvalidValues)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *invalidNameArgv[] = {"msprof", "--nts-metrics=TaskTime", "python3", "test.py", nullptr};
+    const char* invalidNameArgv[] = {"msprof", "--nts-metrics=TaskTime", "python3", "test.py", nullptr};
     optind = 1;
     InputParser invalidNameParser = InputParser();
     EXPECT_EQ(nullptr, invalidNameParser.MsprofGetOpts(MSPROF_APP_ARGC, invalidNameArgv));
 
-    const char *emptyArgv[] = {"msprof", "--nts-metrics=", "python3", "test.py", nullptr};
+    const char* emptyArgv[] = {"msprof", "--nts-metrics=", "python3", "test.py", nullptr};
     optind = 1;
     InputParser emptyParser = InputParser();
     EXPECT_EQ(nullptr, emptyParser.MsprofGetOpts(MSPROF_APP_ARGC, emptyArgv));
 
-    const char *emptyCustomArgv[] = {"msprof", "--nts-metrics=Custom:", "python3", "test.py", nullptr};
+    const char* emptyCustomArgv[] = {"msprof", "--nts-metrics=Custom:", "python3", "test.py", nullptr};
     optind = 1;
     InputParser emptyCustomParser = InputParser();
     EXPECT_EQ(nullptr, emptyCustomParser.MsprofGetOpts(MSPROF_APP_ARGC, emptyCustomArgv));
 
-    const char *tooManyEventsArgv[] = {
+    const char* tooManyEventsArgv[] = {
         "msprof", "--nts-metrics=Custom:1,2,3,4,5,6,7,8,9,10,11", "python3", "test.py", nullptr};
     optind = 1;
     InputParser tooManyEventsParser = InputParser();
     EXPECT_EQ(nullptr, tooManyEventsParser.MsprofGetOpts(MSPROF_APP_ARGC, tooManyEventsArgv));
 
-    const char *invalidEventArgv[] = {"msprof", "--nts-metrics=Custom:0x301,abc", "python3", "test.py", nullptr};
+    const char* invalidEventArgv[] = {"msprof", "--nts-metrics=Custom:0x301,abc", "python3", "test.py", nullptr};
     optind = 1;
     InputParser invalidEventParser = InputParser();
     EXPECT_EQ(nullptr, invalidEventParser.MsprofGetOpts(MSPROF_APP_ARGC, invalidEventArgv));
 
-    const char *largeEventArgv[] = {"msprof", "--nts-metrics=Custom:0x80000000", "python3", "test.py", nullptr};
+    const char* largeEventArgv[] = {"msprof", "--nts-metrics=Custom:0x80000000", "python3", "test.py", nullptr};
     optind = 1;
     InputParser largeEventParser = InputParser();
     EXPECT_EQ(nullptr, largeEventParser.MsprofGetOpts(MSPROF_APP_ARGC, largeEventArgv));
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsEventAboveMaxAsOutOfRange) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsEventAboveMaxAsOutOfRange)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const char *argv[] = {"msprof", "--nts-metrics=Custom:0x71c", "python3", "test.py", nullptr};
+    const char* argv[] = {"msprof", "--nts-metrics=Custom:0x71c", "python3", "test.py", nullptr};
     optind = 1;
     testing::internal::CaptureStdout();
     testing::internal::CaptureStderr();
     InputParser parser = InputParser();
     EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv));
-    const std::string logOutput = testing::internal::GetCapturedStdout() +
-        testing::internal::GetCapturedStderr();
+    const std::string logOutput = testing::internal::GetCapturedStdout() + testing::internal::GetCapturedStderr();
     EXPECT_NE(std::string::npos, logOutput.find("The event is out of range"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsNegativeEventAsOutOfRange) {
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsRejectsNegativeEventAsOutOfRange)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
-    const std::vector<std::string> negativeEvents = {
-        "-1", "-0", "-18446744073709551615", "-0x10", "-0x0"
-    };
-    for (const auto &event : negativeEvents) {
+    const std::vector<std::string> negativeEvents = {"-1", "-0", "-18446744073709551615", "-0x10", "-0x0"};
+    for (const auto& event : negativeEvents) {
         const std::string ntsMetrics = "--nts-metrics=Custom:" + event;
-        const char *argv[] = {"msprof", ntsMetrics.c_str(), "python3", "test.py", nullptr};
+        const char* argv[] = {"msprof", ntsMetrics.c_str(), "python3", "test.py", nullptr};
         optind = 1;
         testing::internal::CaptureStdout();
         testing::internal::CaptureStderr();
         InputParser parser = InputParser();
         EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv)) << event;
-        const std::string logOutput = testing::internal::GetCapturedStdout() +
-            testing::internal::GetCapturedStderr();
+        const std::string logOutput = testing::internal::GetCapturedStdout() + testing::internal::GetCapturedStderr();
         EXPECT_NE(std::string::npos, logOutput.find("The event is out of range")) << event;
     }
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsMetricsOnlyAvailableOnTargetChip) {
-    const char *argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
+TEST_F(INPUT_PARSER_UTEST, NtsMetricsOnlyAvailableOnTargetChip)
+{
+    const char* argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
     SetPlatformTypeForTest(PlatformType::CLOUD_TYPE);
     optind = 1;
     InputParser parser = InputParser();
     EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv));
 }
 
-TEST_F(INPUT_PARSER_UTEST, NtsEventsAllowsTargetChip) {
+TEST_F(INPUT_PARSER_UTEST, NtsEventsAllowsTargetChip)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
     Platform::instance()->Uninit();
     std::string ntsEvents;
@@ -583,11 +612,12 @@ TEST_F(INPUT_PARSER_UTEST, NtsEventsAllowsTargetChip) {
     EXPECT_EQ(std::string::npos, logOutput.find("not supported on current platform"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsNtsMetricsOnTargetChip) {
+TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsNtsMetricsOnTargetChip)
+{
     SetPlatformTypeForTest(TARGET_CHIP_TYPE);
     RefreshArgsManagerForTest();
     std::ostringstream helpOutput;
-    auto *oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
+    auto* oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
     ArgsManager::instance()->PrintHelp();
     std::cout.rdbuf(oldBuffer);
 
@@ -598,18 +628,20 @@ TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsNtsMetricsOnTargetChip) {
     EXPECT_NE(std::string::npos, help.find("[0x0, 0x71b]"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, PrintHelpHidesNtsMetricsOnOtherPlatform) {
+TEST_F(INPUT_PARSER_UTEST, PrintHelpHidesNtsMetricsOnOtherPlatform)
+{
     SetPlatformTypeForTest(PlatformType::CLOUD_TYPE);
     RefreshArgsManagerForTest();
     std::ostringstream helpOutput;
-    auto *oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
+    auto* oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
     ArgsManager::instance()->PrintHelp();
     std::cout.rdbuf(oldBuffer);
 
     EXPECT_EQ(std::string::npos, helpOutput.str().find("--nts-metrics"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsAicoreShape) {
+TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsAicoreShape)
+{
     testing::internal::CaptureStdout();
     ArgsManager argsManager;
     argsManager.PrintHelp();
@@ -620,7 +652,8 @@ TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsAicoreShape) {
     EXPECT_NE(std::string::npos, help.find("default value is off"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckAiCoreMetricsValidModena) {
+TEST_F(INPUT_PARSER_UTEST, CheckAiCoreMetricsValidModena)
+{
     SetPlatformTypeForTest(PlatformType::CHIP_5162A);
     Platform::instance()->Uninit();
     Platform::instance()->Init();
@@ -651,7 +684,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckAiCoreMetricsValidModena) {
     Platform::instance()->Uninit();
 }
 
-TEST_F(INPUT_PARSER_UTEST, SetHostSysParam) {
+TEST_F(INPUT_PARSER_UTEST, SetHostSysParam)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     parser.SetHostSysParam("123");
@@ -662,7 +696,8 @@ TEST_F(INPUT_PARSER_UTEST, SetHostSysParam) {
     EXPECT_EQ(parser.params_->host_osrt_profiling, "on");
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckHostSysValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckHostSysValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -673,7 +708,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckHostSysValid) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckHostSysValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckHostSysUsageValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckHostSysUsageValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -683,7 +719,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckHostSysUsageValid) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckHostSysUsageValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
+TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder)
+{
     EXPECT_EQ(ARGS_INSTR_PROFILING, LONG_OPTIONS[ARGS_INSTR_PROFILING].val);
     EXPECT_EQ(ARGS_INSTR_PROFILING_FREQ, LONG_OPTIONS[ARGS_INSTR_PROFILING_FREQ].val);
 
@@ -706,7 +743,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
 
     cmdInfo.args[ARGS_DVPP_FREQ] = "50";
     EXPECT_EQ(PROFILING_SUCCESS, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
-    cmdInfo.args[ARGS_DVPP_FREQ] = "0";   // 超出 1~100 范围
+    cmdInfo.args[ARGS_DVPP_FREQ] = "0"; // 超出 1~100 范围
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
     cmdInfo.args[ARGS_DVPP_FREQ] = "101"; // 超出 1~100 范围
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_DVPP_FREQ));
@@ -718,7 +755,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
     EXPECT_EQ(PROFILING_SUCCESS, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
     cmdInfo.args[ARGS_DVPP_PROFILING] = "invalid"; // 非法取值
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
-    cmdInfo.args[ARGS_DVPP_PROFILING] = nullptr;   // 缺省值
+    cmdInfo.args[ARGS_DVPP_PROFILING] = nullptr; // 缺省值
     EXPECT_EQ(PROFILING_FAILED, parser.CheckArgOnOff(cmdInfo, ARGS_DVPP_PROFILING));
 
     MOCKER_CPP(static_cast<bool (Platform::*)(const ::Dvvp::Collect::Platform::PlatformFeature) const>(
@@ -745,7 +782,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseOrder) {
     configManger->Uninit();
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
+TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
 
@@ -847,7 +885,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
     EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
     parser.params_->opType.clear();
     std::string opType(257, 't');
-    cmdInfo.args[ARGS_OP_TYPE] = const_cast<char *>(opType.c_str());
+    cmdInfo.args[ARGS_OP_TYPE] = const_cast<char*>(opType.c_str());
     EXPECT_EQ(PROFILING_FAILED, parser.CheckCmdOpTypeIsValid(cmdInfo));
     parser.params_->opType.clear();
     cmdInfo.args[ARGS_OP_TYPE] = "Index,MatMul";
@@ -1024,9 +1062,10 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo) {
     parser.ParamsSwitchValid2(cmdInfo, ARGS_CLEAR);
 }
 
-TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform) {
+TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform)
+{
     InputParser parser = InputParser();
-    const char *argv[] = {"aiv-me"};
+    const char* argv[] = {"aiv-me"};
     ConfigManager::instance()->configMap_["type"] =
         std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::END_TYPE));
     EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_AIV, argv));
@@ -1038,23 +1077,25 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform) {
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
-TEST_F(INPUT_PARSER_UTEST, PreCheckPlatformRejectsDavid121UnsupportedDvppArgs) {
+TEST_F(INPUT_PARSER_UTEST, PreCheckPlatformRejectsDavid121UnsupportedDvppArgs)
+{
     SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V4);
     Platform::instance()->runSide_ = SysPlatformType::HOST;
     InputParser parser = InputParser();
 
     optind = 1;
-    const char *dvppProfilingArgv[] = {"--dvpp-profiling=on"};
+    const char* dvppProfilingArgv[] = {"--dvpp-profiling=on"};
     EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_DVPP_PROFILING, dvppProfilingArgv));
 
     optind = 1;
-    const char *dvppFreqArgv[] = {"--dvpp-freq=50"};
+    const char* dvppFreqArgv[] = {"--dvpp-freq=50"};
     EXPECT_EQ(PROFILING_FAILED, parser.PreCheckPlatform(ARGS_DVPP_FREQ, dvppFreqArgv));
 
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
-TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
+TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_AIV_MODE] = "sample-baseddddd";
@@ -1079,7 +1120,8 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofCmdCheckValid(cmdInfo, ARGS_DURATION_PROF));
 }
 
-TEST_F(INPUT_PARSER_UTEST, RejectMissingOptionalArgumentWithoutCoreDump) {
+TEST_F(INPUT_PARSER_UTEST, RejectMissingOptionalArgumentWithoutCoreDump)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
 
@@ -1093,7 +1135,8 @@ TEST_F(INPUT_PARSER_UTEST, RejectMissingOptionalArgumentWithoutCoreDump) {
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckSysDevicesValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
+TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     ConfigManager::instance()->configMap_["type"] =
@@ -1108,7 +1151,8 @@ TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
 }
 
-TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation) {
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation)
+{
     InputParser parser = InputParser();
     parser.params_->taskBlock = "on";
     parser.params_->taskBlockShink = "off";
@@ -1119,7 +1163,8 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.ParamsCheck());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
+{
     InputParser parser = InputParser();
 
     MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
@@ -1148,7 +1193,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid) {
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid) {
+TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, INVALID_FREQ_OPTION));
@@ -1195,7 +1241,8 @@ TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid) {
     EXPECT_EQ(PROFILING_FAILED, parser.MsprofFreqCheckValid(cmdInfo, ARGS_EXPORT_ITERATION_ID));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckDynProfValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckDynProfValid)
+{
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_DYNAMIC_PROF] = "on";
 
@@ -1232,9 +1279,10 @@ TEST_F(INPUT_PARSER_UTEST, CheckDynProfValid) {
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckDynProfValid(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform_Miniv3) {
+TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform_Miniv3)
+{
     InputParser parser = InputParser();
-    const char *argv[] = {"instr-profiling"};
+    const char* argv[] = {"instr-profiling"};
     optind = 1;
     ConfigManager::instance()->configMap_["type"] =
         std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::MINI_V3_TYPE));
@@ -1244,10 +1292,11 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckPlatform_Miniv3) {
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
-TEST_F(INPUT_PARSER_UTEST, PreCheckSwitch310P) {
+TEST_F(INPUT_PARSER_UTEST, PreCheckSwitch310P)
+{
     InputParser parser = InputParser();
     int32_t argc = 4;
-    const char *argv[argc];
+    const char* argv[argc];
     argv[0] = "msprof";
     argv[1] = "--dynamic=on";
     argv[DYNAMIC_OUTPUT_ARG_INDEX] = "--output=./";
@@ -1257,10 +1306,10 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckSwitch310P) {
         std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::DC_TYPE));
     Platform::instance()->runSide_ = SysPlatformType::HOST;
 
-    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DYNAMIC_PROF, (const char **)argv));
-    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DYNAMIC_PROF_PID, (const char **)argv));
-    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DELAY_PROF, (const char **)argv));
-    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DURATION_PROF, (const char **)argv));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DYNAMIC_PROF, (const char**)argv));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DYNAMIC_PROF_PID, (const char**)argv));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DELAY_PROF, (const char**)argv));
+    EXPECT_EQ(PROFILING_SUCCESS, parser.PreCheckPlatform(ARGS_DURATION_PROF, (const char**)argv));
     Platform::instance()->runSide_ = SysPlatformType::INVALID;
 }
 
@@ -1269,7 +1318,8 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckSwitch310P) {
  * 函数功能	检测参数配置是否发生错位
  * 注意事项 谨慎修改，确保63位是invalid，并且63之前参数填充满，保证63的前后参数与input_parser.h顺序一致
  */
-TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset) {
+TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset)
+{
     EXPECT_EQ(DVPP_FREQ_ARG_INDEX, ARGS_DVPP_FREQ);
     EXPECT_EQ(CPU_SAMPLING_FREQ_ARG_INDEX, ARGS_CPU_SAMPLING_FREQ);
     EXPECT_EQ(INVALID_ARG_INDEX, ARGS_INVALID);
@@ -1281,7 +1331,8 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset) {
     EXPECT_EQ("nts-metrics", LONG_OPTIONS[ARGS_NTS_METRICS].name);
     EXPECT_EQ("aicore-shape", LONG_OPTIONS[ARGS_AICORE_SHAPE].name);
 }
-TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid)
+{
     GlobalMockObject::verify();
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
@@ -1317,7 +1368,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckCmdOpTypeIsValid) {
     EXPECT_EQ("Add,MatMul,Softmax", parser.params_->opType);
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAndmstxDomainExcludeAndMstxAllSet) {
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAndmstxDomainExcludeAndMstxAllSet)
+{
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "a";
@@ -1325,7 +1377,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnErrorWhenmstxDomainIncludeAnd
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmstxDomainExcludeNotSet) {
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmstxDomainExcludeNotSet)
+{
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "";
@@ -1333,7 +1386,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeAndmst
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSet) {
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSet)
+{
     InputParser parser = InputParser();
     parser.params_->msproftx = "on";
     parser.params_->mstxDomainInclude = "a";
@@ -1345,7 +1399,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSetAndMstxOff) {
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeSetAndMstxOff)
+{
     InputParser parser = InputParser();
     parser.params_->msproftx = "off";
     parser.params_->mstxDomainInclude = "a";
@@ -1357,7 +1412,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeBothNotSetAndMstxOff) {
+TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrmstxDomainExcludeBothNotSetAndMstxOff)
+{
     InputParser parser = InputParser();
     parser.params_->msproftx = "off";
     parser.params_->mstxDomainInclude = "";
@@ -1365,7 +1421,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckMstxValidWillReturnOKWhenmstxDomainIncludeSetOrm
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckMstxValid());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid) {
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_EXPORT_TYPE] = "invalid_export_type";
@@ -1375,7 +1432,8 @@ TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnErrorWhenExportTypeInvalid) 
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckExportType(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_EXPORT_TYPE] = "text";
@@ -1387,14 +1445,16 @@ TEST_F(INPUT_PARSER_UTEST, CheckExportTypeWillReturnOKWhenExportTypeValid) {
     EXPECT_STREQ("db", parser.params_->exportType.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnErrorWhenReportsInvalid) {
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnErrorWhenReportsInvalid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_REPORTS] = nullptr;
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckReports(cmdInfo));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid) {
+TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
+{
     InputParser parser = InputParser();
     struct MsprofCmdInfo cmdInfo = {{nullptr}};
     cmdInfo.args[ARGS_REPORTS] = "xx";
@@ -1402,19 +1462,34 @@ TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid) {
     EXPECT_STREQ("xx", parser.params_->reportsPath.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap) {
+TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap)
+{
     InputParser parser = InputParser();
     auto platMap = parser.GenerateChipV2PlatSwithMap();
 
-    const std::vector<MsprofArgsType> expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
-        ARGS_AICPU, ARGS_IO_PROFILING, ARGS_DYNAMIC_PROF, ARGS_DYNAMIC_PROF_PID, ARGS_DELAY_PROF, ARGS_DURATION_PROF,
-        ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ, ARGS_HCCL, ARGS_MODEL_EXECUTION, ARGS_INSTR_PROFILING_FREQ};
+    const std::vector<MsprofArgsType> expected = {
+        ARGS_AIV,
+        ARGS_AIV_FREQ,
+        ARGS_AIV_MODE,
+        ARGS_AIV_METRICS,
+        ARGS_AICPU,
+        ARGS_IO_PROFILING,
+        ARGS_DYNAMIC_PROF,
+        ARGS_DYNAMIC_PROF_PID,
+        ARGS_DELAY_PROF,
+        ARGS_DURATION_PROF,
+        ARGS_DVPP_PROFILING,
+        ARGS_DVPP_FREQ,
+        ARGS_HCCL,
+        ARGS_MODEL_EXECUTION,
+        ARGS_INSTR_PROFILING_FREQ};
 
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_V2]);
     EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_LITE_V2]);
 }
 
-TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs) {
+TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs)
+{
     ArgsManager argsManager = ArgsManager();
 
     // Scenario 1: V2 platforms skip the hccl arg, the list stays empty
@@ -1445,8 +1520,8 @@ TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidAndDavid121BlackSwitches)
     InputParser parser = InputParser();
     auto switchList = parser.GeneratePlatSwithList();
 
-    const std::vector<MsprofArgsType> davidExpected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
-        ARGS_INSTR_PROFILING_FREQ};
+    const std::vector<MsprofArgsType> davidExpected = {
+        ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
     EXPECT_EQ(davidExpected, switchList);
 
     SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V4);
@@ -1454,8 +1529,9 @@ TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidAndDavid121BlackSwitches)
     Platform::instance()->Init();
     switchList = parser.GeneratePlatSwithList();
 
-    const std::vector<MsprofArgsType> david121Expected = {ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS,
-        ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING, ARGS_DVPP_FREQ};
+    const std::vector<MsprofArgsType> david121Expected = {
+        ARGS_AIV,      ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING,
+        ARGS_DVPP_FREQ};
     EXPECT_EQ(david121Expected, switchList);
 }
 

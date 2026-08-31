@@ -35,7 +35,7 @@ public:
     void Uninit();
 
     void Clear();
-    uint8_t *GetBuffer() const;
+    uint8_t* GetBuffer() const;
 
     size_t GetUsedSize() const;
     void SetUsedSize(size_t size);
@@ -44,21 +44,18 @@ public:
     size_t GetBufferSize() const;
 
 private:
-    Chunk &operator=(const Chunk &chunk);
-    Chunk(const Chunk &chunk);
+    Chunk& operator=(const Chunk& chunk);
+    Chunk(const Chunk& chunk);
 
-    unsigned char *buffer_;
+    unsigned char* buffer_;
     size_t bufferSize_;
     size_t usedSize_;
 };
 
-template<class T, class ArgT>
+template <class T, class ArgT>
 class PoolBase {
 public:
-    explicit PoolBase(size_t poolSize, ArgT resArg)
-        : poolSize_(poolSize), resArg_(resArg)
-    {
-    }
+    explicit PoolBase(size_t poolSize, ArgT resArg) : poolSize_(poolSize), resArg_(resArg) {}
     virtual ~PoolBase() {}
 
     bool Init()
@@ -100,18 +97,12 @@ private:
     }
 };
 
-template<class T, class ArgT>
+template <class T, class ArgT>
 class ResourcePool : public PoolBase<T, ArgT> {
 public:
-    explicit ResourcePool(size_t poolSize, ArgT resArg)
-        : PoolBase<T, ArgT>(poolSize, resArg)
-    {
-    }
+    explicit ResourcePool(size_t poolSize, ArgT resArg) : PoolBase<T, ArgT>(poolSize, resArg) {}
 
-    ~ResourcePool() override
-    {
-        Uninit();
-    }
+    ~ResourcePool() override { Uninit(); }
 
     void Uninit()
     {
@@ -174,9 +165,9 @@ public:
     ChunkPool(size_t poolSize, size_t chunkSize);
     ~ChunkPool() override;
 };
-}  // namespace memory
-}  // namespace common
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace memory
+} // namespace common
+} // namespace dvvp
+} // namespace analysis
 
 #endif

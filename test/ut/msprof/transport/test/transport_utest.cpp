@@ -45,17 +45,17 @@ using namespace Analysis::Dvvp::Common::Platform;
 using namespace Analysis::Dvvp::Common::Config;
 using namespace Dvvp::Acp::Analyze;
 //////////////////////////////HDCTransport/////////////////////////////////////
-class TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST: public testing::Test {
+class TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
-    virtual void TearDown() {
-    }
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+
 private:
     std::string _log_file;
 };
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, HDCTransport) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, HDCTransport)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -65,7 +65,8 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, HDCTransport) {
     trans.reset();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBuffer) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBuffer)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -81,19 +82,17 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBuffer) {
         .will(returnValue(IDE_DAEMON_ERROR))
         .then(returnValue(IDE_DAEMON_OK));
 
-    MOCKER(HdcWrite)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_ERROR))
-        .then(returnValue(IDE_DAEMON_OK));
+    MOCKER(HdcWrite).stubs().will(returnValue(IDE_DAEMON_ERROR)).then(returnValue(IDE_DAEMON_OK));
 
-    void * buff = (void *)0x12345678;
+    void* buff = (void*)0x12345678;
     int length = 10;
     EXPECT_EQ(PROFILING_FAILED, trans->SendBuffer(buff, length));
     EXPECT_EQ(PROFILING_FAILED, trans->SendBuffer(buff, length));
     EXPECT_EQ(length, trans->SendBuffer(buff, length));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBufferForProfileFileChunk) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBufferForProfileFileChunk)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -109,10 +108,7 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBufferForProfileFileChunk) {
         .will(returnValue(IDE_DAEMON_ERROR))
         .then(returnValue(IDE_DAEMON_OK));
 
-    MOCKER(HdcWrite)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_ERROR))
-        .then(returnValue(IDE_DAEMON_OK));
+    MOCKER(HdcWrite).stubs().will(returnValue(IDE_DAEMON_ERROR)).then(returnValue(IDE_DAEMON_OK));
 
     SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq;
     fileChunkReq = std::make_shared<analysis::dvvp::ProfileFileChunk>();
@@ -124,12 +120,13 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, SendBufferForProfileFileChunk) {
     EXPECT_EQ(PROFILING_SUCCESS, trans->SendBuffer(fileChunkReq));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, RecvPacket) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, RecvPacket)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
     int buf_len = sizeof(struct tlv_req);
-    struct tlv_req * packet = NULL;
+    struct tlv_req* packet = NULL;
 
     std::shared_ptr<HDCTransport> trans(new HDCTransport(session));
 
@@ -143,7 +140,8 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, RecvPacket) {
     EXPECT_EQ(buf_len, trans->RecvPacket(&packet));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, DestroyPacket) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, DestroyPacket)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -151,12 +149,13 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, DestroyPacket) {
     std::shared_ptr<HDCTransport> trans(new HDCTransport(session));
     EXPECT_NE(nullptr, trans);
 
-    struct tlv_req * packet = (struct tlv_req *)0x12345678;
+    struct tlv_req* packet = (struct tlv_req*)0x12345678;
     trans->DestroyPacket(NULL);
     trans->DestroyPacket(packet);
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, CloseSession) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, CloseSession)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -171,32 +170,31 @@ TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, CloseSession) {
     trans_c.reset();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, MultiThread_CloseSession) {
+TEST_F(TRANSPORT_TRANSPORT_HDCTRANSPORT_TEST, MultiThread_CloseSession)
+{
     GlobalMockObject::verify();
     HDC_SESSION session = (HDC_SESSION)0x12345678;
     std::shared_ptr<ITransport> trans_s(new HDCTransport(session));
 
     std::vector<std::thread> th;
     for (int i = 0; i < 10; i++) {
-        th.push_back(std::thread([&, trans_s]() -> void {
-            EXPECT_EQ(PROFILING_SUCCESS, trans_s->CloseSession());
-        }));
+        th.push_back(std::thread([&, trans_s]() -> void { EXPECT_EQ(PROFILING_SUCCESS, trans_s->CloseSession()); }));
     }
     for_each(th.begin(), th.end(), std::mem_fn(&std::thread::join));
 }
 
 ///////////////////////////////TransportFactory////////////////////////////////////
-class TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST: public testing::Test {
+class TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
-    virtual void TearDown() {
-    }
+    virtual void SetUp() {}
+    virtual void TearDown() {}
+
 private:
     std::string _log_file;
 };
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, TransportFactory) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, TransportFactory)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<TransportFactory> fac(new TransportFactory());
@@ -204,12 +202,14 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, TransportFactory) {
     fac.reset();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_with_nullptr_server) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_with_nullptr_server)
+{
     GlobalMockObject::verify();
     EXPECT_EQ(nullptr, HDCTransportFactory().CreateHdcServerTransport(0, nullptr));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_session) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_session)
+{
     GlobalMockObject::verify();
 
     EXPECT_TRUE(HDCTransportFactory().CreateHdcTransport(nullptr).get() == nullptr);
@@ -219,34 +219,29 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_session) 
     auto trans = HDCTransportFactory().CreateHdcTransport(session);
     EXPECT_NE((ITransport*)NULL, trans.get());
 
-    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckStringIsNonNegativeIntNum)
-        .stubs()
-        .will(returnValue(false));
+    MOCKER_CPP(&analysis::dvvp::common::utils::Utils::CheckStringIsNonNegativeIntNum).stubs().will(returnValue(false));
     trans = HDCTransportFactory().CreateHdcTransport(session);
     EXPECT_EQ((ITransport*)NULL, trans.get());
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_client) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_client)
+{
     GlobalMockObject::verify();
 
     HDC_CLIENT client = (HDC_CLIENT)0x12345678;
     int dev_id = 0;
 
-    MOCKER(HdcSessionConnect)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_ERROR))
-        .then(returnValue(IDE_DAEMON_OK));
+    MOCKER(HdcSessionConnect).stubs().will(returnValue(IDE_DAEMON_ERROR)).then(returnValue(IDE_DAEMON_OK));
 
     EXPECT_EQ((ITransport*)NULL, HDCTransportFactory().CreateHdcTransport(client, dev_id).get());
     EXPECT_NE((ITransport*)NULL, HDCTransportFactory().CreateHdcTransport(client, dev_id).get());
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_getdevid) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_getdevid)
+{
     GlobalMockObject::verify();
 
-    MOCKER(IdeGetDevIdBySession)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_ERROR));
+    MOCKER(IdeGetDevIdBySession).stubs().will(returnValue(IDE_DAEMON_ERROR));
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
 
@@ -254,7 +249,8 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, create_hdc_transport_getdevid)
     EXPECT_EQ((ITransport*)NULL, trans.get());
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateOpTransport) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateOpTransport)
+{
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
@@ -264,8 +260,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateOpTransport) {
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
 
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "test.data";
     chunk->extraInfo = "null.0";
@@ -275,39 +270,38 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateOpTransport) {
     Platform::instance()->Uninit();
 }
 
-drvError_t halGetDeviceInfoTransStub(uint32_t devId, int32_t moduleType, int32_t infoType, int64_t *value) {
+drvError_t halGetDeviceInfoTransStub(uint32_t devId, int32_t moduleType, int32_t infoType, int64_t* value)
+{
     if (moduleType == static_cast<int32_t>(MODULE_TYPE_AICORE) &&
         (infoType == static_cast<int32_t>(INFO_TYPE_CORE_NUM))) {
         *value = 20;
-    } else if (moduleType == static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE) &&
+    } else if (
+        moduleType == static_cast<int32_t>(MODULE_TYPE_VECTOR_CORE) &&
         (infoType == static_cast<int32_t>(INFO_TYPE_CORE_NUM))) {
         *value = 40;
-    } else if (moduleType == static_cast<int32_t>(MODULE_TYPE_SYSTEM) &&
+    } else if (
+        moduleType == static_cast<int32_t>(MODULE_TYPE_SYSTEM) &&
         (infoType == static_cast<int32_t>(INFO_TYPE_DEV_OSC_FREQUE))) {
         *value = 50000;
     }
     return DRV_ERROR_NONE;
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData)
+{
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(PlatformType::CHIP_V4_1_0));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(invoke(halGetDeviceInfoTransStub));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(halGetDeviceInfo).stubs().will(invoke(halGetDeviceInfoTransStub));
     Platform::instance()->Init();
     using namespace Analysis::Dvvp::Analyze;
     std::string deviceId = "0";
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
     // stars_soc.data
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "stars_soc.data";
     chunk->extraInfo = "null.0";
@@ -318,7 +312,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData) {
     data.sysCountHigh = 1;
     data.sysCountLow = 1;
     data.head.logType = ACSQ_TASK_START_FUNC_TYPE;
-    std::string starsData((char *)&data, sizeof(data));
+    std::string starsData((char*)&data, sizeof(data));
     chunk->chunk = starsData;
     chunk->chunkSize = sizeof(data);
     int ret = trans->SendBuffer(chunk);
@@ -327,7 +321,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData) {
     data.sysCountHigh = 1;
     data.sysCountLow = 2;
     data.head.logType = ACSQ_TASK_END_FUNC_TYPE;
-    std::string starsDataEnd((char *)&data, sizeof(data));
+    std::string starsDataEnd((char*)&data, sizeof(data));
     chunk->chunk = starsDataEnd;
     chunk->chunkSize = sizeof(data);
     ret = trans->SendBuffer(chunk);
@@ -351,14 +345,13 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData) {
     data2.pmu[5] = 60;
     data2.pmu[6] = 70;
     data2.pmu[7] = 80;
-    std::string FftsData((char *)&data2, sizeof(data2));
+    std::string FftsData((char*)&data2, sizeof(data2));
     chunk->chunk = FftsData;
     chunk->chunkSize = sizeof(data2);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
     // end_info
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(new analysis::dvvp::ProfileFileChunk());
     chunk2->fileName = "end_info";
     chunk2->extraInfo = "./";
     chunk2->chunk = "MemoryL0";
@@ -371,25 +364,21 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAicData) {
     Platform::instance()->Uninit();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData)
+{
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(PlatformType::CHIP_V4_1_0));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(invoke(halGetDeviceInfoTransStub));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(halGetDeviceInfo).stubs().will(invoke(halGetDeviceInfoTransStub));
     Platform::instance()->Init();
     using namespace Analysis::Dvvp::Analyze;
     std::string deviceId = "0";
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
     // stars_soc.data
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "stars_soc.data";
     chunk->extraInfo = "null.0";
@@ -400,7 +389,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData) {
     data.sysCountHigh = 1;
     data.sysCountLow = 1;
     data.head.logType = ACSQ_TASK_START_FUNC_TYPE;
-    std::string starsData((char *)&data, sizeof(data));
+    std::string starsData((char*)&data, sizeof(data));
     chunk->chunk = starsData;
     chunk->chunkSize = sizeof(data);
     int ret = trans->SendBuffer(chunk);
@@ -409,7 +398,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData) {
     data.sysCountHigh = 1;
     data.sysCountLow = 2;
     data.head.logType = ACSQ_TASK_END_FUNC_TYPE;
-    std::string starsDataEnd((char *)&data, sizeof(data));
+    std::string starsDataEnd((char*)&data, sizeof(data));
     chunk->chunk = starsDataEnd;
     chunk->chunkSize = sizeof(data);
     ret = trans->SendBuffer(chunk);
@@ -433,14 +422,13 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData) {
     data2.pmu[5] = 60;
     data2.pmu[6] = 70;
     data2.pmu[7] = 80;
-    std::string FftsData((char *)&data2, sizeof(data2));
+    std::string FftsData((char*)&data2, sizeof(data2));
     chunk->chunk = FftsData;
     chunk->chunkSize = sizeof(data2);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
     // end_info
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(new analysis::dvvp::ProfileFileChunk());
     chunk2->fileName = "end_info";
     chunk2->extraInfo = "./";
     chunk2->chunk = "ArithmeticUtilization";
@@ -453,25 +441,21 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpAivData) {
     Platform::instance()->Uninit();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // aic context，aiv block
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData)
+{ // aic context，aiv block
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(PlatformType::CHIP_V4_1_0));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(invoke(halGetDeviceInfoTransStub));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(halGetDeviceInfo).stubs().will(invoke(halGetDeviceInfoTransStub));
     Platform::instance()->Init();
     using namespace Analysis::Dvvp::Analyze;
     std::string deviceId = "0";
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
     // stars_soc.data
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "stars_soc.data";
     chunk->extraInfo = "null.0";
@@ -482,7 +466,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     data.sysCountHigh = 1;
     data.sysCountLow = 1;
     data.head.logType = ACSQ_TASK_START_FUNC_TYPE;
-    std::string starsData((char *)&data, sizeof(data));
+    std::string starsData((char*)&data, sizeof(data));
     chunk->chunk = starsData;
     chunk->chunkSize = sizeof(data);
     int ret = trans->SendBuffer(chunk);
@@ -491,7 +475,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     data.sysCountHigh = 1;
     data.sysCountLow = 2;
     data.head.logType = ACSQ_TASK_END_FUNC_TYPE;
-    std::string starsDataEnd((char *)&data, sizeof(data));
+    std::string starsDataEnd((char*)&data, sizeof(data));
     chunk->chunk = starsDataEnd;
     chunk->chunkSize = sizeof(data);
     ret = trans->SendBuffer(chunk);
@@ -511,7 +495,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     data2.pmu[0] = 10;
     data2.pmu[1] = 20;
     data2.pmu[2] = 30;
-    std::string FftsSubData((char *)&data2, sizeof(data2));
+    std::string FftsSubData((char*)&data2, sizeof(data2));
     chunk->chunk = FftsSubData;
     chunk->chunkSize = sizeof(data2);
     ret = trans->SendBuffer(chunk);
@@ -533,7 +517,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     data3.pmu[0] = 10;
     data3.pmu[1] = 20;
     data3.pmu[2] = 30;
-    std::string FftsBlockData((char *)&data3, sizeof(data3));
+    std::string FftsBlockData((char*)&data3, sizeof(data3));
     chunk->chunk = FftsBlockData;
     chunk->chunkSize = sizeof(data3);
     ret = trans->SendBuffer(chunk);
@@ -546,8 +530,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
     // end_info
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(new analysis::dvvp::ProfileFileChunk());
     chunk2->fileName = "end_info";
     chunk2->extraInfo = "./";
     chunk2->chunk = "ResourceConflictRatio";
@@ -560,25 +543,21 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseMilanOpMixAicData) { // a
     Platform::instance()->Uninit();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // aic context，aiv block
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData)
+{ // aic context，aiv block
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(PlatformType::CHIP_CLOUD_V3));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(invoke(halGetDeviceInfoTransStub));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(halGetDeviceInfo).stubs().will(invoke(halGetDeviceInfoTransStub));
     Platform::instance()->Init();
     using namespace Analysis::Dvvp::Analyze;
     std::string deviceId = "0";
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
     // stars_soc.data
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "stars_soc.data";
     chunk->extraInfo = "null.0";
@@ -589,7 +568,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     data.sysCountHigh = 1;
     data.sysCountLow = 1;
     data.head.logType = ACSQ_TASK_START_FUNC_TYPE;
-    std::string starsData((char *)&data, sizeof(data));
+    std::string starsData((char*)&data, sizeof(data));
     chunk->chunk = starsData;
     chunk->chunkSize = sizeof(data);
     int ret = trans->SendBuffer(chunk);
@@ -598,7 +577,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     data.sysCountHigh = 1;
     data.sysCountLow = 2;
     data.head.logType = ACSQ_TASK_END_FUNC_TYPE;
-    std::string starsDataEnd((char *)&data, sizeof(data));
+    std::string starsDataEnd((char*)&data, sizeof(data));
     chunk->chunk = starsDataEnd;
     chunk->chunkSize = sizeof(data);
     ret = trans->SendBuffer(chunk);
@@ -614,10 +593,10 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     data2.totalCycle = 1000;
     data2.startCnt = 0;
     data2.endCnt = 1;
-    for (auto i = 0; i < 9; i ++) {
+    for (auto i = 0; i < 9; i++) {
         data2.pmu[i] = i * 10 + 10;
     }
-    std::string FftsSubData((char *)&data2, sizeof(data2));
+    std::string FftsSubData((char*)&data2, sizeof(data2));
     chunk->chunk = FftsSubData;
     chunk->chunkSize = sizeof(data2);
     ret = trans->SendBuffer(chunk);
@@ -635,10 +614,10 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     data3.totalCycle = 1000;
     data3.startCnt = 0;
     data3.endCnt = 1;
-    for (auto i = 0; i < 9; i ++) {
+    for (auto i = 0; i < 9; i++) {
         data3.pmu[i] = i * 10 + 20;
     }
-    std::string FftsBlockData((char *)&data3, sizeof(data3));
+    std::string FftsBlockData((char*)&data3, sizeof(data3));
     chunk->chunk = FftsBlockData;
     chunk->chunkSize = sizeof(data3);
     ret = trans->SendBuffer(chunk);
@@ -651,8 +630,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
     // end_info
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk2(new analysis::dvvp::ProfileFileChunk());
     chunk2->fileName = "end_info";
     chunk2->extraInfo = "./";
     chunk2->chunk = "PipeUtilization";
@@ -665,25 +643,21 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpMixAicData) { // a
     Platform::instance()->Uninit();
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuPerf
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf)
+{ // biuPerf
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
         .will(returnValue(PlatformType::CHIP_CLOUD_V3));
-    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(invoke(halGetDeviceInfoTransStub));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Platform::AscendHalAdaptor::Init).stubs().will(returnValue(PROFILING_SUCCESS));
+    MOCKER(halGetDeviceInfo).stubs().will(invoke(halGetDeviceInfoTransStub));
     Platform::instance()->Init();
     using namespace Analysis::Dvvp::Analyze;
     std::string deviceId = "0";
     auto trans = OpTransportFactory().CreateOpTransport(deviceId);
     EXPECT_NE((ITransport*)NULL, trans.get());
     // biu data. group: 0, tag: aic
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> chunk(new analysis::dvvp::ProfileFileChunk());
     chunk->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
     chunk->fileName = "data/instr.biu_perf_group0_aic.null";
     chunk->extraInfo = "null.0";
@@ -694,8 +668,8 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1110;
     biuperf.events = 0b000000010101;
     biuperf.timeData = 0b0000000000001110;
-    std::string sysCntData = std::string((char *)&biuperf, sizeof(biuperf));
-    sysCntData.append(std::string((char *)&biuperf, sizeof(biuperf)));
+    std::string sysCntData = std::string((char*)&biuperf, sizeof(biuperf));
+    sysCntData.append(std::string((char*)&biuperf, sizeof(biuperf)));
     sysCntData.append(sysCntData);
     chunk->chunk = sysCntData;
     chunk->chunkSize = sizeof(biuperf) * 4;
@@ -706,7 +680,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b0011;
     biuperf.events = 0b000000010101;
     biuperf.timeData = 0b1000000100001111;
-    chunk->chunk = std::string((char *)&biuperf, sizeof(biuperf));
+    chunk->chunk = std::string((char*)&biuperf, sizeof(biuperf));
     chunk->chunkSize = sizeof(biuperf);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -715,7 +689,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1111;
     biuperf.events = 0b000000010101;
     biuperf.timeData = 0b1000000000111111;
-    chunk->chunk = std::string((char *)&biuperf, sizeof(biuperf));
+    chunk->chunk = std::string((char*)&biuperf, sizeof(biuperf));
     chunk->chunkSize = sizeof(biuperf);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -724,7 +698,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1111;
     biuperf.events = 0b000000000000;
     biuperf.timeData = 0b1000000000111111;
-    chunk->chunk = std::string((char *)&biuperf, sizeof(biuperf));
+    chunk->chunk = std::string((char*)&biuperf, sizeof(biuperf));
     chunk->chunkSize = sizeof(biuperf);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -734,8 +708,8 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf2.ctrlType = 0b1110;
     biuperf2.events = 0b000000010111;
     biuperf2.timeData = 0b0000000000001110;
-    std::string sysCntData2 = std::string((char *)&biuperf2, sizeof(biuperf2));
-    sysCntData2.append(std::string((char *)&biuperf2, sizeof(biuperf2)));
+    std::string sysCntData2 = std::string((char*)&biuperf2, sizeof(biuperf2));
+    sysCntData2.append(std::string((char*)&biuperf2, sizeof(biuperf2)));
     sysCntData2.append(sysCntData2);
     chunk->fileName = "data/instr.biu_perf_group1_aiv1.null";
     chunk->extraInfo = "null.0";
@@ -748,7 +722,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf2.ctrlType = 0b1111;
     biuperf2.events = 0b000000101010;
     biuperf2.timeData = 0b1000000001111111;
-    chunk->chunk = std::string((char *)&biuperf2, sizeof(biuperf2));
+    chunk->chunk = std::string((char*)&biuperf2, sizeof(biuperf2));
     chunk->chunkSize = sizeof(biuperf2);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -757,7 +731,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf2.ctrlType = 0b1111;
     biuperf2.events = 0b000000000000;
     biuperf2.timeData = 0b1000000000111110;
-    chunk->chunk = std::string((char *)&biuperf2, sizeof(biuperf2));
+    chunk->chunk = std::string((char*)&biuperf2, sizeof(biuperf2));
     chunk->chunkSize = sizeof(biuperf2);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -766,8 +740,8 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1110;
     biuperf.events = 0b000000010101;
     biuperf.timeData = 0b0000000000001110;
-    sysCntData = std::string((char *)&biuperf, sizeof(biuperf));
-    sysCntData.append(std::string((char *)&biuperf, sizeof(biuperf)));
+    sysCntData = std::string((char*)&biuperf, sizeof(biuperf));
+    sysCntData.append(std::string((char*)&biuperf, sizeof(biuperf)));
     sysCntData.append(sysCntData);
     chunk->fileName = "data/instr.biu_perf_group0_aiv0.null";
     chunk->extraInfo = "null.0";
@@ -780,7 +754,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1111;
     biuperf.events = 0b000000011111;
     biuperf.timeData = 0b1000000111111111;
-    chunk->chunk = std::string((char *)&biuperf, sizeof(biuperf));
+    chunk->chunk = std::string((char*)&biuperf, sizeof(biuperf));
     chunk->chunkSize = sizeof(biuperf);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -789,7 +763,7 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
     biuperf.ctrlType = 0b1111;
     biuperf.events = 0b000000000000;
     biuperf.timeData = 0b1000000000111111;
-    chunk->chunk = std::string((char *)&biuperf, sizeof(biuperf));
+    chunk->chunk = std::string((char*)&biuperf, sizeof(biuperf));
     chunk->chunkSize = sizeof(biuperf);
     ret = trans->SendBuffer(chunk);
     EXPECT_EQ(ret, PROFILING_SUCCESS);
@@ -804,17 +778,17 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, ParseDavidOpBiuPerf) { // biuP
 }
 
 ////////////////////////////////////////FILETransport/////////////////////////////////////////
-class TRANSPORT_TRANSPORT_ITRANSPORT_TEST: public testing::Test {
+class TRANSPORT_TRANSPORT_ITRANSPORT_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
+    virtual void SetUp() {}
 
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 private:
 };
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, FILETransport) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, FILETransport)
+{
     GlobalMockObject::verify();
 
     struct tlv_req packet;
@@ -823,7 +797,8 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, FILETransport) {
     EXPECT_EQ(PROFILING_SUCCESS, trans->CloseSession());
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_without_protobuf) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_without_protobuf)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<FILETransport> trans(new FILETransport("/tmp", "200MB"));
@@ -832,13 +807,14 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_without_protobuf) {
     trans->Init();
 
     // test the normal procests, fileChunkReq datamodule is PROFILING_IS_FROM_DEVICE
-    std::shared_ptr<analysis::dvvp::ProfileFileChunk> message(
-        new analysis::dvvp::ProfileFileChunk());
+    std::shared_ptr<analysis::dvvp::ProfileFileChunk> message(new analysis::dvvp::ProfileFileChunk());
     message->extraInfo = "null.64";
     message->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_IS_FROM_MSPROF_DEVICE;
 
-    MOCKER_CPP(&analysis::dvvp::transport::FileSlice::SaveDataToLocalFiles,
-        int(analysis::dvvp::transport::FileSlice::*)(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk>, const std::string&))
+    MOCKER_CPP(
+        &analysis::dvvp::transport::FileSlice::SaveDataToLocalFiles,
+        int(analysis::dvvp::transport::FileSlice::*)(
+            SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk>, const std::string&))
         .stubs()
         .will(returnValue(PROFILING_FAILED))
         .then(returnValue(PROFILING_SUCCESS));
@@ -849,11 +825,12 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_without_protobuf) {
     EXPECT_EQ(PROFILING_FAILED, trans->SendBuffer(message));
 
     // test fileChunkReq datamodule is PROFILING_DEFAULT_DATA_MODULE
-    message->chunkModule  = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_DEFAULT_DATA_MODULE;
+    message->chunkModule = analysis::dvvp::common::config::FileChunkDataModule::PROFILING_DEFAULT_DATA_MODULE;
     EXPECT_EQ(PROFILING_SUCCESS, trans->SendBuffer(message));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<FILETransport> trans(new FILETransport("/tmp", "200MB"));
@@ -865,7 +842,8 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer) {
     EXPECT_EQ(0, trans->SendBuffer(buff.c_str(), 0));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateFileTransport) {
+TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateFileTransport)
+{
     GlobalMockObject::verify();
 
     std::string storageDir = "";
@@ -878,7 +856,8 @@ TEST_F(TRANSPORT_TRANSPORT_TRANSPORTFACTORY_TEST, CreateFileTransport) {
     EXPECT_NE((ITransport*)NULL, trans_.get());
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBufferForMsprof) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBufferForMsprof)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<FILETransport> trans(new FILETransport("/tmp", "200MB"));
@@ -887,8 +866,7 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBufferForMsprof) {
     trans->SetAbility(true);
     trans->Init();
 
-    std::shared_ptr<analysis::dvvp::proto::FileChunkReq> message(
-        new analysis::dvvp::proto::FileChunkReq());
+    std::shared_ptr<analysis::dvvp::proto::FileChunkReq> message(new analysis::dvvp::proto::FileChunkReq());
     analysis::dvvp::message::JobContext job_ctx;
     job_ctx.dev_id = "0";
     job_ctx.job_id = "123456789";
@@ -906,7 +884,8 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBufferForMsprof) {
     EXPECT_EQ(0, trans->SendBuffer(buff.c_str(), buff.size()));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHdcServerAccept) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHdcServerAccept)
+{
     GlobalMockObject::verify();
 
     EXPECT_EQ(nullptr, AdxHdcServerAccept(nullptr));
@@ -914,37 +893,39 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHdcServerAccept) {
 
 int32_t HdcServerDestroyStub(HDC_SERVER server)
 {
-    int32_t *dataPtr = static_cast<int32_t*>(server);
+    int32_t* dataPtr = static_cast<int32_t*>(server);
     *dataPtr = 200;
     return DRV_ERROR_NONE;
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHdcServerDestroy) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHdcServerDestroy)
+{
     GlobalMockObject::verify();
     int32_t data = 100;
     HDC_SERVER server = &data;
-    MOCKER(&HdcServerDestroy)
-        .stubs()
-        .will(invoke(HdcServerDestroyStub));
+    MOCKER(&HdcServerDestroy).stubs().will(invoke(HdcServerDestroyStub));
     AdxHdcServerDestroy(server);
     int32_t* dataPtr = static_cast<int32_t*>(server);
     EXPECT_EQ(*dataPtr, 200);
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHalHdcSessionConnect) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxHalHdcSessionConnect)
+{
     GlobalMockObject::verify();
 
     EXPECT_EQ(DRV_ERROR_NONE, AdxHalHdcSessionConnect(0, 0, 0, nullptr, nullptr));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxIdeGetVfIdBySession) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, AdxIdeGetVfIdBySession)
+{
     GlobalMockObject::verify();
 
     int32_t vfId = -1;
     EXPECT_EQ(IDE_DAEMON_OK, AdxIdeGetVfIdBySession((HDC_SESSION)0x1, vfId));
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_TLV) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_TLV)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<FILETransport> trans(new FILETransport("/tmp", "200MB"));
@@ -964,8 +945,9 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, SendBuffer_TLV) {
     EXPECT_EQ(PROFILING_FAILED, trans->SendBuffer(message));
 }
 
-ProfTlv GenerateProfTlvData(bool isLastChunk, int32_t chunkModule, size_t offset,
-    std::string chunk, std::string fileName, std::string extraInfo, std::string id)
+ProfTlv GenerateProfTlvData(
+    bool isLastChunk, int32_t chunkModule, size_t offset, std::string chunk, std::string fileName,
+    std::string extraInfo, std::string id)
 {
     ProfTlvValue data;
     data.isLastChunk = isLastChunk;
@@ -987,9 +969,7 @@ ProfTlv GenerateProfTlvData(bool isLastChunk, int32_t chunkModule, size_t offset
     return tlv;
 }
 
-uint64_t HashDataGenHashIdWrapper(const std::string &str) {
-    return str.length();
-}
+uint64_t HashDataGenHashIdWrapper(const std::string& str) { return str.length(); }
 
 // ParseStr2IdChunk 的 hashDataGenIdFuncPtr_ 只接受 free function 指针，无法捕获局部状态，
 // 因此用一个文件作用域的 vector 收集喂入 AddHashData 的字符串，每个用例首尾各 clear 一次。
@@ -997,7 +977,7 @@ std::vector<std::string> g_str2idCollected;
 
 // 注册给 FILETransport 的伪 GenHashId 回调：把待注册的 hash 字符串记录下来，
 // 返回值仅用于占位（hashDataGenIdFuncPtr_ 期望返回 uint64_t hashId）。
-uint64_t CollectStr2IdHash(const std::string &s)
+uint64_t CollectStr2IdHash(const std::string& s)
 {
     g_str2idCollected.push_back(s);
     return static_cast<uint64_t>(g_str2idCollected.size());
@@ -1006,7 +986,7 @@ uint64_t CollectStr2IdHash(const std::string &s)
 // 模拟 device 侧 DevprofDrvAicpu::AddStr2IdIntoBuffer：把一段 ASCII payload 装进
 // 一个 MsprofAdditionalInfo（24B 二进制头 + 232B data，dataLen 标记有效字节，
 // data 末尾 232 - dataLen 字节是 NUL 填充——这就是修复前会污染解析结果的根源）。
-MsprofAdditionalInfo MakeStr2IdStruct(const std::string &payload)
+MsprofAdditionalInfo MakeStr2IdStruct(const std::string& payload)
 {
     MsprofAdditionalInfo info{};
     info.magicNumber = MSPROF_REPORT_DATA_MAGIC_NUM;
@@ -1021,19 +1001,19 @@ MsprofAdditionalInfo MakeStr2IdStruct(const std::string &payload)
 
 // 模拟 host 侧 ReceiveData::DumpAdprofData：把 N 个 struct 紧密拼成 raw 二进制流
 // 塞进 ProfileFileChunk::chunk，正是 ParseStr2IdChunk 实际收到的输入。
-std::string PackStr2IdStructs(const std::vector<MsprofAdditionalInfo> &arr)
+std::string PackStr2IdStructs(const std::vector<MsprofAdditionalInfo>& arr)
 {
     std::string out;
     out.reserve(arr.size() * sizeof(MsprofAdditionalInfo));
-    for (const auto &info : arr) {
-        out.append(reinterpret_cast<const char *>(&info), sizeof(MsprofAdditionalInfo));
+    for (const auto& info : arr) {
+        out.append(reinterpret_cast<const char*>(&info), sizeof(MsprofAdditionalInfo));
     }
     return out;
 }
 
 // 关键断言：注册到 HashData 的字符串应是干净 ASCII，不能残留 NUL（struct 末尾填充）
 // 或 0x5A5A magic（下一个 struct 的二进制头开头）——这两类残留是修复前直写磁盘出乱码的特征。
-void ExpectNoBinaryGarbage(const std::string &s, const char *hint)
+void ExpectNoBinaryGarbage(const std::string& s, const char* hint)
 {
     for (size_t i = 0; i < s.size(); ++i) {
         unsigned char c = static_cast<unsigned char>(s[i]);
@@ -1045,7 +1025,8 @@ void ExpectNoBinaryGarbage(const std::string &s, const char *hint)
     }
 }
 
-TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, ParseTlvChunk) {
+TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, ParseTlvChunk)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<FILETransport> trans(new FILETransport("/tmp", "200MB"));
@@ -1065,10 +1046,8 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, ParseTlvChunk) {
     message->chunkSize = message->chunk.size();
     message->extraInfo = "trace000000017775175798806765773.0";
 
-    MOCKER_CPP(&FileSlice::SaveDataToLocalFiles)
-        .stubs()
-        .will(returnValue(PROFILING_SUCCESS));
-    
+    MOCKER_CPP(&FileSlice::SaveDataToLocalFiles).stubs().will(returnValue(PROFILING_SUCCESS));
+
     EXPECT_EQ(PROFILING_SUCCESS, trans->ParseTlvChunk(message));
     message->chunk = std::string(reinterpret_cast<CHAR_PTR>(&tlv_data2) + 100, sizeof(ProfTlv) - 100);
     message->chunkSize = message->chunk.size();
@@ -1095,15 +1074,14 @@ TEST_F(TRANSPORT_TRANSPORT_ITRANSPORT_TEST, ParseTlvChunk) {
 }
 
 ////////////////////////////////////////HelperTransportFactory/////////////////////////////////////////
-class HELPER_TRANSPORTFACTORY_TEST: public testing::Test {
+class HELPER_TRANSPORTFACTORY_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
-    virtual void TearDown() {
-    }
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
-TEST_F(HELPER_TRANSPORTFACTORY_TEST, TransportFactory) {
+TEST_F(HELPER_TRANSPORTFACTORY_TEST, TransportFactory)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<TransportFactory> fac(new TransportFactory());
@@ -1111,44 +1089,42 @@ TEST_F(HELPER_TRANSPORTFACTORY_TEST, TransportFactory) {
     fac.reset();
 }
 
-TEST_F(HELPER_TRANSPORTFACTORY_TEST, create_helper_transport_server) {
+TEST_F(HELPER_TRANSPORTFACTORY_TEST, create_helper_transport_server)
+{
     GlobalMockObject::verify();
     HDC_SERVER server = (HDC_SERVER)0x12345678;
     MOCKER(Analysis::Dvvp::Adx::AdxHdcServerAccept)
         .stubs()
         .will(returnValue((HDC_SESSION)0x12345678))
-        .then(returnValue((HDC_SESSION)nullptr));
+        .then(returnValue((HDC_SESSION) nullptr));
     EXPECT_EQ((ITransport*)NULL, HelperTransportFactory().CreateHdcServerTransport(0, nullptr).get());
     EXPECT_NE((ITransport*)NULL, HelperTransportFactory().CreateHdcServerTransport(0, server).get());
     EXPECT_EQ((ITransport*)NULL, HelperTransportFactory().CreateHdcServerTransport(0, server).get());
 }
 
-TEST_F(HELPER_TRANSPORTFACTORY_TEST, create_hdc_transport_client) {
+TEST_F(HELPER_TRANSPORTFACTORY_TEST, create_hdc_transport_client)
+{
     GlobalMockObject::verify();
 
     HDC_CLIENT client = (HDC_CLIENT)0x12345678;
     int pid = 2023;
     int dev_id = 0;
 
-    MOCKER(AdxHalHdcSessionConnect)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_ERROR))
-        .then(returnValue(IDE_DAEMON_OK));
+    MOCKER(AdxHalHdcSessionConnect).stubs().will(returnValue(IDE_DAEMON_ERROR)).then(returnValue(IDE_DAEMON_OK));
 
     EXPECT_EQ((ITransport*)NULL, HelperTransportFactory().CreateHdcClientTransport(pid, dev_id, client).get());
     EXPECT_NE((ITransport*)NULL, HelperTransportFactory().CreateHdcClientTransport(pid, dev_id, client).get());
 }
 
 //////////////////////////////HelperTransport/////////////////////////////////////
-class HELPERTRANSPORT_TEST: public testing::Test {
+class HELPERTRANSPORT_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
-    }
-    virtual void TearDown() {
-    }
+    virtual void SetUp() {}
+    virtual void TearDown() {}
 };
 
-TEST_F(HELPERTRANSPORT_TEST, HelperTransport) {
+TEST_F(HELPERTRANSPORT_TEST, HelperTransport)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -1158,7 +1134,8 @@ TEST_F(HELPERTRANSPORT_TEST, HelperTransport) {
     trans.reset();
 }
 
-TEST_F(HELPERTRANSPORT_TEST, SendBuffer) {
+TEST_F(HELPERTRANSPORT_TEST, SendBuffer)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -1166,28 +1143,30 @@ TEST_F(HELPERTRANSPORT_TEST, SendBuffer) {
     std::shared_ptr<ITransport> trans(new HelperTransport(session));
     std::shared_ptr<PerfCount> perfCount(new PerfCount("test"));
     trans->perfCount_ = perfCount;
-    void * buff = (void *)0x12345678;
+    void* buff = (void*)0x12345678;
     int length = 10;
     EXPECT_EQ(PROFILING_SUCCESS, trans->SendBuffer(buff, length));
 }
 
-TEST_F(HELPERTRANSPORT_TEST, SendBufferForProfileFileChunk) {
+TEST_F(HELPERTRANSPORT_TEST, SendBufferForProfileFileChunk)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
 
     std::shared_ptr<ITransport> trans(new HelperTransport(session));
     std::shared_ptr<PerfCount> perfCount(new PerfCount("test"));
-    std::string content = "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
+    std::string content =
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
         "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz";
     trans->perfCount_ = perfCount;
 
@@ -1203,7 +1182,8 @@ TEST_F(HELPERTRANSPORT_TEST, SendBufferForProfileFileChunk) {
     EXPECT_EQ(PROFILING_SUCCESS, trans->SendBuffer(fileChunkReq));
 }
 
-TEST_F(HELPERTRANSPORT_TEST, CloseSession) {
+TEST_F(HELPERTRANSPORT_TEST, CloseSession)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -1219,15 +1199,14 @@ TEST_F(HELPERTRANSPORT_TEST, CloseSession) {
     trans_c.reset();
 }
 
-TEST_F(HELPERTRANSPORT_TEST, ReceivePacket) {
+TEST_F(HELPERTRANSPORT_TEST, ReceivePacket)
+{
     GlobalMockObject::verify();
 
-    ProfHalTlv *packet = nullptr;
+    ProfHalTlv* packet = nullptr;
     HDC_SESSION session = (HDC_SESSION)0x12345678;
     std::shared_ptr<HelperTransport> trans_c(new HelperTransport(session, true));
-    MOCKER_CPP(&Analysis::Dvvp::Adx::AdxHdcRead)
-        .stubs()
-        .will(returnValue(IDE_DAEMON_OK));
+    MOCKER_CPP(&Analysis::Dvvp::Adx::AdxHdcRead).stubs().will(returnValue(IDE_DAEMON_OK));
     trans_c->WriteDone();
 
     EXPECT_EQ(-1, trans_c->ReceivePacket(&packet));
@@ -1236,7 +1215,8 @@ TEST_F(HELPERTRANSPORT_TEST, ReceivePacket) {
     trans_c.reset();
 }
 
-TEST_F(HELPERTRANSPORT_TEST, PackingData) {
+TEST_F(HELPERTRANSPORT_TEST, PackingData)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -1265,7 +1245,8 @@ TEST_F(HELPERTRANSPORT_TEST, PackingData) {
     EXPECT_NE("", package.id);
 }
 
-TEST_F(HELPERTRANSPORT_TEST, SendPackingData) {
+TEST_F(HELPERTRANSPORT_TEST, SendPackingData)
+{
     GlobalMockObject::verify();
 
     HDC_SESSION session = (HDC_SESSION)0x12345678;
@@ -1276,20 +1257,22 @@ TEST_F(HELPERTRANSPORT_TEST, SendPackingData) {
     MSVP_MAKE_SHARED1(trans, HelperTransport, session, return);
     std::shared_ptr<PerfCount> perfCount = nullptr;
     MSVP_MAKE_SHARED1(perfCount, PerfCount, "test", return);
-    std::string content = "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
+    std::string content =
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
         "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz";
-    std::string checkContent = "stuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
-        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "\
+    std::string checkContent =
+        "stuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
+        "abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz "
         "abcdefghijklmnopqrstuvwxyz";
     trans->perfCount_ = perfCount;
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include "msopprof_manager.h"
 #include <string>
 #include <csignal>
@@ -34,7 +33,7 @@ using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::cmdlog;
 using namespace Analysis::Dvvp::App;
 
-MsopprofManager::MsopprofManager(): msopprofPid_(MSVP_PROCESS)
+MsopprofManager::MsopprofManager() : msopprofPid_(MSVP_PROCESS)
 {
     std::string ascendToolkitHome;
     MSPROF_GET_ENV(MM_ENV_ASCEND_TOOLKIT_HOME, ascendToolkitHome);
@@ -61,8 +60,7 @@ int MsopprofManager::MsopprofProcess(int argc, CONST_CHAR_PTR argv[])
     return PROFILING_SUCCESS;
 }
 
-bool MsopprofManager::CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[],
-                                           std::vector<std::string> &opArgv) const
+bool MsopprofManager::CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[], std::vector<std::string>& opArgv) const
 {
     bool ret = false;
     static std::string msopprofCmd = "op";
@@ -72,7 +70,7 @@ bool MsopprofManager::CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[],
     if (ret) {
         if (msopprofPath_.empty()) {
             CmdLog::CmdErrorLog("Cannot find msopprof, "
-              "Maybe you should source set_env.sh in advance.");
+                                "Maybe you should source set_env.sh in advance.");
         } else {
             for (int i = 2; i < argc; i++) {
                 opArgv.emplace_back(argv[i]);
@@ -82,7 +80,7 @@ bool MsopprofManager::CheckMsopprofIfExist(int argc, CONST_CHAR_PTR argv[],
     return ret;
 }
 
-void MsopprofManager::ExecuteMsopprof(const std::vector<std::string> &opArgv)
+void MsopprofManager::ExecuteMsopprof(const std::vector<std::string>& opArgv)
 {
     (void)signal(SIGINT, [](int signum) {
         (void)Utils::UsleepInterupt(OSAL_TIMES_MILLIONS);
@@ -104,10 +102,7 @@ void MsopprofManager::ExecuteMsopprof(const std::vector<std::string> &opArgv)
     }
 }
 
-bool MsopprofManager::IsMsopprofExist() const
-{
-    return !msopprofPath_.empty() && Utils::IsFileExist(msopprofPath_);
-}
+bool MsopprofManager::IsMsopprofExist() const { return !msopprofPath_.empty() && Utils::IsFileExist(msopprofPath_); }
 } // namespace Msopprof
 } // namespace Dvvp
 } // namespace Analysis

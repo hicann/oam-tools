@@ -30,8 +30,8 @@ namespace Acp {
 using namespace analysis::dvvp::transport;
 using RtDevBinary = rtDevBinary_t;
 struct AcpDevBinary {
-    uint32_t magic{0};                      // magic number
-    uint32_t version{0};                    // version of binary
+    uint32_t magic{0};   // magic number
+    uint32_t version{0}; // version of binary
     uint64_t length{0};
     std::vector<uint8_t> data;
     VOID_PTR baseAddr{nullptr};
@@ -54,11 +54,11 @@ public:
     void SetTaskBlockDim(const uint32_t blockDim);
     int32_t TaskStop();
     // pc sampling
-    void AddBinary(VOID_PTR handle, const RtDevBinary &binary);
+    void AddBinary(VOID_PTR handle, const RtDevBinary& binary);
     void RemoveBinary(VOID_PTR handle);
     void DumpBinary(VOID_PTR handle);
     void AddBinaryBaseAddr(VOID_PTR handle, VOID_PTR baseAddr);
-    void SaveBinaryHandle(VOID_PTR &handle);
+    void SaveBinaryHandle(VOID_PTR& handle);
     VOID_PTR GetBinaryHandle() const;
     bool PcSamplingIsEnable() const;
     std::string GetBinaryObjectPath() const;
@@ -71,7 +71,7 @@ public:
     void RegisterRtMemcpyFunc(RtMemcpyAsyncFunc memcpyAsyncFunc);
     // rtMalloc and rtFree
     void RegisterRtMallocFunc(RtMallocFunc mallocFunc, RtFreeFunc freeFunc);
-    void SaveRtMallocAttr(AcpBackupAttr &attr);
+    void SaveRtMallocAttr(AcpBackupAttr& attr);
     void ReleaseRtMallocAddr(const void* ptr);
 
 private:
@@ -105,7 +105,7 @@ private:
     RtFreeFunc rtFreeFunc_;
     RtMemcpyAsyncFunc rtMemcpyAsyncFunc_;
 };
-}
-}
-}
+} // namespace Acp
+} // namespace Dvvp
+} // namespace Collector
 #endif

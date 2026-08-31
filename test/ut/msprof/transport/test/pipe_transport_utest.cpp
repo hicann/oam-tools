@@ -24,7 +24,8 @@ using namespace analysis::dvvp::transport;
 using namespace analysis::dvvp::common::error;
 
 static int32_t g_callbackCalled = 0;
-static int32_t StubRawDataCallback(MsprofRawData* rawData) {
+static int32_t StubRawDataCallback(MsprofRawData* rawData)
+{
     g_callbackCalled++;
     EXPECT_NE(nullptr, rawData);
     return 0;
@@ -32,28 +33,30 @@ static int32_t StubRawDataCallback(MsprofRawData* rawData) {
 
 class PIPE_TRANSPORT_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         GlobalMockObject::verify();
         g_callbackCalled = 0;
     }
-    virtual void TearDown() {
-        GlobalMockObject::verify();
-    }
+    virtual void TearDown() { GlobalMockObject::verify(); }
 };
 
-TEST_F(PIPE_TRANSPORT_TEST, Constructor) {
+TEST_F(PIPE_TRANSPORT_TEST, Constructor)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     EXPECT_NE(nullptr, transport);
     EXPECT_FALSE(transport->IsRegisterRawDataCallback());
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_VoidPtr) {
+TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_VoidPtr)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     uint8_t buf[] = {0x01, 0x02};
     EXPECT_EQ(0, transport->SendBuffer(buf, 2));
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_NoCallback) {
+TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_NoCallback)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     auto chunk = std::make_shared<analysis::dvvp::ProfileFileChunk>();
     chunk->isLastChunk = true;
@@ -64,7 +67,8 @@ TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_NoCallback) {
     EXPECT_EQ(PROFILING_FAILED, transport->SendBuffer(chunk));
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_WithCallback) {
+TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_WithCallback)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     transport->RegisterRawDataCallback(StubRawDataCallback);
     EXPECT_TRUE(transport->IsRegisterRawDataCallback());
@@ -79,7 +83,8 @@ TEST_F(PIPE_TRANSPORT_TEST, SendBuffer_FileChunk_WithCallback) {
     EXPECT_EQ(1, g_callbackCalled);
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData) {
+TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     auto chunk = std::make_shared<analysis::dvvp::ProfileFileChunk>();
     chunk->isLastChunk = true;
@@ -97,7 +102,8 @@ TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData) {
     EXPECT_EQ(chunk->chunkSize, rawData.chunkSize);
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData_ChunkTooLarge) {
+TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData_ChunkTooLarge)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     auto chunk = std::make_shared<analysis::dvvp::ProfileFileChunk>();
     chunk->isLastChunk = false;
@@ -109,17 +115,20 @@ TEST_F(PIPE_TRANSPORT_TEST, ConvertFileChunkToRawData_ChunkTooLarge) {
     EXPECT_EQ(PROFILING_FAILED, transport->ConvertFileChunkToRawData(chunk, rawData));
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, CloseSession) {
+TEST_F(PIPE_TRANSPORT_TEST, CloseSession)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     EXPECT_EQ(PROFILING_SUCCESS, transport->CloseSession());
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, WriteDone) {
+TEST_F(PIPE_TRANSPORT_TEST, WriteDone)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     transport->WriteDone();
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, RegisterAndUnregisterCallback) {
+TEST_F(PIPE_TRANSPORT_TEST, RegisterAndUnregisterCallback)
+{
     auto transport = std::make_shared<MsptiPipeTransport>();
     EXPECT_FALSE(transport->IsRegisterRawDataCallback());
     transport->RegisterRawDataCallback(StubRawDataCallback);
@@ -128,7 +137,8 @@ TEST_F(PIPE_TRANSPORT_TEST, RegisterAndUnregisterCallback) {
     EXPECT_FALSE(transport->IsRegisterRawDataCallback());
 }
 
-TEST_F(PIPE_TRANSPORT_TEST, Factory_CreateMsptiPipeTransport) {
+TEST_F(PIPE_TRANSPORT_TEST, Factory_CreateMsptiPipeTransport)
+{
     MsptiPipeTransportFactory factory;
     auto transport = factory.CreateMsptiPipeTransport();
     EXPECT_NE(nullptr, transport);

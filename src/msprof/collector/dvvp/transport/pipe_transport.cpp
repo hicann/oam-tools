@@ -23,10 +23,7 @@ namespace dvvp {
 namespace transport {
 using namespace analysis::dvvp::common::error;
 
-MsptiPipeTransport::MsptiPipeTransport(): profRawDataCallback_(nullptr)
-{
-    MSPROF_LOGD("MsptiPipeTransport init.");
-}
+MsptiPipeTransport::MsptiPipeTransport() : profRawDataCallback_(nullptr) { MSPROF_LOGD("MsptiPipeTransport init."); }
 
 MsptiPipeTransport::~MsptiPipeTransport()
 {
@@ -40,8 +37,8 @@ int32_t MsptiPipeTransport::SendBuffer(CONST_VOID_PTR /* buffer */, int32_t /* l
     return 0;
 }
 
-int32_t MsptiPipeTransport::ConvertFileChunkToRawData(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq,
-    MsprofRawData& rawData) const
+int32_t MsptiPipeTransport::ConvertFileChunkToRawData(
+    SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq, MsprofRawData& rawData) const
 {
     rawData.isLastChunk = fileChunkReq->isLastChunk;
     rawData.offset = fileChunkReq->offset;
@@ -77,10 +74,7 @@ int32_t MsptiPipeTransport::CloseSession()
     return PROFILING_SUCCESS;
 }
 
-void MsptiPipeTransport::WriteDone()
-{
-    MSPROF_LOGI("MsptiPipeTransport WriteDone");
-}
+void MsptiPipeTransport::WriteDone() { MSPROF_LOGI("MsptiPipeTransport WriteDone"); }
 
 void MsptiPipeTransport::RegisterRawDataCallback(MsprofRawDataCallback callback)
 {
@@ -91,9 +85,7 @@ void MsptiPipeTransport::RegisterRawDataCallback(MsprofRawDataCallback callback)
     MSPROF_LOGD("RegisterRawDataCallback done");
 }
 
-bool MsptiPipeTransport::IsRegisterRawDataCallback() {
-    return (profRawDataCallback_ != nullptr);
-}
+bool MsptiPipeTransport::IsRegisterRawDataCallback() { return (profRawDataCallback_ != nullptr); }
 
 void MsptiPipeTransport::UnRegisterRawDataCallback()
 {
@@ -104,15 +96,9 @@ void MsptiPipeTransport::UnRegisterRawDataCallback()
     MSPROF_LOGD("UnRegisterRawDataCallback done");
 }
 
-MsptiPipeTransportFactory::MsptiPipeTransportFactory()
-{
-    MSPROF_LOGD("MsptiPipeTransportFactory.");
-}
+MsptiPipeTransportFactory::MsptiPipeTransportFactory() { MSPROF_LOGD("MsptiPipeTransportFactory."); }
 
-MsptiPipeTransportFactory::~MsptiPipeTransportFactory()
-{
-    MSPROF_LOGD("MsptiPipeTransportFactory uninit.");
-}
+MsptiPipeTransportFactory::~MsptiPipeTransportFactory() { MSPROF_LOGD("MsptiPipeTransportFactory uninit."); }
 
 SHARED_PTR_ALIA<ITransport> MsptiPipeTransportFactory::CreateMsptiPipeTransport() const
 {
@@ -122,6 +108,6 @@ SHARED_PTR_ALIA<ITransport> MsptiPipeTransportFactory::CreateMsptiPipeTransport(
     return msptiPipeTransport;
 }
 
-}  // namespace transport
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

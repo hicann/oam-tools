@@ -29,19 +29,18 @@ namespace dvvp {
 namespace transport {
 class DeviceTransport : public IDeviceTransport, public analysis::dvvp::common::thread::Thread {
 public:
-    DeviceTransport(HDC_CLIENT client,
-        const std::string &devId, const std::string &jobId, const std::string &mode);
+    DeviceTransport(HDC_CLIENT client, const std::string& devId, const std::string& jobId, const std::string& mode);
     ~DeviceTransport() override;
 
     int32_t Init();
     void CloseConn();
     bool IsInitialized();
-    int32_t SendMsgAndRecvResponse(const std::string &msg, TLV_REQ_2PTR packet) override;
-    int32_t HandlePacket(TLV_REQ_PTR packet, analysis::dvvp::message::StatusInfo &status) override;
+    int32_t SendMsgAndRecvResponse(const std::string& msg, TLV_REQ_2PTR packet) override;
+    int32_t HandlePacket(TLV_REQ_PTR packet, analysis::dvvp::message::StatusInfo& status) override;
     void SetTimeOut(uint32_t timeout);
 
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
 
 private:
     void Uinit();
@@ -51,8 +50,8 @@ private:
 
 private:
     HDC_CLIENT client_;
-    int32_t devIndexId_;                // for HdcSessionConnect
-    std::string devIndexIdStr_;     // for management and log
+    int32_t devIndexId_;        // for HdcSessionConnect
+    std::string devIndexIdStr_; // for management and log
     std::string jobId_;
     std::string mode_;
     uint32_t timeout_;
@@ -66,6 +65,7 @@ private:
 
 class DevTransMgr : public analysis::dvvp::common::singleton::Singleton<DevTransMgr> {
     friend analysis::dvvp::common::singleton::Singleton<DevTransMgr>;
+
 public:
     int32_t Init(std::string jobId, int32_t devId, std::string mode, uint32_t timeout);
     int32_t UnInit();
@@ -77,10 +77,7 @@ public:
     {
         return DevTransMgr::instance()->Init(jobId, devId, mode, timeout);
     }
-    static int32_t UnInitDevTransMgr()
-    {
-        return DevTransMgr::instance()->UnInit();
-    }
+    static int32_t UnInitDevTransMgr() { return DevTransMgr::instance()->UnInit(); }
     static int32_t CloseDevTrans(std::string jobId, int32_t devId)
     {
         return DevTransMgr::instance()->CloseDevTransport(jobId, devId);
@@ -92,17 +89,17 @@ public:
 
 protected:
     DevTransMgr() {}
-    ~DevTransMgr() override
-    {
-    }
+    ~DevTransMgr() override {}
 
 private:
-    int32_t DoInit(const std::vector<int32_t> &devIds);
+    int32_t DoInit(const std::vector<int32_t>& devIds);
 
 private:
     std::mutex devTarnsMtx_;
     std::map<std::string, std::map<int32_t, SHARED_PTR_ALIA<DeviceTransport> > > devTransMap_;
 };
-}}}
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis
 
 #endif

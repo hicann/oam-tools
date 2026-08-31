@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "file_ageing.h"
 #include <cstdio>
 #include <cstring>
@@ -33,15 +33,17 @@ using namespace Analysis::Dvvp::Common::Config;
 constexpr uint64_t MOVE_BIT = 20;
 constexpr uint64_t STORAGE_RESERVED_VOLUME = (STORAGE_LIMIT_DOWN_THD / 10) << MOVE_BIT;
 
-FileAgeing::FileAgeing(const std::string &storageDir, const std::string &storageLimit)
-    : inited_(false), overThdSize_(0), storagedFileSize_(0), storageVolumeUpThd_(0),
-      storageVolumeDownThd_(0), storageDir_(storageDir), storageLimit_(storageLimit)
-{
-}
+FileAgeing::FileAgeing(const std::string& storageDir, const std::string& storageLimit)
+    : inited_(false),
+      overThdSize_(0),
+      storagedFileSize_(0),
+      storageVolumeUpThd_(0),
+      storageVolumeDownThd_(0),
+      storageDir_(storageDir),
+      storageLimit_(storageLimit)
+{}
 
-FileAgeing::~FileAgeing()
-{
-}
+FileAgeing::~FileAgeing() {}
 
 int32_t FileAgeing::Init()
 {
@@ -52,15 +54,17 @@ int32_t FileAgeing::Init()
 
     unsigned long long totalVolume = 0;
     if (Utils::GetVolumeSize(storageDir_, totalVolume, VolumeSize::TOTAL_SIZE) == PROFILING_FAILED) {
-        MSPROF_LOGE("Get totalVolume failed, storageDir_:%s, storage_limit:%s",
-            Utils::BaseName(storageDir_).c_str(), storageLimit_.c_str());
+        MSPROF_LOGE(
+            "Get totalVolume failed, storageDir_:%s, storage_limit:%s", Utils::BaseName(storageDir_).c_str(),
+            storageLimit_.c_str());
         return PROFILING_FAILED;
     }
 
     unsigned long long availableVolume = 0;
     if (Utils::GetVolumeSize(storageDir_, availableVolume, VolumeSize::AVAIL_SIZE) == PROFILING_FAILED) {
-        MSPROF_LOGE("Get availableVolume failed, storageDir_:%s, storage_limit:%s",
-            Utils::BaseName(storageDir_).c_str(), storageLimit_.c_str());
+        MSPROF_LOGE(
+            "Get availableVolume failed, storageDir_:%s, storage_limit:%s", Utils::BaseName(storageDir_).c_str(),
+            storageLimit_.c_str());
         return PROFILING_FAILED;
     }
 
@@ -69,13 +73,15 @@ int32_t FileAgeing::Init()
         limit = availableVolume;
         MSPROF_LOGI("limit is 0, set default value which equal to available volume");
         if (availableVolume < STORAGE_RESERVED_VOLUME) {
-            MSPROF_LOGE("Available volume:%" PRIu64 " (%lluMB) less than 20MB. Data will not be collected.",
-                availableVolume, (availableVolume >> MOVE_BIT));
-            std::string errReason = "The available volume is less than 20MB. " +
-                std::string("Data will not be collected. ") +
+            MSPROF_LOGE(
+                "Available volume:%" PRIu64 " (%lluMB) less than 20MB. Data will not be collected.", availableVolume,
+                (availableVolume >> MOVE_BIT));
+            std::string errReason =
+                "The available volume is less than 20MB. " + std::string("Data will not be collected. ") +
                 "Please check the available disk space in current path and the related profiling configs";
             std::string errValue = std::to_string(availableVolume >> MOVE_BIT) + "MB";
-            MSPROF_INPUT_ERROR("EK0003", std::vector<std::string>({"config", "value", "reason"}),
+            MSPROF_INPUT_ERROR(
+                "EK0003", std::vector<std::string>({"config", "value", "reason"}),
                 std::vector<std::string>({"storage limit", errValue, errReason}));
             return PROFILING_FAILED;
         }
@@ -91,22 +97,21 @@ void FileAgeing::InitAgeingParams(uint64_t limit)
 {
     storageVolumeUpThd_ = limit - STORAGE_RESERVED_VOLUME;
     storageVolumeDownThd_ = STORAGE_RESERVED_VOLUME;
-    MSPROF_LOGI("init storage_limit success, limit:%" PRIu64 " (%lluMB), storageVolumeUpThd_:%" PRIu64 " (%lluMB), "
-                "storageVolumeDownThd_:%" PRIu64 " (%lluMB)",
-                limit, (limit >> MOVE_BIT),
-                storageVolumeUpThd_, (storageVolumeUpThd_ >> MOVE_BIT),
-                storageVolumeDownThd_, (storageVolumeDownThd_ >> MOVE_BIT));
+    MSPROF_LOGI(
+        "init storage_limit success, limit:%" PRIu64 " (%lluMB), storageVolumeUpThd_:%" PRIu64 " (%lluMB), "
+        "storageVolumeDownThd_:%" PRIu64 " (%lluMB)",
+        limit, (limit >> MOVE_BIT), storageVolumeUpThd_, (storageVolumeUpThd_ >> MOVE_BIT), storageVolumeDownThd_,
+        (storageVolumeDownThd_ >> MOVE_BIT));
 
     overThdSize_ = 0;
     storagedFileSize_ = 0;
     unPairCount_[HWTS_DATA] = 0;
     unPairCount_[AICORE_DATA] = 0;
-    noAgeingFile_ = {std::string("model_load_info"), std::string("task_desc_info"), std::string("id_map_info"),
-                     std::string("fusion_op_info"), std::string("tensor_data_info"),
-                     std::string("step_info"), std::string("training_trace"), std::string("info.json"),
-                     std::string("hash_dic"), std::string("start_info"), std::string("end_info"),
-                     std::string("host_start"), std::string("dev_start"), std::string("sample.json"),
-                     std::string("unaging")};
+    noAgeingFile_ = {std::string("model_load_info"), std::string("task_desc_info"),   std::string("id_map_info"),
+                     std::string("fusion_op_info"),  std::string("tensor_data_info"), std::string("step_info"),
+                     std::string("training_trace"),  std::string("info.json"),        std::string("hash_dic"),
+                     std::string("start_info"),      std::string("end_info"),         std::string("host_start"),
+                     std::string("dev_start"),       std::string("sample.json"),      std::string("unaging")};
     inited_ = true;
 }
 
@@ -132,8 +137,9 @@ bool FileAgeing::IsNeedAgeingFile()
 
     if (storagedFileSize_ > storageVolumeUpThd_) {
         overThdSize_ = storagedFileSize_ - storageVolumeUpThd_;
-        MSPROF_LOGD("storagedFileSize_:%" PRIu64 ", storageVolumeUpThd_:%" PRIu64 ", overThdSize_:%" PRIu64,
-                    storagedFileSize_, storageVolumeUpThd_, overThdSize_);
+        MSPROF_LOGD(
+            "storagedFileSize_:%" PRIu64 ", storageVolumeUpThd_:%" PRIu64 ", overThdSize_:%" PRIu64, storagedFileSize_,
+            storageVolumeUpThd_, overThdSize_);
         return true;
     }
 
@@ -144,14 +150,16 @@ bool FileAgeing::IsNeedAgeingFile()
     }
     if (dirFreeSize < storageVolumeDownThd_) {
         overThdSize_ = storageVolumeDownThd_ - dirFreeSize;
-        MSPROF_LOGD("storageVolumeUpThd_:%" PRIu64 ", storageVolumeDownThd_:%" PRIu64 ", dirFreeSize:%" PRIu64
-            ", overThdSize_:%" PRIu64, storageVolumeUpThd_, storageVolumeDownThd_, dirFreeSize, overThdSize_);
+        MSPROF_LOGD(
+            "storageVolumeUpThd_:%" PRIu64 ", storageVolumeDownThd_:%" PRIu64 ", dirFreeSize:%" PRIu64
+            ", overThdSize_:%" PRIu64,
+            storageVolumeUpThd_, storageVolumeDownThd_, dirFreeSize, overThdSize_);
         return true;
     }
     return false;
 }
 
-bool FileAgeing::IsNoAgeingFile(const std::string &fileName) const
+bool FileAgeing::IsNoAgeingFile(const std::string& fileName) const
 {
     for (auto iter = noAgeingFile_.begin(); iter != noAgeingFile_.end(); ++iter) {
         if (fileName.find(*iter) != std::string::npos) {
@@ -161,7 +169,7 @@ bool FileAgeing::IsNoAgeingFile(const std::string &fileName) const
     return false;
 }
 
-int32_t FileAgeing::CutSliceNum(const std::string &fileName, std::string &cutFileName) const
+int32_t FileAgeing::CutSliceNum(const std::string& fileName, std::string& cutFileName) const
 {
     const std::string::size_type pos = fileName.find_last_of('.');
     if (pos == std::string::npos) {
@@ -172,7 +180,7 @@ int32_t FileAgeing::CutSliceNum(const std::string &fileName, std::string &cutFil
     return PROFILING_SUCCESS;
 }
 
-void FileAgeing::PairInsertList(const std::string &pairedFileTag, ToBeAgedFile &insertedFile)
+void FileAgeing::PairInsertList(const std::string& pairedFileTag, ToBeAgedFile& insertedFile)
 {
     uint32_t rInd = 0;
     uint32_t insertPos = 0;
@@ -187,8 +195,8 @@ void FileAgeing::PairInsertList(const std::string &pairedFileTag, ToBeAgedFile &
                 return;
             }
         }
-        MSPROF_LOGE("not find ToBeAgedFile struct, unPairCount_[%s]:%u",
-                    pairedFileTag.c_str(), unPairCount_[pairedFileTag]);
+        MSPROF_LOGE(
+            "not find ToBeAgedFile struct, unPairCount_[%s]:%u", pairedFileTag.c_str(), unPairCount_[pairedFileTag]);
         PrintAgeingFile();
     }
 
@@ -213,23 +221,25 @@ void FileAgeing::PairInsertList(const std::string &pairedFileTag, ToBeAgedFile &
     }
 }
 
-void FileAgeing::AppendAgeingFile(const std::string &filePath, const std::string &doneFilePath,
-                                  uint64_t fileSize, uint64_t doneFileSize)
+void FileAgeing::AppendAgeingFile(
+    const std::string& filePath, const std::string& doneFilePath, uint64_t fileSize, uint64_t doneFileSize)
 {
     if (!inited_) {
         return;
     }
 
-    MSPROF_LOGD("Try append ageing file. filePath:%s doneFilePath:%s",
-                Utils::BaseName(filePath).c_str(), Utils::BaseName(doneFilePath).c_str());
+    MSPROF_LOGD(
+        "Try append ageing file. filePath:%s doneFilePath:%s", Utils::BaseName(filePath).c_str(),
+        Utils::BaseName(doneFilePath).c_str());
     constexpr uint64_t maxStoragedFileSize = static_cast<uint64_t>(1) << 50; // (2^50)Byte = 1024T
     if (storagedFileSize_ >= maxStoragedFileSize) {
         MSPROF_LOGE("storagedFileSize_:%" PRIu64 " is over normal range", storagedFileSize_);
         return;
     }
     if (filePath.empty() || doneFilePath.empty()) {
-        MSPROF_LOGE("filePath:%s, doneFilePath:%s, file path invalid",
-                    Utils::BaseName(filePath).c_str(), Utils::BaseName(doneFilePath).c_str());
+        MSPROF_LOGE(
+            "filePath:%s, doneFilePath:%s, file path invalid", Utils::BaseName(filePath).c_str(),
+            Utils::BaseName(doneFilePath).c_str());
         return;
     }
 
@@ -246,7 +256,7 @@ void FileAgeing::AppendAgeingFile(const std::string &filePath, const std::string
         MSPROF_LOGE("CutSliceNum failed, fileName:%s", Utils::BaseName(fileName).c_str());
         return;
     }
-    ToBeAgedFile file = {true, false, false, fileSize, doneFileSize, fileName, doneFileName,
+    ToBeAgedFile file = {true,     false,        false,           fileSize, doneFileSize, fileName, doneFileName,
                          filePath, doneFilePath, cutSliceNumName, ""};
 
     const auto iter = fileCount_.find(cutSliceNumName);
@@ -270,7 +280,7 @@ void FileAgeing::AppendAgeingFile(const std::string &filePath, const std::string
     storagedFileSize_ += fileSize + doneFileSize;
 }
 
-bool FileAgeing::IsLastFile(const std::string &fileCountTag)
+bool FileAgeing::IsLastFile(const std::string& fileCountTag)
 {
     if (fileCount_.find(fileCountTag) == fileCount_.end()) {
         MSPROF_LOGE("file:%s not find in fileCount_", fileCountTag.c_str());
@@ -283,7 +293,7 @@ bool FileAgeing::IsLastFile(const std::string &fileCountTag)
     return false;
 }
 
-void FileAgeing::RemoveFile(const ToBeAgedFile &file, uint64_t &removeFileSize)
+void FileAgeing::RemoveFile(const ToBeAgedFile& file, uint64_t& removeFileSize)
 {
     if (remove(file.filePath.c_str()) != EOK) {
         MSPROF_LOGE("remove file:%s failed", Utils::BaseName(file.filePath).c_str());
@@ -296,17 +306,18 @@ void FileAgeing::RemoveFile(const ToBeAgedFile &file, uint64_t &removeFileSize)
         removeFileSize += file.doneFizeSize;
     }
     fileCount_[file.fileCountTag] -= 1;
-    MSPROF_LOGD("remove fileName:%s, filePath:%s, fileCount_[%s]:%u",
-                file.fileName.c_str(), Utils::BaseName(file.filePath).c_str(),
-                file.fileCountTag.c_str(), fileCount_[file.fileCountTag]);
+    MSPROF_LOGD(
+        "remove fileName:%s, filePath:%s, fileCount_[%s]:%u", file.fileName.c_str(),
+        Utils::BaseName(file.filePath).c_str(), file.fileCountTag.c_str(), fileCount_[file.fileCountTag]);
 }
 
 void FileAgeing::RemoveAgeingFile()
 {
     uint64_t removeFileSize = 0;
 
-    MSPROF_LOGD("RemoveAgeingFile begin, storagedFileSize:%" PRIu64 " overThdSize:%" PRIu64 ", ageingFileList.size:%zu",
-                storagedFileSize_, overThdSize_, ageingFileList_.size());
+    MSPROF_LOGD(
+        "RemoveAgeingFile begin, storagedFileSize:%" PRIu64 " overThdSize:%" PRIu64 ", ageingFileList.size:%zu",
+        storagedFileSize_, overThdSize_, ageingFileList_.size());
     for (auto iter = ageingFileList_.begin(); iter != ageingFileList_.end();) {
         if (!iter->isValid || IsLastFile(iter->fileCountTag)) {
             ++iter;
@@ -324,8 +335,9 @@ void FileAgeing::RemoveAgeingFile()
 
         if (removeFileSize >= overThdSize_) {
             if (removeFileSize > storagedFileSize_) {
-                MSPROF_LOGE("removeFileSize error, removeFileSize:%" PRIu64 ", storagedFileSize_:%" PRIu64,
-                            removeFileSize, storagedFileSize_);
+                MSPROF_LOGE(
+                    "removeFileSize error, removeFileSize:%" PRIu64 ", storagedFileSize_:%" PRIu64, removeFileSize,
+                    storagedFileSize_);
                 PrintAgeingFile();
                 storagedFileSize_ = 0;
             } else {
@@ -335,20 +347,21 @@ void FileAgeing::RemoveAgeingFile()
             break;
         }
     }
-    MSPROF_LOGD("RemoveAgeingFile end, storagedFileSize:%" PRIu64 " overThdSize:%" PRIu64 ", "
-                "ageingFileList.size:%zu, removeFileSize:%" PRIu64,
-                storagedFileSize_, overThdSize_, ageingFileList_.size(), removeFileSize);
+    MSPROF_LOGD(
+        "RemoveAgeingFile end, storagedFileSize:%" PRIu64 " overThdSize:%" PRIu64 ", "
+        "ageingFileList.size:%zu, removeFileSize:%" PRIu64,
+        storagedFileSize_, overThdSize_, ageingFileList_.size(), removeFileSize);
 }
 
 void FileAgeing::PrintAgeingFile() const
 {
     MSPROF_LOGD("print ageing file list: ");
     for (auto iter = ageingFileList_.begin(); iter != ageingFileList_.end(); ++iter) {
-        MSPROF_LOGD("isValid:%u, isNeedPair:%u, isPaired:%u, filePath:%s, fileSize:%" PRIu64,
-                    iter->isValid, iter->isNeedPair, iter->isPaired,
-                    Utils::BaseName(iter->filePath).c_str(), iter->fileSize);
+        MSPROF_LOGD(
+            "isValid:%u, isNeedPair:%u, isPaired:%u, filePath:%s, fileSize:%" PRIu64, iter->isValid, iter->isNeedPair,
+            iter->isPaired, Utils::BaseName(iter->filePath).c_str(), iter->fileSize);
     }
 }
-}
-}
-}
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

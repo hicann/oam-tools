@@ -53,7 +53,8 @@ protected:
     void TearDown() override {}
 };
 
-TEST_F(MSPROF_BIN_UTEST, LltMain) {
+TEST_F(MSPROF_BIN_UTEST, LltMain)
+{
     GlobalMockObject::verify();
     const char* argv[ARGS_CAPACITY];
     argv[BASIC_ENV_INDEX] = "--help";
@@ -77,7 +78,8 @@ TEST_F(MSPROF_BIN_UTEST, LltMain) {
     EXPECT_EQ(PROFILING_FAILED, LltMain(SYS_ARGC, argv, envp));
 }
 
-TEST_F(MSPROF_BIN_UTEST, SetEnvList) {
+TEST_F(MSPROF_BIN_UTEST, SetEnvList)
+{
     GlobalMockObject::verify();
     const char* envp[ENVP_CAPACITY];
     const char str[] = "a=a";

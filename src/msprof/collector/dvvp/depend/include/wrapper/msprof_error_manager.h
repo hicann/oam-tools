@@ -23,13 +23,13 @@
 
 // 谓词类宏：新接口要求 std::vector<const char *>，业务侧传的是 std::vector<std::string>。
 // 先把入参具化为具名局部变量，再取 c_str()，把临时 vector 的生命周期绑定到 do/while 块。
-#define MSPROF_INPUT_ERROR(errorCode, key, value)                            \
-    do {                                                                     \
-        const std::vector<std::string> msprofErrKeys__ = (key);              \
-        const std::vector<std::string> msprofErrValues__ = (value);          \
-        REPORT_PREDEFINED_ERR_MSG((errorCode),                               \
-            Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrKeys__),        \
-            Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrValues__));     \
+#define MSPROF_INPUT_ERROR(errorCode, key, value)                                  \
+    do {                                                                           \
+        const std::vector<std::string> msprofErrKeys__ = (key);                    \
+        const std::vector<std::string> msprofErrValues__ = (value);                \
+        REPORT_PREDEFINED_ERR_MSG(                                                 \
+            (errorCode), Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrKeys__), \
+            Analysis::Dvvp::MsprofErrMgr::ToCStrVec(msprofErrValues__));           \
     } while (false)
 
 #define MSPROF_ENV_ERROR MSPROF_INPUT_ERROR
@@ -39,11 +39,11 @@ namespace Analysis {
 namespace Dvvp {
 namespace MsprofErrMgr {
 
-inline std::vector<const char *> ToCStrVec(const std::vector<std::string> &in)
+inline std::vector<const char*> ToCStrVec(const std::vector<std::string>& in)
 {
-    std::vector<const char *> out;
+    std::vector<const char*> out;
     out.reserve(in.size());
-    for (const auto &item : in) {
+    for (const auto& item : in) {
         out.emplace_back(item.c_str());
     }
     return out;
@@ -51,15 +51,16 @@ inline std::vector<const char *> ToCStrVec(const std::vector<std::string> &in)
 
 class MsprofErrorManager : public analysis::dvvp::common::singleton::Singleton<MsprofErrorManager> {
 public:
-    error_message::ErrorManagerContext &GetErrorManagerContext() const;
+    error_message::ErrorManagerContext& GetErrorManagerContext() const;
     void SetErrorContext(const error_message::ErrorManagerContext errorContext) const;
     MsprofErrorManager() {}
     ~MsprofErrorManager() override {}
+
 private:
     static error_message::ErrorManagerContext errorContext_;
 };
 
-}  // ErrorManager
-}  // Dvvp
-}  // namespace Analysis
+} // namespace MsprofErrMgr
+} // namespace Dvvp
+} // namespace Analysis
 #endif

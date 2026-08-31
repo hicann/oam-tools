@@ -45,12 +45,7 @@ struct PMUEventsConfig {
 
 class JobAdapter {
 public:
-    JobAdapter()
-        : hostCntvctStart_(0),
-          hostMonotonicStart_(0),
-          hostCntvctDiff_(0),
-          devMonotonic_(0),
-          devCntvct_(0) {}
+    JobAdapter() : hostCntvctStart_(0), hostMonotonicStart_(0), hostCntvctDiff_(0), devMonotonic_(0), devCntvct_(0) {}
     virtual ~JobAdapter() {}
 
 public:
@@ -58,19 +53,16 @@ public:
     virtual int32_t StopProf(void) = 0;
 
 public:
-    virtual const analysis::dvvp::message::StatusInfo& GetLastStatus()
-    {
-        return status_;
-    }
+    virtual const analysis::dvvp::message::StatusInfo& GetLastStatus() { return status_; }
     SHARED_PTR_ALIA<PMUEventsConfig> CreatePmuEventConfig(
         SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params, int32_t devId) const
     {
         SHARED_PTR_ALIA<PMUEventsConfig> pmuEventsConfig = nullptr;
         MSVP_MAKE_SHARED0(pmuEventsConfig, PMUEventsConfig, return nullptr);
         pmuEventsConfig->ctrlCPUEvents = Utils::Split(params->ai_ctrl_cpu_profiling_events, false, "", ",");
-        pmuEventsConfig->tsCPUEvents   = Utils::Split(params->ts_cpu_profiling_events, false, "", ",");
-        pmuEventsConfig->hbmEvents     = Utils::Split(params->hbm_profiling_events, false, "", ",");
-        pmuEventsConfig->aiCoreEvents  = Utils::Split(params->ai_core_profiling_events, false, "", ",");
+        pmuEventsConfig->tsCPUEvents = Utils::Split(params->ts_cpu_profiling_events, false, "", ",");
+        pmuEventsConfig->hbmEvents = Utils::Split(params->hbm_profiling_events, false, "", ",");
+        pmuEventsConfig->aiCoreEvents = Utils::Split(params->ai_core_profiling_events, false, "", ",");
         if (!params->hostProfiling) {
             if (RepackAicore(pmuEventsConfig->aiCoreEventsCoreIds, devId) != PROFILING_SUCCESS) {
                 MSPROF_LOGE("RepackAicore failed , jobId:%s, devId:%d", params->job_id.c_str(), devId);
@@ -131,7 +123,7 @@ public:
 
             // Filter out the minimum time difference for obtaining device time from 5 times,
             // indicating that the interaction time between host and device has the least impact
-            if ((t3 - t2)  < minDelta || minDelta == 0) {
+            if ((t3 - t2) < minDelta || minDelta == 0) {
                 minDelta = t3 - t2;
                 hostMonotonicStart_ = (mT2 + mT1) >> 1;
                 hostCntvctStart_ = (((t1 + t2) >> 1) + ((t3 + t4) >> 1)) >> 1;
@@ -144,7 +136,7 @@ public:
         }
     }
 
-    uint64_t GenClockTimer(uint32_t devIndexId, uint64_t &startMono) const
+    uint64_t GenClockTimer(uint32_t devIndexId, uint64_t& startMono) const
     {
         uint64_t timer = Utils::GetCPUCycleCounter();
         if (timer == 0 && Platform::instance()->PlatformIsSocSide()) {
@@ -169,6 +161,7 @@ public:
         devStartData << CLOCK_CNTVCT_KEY_DIFF << ": " << hostCntvctDiff_ << std::endl;
         return devStartData.str();
     }
+
 protected:
     uint64_t hostCntvctStart_;
     uint64_t hostMonotonicStart_;
@@ -178,7 +171,7 @@ protected:
     analysis::dvvp::message::StatusInfo status_;
 
 private:
-    int32_t RepackAicore(std::vector<int32_t> &aiCores, int32_t devId) const
+    int32_t RepackAicore(std::vector<int32_t>& aiCores, int32_t devId) const
     {
         int64_t aiCoreNum = 0;
         if (analysis::dvvp::driver::DrvGetAiCoreNum(devId, aiCoreNum) != PROFILING_SUCCESS) {
@@ -188,7 +181,7 @@ private:
         return PROFILING_SUCCESS;
     }
 
-    int32_t RepackAiv(std::vector<int32_t> &aivCores, int32_t devId) const
+    int32_t RepackAiv(std::vector<int32_t>& aivCores, int32_t devId) const
     {
         int64_t aivNum = 0;
         if (analysis::dvvp::driver::DrvGetAivNum(devId, aivNum) != PROFILING_SUCCESS) {
@@ -198,7 +191,7 @@ private:
         return PROFILING_SUCCESS;
     }
 
-    void RepackCoreId(const int32_t coreNum, std::vector<int32_t> &aiCores) const
+    void RepackCoreId(const int32_t coreNum, std::vector<int32_t>& aiCores) const
     {
         int32_t startCoreIndex = 0;
         for (int32_t kk = 0; kk < coreNum; ++kk) {
@@ -210,6 +203,8 @@ private:
         }
     }
 };
-}}}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis
 
 #endif

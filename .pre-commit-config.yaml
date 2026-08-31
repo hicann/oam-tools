@@ -29,16 +29,23 @@ repos:
         # 不传 --style 内联配置：该镜像钩子默认 args 为 ["-style=file"]，
         # 即使用仓库根目录 .clang-format。传内联参数会整体覆盖 .clang-format，
         # 导致钩子与开发者手动/IDE 执行 clang-format 的结果不一致。
+        # msprof 已整改（存量 C/C++ 已按 .clang-format 格式化），故摘出
+        # src/msprof；但 src/msprof/inc/{external,toolchain} 是 vendored SDK
+        # 接口头，不归本项目维护，仍屏蔽。
+        # test/ 不再逐组件白名单：test/ 下的 C/C++ 全部落在
+        # (ut|st)/(asys|msaicerr|msprof)/ 内（msprof 91 + msaicerr 5），
+        # 负向前瞻要排除的集合已为空、不再屏蔽任何文件，只剩"每个组件摘除
+        # 都要改同一行"的冲突点，故删除。仅保留 test/{ut,st}/msaicerr/res/
+        # （采自设备的样本头，不可改写）。
         exclude: |
           (?x)^(
             build/
             | experiment/
             | src/(
               hccl_test
-              | msprof
               | third_party
             )/
-            | test/(?!(ut|st)/(asys|msaicerr)/)
+            | src/msprof/inc/(external|toolchain)/
             | test/(ut|st)/msaicerr/res/
           )
 
@@ -104,13 +111,15 @@ repos:
         # （oam/msprof/aicerr/hccl/te/nin/fo/optin/abl/OpEnd/mata/VALU/nd/enque）。
         # 注意：codespell 小写词条大小写不敏感（cann 即可压住 CANN/Cann），
         # 带大写的词条仅精确匹配（ND 压不住 nd），故模板大写词与主线小写词并存。
+        # modeE 是 msprof FileDataParams 构造参数（同行 fileNameStr/isLastChunkB
+        # 按"类型首字母后缀"命名以避开同名成员 mode），非拼写错误，故加白。
         # --skip 不跳过源码文件（与主线行为一致，主线 codespell 一直检查
         # .py/.cpp 等），仅跳过二进制/构建产物目录；test/*/*/res/* 是采集自
         # 设备的原始日志/落盘样本，不能改写，整目录跳过（fnmatch 需尾部 /*
         # 且不能带 ./ 前缀才能命中嵌套文件）。
         args: [
             "-L",
-            "CANN,cann,NNAL,nnal,ASCEND,ascend,EnQue,CopyIn,ArchType,AND,ND,tbe,copyin,alog,oam,msprof,aicerr,hccl,te,nin,fo,optin,abl,OpEnd,mata,VALU,nd,enque",
+            "CANN,cann,NNAL,nnal,ASCEND,ascend,EnQue,CopyIn,ArchType,AND,ND,tbe,copyin,alog,oam,msprof,aicerr,hccl,te,nin,fo,optin,abl,OpEnd,mata,VALU,nd,enque,modeE",
             "--skip",
             "*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules,test/*/*/res/*",
           ]

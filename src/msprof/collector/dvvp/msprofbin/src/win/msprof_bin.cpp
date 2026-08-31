@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifdef __PROF_LLT
-int WlltMain(int argc, const char **argv, const char **envp)
+int WlltMain(int argc, const char** argv, const char** envp)
 #else
-int main(int argc, const char **argv, const char **envp)
+int main(int argc, const char** argv, const char** envp)
 #endif
 {
     return 0;

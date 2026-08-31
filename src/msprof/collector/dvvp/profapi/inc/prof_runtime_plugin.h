@@ -25,27 +25,27 @@
 #include "runtime/rt_error_codes.h"
 
 namespace ProfAPI {
-using RtProfilerTraceExFunc = rtError_t (*) (uint64_t indexId, uint64_t modelId, uint16_t tagId, rtStream_t stm);
+using RtProfilerTraceExFunc = rtError_t (*)(uint64_t indexId, uint64_t modelId, uint16_t tagId, rtStream_t stm);
 
 struct RuntimeApiInfo {
     std::string funcName;
-    void *funcAddr;
+    void* funcAddr;
 };
 
 class ProfRuntimePlugin : public analysis::dvvp::common::singleton::Singleton<ProfRuntimePlugin> {
 public:
     ~ProfRuntimePlugin() override;
     int32_t RuntimeApiInit();
-    void *GetPluginApiFunc(const std::string funcName);
-    int32_t ProfMarkEx(uint64_t indexId, uint64_t modelId, uint16_t tagId, void *stm);
+    void* GetPluginApiFunc(const std::string funcName);
+    int32_t ProfMarkEx(uint64_t indexId, uint64_t modelId, uint16_t tagId, void* stm);
 
 private:
     void LoadRuntimeApi();
 
 private:
-    void *runtimeLibHandle_{nullptr};
+    void* runtimeLibHandle_{nullptr};
     ProfAPI::PTHREAD_ONCE_T runtimeApiloadFlag_;
     std::map<std::string, RuntimeApiInfo> runtimeApiInfoMap_{};
 };
-}
+} // namespace ProfAPI
 #endif

@@ -26,11 +26,12 @@ public:
     MiniV3Platform();
     ~MiniV3Platform() override {}
     bool FeatureIsSupport(const PlatformFeature feature) const override;
+
 protected:
     std::string GetMemoryUBMetrics() override;
     std::set<PlatformFeature> epSupportFeature_;
 };
-}
-}
-}
+} // namespace Platform
+} // namespace Collect
+} // namespace Dvvp
 #endif

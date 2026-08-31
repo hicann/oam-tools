@@ -27,10 +27,7 @@ using namespace analysis::dvvp::common::config;
 
 class ProfSysInfoBase : public ICollectionJob {
 public:
-    ProfSysInfoBase()
-        : sampleIntervalNs_(0)
-    {
-    }
+    ProfSysInfoBase() : sampleIntervalNs_(0) {}
     ~ProfSysInfoBase() override {}
 
 protected:
@@ -46,10 +43,7 @@ public:
     int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) override;
     int32_t Process() override;
     int32_t Uninit() override;
-    bool IsGlobalJobLevel() override
-    {
-        return true;
-    }
+    bool IsGlobalJobLevel() override { return true; }
 };
 
 class ProfAllPidsJob : public ProfSysInfoBase {
@@ -59,10 +53,7 @@ public:
     int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) override;
     int32_t Process() override;
     int32_t Uninit() override;
-    bool IsGlobalJobLevel() override
-    {
-        return true;
-    }
+    bool IsGlobalJobLevel() override { return true; }
 };
 
 class ProfSysStatJob : public ProfSysInfoBase {
@@ -72,12 +63,9 @@ public:
     int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) override;
     int32_t Process() override;
     int32_t Uninit() override;
-    bool IsGlobalJobLevel() override
-    {
-        return true;
-    }
+    bool IsGlobalJobLevel() override { return true; }
 };
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis
 #endif

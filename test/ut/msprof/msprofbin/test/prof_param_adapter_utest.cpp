@@ -29,16 +29,16 @@ using namespace Analysis::Dvvp::Msprof;
 namespace {
 class PROF_PARAM_ADAPTER_UTEST : public testing::Test {
 protected:
-  void SetUp() override {}
-  void TearDown() override {}
+    void SetUp() override {}
+    void TearDown() override {}
 };
 
-TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents) {
+TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents)
+{
     GlobalMockObject::verify();
     std::shared_ptr<Analysis::Dvvp::Msprof::MsprofParamsAdapter> paramsAdapter(
         new Analysis::Dvvp::Msprof::MsprofParamsAdapter);
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(
-            new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(new analysis::dvvp::message::ProfileParams);
 
     Analysis::Dvvp::Common::Config::ConfigManager::instance()->configMap_["type"] =
         std::to_string(static_cast<int32_t>(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
@@ -62,13 +62,12 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, GenerateLlcEvents) {
     EXPECT_EQ(srcParams->llc_profiling_events, "write");
 }
 
-
-TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParams) {
+TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParams)
+{
     GlobalMockObject::verify();
     std::shared_ptr<Analysis::Dvvp::Msprof::MsprofParamsAdapter> paramsAdapter(
         new Analysis::Dvvp::Msprof::MsprofParamsAdapter);
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(
-            new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(new analysis::dvvp::message::ProfileParams);
 
     srcParams->io_profiling = "on";
     srcParams->interconnection_profiling = "on";
@@ -76,15 +75,13 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParams) {
     srcParams->cpu_profiling = "on";
     EXPECT_EQ(PROFILING_FAILED, paramsAdapter->UpdateParams(nullptr));
     EXPECT_EQ(PROFILING_SUCCESS, paramsAdapter->UpdateParams(srcParams));
-
 }
 
 TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParamsKeepsAiCoreEventsWhenNtsPmuEventsExist)
 {
     std::shared_ptr<Analysis::Dvvp::Msprof::MsprofParamsAdapter> paramsAdapter(
         new Analysis::Dvvp::Msprof::MsprofParamsAdapter);
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(
-            new analysis::dvvp::message::ProfileParams);
+    std::shared_ptr<analysis::dvvp::message::ProfileParams> srcParams(new analysis::dvvp::message::ProfileParams);
 
     srcParams->ai_core_profiling_events = "0x1,0x2";
     srcParams->ntsMetrics = "Custom:0x301,0x312";
@@ -94,4 +91,4 @@ TEST_F(PROF_PARAM_ADAPTER_UTEST, UpdateParamsKeepsAiCoreEventsWhenNtsPmuEventsEx
     EXPECT_EQ("0x1,0x2", srcParams->ai_core_profiling_events);
     EXPECT_EQ("0x301,0x312", srcParams->ntsPmuEvents);
 }
-}
+} // namespace

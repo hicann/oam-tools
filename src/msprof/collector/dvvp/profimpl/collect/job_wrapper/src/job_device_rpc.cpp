@@ -35,16 +35,12 @@ using namespace Analysis::Dvvp::TaskHandle;
 using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::transport;
 
-JobDeviceRpc::JobDeviceRpc(int32_t indexId)
-    : indexId_(indexId),
-      isStarted_(false)
+JobDeviceRpc::JobDeviceRpc(int32_t indexId) : indexId_(indexId), isStarted_(false)
 {
     jobCtx_.dev_id = std::to_string(indexId);
 }
 
-JobDeviceRpc::~JobDeviceRpc()
-{
-}
+JobDeviceRpc::~JobDeviceRpc() {}
 
 int32_t JobDeviceRpc::StartProf(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params)
 {
@@ -86,32 +82,32 @@ int32_t JobDeviceRpc::StartProf(SHARED_PTR_ALIA<analysis::dvvp::message::Profile
     return ret;
 }
 
-
-void JobDeviceRpc::BuildCtrlCpuEventMessage(SHARED_PTR_ALIA<PMUEventsConfig> cfg,
+void JobDeviceRpc::BuildCtrlCpuEventMessage(
+    SHARED_PTR_ALIA<PMUEventsConfig> cfg,
     SHARED_PTR_ALIA<analysis::dvvp::proto::ReplayStartReq> startReplayMessage) const
 {
     if (cfg->ctrlCPUEvents.size() > 0) {
-        MSPROF_LOGI("Dev id=%d, add_ctrl_cpu_events:%s.",
-            indexId_, Utils::GetEventsStr(cfg->ctrlCPUEvents).c_str());
+        MSPROF_LOGI("Dev id=%d, add_ctrl_cpu_events:%s.", indexId_, Utils::GetEventsStr(cfg->ctrlCPUEvents).c_str());
         for (auto iter = cfg->ctrlCPUEvents.begin(); iter != cfg->ctrlCPUEvents.end(); ++iter) {
             startReplayMessage->add_ctrl_cpu_events(iter->c_str());
         }
     }
 }
 
-void JobDeviceRpc::BuildLlcEventMessage(SHARED_PTR_ALIA<PMUEventsConfig> cfg,
+void JobDeviceRpc::BuildLlcEventMessage(
+    SHARED_PTR_ALIA<PMUEventsConfig> cfg,
     SHARED_PTR_ALIA<analysis::dvvp::proto::ReplayStartReq> startReplayMessage) const
 {
     if (cfg->llcEvents.size() > 0) {
-        MSPROF_LOGI("Dev id=%d, add_llc_events:%s.",
-            indexId_, Utils::GetEventsStr(cfg->llcEvents).c_str());
+        MSPROF_LOGI("Dev id=%d, add_llc_events:%s.", indexId_, Utils::GetEventsStr(cfg->llcEvents).c_str());
         for (auto iter = cfg->llcEvents.begin(); iter != cfg->llcEvents.end(); ++iter) {
             startReplayMessage->add_llc_events(iter->c_str());
         }
     }
 }
 
-void JobDeviceRpc::BuildStartReplayMessage(SHARED_PTR_ALIA<PMUEventsConfig> cfg,
+void JobDeviceRpc::BuildStartReplayMessage(
+    SHARED_PTR_ALIA<PMUEventsConfig> cfg,
     SHARED_PTR_ALIA<analysis::dvvp::proto::ReplayStartReq> startReplayMessage) const
 {
     BuildCtrlCpuEventMessage(cfg, startReplayMessage);
@@ -185,4 +181,6 @@ int32_t JobDeviceRpc::SendMsgAndHandleResponse(SHARED_PTR_ALIA<google::protobuf:
 
     return ret;
 }
-}}}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

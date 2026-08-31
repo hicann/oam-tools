@@ -26,12 +26,13 @@ namespace MsprofErrMgr {
 
 class MsprofErrorManager : public analysis::dvvp::common::singleton::Singleton<MsprofErrorManager> {
 public:
-    error_message::ErrorManagerContext &GetErrorManagerContext() const;
+    error_message::ErrorManagerContext& GetErrorManagerContext() const;
     void SetErrorContext(const error_message::ErrorManagerContext errorContext) const;
     MsprofErrorManager() {}
     ~MsprofErrorManager() override {}
-    void ReportErrorMessage(const std::string errorCode, const std::vector<std::string> &keys = {},
-        const std::vector<std::string> &values = {}) const;
+    void ReportErrorMessage(
+        const std::string errorCode, const std::vector<std::string>& keys = {},
+        const std::vector<std::string>& values = {}) const;
 
 private:
     static error_message::ErrorManagerContext errorContext_;
@@ -43,7 +44,7 @@ private:
 #define MSPROF_ENV_ERROR MSPROF_INPUT_ERROR
 #define MSPROF_INNER_ERROR REPORT_INNER_ERR_MSG
 #define MSPROF_CALL_ERROR MSPROF_INNER_ERROR
-}  // ErrorManager
-}  // Dvvp
-}  // namespace Analysis
+} // namespace MsprofErrMgr
+} // namespace Dvvp
+} // namespace Analysis
 #endif

@@ -32,7 +32,8 @@ constexpr char CCU0_STATISTIC_NAME[] = "0.stat";
 constexpr char CCU1_STATISTIC_NAME[] = "1.stat";
 
 ProfCcuBaseJob::ProfCcuBaseJob(AI_DRV_CHANNEL channelIdCcu0, AI_DRV_CHANNEL channelIdCcu1)
-    : channelIdCcu0_(channelIdCcu0), channelIdCcu1_(channelIdCcu1) {}
+    : channelIdCcu0_(channelIdCcu0), channelIdCcu1_(channelIdCcu1)
+{}
 
 ProfCcuBaseJob::~ProfCcuBaseJob() {}
 
@@ -42,22 +43,16 @@ int32_t ProfCcuBaseJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     return PROFILING_SUCCESS;
 }
 
-int32_t ProfCcuBaseJob::Process()
-{
-    return PROFILING_SUCCESS;
-}
+int32_t ProfCcuBaseJob::Process() { return PROFILING_SUCCESS; }
 
-int32_t ProfCcuBaseJob::Uninit()
-{
-    return PROFILING_SUCCESS;
-}
+int32_t ProfCcuBaseJob::Uninit() { return PROFILING_SUCCESS; }
 
-int32_t ProfCcuBaseJob::StartCcuChannel(const std::string &jobId, int32_t deviceId,
-    analysis::dvvp::driver::AI_DRV_CHANNEL channelId, const std::string &filePath)
+int32_t ProfCcuBaseJob::StartCcuChannel(
+    const std::string& jobId, int32_t deviceId, analysis::dvvp::driver::AI_DRV_CHANNEL channelId,
+    const std::string& filePath)
 {
     if (!DrvChannelsMgr::instance()->ChannelIsValid(deviceId, channelId)) {
-        MSPROF_LOGW("Ccu channel is invalid, devId: %d, channelId: %d", deviceId,
-            static_cast<int32_t>(channelId));
+        MSPROF_LOGW("Ccu channel is invalid, devId: %d, channelId: %d", deviceId, static_cast<int32_t>(channelId));
         return PROFILING_FAILED;
     }
 
@@ -70,12 +65,11 @@ int32_t ProfCcuBaseJob::StartCcuChannel(const std::string &jobId, int32_t device
     return PROFILING_SUCCESS;
 }
 
-int32_t ProfCcuBaseJob::StopCcuChannel(const std::string &jobId, int32_t deviceId,
-    analysis::dvvp::driver::AI_DRV_CHANNEL channelId) const
+int32_t ProfCcuBaseJob::StopCcuChannel(
+    const std::string& jobId, int32_t deviceId, analysis::dvvp::driver::AI_DRV_CHANNEL channelId) const
 {
     if (!DrvChannelsMgr::instance()->ChannelIsValid(deviceId, channelId)) {
-        MSPROF_LOGW("Ccu channel is invalid, devId: %d, channelId: %d", deviceId,
-            static_cast<int32_t>(channelId));
+        MSPROF_LOGW("Ccu channel is invalid, devId: %d, channelId: %d", deviceId, static_cast<int32_t>(channelId));
         return PROFILING_FAILED;
     }
 
@@ -113,16 +107,18 @@ int32_t ProfCcuInstrJob::Process()
     MSPROF_LOGI("Begin to start profiling ccu instruction, devId: %d", collectionJobCfg_->comParams->devId);
 
     std::string filePathCcu0 = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath + CCU0_INSTRUCTION_NAME);
-    int32_t ret = StartCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu0_, filePathCcu0);
+    int32_t ret = StartCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu0_,
+        filePathCcu0);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuInstrJob Process failed");
         return ret;
     }
 
     std::string filePathCcu1 = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath + CCU1_INSTRUCTION_NAME);
-    ret = StartCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu1_, filePathCcu1);
+    ret = StartCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu1_,
+        filePathCcu1);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuInstrJob Process failed");
         return ret;
@@ -133,15 +129,15 @@ int32_t ProfCcuInstrJob::Process()
 int32_t ProfCcuInstrJob::Uninit()
 {
     CHECK_JOB_COMMON_PARAM_RET(collectionJobCfg_, return PROFILING_SUCCESS);
-    int32_t ret = StopCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu0_);
+    int32_t ret = StopCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu0_);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuInstrJob Uninit failed");
         return ret;
     }
 
-    ret = StopCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu1_);
+    ret = StopCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu1_);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuInstrJob Uninit failed");
         return ret;
@@ -178,16 +174,18 @@ int32_t ProfCcuStatJob::Process()
     MSPROF_LOGI("Begin to start profiling ccu statistic, devId: %d", collectionJobCfg_->comParams->devId);
 
     std::string filePathCcu0 = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath + CCU0_STATISTIC_NAME);
-    int32_t ret = StartCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu0_, filePathCcu0);
+    int32_t ret = StartCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu0_,
+        filePathCcu0);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuStatJob Process failed");
         return ret;
     }
 
     std::string filePathCcu1 = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath + CCU1_STATISTIC_NAME);
-    ret = StartCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu1_, filePathCcu1);
+    ret = StartCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu1_,
+        filePathCcu1);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuStatJob Process failed");
         return ret;
@@ -198,21 +196,21 @@ int32_t ProfCcuStatJob::Process()
 int32_t ProfCcuStatJob::Uninit()
 {
     CHECK_JOB_COMMON_PARAM_RET(collectionJobCfg_, return PROFILING_SUCCESS);
-    int32_t ret = StopCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu0_);
+    int32_t ret = StopCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu0_);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuStatJob Uninit failed");
         return ret;
     }
 
-    ret = StopCcuChannel(collectionJobCfg_->comParams->params->job_id,
-        collectionJobCfg_->comParams->devId, channelIdCcu1_);
+    ret = StopCcuChannel(
+        collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelIdCcu1_);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_INNER_ERROR("EK9999", "ProfCcuStatJob Uninit failed");
         return ret;
     }
     return ret;
 }
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

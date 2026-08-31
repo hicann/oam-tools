@@ -32,22 +32,17 @@ using namespace Msprof::MsprofTx;
 
 constexpr size_t RING_BUFFER_DEFAULT_CAPACITY = 512;
 
-enum class MstxDataType {
-    DATA_MARK = 0,
-    DATA_RANGE_START,
-    DATA_RANGE_END,
-    DATA_INVALID
-};
+enum class MstxDataType { DATA_MARK = 0, DATA_RANGE_START, DATA_RANGE_END, DATA_INVALID };
 
 class MstxDataHandler : public analysis::dvvp::common::singleton::Singleton<MstxDataHandler>,
-                    public analysis::dvvp::common::thread::Thread {
+                        public analysis::dvvp::common::thread::Thread {
 public:
     MstxDataHandler();
     ~MstxDataHandler();
 
-    int Start(const std::string &mstxDomainInclude, const std::string &mstxDomainExclude);
+    int Start(const std::string& mstxDomainInclude, const std::string& mstxDomainExclude);
     int Stop();
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
     bool IsStart();
     int SaveMstxData(const char* msg, uint64_t mstxEventId, MstxDataType type, uint64_t domainNameHash = 0);
 
@@ -68,7 +63,7 @@ private:
     std::mutex tmpRangeDataMutex_;
     std::unordered_map<uint64_t, MsprofTxInfo> tmpMstxRangeData_;
 };
-}
-}
-}
+} // namespace Mstx
+} // namespace Dvvp
+} // namespace Collector
 #endif

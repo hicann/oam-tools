@@ -33,20 +33,17 @@ public:
 
     virtual int32_t Start();
     virtual int32_t Stop();
-    virtual void StopNoWait()
-    {
-        quit_ = true;
-    };
+    virtual void StopNoWait() { quit_ = true; };
     int32_t Join();
     bool IsQuit() const;
-    void SetThreadName(const std::string &threadName);
-    const std::string &GetThreadName() const;
+    void SetThreadName(const std::string& threadName);
+    const std::string& GetThreadName() const;
 
 protected:
-    virtual void Run(const error_message::ErrorManagerContext &errorContext) = 0;
+    virtual void Run(const error_message::ErrorManagerContext& errorContext) = 0;
 
 private:
-    static void *ThrProcess(VOID_PTR arg);
+    static void* ThrProcess(VOID_PTR arg);
 
     OsalThread tid_;
     volatile bool quit_;
@@ -54,9 +51,9 @@ private:
     std::string threadName_;
     error_message::ErrorManagerContext errorContext_;
 };
-}  // namespace thread
-}  // namespace common
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace thread
+} // namespace common
+} // namespace dvvp
+} // namespace analysis
 
 #endif

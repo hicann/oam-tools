@@ -28,10 +28,9 @@ using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::utils;
 
-FileSlice::FileSlice(int32_t sliceFileMaxKByte, const std::string &storageDir, const std::string &storageLimit)
+FileSlice::FileSlice(int32_t sliceFileMaxKByte, const std::string& storageDir, const std::string& storageLimit)
     : sliceFileMaxKByte_(sliceFileMaxKByte), storageDir_(storageDir), needSlice_(true), storageLimit_(storageLimit)
-{
-}
+{}
 
 FileSlice::~FileSlice() {}
 
@@ -40,8 +39,8 @@ int32_t FileSlice::Init(bool needSlice)
     static const std::string WRITE_PERFCOUNT_MODULE_NAME = std::string("FileSlice");
     MSVP_MAKE_SHARED1(writeFilePerfCount_, PerfCount, WRITE_PERFCOUNT_MODULE_NAME, return PROFILING_FAILED);
     if (!Utils::IsDirAccessible(storageDir_)) {
-        MSPROF_LOGE("para err, storageDir_:%s, storageDirLen:%d",
-                    Utils::BaseName(storageDir_).c_str(), storageDir_.length());
+        MSPROF_LOGE(
+            "para err, storageDir_:%s, storageDirLen:%d", Utils::BaseName(storageDir_).c_str(), storageDir_.length());
         return PROFILING_FAILED;
     }
     MSVP_MAKE_SHARED2(fileAgeing_, FileAgeing, storageDir_, storageLimit_, return PROFILING_FAILED);
@@ -49,8 +48,9 @@ int32_t FileSlice::Init(bool needSlice)
         MSPROF_LOGE("Failed to init file ageing engine");
         return PROFILING_FAILED;
     }
-    MSPROF_LOGI("StorageDir_:%s, sliceFileMaxKByte:%d, needSlice_:%d, storage_limit:%s",
-                Utils::BaseName(storageDir_).c_str(), sliceFileMaxKByte_, needSlice_, storageLimit_.c_str());
+    MSPROF_LOGI(
+        "StorageDir_:%s, sliceFileMaxKByte:%d, needSlice_:%d, storage_limit:%s", Utils::BaseName(storageDir_).c_str(),
+        sliceFileMaxKByte_, needSlice_, storageLimit_.c_str());
     Utils::EnsureEndsInSlash(storageDir_);
     needSlice_ = needSlice;
 
@@ -63,7 +63,7 @@ int32_t FileSlice::Init(bool needSlice)
  * @param [in] fileName: filename to flush data
  * @return : dir/fileName.slice_
  */
-std::string FileSlice::GetSliceKey(const std::string &dir, std::string &fileName)
+std::string FileSlice::GetSliceKey(const std::string& dir, std::string& fileName)
 {
     if (needSlice_) {
         fileName.append(".slice_");
@@ -89,7 +89,7 @@ std::string FileSlice::GetSliceKey(const std::string &dir, std::string &fileName
  * @return : PROFILING_FAILED (-1) failed
  *         : PROFILING_SUCCES (0)  success
  */
-int32_t FileSlice::SetChunkTime(const std::string &key, uint64_t startTime, uint64_t endTime)
+int32_t FileSlice::SetChunkTime(const std::string& key, uint64_t startTime, uint64_t endTime)
 {
     if (key.length() == 0) {
         MSPROF_LOGE("key err");
@@ -123,8 +123,8 @@ int32_t FileSlice::SetChunkTime(const std::string &key, uint64_t startTime, uint
  * @return : PROFILING_FAILED (-1) failed
  *         : PROFILING_SUCCES (0)  success
  */
-int32_t FileSlice::WriteToLocalFiles(const std::string &key, CONST_CHAR_PTR data, int32_t dataLen,
-    int32_t offset, bool isLastChunk)
+int32_t FileSlice::WriteToLocalFiles(
+    const std::string& key, CONST_CHAR_PTR data, int32_t dataLen, int32_t offset, bool isLastChunk)
 {
     if (key.length() == 0) {
         MSPROF_LOGE("para err!");
@@ -146,8 +146,9 @@ int32_t FileSlice::WriteToLocalFiles(const std::string &key, CONST_CHAR_PTR data
         if (!out.is_open()) {
             const int32_t errorNo = OsalGetErrorCode();
             char errBuf[MAX_ERR_STRING_LEN + 1] = {0};
-            MSPROF_LOGE("Failed to open %s, ErrorCode:%d, errinfo:%s", Utils::BaseName(absolutePath).c_str(),
-                errorNo, OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
+            MSPROF_LOGE(
+                "Failed to open %s, ErrorCode:%d, errinfo:%s", Utils::BaseName(absolutePath).c_str(), errorNo,
+                OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
             return PROFILING_FAILED;
         }
         if (OsalChmod(absolutePath.c_str(), FILE_MODE) != OSAL_EN_OK) {
@@ -168,8 +169,9 @@ int32_t FileSlice::WriteToLocalFiles(const std::string &key, CONST_CHAR_PTR data
     int64_t fileSize = Utils::GetFileSize(absolutePath);
     // 如果文件>2M，就切分成不同的文件
     if (fileSize >= sliceFileMaxKByte_ * MEGABYTE_CONVERT || (isLastChunk && Utils::IsFileExist(absolutePath))) {
-        if (!(CreateDoneFile(absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
-            std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
+        if (!(CreateDoneFile(
+                absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
+                std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
             MSPROF_LOGE("Failed to create file:%s_%" PRIu64, Utils::BaseName(key).c_str(), sliceNum_[key]);
             return PROFILING_FAILED;
         }
@@ -187,8 +189,8 @@ int32_t FileSlice::WriteToLocalFiles(const std::string &key, CONST_CHAR_PTR data
  * @return: PROFILING_SUCCESS
             PROFILING_FAILED
  */
-int32_t FileSlice::CheckDirAndMessage(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq,
-    const std::string &storageDir) const
+int32_t FileSlice::CheckDirAndMessage(
+    SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq, const std::string& storageDir) const
 {
     if (fileChunkReq == nullptr) {
         MSPROF_LOGE("para err!");
@@ -199,8 +201,9 @@ int32_t FileSlice::CheckDirAndMessage(SHARED_PTR_ALIA<analysis::dvvp::ProfileFil
     }
 
     if (fileChunkReq->fileName.length() == 0 || (!(fileChunkReq->isLastChunk) && fileChunkReq->chunkSize == 0)) {
-        MSPROF_LOGE("para err! filename.length:%d, chunksizeinbytes:%d",
-            fileChunkReq->fileName.length(), fileChunkReq->chunkSize);
+        MSPROF_LOGE(
+            "para err! filename.length:%d, chunksizeinbytes:%d", fileChunkReq->fileName.length(),
+            fileChunkReq->chunkSize);
 
         return PROFILING_FAILED;
     }
@@ -217,7 +220,7 @@ int32_t FileSlice::CheckDirAndMessage(SHARED_PTR_ALIA<analysis::dvvp::ProfileFil
     return PROFILING_SUCCESS;
 }
 
-int32_t FileSlice::WriteCtrlDataToFile(const std::string &absolutePath, const std::string &data, int32_t dataLen)
+int32_t FileSlice::WriteCtrlDataToFile(const std::string& absolutePath, const std::string& data, int32_t dataLen)
 {
     std::ofstream file;
     std::unique_lock<std::mutex> lk(sliceFileMtx_);
@@ -260,8 +263,8 @@ int32_t FileSlice::WriteCtrlDataToFile(const std::string &absolutePath, const st
  * @return: PROFILING_SUCCESS
             PROFILING_FAILED
  */
-int32_t FileSlice::SaveDataToLocalFiles(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq,
-    const std::string &storageDir)
+int32_t FileSlice::SaveDataToLocalFiles(
+    SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq, const std::string& storageDir)
 {
     int32_t ret = PROFILING_FAILED;
     if (fileChunkReq == nullptr) {
@@ -279,8 +282,7 @@ int32_t FileSlice::SaveDataToLocalFiles(SHARED_PTR_ALIA<analysis::dvvp::ProfileF
         return FileSliceFlushByJobID(storageDir + fileName, devId);
     }
     if (fileChunkReq->chunkModule == FileChunkDataModule::PROFILING_IS_CTRL_DATA) {
-        return WriteCtrlDataToFile(storageDir + fileName,
-                                   fileChunkReq->chunk, fileChunkReq->chunkSize);
+        return WriteCtrlDataToFile(storageDir + fileName, fileChunkReq->chunk, fileChunkReq->chunkSize);
     }
 
     std::unique_lock<std::mutex> lk(sliceFileMtx_);
@@ -302,8 +304,8 @@ int32_t FileSlice::SaveDataToLocalFiles(SHARED_PTR_ALIA<analysis::dvvp::ProfileF
             fileChunkReq->offset = fileSize;
         }
     }
-    ret = WriteToLocalFiles(key, fileChunkReq->chunk.c_str(), fileChunkReq->chunkSize,
-        fileChunkReq->offset, fileChunkReq->isLastChunk);
+    ret = WriteToLocalFiles(
+        key, fileChunkReq->chunk.c_str(), fileChunkReq->chunkSize, fileChunkReq->offset, fileChunkReq->isLastChunk);
     if (ret != PROFILING_SUCCESS) {
         MSPROF_LOGE("Failed to write local files, fileName: %s", Utils::BaseName(fileName).c_str());
         return PROFILING_FAILED;
@@ -312,8 +314,9 @@ int32_t FileSlice::SaveDataToLocalFiles(SHARED_PTR_ALIA<analysis::dvvp::ProfileF
     return PROFILING_SUCCESS;
 }
 
-bool FileSlice::CreateDoneFile(const std::string &absolutePath, const std::string &fileSize,
-    const std::string &startTime, const std::string &endTime, const std::string &timeKey)
+bool FileSlice::CreateDoneFile(
+    const std::string& absolutePath, const std::string& fileSize, const std::string& startTime,
+    const std::string& endTime, const std::string& timeKey)
 {
     if (!needSlice_) {
         return true;
@@ -324,8 +327,9 @@ bool FileSlice::CreateDoneFile(const std::string &absolutePath, const std::strin
     if (!file.is_open()) {
         const int32_t errorNo = OsalGetErrorCode();
         char errBuf[MAX_ERR_STRING_LEN + 1] = {0};
-        MSPROF_LOGE("Failed to open %s, ErrorCode:%d, errinfo:%s", Utils::BaseName(tempPath).c_str(), errorNo,
-                    OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
+        MSPROF_LOGE(
+            "Failed to open %s, ErrorCode:%d, errinfo:%s", Utils::BaseName(tempPath).c_str(), errorNo,
+            OsalGetErrorFormatMessage(errorNo, errBuf, MAX_ERR_STRING_LEN));
         return false;
     }
     if (OsalChmod(tempPath.c_str(), FILE_MODE) != OSAL_EN_OK) {
@@ -370,14 +374,16 @@ bool FileSlice::FileSliceFlush()
     for (it = sliceNum_.begin(); it != sliceNum_.end(); ++it) {
         const std::string absolutePath = it->first + std::to_string(it->second);
         if (Utils::IsFileExist(absolutePath)) {
-            MSPROF_EVENT("[FileSliceFlush]file:%s, total_size_file:%" PRIu64" bytes",
-                        Utils::BaseName(it->first).c_str(), totalSize_[it->first]);
+            MSPROF_EVENT(
+                "[FileSliceFlush]file:%s, total_size_file:%" PRIu64 " bytes", Utils::BaseName(it->first).c_str(),
+                totalSize_[it->first]);
             int64_t fileSize = Utils::GetFileSize(absolutePath);
             if (fileSize < 0) {
                 MSPROF_LOGE("[fileSize:%d error", fileSize);
             }
-            if (!(CreateDoneFile(absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
-                std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
+            if (!(CreateDoneFile(
+                    absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
+                    std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
                 MSPROF_LOGE("[FileSliceFlush]Failed to create file:%s", Utils::BaseName(absolutePath).c_str());
                 return false;
             }
@@ -394,7 +400,7 @@ bool FileSlice::FileSliceFlush()
     return true;
 }
 
-int32_t FileSlice::FileSliceFlushByJobID(const std::string &jobIDRelative, const std::string &devID)
+int32_t FileSlice::FileSliceFlushByJobID(const std::string& jobIDRelative, const std::string& devID)
 {
     if (!needSlice_) {
         return PROFILING_SUCCESS;
@@ -402,26 +408,27 @@ int32_t FileSlice::FileSliceFlushByJobID(const std::string &jobIDRelative, const
     std::map<std::string, uint64_t>::iterator it;
     std::string fileSliceName = "";
 
-    MSPROF_LOGI("[FileSliceFlushByJobID]jobIDRelative:%s, devID:%s",
-                Utils::BaseName(jobIDRelative).c_str(), devID.c_str());
+    MSPROF_LOGI(
+        "[FileSliceFlushByJobID]jobIDRelative:%s, devID:%s", Utils::BaseName(jobIDRelative).c_str(), devID.c_str());
     fileSliceName.append(".").append(devID).append(".slice_");
     std::unique_lock<std::mutex> lk(sliceFileMtx_);
     for (it = sliceNum_.begin(); it != sliceNum_.end(); ++it) {
-        if (it->first.find(fileSliceName) == std::string::npos ||
-            it->first.find(jobIDRelative) == std::string::npos) {
+        if (it->first.find(fileSliceName) == std::string::npos || it->first.find(jobIDRelative) == std::string::npos) {
             continue;
         }
         std::string absolutePath = it->first + std::to_string(it->second);
-        MSPROF_EVENT("[FileSliceFlushByJobID]file:%s, total_size_file:%" PRIu64,
-                    Utils::BaseName(it->first).c_str(), totalSize_[it->first]);
+        MSPROF_EVENT(
+            "[FileSliceFlushByJobID]file:%s, total_size_file:%" PRIu64, Utils::BaseName(it->first).c_str(),
+            totalSize_[it->first]);
         if (Utils::IsFileExist(absolutePath)) {
             MSPROF_LOGI("[FileSliceFlushByJobID]create done file for:%s", Utils::BaseName(absolutePath).c_str());
             const int64_t fileSize = Utils::GetFileSize(absolutePath);
             if (fileSize < 0) {
                 MSPROF_LOGE("[fileSize:%d error", fileSize);
             }
-            if (!(CreateDoneFile(absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
-                std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
+            if (!(CreateDoneFile(
+                    absolutePath, std::to_string(fileSize), std::to_string(chunkStartTime_[absolutePath]),
+                    std::to_string(chunkEndTime_[absolutePath]), absolutePath))) {
                 MSPROF_LOGE("[FileSliceFlushByJobID]Failed to create file:%s", Utils::BaseName(absolutePath).c_str());
                 return PROFILING_FAILED;
             }
@@ -432,6 +439,6 @@ int32_t FileSlice::FileSliceFlushByJobID(const std::string &jobIDRelative, const
 
     return PROFILING_SUCCESS;
 }
-}
-}
-}
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

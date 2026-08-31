@@ -41,20 +41,12 @@ using namespace Msprofiler::Parser;
 ProfDvppJob::ProfDvppJob()
 {
     channelId_ = PROF_CHANNEL_DVPP;
-    channelList_ = {PROF_CHANNEL_DVPP_VENC,
-               PROF_CHANNEL_DVPP_JPEGE,
-               PROF_CHANNEL_DVPP_VDEC,
-               PROF_CHANNEL_DVPP_JPEGD,
-               PROF_CHANNEL_DVPP_VPC,
-               PROF_CHANNEL_DVPP_PNG,
-               PROF_CHANNEL_DVPP_SCD};
-    fileNameList_ = {{PROF_CHANNEL_DVPP_JPEGD, "data/dvpp.jpegd"},
-                {PROF_CHANNEL_DVPP_JPEGE, "data/dvpp.jpege"},
-                {PROF_CHANNEL_DVPP_PNG, "data/dvpp.png"},
-                {PROF_CHANNEL_DVPP_SCD, "data/dvpp.scd"},
-                {PROF_CHANNEL_DVPP_VENC, "data/dvpp.venc"},
-                {PROF_CHANNEL_DVPP_VPC, "data/dvpp.vpc"},
-                {PROF_CHANNEL_DVPP_VDEC, "data/dvpp.vdec"}};
+    channelList_ = {PROF_CHANNEL_DVPP_VENC, PROF_CHANNEL_DVPP_JPEGE, PROF_CHANNEL_DVPP_VDEC, PROF_CHANNEL_DVPP_JPEGD,
+                    PROF_CHANNEL_DVPP_VPC,  PROF_CHANNEL_DVPP_PNG,   PROF_CHANNEL_DVPP_SCD};
+    fileNameList_ = {{PROF_CHANNEL_DVPP_JPEGD, "data/dvpp.jpegd"}, {PROF_CHANNEL_DVPP_JPEGE, "data/dvpp.jpege"},
+                     {PROF_CHANNEL_DVPP_PNG, "data/dvpp.png"},     {PROF_CHANNEL_DVPP_SCD, "data/dvpp.scd"},
+                     {PROF_CHANNEL_DVPP_VENC, "data/dvpp.venc"},   {PROF_CHANNEL_DVPP_VPC, "data/dvpp.vpc"},
+                     {PROF_CHANNEL_DVPP_VDEC, "data/dvpp.vdec"}};
 }
 ProfDvppJob::~ProfDvppJob()
 {
@@ -102,18 +94,19 @@ int32_t ProfDvppJob::Process()
         (void)SetPeripheralConfig();
         for (const auto channelId : channelList_) {
             if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId)) {
-                MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
+                MSPROF_LOGW(
+                    "Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
                     static_cast<int32_t>(channelId));
                 continue;
             }
-            std::string filePath =
-                collectionJobCfg_->comParams->tmpResultDir + MSVP_SLASH + fileNameList_[channelId];
-            AddReader(collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId,
-                filePath);
-            MSPROF_LOGI("begin to start profiling Channel %d, devId :%d",
-                static_cast<int32_t>(channelId), collectionJobCfg_->comParams->devIdOnHost);
-            peripheralCfg_.profDeviceId     = collectionJobCfg_->comParams->devId;
-            peripheralCfg_.profChannel      = channelId;
+            std::string filePath = collectionJobCfg_->comParams->tmpResultDir + MSVP_SLASH + fileNameList_[channelId];
+            AddReader(
+                collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId, filePath);
+            MSPROF_LOGI(
+                "begin to start profiling Channel %d, devId :%d", static_cast<int32_t>(channelId),
+                collectionJobCfg_->comParams->devIdOnHost);
+            peripheralCfg_.profDeviceId = collectionJobCfg_->comParams->devId;
+            peripheralCfg_.profChannel = channelId;
             peripheralCfg_.profSamplePeriod = samplePeriod_;
             peripheralCfg_.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(channelId);
             int32_t period = JsonParser::instance()->GetJsonChannelPeriod(channelId);
@@ -124,8 +117,9 @@ int32_t ProfDvppJob::Process()
             }
             peripheralCfg_.profDataFile = "";
             const int32_t ret = DrvPeripheralStart(peripheralCfg_);
-            MSPROF_LOGI("start profiling Channel %d, events:%s, ret=%d",
-                static_cast<int32_t>(channelId), eventsStr_.c_str(), ret);
+            MSPROF_LOGI(
+                "start profiling Channel %d, events:%s, ret=%d", static_cast<int32_t>(channelId), eventsStr_.c_str(),
+                ret);
 
             Utils::ProfFree(peripheralCfg_.configP);
             peripheralCfg_.configP = nullptr;
@@ -148,7 +142,8 @@ int32_t ProfDvppJob::Uninit()
         CHECK_JOB_COMMON_PARAM_RET(collectionJobCfg_, return PROFILING_SUCCESS);
         for (const auto channelId : channelList_) {
             if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId)) {
-                MSPROF_LOGW("Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
+                MSPROF_LOGW(
+                    "Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
                     static_cast<int32_t>(channelId));
                 continue;
             }
@@ -166,6 +161,6 @@ int32_t ProfDvppJob::Uninit()
     }
     return PROFILING_SUCCESS;
 }
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

@@ -27,9 +27,10 @@ namespace Collector {
 namespace Dvvp {
 namespace DynProf {
 const std::map<std::string, DynProfCliCmd> DYN_PROF_CLI_CMD_MAP = {
-    { "start", DynProfCliCmd::DYN_PROF_CLI_CMD_START }, { "stop", DynProfCliCmd::DYN_PROF_CLI_CMD_STOP },
-    { "quit", DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT },   { "q", DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT }
-};
+    {"start", DynProfCliCmd::DYN_PROF_CLI_CMD_START},
+    {"stop", DynProfCliCmd::DYN_PROF_CLI_CMD_STOP},
+    {"quit", DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT},
+    {"q", DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT}};
 
 using namespace analysis::dvvp::common::cmdlog;
 using namespace analysis::dvvp::common::config;
@@ -39,7 +40,7 @@ using namespace analysis::dvvp::common::thread;
 using namespace analysis::dvvp::common::utils;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 
-void DynProfClient::SetParams(const std::string &params)
+void DynProfClient::SetParams(const std::string& params)
 {
     if (params.size() >= DYN_PROF_PARAMS_MAX_LEN || params.empty()) {
         MSPROF_LOGE("dynamic profiling param length error, len=%zu bytes.", params.size());
@@ -99,12 +100,9 @@ void DynProfClient::DynProfCliStopSocket(int32_t cliSockFd)
     cliSockFdMap_.erase(cliSockFd);
 }
 
-bool DynProfClient::IsCliStarted() const
-{
-    return cliStarted_;
-}
+bool DynProfClient::IsCliStarted() const { return cliStarted_; }
 
-int DynProfClient::TryReadInputCmd(std::string &inputCmd) const
+int DynProfClient::TryReadInputCmd(std::string& inputCmd) const
 {
     timeval timeout = {DYN_PROF_READ_INPUT_CMD_WAIT_TIME, 0};
     fd_set fdSet;
@@ -145,7 +143,7 @@ void DynProfClient::SetSocketTimeout()
     }
 }
 
-void DynProfClient::Run(const error_message::ErrorManagerContext &errorContext)
+void DynProfClient::Run(const error_message::ErrorManagerContext& errorContext)
 {
     MsprofErrorManager::instance()->SetErrorContext(errorContext);
 
@@ -199,15 +197,15 @@ void DynProfClient::Run(const error_message::ErrorManagerContext &errorContext)
 
 void DynProfClient::DynProfCliInitProcFunc()
 {
-    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_START] = std::bind(&DynProfClient::DynProfCliProcStart,
-        this, std::placeholders::_1);
-    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_STOP] = std::bind(&DynProfClient::DynProfCliProcStop,
-        this, std::placeholders::_1);
-    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT] = std::bind(&DynProfClient::DynProfCliProcQuit,
-        this, std::placeholders::_1);
+    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_START] =
+        std::bind(&DynProfClient::DynProfCliProcStart, this, std::placeholders::_1);
+    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_STOP] =
+        std::bind(&DynProfClient::DynProfCliProcStop, this, std::placeholders::_1);
+    procFuncMap_[DynProfCliCmd::DYN_PROF_CLI_CMD_QUIT] =
+        std::bind(&DynProfClient::DynProfCliProcQuit, this, std::placeholders::_1);
 }
 
-int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain) const
+int32_t DynProfClient::DynProfCliConnectSocket(const int32_t cliSockFd, const std::string& srvSockDomain) const
 {
     // app 场景下, 每秒重试一次直到超时或者连接上
     const int32_t sleepIntervalUs = 1000000;
@@ -247,7 +245,7 @@ int32_t DynProfClient::DynProfCliCreate()
         MSPROF_LOGE("there is no valid pid to connect.");
         return PROFILING_FAILED;
     }
-    for (auto &pid : pids) {
+    for (auto& pid : pids) {
         int32_t cliSockFd = LocalSocket::Open();
         if (cliSockFd == PROFILING_FAILED) {
             MSPROF_LOGE("open client socket for pid %d failed", pid);
@@ -414,11 +412,9 @@ void DynProfClient::DynProfCliHelpInfo() const
                           "\t quit:                  Stop collection and quit interactive mode.");
 }
 
-DynProfCliMgr::~DynProfCliMgr()
-{
-}
+DynProfCliMgr::~DynProfCliMgr() {}
 
-int32_t DynProfCliMgr::StartDynProfCli(const std::string &params)
+int32_t DynProfCliMgr::StartDynProfCli(const std::string& params)
 {
     MSVP_MAKE_SHARED0(dynProfCli_, DynProfClient, return PROFILING_FAILED);
     dynProfCli_->SetParams(params);
@@ -445,46 +441,30 @@ void DynProfCliMgr::SetKeyPid(const std::vector<int32_t> pids)
     }
 }
 
-std::set<int32_t> DynProfCliMgr::GetKeyPid() const
-{
-    return keyPids_;
-}
+std::set<int32_t> DynProfCliMgr::GetKeyPid() const { return keyPids_; }
 
 std::string DynProfCliMgr::GetKeyPidEnv() const
 {
     std::vector<std::string> pidStrs(keyPids_.size());
-    std::transform(keyPids_.begin(), keyPids_.end(), pidStrs.begin(), 
-                   [](int32_t n) { return std::to_string(n); });
+    std::transform(keyPids_.begin(), keyPids_.end(), pidStrs.begin(), [](int32_t n) { return std::to_string(n); });
 
     UtilsStringBuilder<std::string> builder;
     std::string keyPids = builder.Join(pidStrs, ",");
     return isAppMode_ ? DYNAMIC_PROFILING_KEY_PID_ENV + "=" + keyPids : "";
 }
 
-void DynProfCliMgr::EnableDynProfCli()
-{
-    enabled_ = true;
-}
+void DynProfCliMgr::EnableDynProfCli() { enabled_ = true; }
 
-bool DynProfCliMgr::IsDynProfCliEnable() const
-{
-    return enabled_;
-}
+bool DynProfCliMgr::IsDynProfCliEnable() const { return enabled_; }
 
 std::string DynProfCliMgr::GetDynProfEnv() const
 {
     return enabled_ ? PROFILING_MODE_ENV + "=" + DYNAMIC_PROFILING_VALUE : "";
 }
 
-void DynProfCliMgr::SetAppMode()
-{
-    isAppMode_ = true;
-}
+void DynProfCliMgr::SetAppMode() { isAppMode_ = true; }
 
-bool DynProfCliMgr::IsAppMode() const
-{
-    return isAppMode_;
-}
+bool DynProfCliMgr::IsAppMode() const { return isAppMode_; }
 
 bool DynProfCliMgr::IsCliStarted() const
 {
@@ -500,6 +480,6 @@ void DynProfCliMgr::WaitQuit()
         dynProfCli_->Join();
     }
 }
-}  // namespace DynProf
-}  // namespace Dvvp
-}  // namespace Collector
+} // namespace DynProf
+} // namespace Dvvp
+} // namespace Collector

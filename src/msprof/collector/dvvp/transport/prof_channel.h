@@ -38,10 +38,10 @@ public:
     ~ChannelBuffer() override;
     int32_t Start() override;
     int32_t Stop() override;
-    bool SwapChannelBuffer(std::string &buffer);
+    bool SwapChannelBuffer(std::string& buffer);
 
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
 
 private:
     std::queue<std::string> preBufferQueue_;
@@ -53,10 +53,9 @@ private:
 
 class ChannelReader : public analysis::dvvp::common::thread::Task {
 public:
-    ChannelReader(int32_t deviceId,
-                  analysis::dvvp::driver::AI_DRV_CHANNEL channelId,
-                  const std::string &relativeFileName,
-                  SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx);
+    ChannelReader(
+        int32_t deviceId, analysis::dvvp::driver::AI_DRV_CHANNEL channelId, const std::string& relativeFileName,
+        SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx);
     virtual ~ChannelReader();
 
     int32_t Execute() final;
@@ -124,7 +123,7 @@ public:
     int32_t Stop() override;
 
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
 
 private:
     std::vector<SHARED_PTR_ALIA<ChannelReader>> GetAllReaders();
@@ -140,8 +139,8 @@ private:
     uint32_t dispatchCount_;
     uint32_t dispatchChannelCount_;
 };
-}  // namespace device
-}  // namespace dvvp
-}  // namespace analysis
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis
 
 #endif

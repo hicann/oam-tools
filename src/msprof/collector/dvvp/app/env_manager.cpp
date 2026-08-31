@@ -13,30 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "env_manager.h"
 namespace Analysis {
 namespace Dvvp {
 namespace App {
-void EnvManager::SetGlobalEnv(std::vector<std::string> &envList)
-{
-    envList_ = envList;
-}
+void EnvManager::SetGlobalEnv(std::vector<std::string>& envList) { envList_ = envList; }
 
-const std::vector<std::string> EnvManager::GetGlobalEnv()
-{
-    return envList_;
-}
+const std::vector<std::string> EnvManager::GetGlobalEnv() { return envList_; }
 
-void EnvManager::SetParamEnv(std::string paramEnv)
-{
-    paramEnv_ = paramEnv;
-}
+void EnvManager::SetParamEnv(std::string paramEnv) { paramEnv_ = paramEnv; }
 
-std::string EnvManager::GetParamEnv()
-{
-    return paramEnv_;
-}
-}
-}
-}
+std::string EnvManager::GetParamEnv() { return paramEnv_; }
+} // namespace App
+} // namespace Dvvp
+} // namespace Analysis

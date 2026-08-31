@@ -33,15 +33,17 @@ public:
     virtual int32_t RunModeTasks() = 0;
     virtual void UpdateOutputDirInfo();
     void StopRunningTasks() const;
-    void RemoveRecordFile(const std::string &fileName) const;
-    SHARED_PTR_ALIA<Analysis::Dvvp::Msprof::MsprofTask> GetRunningTask(const std::string &jobId);
+    void RemoveRecordFile(const std::string& fileName) const;
+    SHARED_PTR_ALIA<Analysis::Dvvp::Msprof::MsprofTask> GetRunningTask(const std::string& jobId);
 
     // marked when unexcepted quit
     std::atomic<bool> isQuit_;
     std::string jobResultDir_;
     std::set<std::string> jobResultDirList_;
+
 protected:
-    RunningMode(std::string preCheckParams, std::string modeName,
+    RunningMode(
+        std::string preCheckParams, std::string modeName,
         SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params);
     virtual ~RunningMode();
     int32_t CheckForbiddenParams() const;
@@ -51,12 +53,15 @@ protected:
     int32_t StartParseTask();
     int32_t StartQueryTask();
     int32_t StartExportTask();
-    int32_t RunExportSummaryTask(const analysis::dvvp::common::utils::ExecCmdParams &execCmdParams,
-        std::vector<std::string> &envsV, int32_t &exitCode);
-    int32_t RunExportTimelineTask(const analysis::dvvp::common::utils::ExecCmdParams &execCmdParams,
-        std::vector<std::string> &envsV, int32_t &exitCode);
-    int32_t RunExportDbTask(const analysis::dvvp::common::utils::ExecCmdParams &execCmdParams,
-        std::vector<std::string> &envsV, int32_t &exitCode);
+    int32_t RunExportSummaryTask(
+        const analysis::dvvp::common::utils::ExecCmdParams& execCmdParams, std::vector<std::string>& envsV,
+        int32_t& exitCode);
+    int32_t RunExportTimelineTask(
+        const analysis::dvvp::common::utils::ExecCmdParams& execCmdParams, std::vector<std::string>& envsV,
+        int32_t& exitCode);
+    int32_t RunExportDbTask(
+        const analysis::dvvp::common::utils::ExecCmdParams& execCmdParams, std::vector<std::string>& envsV,
+        int32_t& exitCode);
     int32_t CheckAnalysisEnv();
     int32_t WaitRunningProcess(std::string processUsage);
     // for parse, export, query mode
@@ -82,7 +87,7 @@ protected:
 
 private:
     std::string ConvertParamsSetToString(std::set<int32_t>& srcSet) const;
-    void SetEnvList(std::vector<std::string> &envsV) const;
+    void SetEnvList(std::vector<std::string>& envsV) const;
 
     std::string analysisPath_;
 };
@@ -93,6 +98,7 @@ public:
     ~AppMode() override;
     int32_t ModeParamsCheck() override;
     int32_t RunModeTasks() override;
+
 private:
     int32_t StartAppTask(bool needWait = true);
     int32_t StartAppTaskForDynProf();
@@ -106,6 +112,7 @@ public:
     ~SystemMode() override;
     int32_t ModeParamsCheck() override;
     int32_t RunModeTasks() override;
+
 private:
     bool DataWillBeCollected() const;
     int32_t CheckIfDeviceOnline() const;
@@ -116,16 +123,16 @@ private:
     bool IsDeviceJob() const;
     int32_t StartDeviceJobs(const std::string& device);
     int32_t StartHostJobs();
-    int32_t CreateJobDir(std::string device, std::string &resultDir) const;
+    int32_t CreateJobDir(std::string device, std::string& resultDir) const;
     int32_t RecordOutPut() const;
     int32_t StartHostTask(const std::string resultDir, uint32_t deviceId);
     int32_t StartDeviceTask(const std::string resultDir, const std::string device);
     void SetSysDefaultParams() const;
-    int32_t CreateUploader(const std::string &jobId, const std::string &resultDir) const;
-    bool CreateSampleJsonFile(SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params,
-        const std::string &resultDir) const;
-    bool CreateDoneFile(const std::string &absolutePath, const std::string &fileSize) const;
-    int32_t WriteCtrlDataToFile(const std::string &absolutePath, const std::string &data, int32_t dataLen) const;
+    int32_t CreateUploader(const std::string& jobId, const std::string& resultDir) const;
+    bool CreateSampleJsonFile(
+        SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params, const std::string& resultDir) const;
+    bool CreateDoneFile(const std::string& absolutePath, const std::string& fileSize) const;
+    int32_t WriteCtrlDataToFile(const std::string& absolutePath, const std::string& data, int32_t dataLen) const;
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> GenerateHostParam(
         SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> params) const;
     SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> GenerateDeviceParam(
@@ -169,9 +176,8 @@ public:
     int32_t RunModeTasks() override;
     void UpdateOutputDirInfo() override;
 };
-}
-}
-}
-
+} // namespace Msprofbin
+} // namespace Dvvp
+} // namespace Collector
 
 #endif

@@ -44,7 +44,7 @@ std::deque<int32_t> g_errorCodeReturns;
 std::deque<int32_t> g_closeReturns;
 
 template <typename T>
-T PopOrDefault(std::deque<T> &values, T defaultValue)
+T PopOrDefault(std::deque<T>& values, T defaultValue)
 {
     if (values.empty()) {
         return defaultValue;
@@ -79,7 +79,7 @@ OsalSockHandle OsalSocket(int32_t sockFamily, int32_t type, int32_t protocol)
     return PopOrDefault(g_socketReturns, static_cast<OsalSockHandle>(OSAL_EN_ERROR));
 }
 
-int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
+int32_t OsalBind(OsalSockHandle sockFd, OsalSockAddr* addr, OsalSocklen addrLen)
 {
     (void)sockFd;
     (void)addr;
@@ -94,7 +94,7 @@ int32_t OsalListen(OsalSockHandle sockFd, int32_t backLog)
     return PopOrDefault(g_listenReturns, OSAL_EN_ERROR);
 }
 
-OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen *addrLen)
+OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr* addr, OsalSocklen* addrLen)
 {
     (void)sockFd;
     (void)addr;
@@ -102,7 +102,7 @@ OsalSockHandle OsalAccept(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen
     return PopOrDefault(g_acceptReturns, static_cast<OsalSockHandle>(OSAL_EN_ERROR));
 }
 
-int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrLen)
+int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr* addr, OsalSocklen addrLen)
 {
     (void)sockFd;
     (void)addr;
@@ -110,7 +110,7 @@ int32_t OsalConnect(OsalSockHandle sockFd, OsalSockAddr *addr, OsalSocklen addrL
     return PopOrDefault(g_connectReturns, OSAL_EN_ERROR);
 }
 
-OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, int32_t sendFlag)
+OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID* sendBuf, int32_t sendLen, int32_t sendFlag)
 {
     (void)sockFd;
     (void)sendBuf;
@@ -119,7 +119,7 @@ OsalSsize OsalSocketSend(OsalSockHandle sockFd, VOID *sendBuf, int32_t sendLen, 
     return PopOrDefault(g_sendReturns, static_cast<OsalSsize>(OSAL_EN_ERROR));
 }
 
-OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, int32_t recvFlag)
+OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID* recvBuf, int32_t recvLen, int32_t recvFlag)
 {
     (void)sockFd;
     (void)recvBuf;
@@ -128,23 +128,20 @@ OsalSsize OsalSocketRecv(OsalSockHandle sockFd, VOID *recvBuf, int32_t recvLen, 
     return PopOrDefault(g_recvReturns, static_cast<OsalSsize>(OSAL_EN_ERROR));
 }
 
-int32_t OsalChmod(const CHAR *filename, int32_t mode)
+int32_t OsalChmod(const CHAR* filename, int32_t mode)
 {
     (void)filename;
     (void)mode;
     return PopOrDefault(g_chmodReturns, OSAL_EN_ERROR);
 }
 
-int32_t OsalUnlink(const CHAR *filename)
+int32_t OsalUnlink(const CHAR* filename)
 {
     (void)filename;
     return PopOrDefault(g_unlinkReturns, OSAL_EN_OK);
 }
 
-int32_t OsalGetErrorCode(void)
-{
-    return PopOrDefault(g_errorCodeReturns, 0);
-}
+int32_t OsalGetErrorCode(void) { return PopOrDefault(g_errorCodeReturns, 0); }
 
 int32_t OsalClose(int32_t fd)
 {
@@ -169,10 +166,7 @@ CHAR_PTR Utils::GetErrno()
 
 class LOCAL_SOCKET_UTEST : public testing::Test {
 protected:
-    void SetUp() override
-    {
-        ResetSocketStubs();
-    }
+    void SetUp() override { ResetSocketStubs(); }
 
     void TearDown() override
     {
@@ -236,10 +230,7 @@ TEST_F(LOCAL_SOCKET_UTEST, Connect)
 
 TEST_F(LOCAL_SOCKET_UTEST, SetRecvTimeOut)
 {
-    MOCKER(setsockopt)
-        .stubs()
-        .will(returnValue(-1))
-        .then(returnValue(0));
+    MOCKER(setsockopt).stubs().will(returnValue(-1)).then(returnValue(0));
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::SetRecvTimeOut(1, 1, 1));
     EXPECT_EQ(PROFILING_SUCCESS, LocalSocket::SetRecvTimeOut(1, 1, 1));
@@ -247,10 +238,7 @@ TEST_F(LOCAL_SOCKET_UTEST, SetRecvTimeOut)
 
 TEST_F(LOCAL_SOCKET_UTEST, SetSendTimeOut)
 {
-    MOCKER(setsockopt)
-        .stubs()
-        .will(returnValue(-1))
-        .then(returnValue(0));
+    MOCKER(setsockopt).stubs().will(returnValue(-1)).then(returnValue(0));
 
     EXPECT_EQ(PROFILING_FAILED, LocalSocket::SetSendTimeOut(1, 1, 1));
     EXPECT_EQ(PROFILING_SUCCESS, LocalSocket::SetSendTimeOut(1, 1, 1));

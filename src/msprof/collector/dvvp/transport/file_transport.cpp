@@ -28,16 +28,17 @@ using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::utils;
 
-FILETransport::FILETransport(const std::string &storageDir, const std::string &storageLimit)
-    : fileSlice_(nullptr), storageDir_(storageDir), storageLimit_(storageLimit), needSlice_(true), stopped_(false),
-    parseStr2IdStart_(false), hashDataGenIdFuncPtr_(nullptr)
-{
-}
+FILETransport::FILETransport(const std::string& storageDir, const std::string& storageLimit)
+    : fileSlice_(nullptr),
+      storageDir_(storageDir),
+      storageLimit_(storageLimit),
+      needSlice_(true),
+      stopped_(false),
+      parseStr2IdStart_(false),
+      hashDataGenIdFuncPtr_(nullptr)
+{}
 
-FILETransport::~FILETransport()
-{
-    helperStorageMap_.clear();
-}
+FILETransport::~FILETransport() { helperStorageMap_.clear(); }
 
 int32_t FILETransport::Init()
 {
@@ -50,10 +51,7 @@ int32_t FILETransport::Init()
     return PROFILING_SUCCESS;
 }
 
-void FILETransport::SetAbility(bool needSlice)
-{
-    needSlice_ = needSlice;
-}
+void FILETransport::SetAbility(bool needSlice) { needSlice_ = needSlice; }
 
 void FILETransport::WriteDone()
 {
@@ -104,8 +102,8 @@ int32_t FILETransport::SendBuffer(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChu
     if (helperStorageMap_.empty() || fileChunkReq->id.empty()) {
         ret = fileSlice_->SaveDataToLocalFiles(fileChunkReq, storageDir_);
     } else {
-        MSPROF_LOGD("Helper fileChunkReq id: %s, fileName: %s", fileChunkReq->id.c_str(),
-            fileChunkReq->fileName.c_str());
+        MSPROF_LOGD(
+            "Helper fileChunkReq id: %s, fileName: %s", fileChunkReq->id.c_str(), fileChunkReq->fileName.c_str());
         std::unique_lock<std::mutex> guard(helperMtx_, std::defer_lock);
         guard.lock();
         std::string helperPath = helperStorageMap_[fileChunkReq->id];
@@ -120,13 +118,10 @@ int32_t FILETransport::SendBuffer(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChu
     return PROFILING_SUCCESS;
 }
 
-int32_t FILETransport::CloseSession()
-{
-    return PROFILING_SUCCESS;
-}
+int32_t FILETransport::CloseSession() { return PROFILING_SUCCESS; }
 
-int32_t FILETransport::UpdateFileName(SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq,
-    const std::string &devId) const
+int32_t FILETransport::UpdateFileName(
+    SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq, const std::string& devId) const
 {
     std::string fileName = fileChunkReq->fileName;
     const size_t pos = fileName.find_last_of("/\\");
@@ -168,8 +163,8 @@ int32_t FILETransport::ParseTlvChunk(SHARED_PTR_ALIA<analysis::dvvp::ProfileFile
     fileChunk->extraInfo = fileChunkReq->extraInfo;
 
     const uint32_t structSize = sizeof(ProfTlv);
-    const char *data = fileChunkReq->chunk.data();
-    std::string &fileName = fileChunkReq->fileName;
+    const char* data = fileChunkReq->chunk.data();
+    std::string& fileName = fileChunkReq->fileName;
 
     // If there is cached data, some data in front of the chunk belongs to the previous chunk.
     if (channelBuffer_.find(fileName) != channelBuffer_.end() && channelBuffer_[fileName].size() != 0 &&
@@ -177,8 +172,9 @@ int32_t FILETransport::ParseTlvChunk(SHARED_PTR_ALIA<analysis::dvvp::ProfileFile
         const uint32_t prevDataSize = channelBuffer_[fileName].size();
         const uint32_t leftDataSize = structSize - prevDataSize;
         if (fileChunkReq->chunkSize < leftDataSize) {
-            MSPROF_LOGE("fileChunk size smaller than expected, expected minimum size %u, received size %zu",
-                leftDataSize, fileChunkReq->chunkSize);
+            MSPROF_LOGE(
+                "fileChunk size smaller than expected, expected minimum size %u, received size %zu", leftDataSize,
+                fileChunkReq->chunkSize);
             return PROFILING_FAILED;
         }
         channelBuffer_[fileName].append(data, leftDataSize);
@@ -210,7 +206,8 @@ int32_t FILETransport::ParseTlvChunk(SHARED_PTR_ALIA<analysis::dvvp::ProfileFile
     return PROFILING_SUCCESS;
 }
 
-void FILETransport::AddHashData(const std::string& input) const{
+void FILETransport::AddHashData(const std::string& input) const
+{
     if (hashDataGenIdFuncPtr_ == nullptr) {
         MSPROF_LOGE("hashDataGenIdFuncPtr_ is null");
         return;
@@ -228,7 +225,8 @@ void FILETransport::AddHashData(const std::string& input) const{
  * @param [in] data string
  * @return true: header mark matched, false: not matched
  */
-static bool removeStr2IdHeaderMark(std::string& str) {
+static bool removeStr2IdHeaderMark(std::string& str)
+{
     // keep mark the same as ReportStr2IdInfoToHost in devprof_drv_aicpu
     const std::string mark = "###drv_hashdata###";
     if (str.compare(0, mark.length(), mark) == 0) {
@@ -243,12 +241,13 @@ static bool removeStr2IdHeaderMark(std::string& str) {
  * @param [in] fileChunkReq: ProfileFileChunk type shared_ptr
  * @return 0:SUCCESS, !0:FAILED
  */
-int32_t FILETransport::ParseStr2IdChunk(const SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq) {
+int32_t FILETransport::ParseStr2IdChunk(const SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunkReq)
+{
     if (fileChunkReq == nullptr) {
         MSPROF_LOGW("Unable to parse fileChunkReq");
         return PROFILING_SUCCESS;
     }
-    const char *data = fileChunkReq->chunk.data();
+    const char* data = fileChunkReq->chunk.data();
     if (data == nullptr) {
         MSPROF_LOGE("str2id fileChunkReq data is null");
         return PROFILING_FAILED;
@@ -259,7 +258,9 @@ int32_t FILETransport::ParseStr2IdChunk(const SHARED_PTR_ALIA<analysis::dvvp::Pr
         return PROFILING_SUCCESS;
     }
     if (parseStr2IdStart_) {
-        MSPROF_LOGD("parse str2id fileChunk size: %u data addr:%s data size:%u", fileChunkReq->chunkSize, data, dataStr.length());
+        MSPROF_LOGD(
+            "parse str2id fileChunk size: %u data addr:%s data size:%u", fileChunkReq->chunkSize, data,
+            dataStr.length());
         AddHashData(dataStr);
     } else if (removeStr2IdHeaderMark(dataStr)) {
         MSPROF_LOGI("start parse drv str2id info");
@@ -275,12 +276,12 @@ int32_t FILETransport::ParseStr2IdChunk(const SHARED_PTR_ALIA<analysis::dvvp::Pr
  * @param [in] fileChunk: ProfileFileChunk type shared_ptr
  * @return 0:SUCCESS, !0:FAILED
  */
-int32_t FILETransport::SaveChunk(const char *data, SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk) const
+int32_t FILETransport::SaveChunk(const char* data, SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk) const
 {
-    FUNRET_CHECK_EXPR_ACTION_LOGW(data == nullptr, return PROFILING_SUCCESS,
-        "Unable to parse struct data, pointer is null");
+    FUNRET_CHECK_EXPR_ACTION_LOGW(
+        data == nullptr, return PROFILING_SUCCESS, "Unable to parse struct data, pointer is null");
 
-    const ProfTlv *packet = reinterpret_cast<const ProfTlv *>(data);
+    const ProfTlv* packet = reinterpret_cast<const ProfTlv*>(data);
     if (packet->head != TLV_HEAD) {
         MSPROF_LOGE("Check tlv head failed");
         return PROFILING_FAILED;
@@ -291,7 +292,7 @@ int32_t FILETransport::SaveChunk(const char *data, SHARED_PTR_ALIA<analysis::dvv
         return PROFILING_FAILED;
     }
 
-    const ProfTlvValue *tlvValue = reinterpret_cast<const ProfTlvValue *>(packet->value);
+    const ProfTlvValue* tlvValue = reinterpret_cast<const ProfTlvValue*>(packet->value);
 
     if (tlvValue->chunkSize > TLV_VALUE_CHUNK_MAX_LEN) {
         MSPROF_LOGE("Invalid chunkSize: %zu, max: %u", tlvValue->chunkSize, TLV_VALUE_CHUNK_MAX_LEN);
@@ -324,7 +325,7 @@ int32_t FILETransport::SaveChunk(const char *data, SHARED_PTR_ALIA<analysis::dvv
  * @param [in] id: devId + devPid
  * @param [in] helperPath: absolute helper path
  */
-void FILETransport::SetHelperDir(const std::string &id, const std::string &helperPath)
+void FILETransport::SetHelperDir(const std::string& id, const std::string& helperPath)
 {
     std::unique_lock<std::mutex> lk(helperMtx_);
     MSPROF_LOGI("SetHelperDir, id: %s, helperPath: %s", id.c_str(), helperPath.c_str());
@@ -332,12 +333,12 @@ void FILETransport::SetHelperDir(const std::string &id, const std::string &helpe
 }
 
 SHARED_PTR_ALIA<ITransport> FileTransportFactory::CreateFileTransport(
-    const std::string &storageDir, const std::string &storageLimit, bool needSlice) const
+    const std::string& storageDir, const std::string& storageLimit, bool needSlice) const
 {
     SHARED_PTR_ALIA<FILETransport> fileTransport;
     MSVP_MAKE_SHARED2(fileTransport, FILETransport, storageDir, storageLimit, return fileTransport);
-    MSVP_MAKE_SHARED2(fileTransport->perfCount_, PerfCount, FILE_PERFCOUNT_MODULE_NAME,
-        TRANSPORT_PRI_FREQ, return nullptr);
+    MSVP_MAKE_SHARED2(
+        fileTransport->perfCount_, PerfCount, FILE_PERFCOUNT_MODULE_NAME, TRANSPORT_PRI_FREQ, return nullptr);
     fileTransport->SetAbility(needSlice);
 
     if (fileTransport->Init() != PROFILING_SUCCESS) {
@@ -348,15 +349,9 @@ SHARED_PTR_ALIA<ITransport> FileTransportFactory::CreateFileTransport(
     return fileTransport;
 }
 
-void FILETransport::SetStopped()
-{
-    stopped_ = true;
-}
+void FILETransport::SetStopped() { stopped_ = true; }
 
-void FILETransport::RegisterHashDataGenIdFuncPtr(HashDataGenIdFuncPtr *ptr)
-{
-    hashDataGenIdFuncPtr_ = ptr;
-}
+void FILETransport::RegisterHashDataGenIdFuncPtr(HashDataGenIdFuncPtr* ptr) { hashDataGenIdFuncPtr_ = ptr; }
 
 } // namespace transport
 } // namespace dvvp

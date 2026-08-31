@@ -33,7 +33,7 @@ HashData::HashData() : inited_(false), readIndex_(0), readStatus_(true) {}
 
 HashData::~HashData()
 {
-    (void)Uninit();  // clean sc warning
+    (void)Uninit(); // clean sc warning
 }
 
 int32_t HashData::Init()
@@ -44,7 +44,7 @@ int32_t HashData::Init()
         MSPROF_LOGW("HashData repeated initialize");
         return PROFILING_SUCCESS;
     }
-    for (auto &module : MSPROF_MODULE_ID_NAME_MAP) {
+    for (auto& module : MSPROF_MODULE_ID_NAME_MAP) {
         // init hashMapMutex_
         SHARED_PTR_ALIA<std::mutex> mapMutex = nullptr;
         MSVP_MAKE_SHARED0(mapMutex, std::mutex, return PROFILING_FAILED);
@@ -73,16 +73,13 @@ int32_t HashData::Uninit()
     return PROFILING_SUCCESS;
 }
 
-bool HashData::IsInit() const
-{
-    return inited_;
-}
+bool HashData::IsInit() const { return inited_; }
 
-uint64_t HashData::DoubleHash(const std::string &data) const
+uint64_t HashData::DoubleHash(const std::string& data) const
 {
-    const uint32_t uint32Bits = 32;   // the number of uint32_t bits
-    uint32_t prime[2] = { 29, 131 };  // hash step size,
-    uint32_t hash[2] = { 0 };
+    const uint32_t uint32Bits = 32; // the number of uint32_t bits
+    uint32_t prime[2] = {29, 131};  // hash step size,
+    uint32_t hash[2] = {0};
 
     for (const char d : data) {
         hash[0] = hash[0] * prime[0] + d;
@@ -92,7 +89,7 @@ uint64_t HashData::DoubleHash(const std::string &data) const
     return (((static_cast<uint64_t>(hash[0])) << uint32Bits) | hash[1]);
 }
 
-uint64_t HashData::GenHashId(const std::string &module, CONST_CHAR_PTR data, uint32_t dataLen)
+uint64_t HashData::GenHashId(const std::string& module, CONST_CHAR_PTR data, uint32_t dataLen)
 {
     if (hashMapMutex_.find(module) == hashMapMutex_.end()) {
         MSPROF_LOGE("HashData does not support module:%s", module.c_str());
@@ -101,17 +98,18 @@ uint64_t HashData::GenHashId(const std::string &module, CONST_CHAR_PTR data, uin
 
     std::string strData(data, dataLen);
     std::lock_guard<std::mutex> lock(*hashMapMutex_[module]);
-    auto &moduleHashData = hashDataKeyMap_[module];
+    auto& moduleHashData = hashDataKeyMap_[module];
     const auto iter = moduleHashData.find(strData);
     if (iter != moduleHashData.end()) {
         return iter->second;
     } else {
         const uint64_t hashId = DoubleHash(strData);
         moduleHashData[strData] = hashId;
-        auto &moduleHashId = hashIdKeyMap_[module];
+        auto& moduleHashId = hashIdKeyMap_[module];
         if (moduleHashId.find(hashId) != moduleHashId.end()) {
-            MSPROF_LOGW("HashData GenHashId conflict, hashId:%" PRIu64 " oldStr:%s newStr:%s", hashId,
-                        moduleHashId[hashId].c_str(), strData.c_str());
+            MSPROF_LOGW(
+                "HashData GenHashId conflict, hashId:%" PRIu64 " oldStr:%s newStr:%s", hashId,
+                moduleHashId[hashId].c_str(), strData.c_str());
         } else {
             moduleHashId[hashId] = strData;
         }
@@ -120,7 +118,7 @@ uint64_t HashData::GenHashId(const std::string &module, CONST_CHAR_PTR data, uin
     }
 }
 
-uint64_t HashData::GenHashId(const std::string &hashInfo)
+uint64_t HashData::GenHashId(const std::string& hashInfo)
 {
     if (hashInfo.empty()) {
         MSPROF_LOGE("HashData hashInfo is empty().");
@@ -138,8 +136,9 @@ uint64_t HashData::GenHashId(const std::string &hashInfo)
     std::pair<uint64_t, std::string> tmpHashInfo(hashId, hashInfo);
     hashVector_.emplace_back(tmpHashInfo);
     if (hashIdMap_.find(hashId) != hashIdMap_.end()) {
-        MSPROF_LOGW("HashData GenHashId conflict, hashId:%" PRIu64 " oldStr:%s newStr:%s", hashId,
-                    hashIdMap_[hashId].c_str(), hashInfo.c_str());
+        MSPROF_LOGW(
+            "HashData GenHashId conflict, hashId:%" PRIu64 " oldStr:%s newStr:%s", hashId, hashIdMap_[hashId].c_str(),
+            hashInfo.c_str());
     } else {
         hashIdMap_[hashId] = hashInfo;
     }
@@ -147,7 +146,7 @@ uint64_t HashData::GenHashId(const std::string &hashInfo)
     return hashId;
 }
 
-std::string &HashData::GetHashInfo(uint64_t hashId)
+std::string& HashData::GetHashInfo(uint64_t hashId)
 {
     static std::string empty;
     std::lock_guard<std::mutex> lock(hashMutex_);
@@ -160,14 +159,16 @@ std::string &HashData::GetHashInfo(uint64_t hashId)
     }
 }
 
-void HashData::FillPbData(int32_t upDevId, const std::string &saveHashData,
-                          SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk, bool isLastChunk) const
+void HashData::FillPbData(
+    int32_t upDevId, const std::string& saveHashData, SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk,
+    bool isLastChunk) const
 {
     FillPbData("unaging.additional", upDevId, saveHashData, fileChunk, isLastChunk);
 }
 
-void HashData::FillPbData(const std::string &module, int32_t upDevId, const std::string &saveHashData,
-                          SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk, bool isLastChunk) const
+void HashData::FillPbData(
+    const std::string& module, int32_t upDevId, const std::string& saveHashData,
+    SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk, bool isLastChunk) const
 {
     fileChunk->fileName = Utils::PackDotInfo(module, HASH_TAG);
     fileChunk->offset = -1;
@@ -189,7 +190,7 @@ void HashData::SaveHashData(int32_t devId)
         MSPROF_LOGW("HashData not inited");
         return;
     }
-    for (auto &module : MSPROF_MODULE_ID_NAME_MAP) {
+    for (auto& module : MSPROF_MODULE_ID_NAME_MAP) {
         std::lock_guard<std::mutex> lock(*hashMapMutex_[module.name]);
         if (hashDataKeyMap_[module.name].empty()) {
             MSPROF_LOGI("HashData is null, module:%s", module.name.c_str());
@@ -197,7 +198,7 @@ void HashData::SaveHashData(int32_t devId)
         }
         // combined hash map data
         std::string saveHashData;
-        for (auto &data : hashDataKeyMap_[module.name]) {
+        for (auto& data : hashDataKeyMap_[module.name]) {
             saveHashData.append(std::to_string(data.second) + HASH_DIC_DELIMITER + data.first + "\n");
         }
         // construct ProfileFileChunk data
@@ -208,14 +209,15 @@ void HashData::SaveHashData(int32_t devId)
         const int32_t ret =
             analysis::dvvp::transport::UploaderMgr::instance()->UploadData(std::to_string(DEFAULT_HOST_ID), fileChunk);
         if (ret != PROFILING_SUCCESS) {
-            MSPROF_LOGE("HashData upload data failed, module:%s, dataLen:%zu bytes", module.name.c_str(),
-                        saveHashData.size());
+            MSPROF_LOGE(
+                "HashData upload data failed, module:%s, dataLen:%zu bytes", module.name.c_str(), saveHashData.size());
             continue;
         }
-        MSPROF_EVENT("total_size_HashData, module:%s, saveLen:%zu bytes, dataKeyMapSize:%zu bytes,"
-                     "idKeyMapSize:%zu bytes",
-                     module.name.c_str(), saveHashData.size(), hashDataKeyMap_[module.name].size(),
-                     hashIdKeyMap_[module.name].size());
+        MSPROF_EVENT(
+            "total_size_HashData, module:%s, saveLen:%zu bytes, dataKeyMapSize:%zu bytes,"
+            "idKeyMapSize:%zu bytes",
+            module.name.c_str(), saveHashData.size(), hashDataKeyMap_[module.name].size(),
+            hashIdKeyMap_[module.name].size());
     }
     SaveNewHashData(true);
     readIndex_ = 0;
@@ -250,7 +252,7 @@ void HashData::SaveNewHashData(bool isLastChunk)
     lock.unlock();
     // construct ProfileFileChunk data
     SHARED_PTR_ALIA<analysis::dvvp::ProfileFileChunk> fileChunk = nullptr;
-    MSVP_MAKE_SHARED0_NODO(fileChunk, analysis::dvvp::ProfileFileChunk, return );
+    MSVP_MAKE_SHARED0_NODO(fileChunk, analysis::dvvp::ProfileFileChunk, return);
     FillPbData(DEFAULT_HOST_ID, saveHashData, fileChunk, isLastChunk);
     // upload ProfileFileChunk data
     const int32_t ret =
@@ -258,8 +260,9 @@ void HashData::SaveNewHashData(bool isLastChunk)
     if (ret != PROFILING_SUCCESS) {
         MSPROF_LOGE("HashData upload data failed, dataLen:%zu", saveHashData.size());
     }
-    MSPROF_EVENT("total_size_HashData, saveLen:%zu bytes, hashIdMap size:%zu bytes, hashInfoMap size:%zu bytes",
-                 saveHashData.size(), hashIdMap_.size(), hashInfoMap_.size());
+    MSPROF_EVENT(
+        "total_size_HashData, saveLen:%zu bytes, hashIdMap size:%zu bytes, hashInfoMap size:%zu bytes",
+        saveHashData.size(), hashIdMap_.size(), hashInfoMap_.size());
 }
 
 /**
@@ -267,7 +270,8 @@ void HashData::SaveNewHashData(bool isLastChunk)
  * @param [in] std:string: saveHashData
  * @return 0:SUCCESS, !0:FAILED
  */
-int32_t HashData::GetHashKeys(std::string &saveHashData) {
+int32_t HashData::GetHashKeys(std::string& saveHashData)
+{
     std::unique_lock<std::mutex> lock(hashMutex_);
     // combined hash map data
     const size_t currentHashSize = hashVector_.size();
@@ -286,6 +290,6 @@ int32_t HashData::GetHashKeys(std::string &saveHashData) {
     return PROFILING_SUCCESS;
 }
 
-}
-}
-}
+} // namespace transport
+} // namespace dvvp
+} // namespace analysis

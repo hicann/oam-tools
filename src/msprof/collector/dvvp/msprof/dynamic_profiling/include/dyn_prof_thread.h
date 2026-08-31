@@ -33,10 +33,10 @@ class DynProfThread : public analysis::dvvp::common::thread::Thread {
 public:
     DynProfThread();
     ~DynProfThread() override;
- 
+
     int32_t Start() override;
     int32_t Stop() override;
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
     void SaveDevicesInfo(DynProfDeviceInfo data);
     bool IsProfStarted();
 
@@ -58,7 +58,7 @@ private:
     std::string msprofEnvCfg_;
     std::mutex devMtx_;
 };
-} // DynProf
-} // Dvvp
-} // Collect
+} // namespace DynProf
+} // namespace Dvvp
+} // namespace Collector
 #endif

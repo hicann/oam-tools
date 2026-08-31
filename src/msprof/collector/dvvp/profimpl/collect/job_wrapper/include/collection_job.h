@@ -110,12 +110,7 @@ struct CollectionJobCfg {
 
 class ICollectionJob;
 struct CollectionJobT {
-    CollectionJobT()
-        : jobTag(NR_MAX_COLLECTION_JOB),
-          jobCfg(nullptr),
-          collectionJob(nullptr)
-    {
-    }
+    CollectionJobT() : jobTag(NR_MAX_COLLECTION_JOB), jobCfg(nullptr), collectionJob(nullptr) {}
     Analysis::Dvvp::JobWrapper::ProfCollectionJobE jobTag;
     SHARED_PTR_ALIA<Analysis::Dvvp::JobWrapper::CollectionJobCfg> jobCfg;
     SHARED_PTR_ALIA<Analysis::Dvvp::JobWrapper::ICollectionJob> collectionJob;
@@ -124,7 +119,7 @@ struct CollectionJobT {
 class ICollectionJob {
 public:
     ICollectionJob();
-    ICollectionJob(int32_t collectionId, const std::string &name);
+    ICollectionJob(int32_t collectionId, const std::string& name);
     virtual ~ICollectionJob();
     virtual int32_t Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg) = 0;
     virtual int32_t Process() = 0;
@@ -139,11 +134,11 @@ public:
 
 class CollectionJobReflection {
 public:
-    template<typename T>
+    template <typename T>
     static void RegisterCollectionJobClass(const int32_t collectionId)
     {
         collectionJobMap_[collectionId] = []() -> SHARED_PTR_ALIA<ICollectionJob> {
-            return SHARED_PTR_ALIA<T>(new (std::nothrow)T);
+            return SHARED_PTR_ALIA<T>(new (std::nothrow) T);
         };
     }
 
@@ -161,7 +156,7 @@ private:
     static std::map<int32_t, std::function<SHARED_PTR_ALIA<ICollectionJob>()>> collectionJobMap_;
 };
 
-template<typename T>
+template <typename T>
 class CollectionJobRegister {
 public:
     explicit CollectionJobRegister(const int32_t collectionId)
@@ -173,7 +168,7 @@ public:
 #define COLLECTION_JOB_REGISTER(collectionId, collectionJob) \
     CollectionJobRegister<collectionJob> g_##collectionJob##collectionId(collectionId)
 
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis
 #endif

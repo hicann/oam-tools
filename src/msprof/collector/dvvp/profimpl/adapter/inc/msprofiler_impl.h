@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef ANALYSIS_DVVP_PROFILER_MSPROF_CALLBACK_IMPL_H
 #define ANALYSIS_DVVP_PROFILER_MSPROF_CALLBACK_IMPL_H
 
@@ -27,9 +27,9 @@ namespace ProfilerCommon {
 using namespace analysis::dvvp::common::utils;
 
 int32_t ProfInit(uint32_t type, VOID_PTR data, uint32_t len);
-int32_t ProfConfigStart(uint32_t dataType, const void *data, uint32_t length);
-int32_t ProfConfigStop(uint32_t dataType, const void *data, uint32_t length);
-int32_t ProfSetConfig(uint32_t configType, const char *config, size_t configLength);
+int32_t ProfConfigStart(uint32_t dataType, const void* data, uint32_t length);
+int32_t ProfConfigStop(uint32_t dataType, const void* data, uint32_t length);
+int32_t ProfSetConfig(uint32_t configType, const char* config, size_t configLength);
 int32_t ProfNotifySetDeviceForDynProf(uint32_t chipId, uint32_t devId, bool isOpenDevice);
 int32_t ProfNotifySetDevice(uint32_t chipId, uint32_t devId, bool isOpenDevice);
 int32_t ProfReportData(uint32_t moduleId, uint32_t type, VOID_PTR data, uint32_t len);
@@ -40,7 +40,7 @@ int32_t ProfUnsetDeviceIdByGeModelIdx(const uint32_t geModelIdx, const uint32_t 
 int32_t ProfGetDeviceIdByGeModelIdx(const uint32_t geModelIdx, uint32_t* deviceId);
 void InstanceFinalizeGuard();
 void ProfGetImplInfo(ProfImplInfo& info);
-bool CheckMsprofBin(std::string &envValue);
+bool CheckMsprofBin(std::string& envValue);
 int32_t ProfInitProc(uint32_t type);
 int32_t ProfInitIfCommandLine();
 int32_t ProfAdprofInit(VOID_PTR data, uint32_t len);
@@ -54,8 +54,8 @@ public:
     FinalizeGuard() {}
     ~FinalizeGuard();
 };
-}  // namespace ProfilerCommon
-}  // namespace Dvvp
-}  // namespace Analysis
+} // namespace ProfilerCommon
+} // namespace Dvvp
+} // namespace Analysis
 
 #endif

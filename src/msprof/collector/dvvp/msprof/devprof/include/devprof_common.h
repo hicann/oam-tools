@@ -35,7 +35,6 @@ typedef struct prof_sample_stop_para ProfSampleStopPara;
 typedef struct prof_sample_ops ProfSampleOps;
 typedef struct prof_sample_register_para ProfSampleRegisterPara;
 
-
 #ifdef __cplusplus
 }
 #endif
@@ -45,7 +44,7 @@ constexpr int32_t REPORT_BUFF_CAPACITY = 16 * 1024;
 constexpr size_t REPORT_BUFF_SIZE = 1024 * 1024;
 constexpr uint32_t WAIT_DATA_TIME = 5U;
 constexpr uint32_t WAIT_DRV_TIME = 1U;
-int32_t ProfSendEvent(uint32_t devId, int32_t hostPid, const char *grpName);
-}
+int32_t ProfSendEvent(uint32_t devId, int32_t hostPid, const char* grpName);
+} // namespace Devprof
 
 #endif

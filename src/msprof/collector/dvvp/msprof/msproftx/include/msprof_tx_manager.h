@@ -27,19 +27,13 @@
 #include "acl/acl_base.h"
 namespace Msprof {
 namespace MsprofTx {
-using ACL_PROF_STAMP_PTR = MsprofStampInstance *;
-using CONST_CHAR_PTR = const char *;
+using ACL_PROF_STAMP_PTR = MsprofStampInstance*;
+using CONST_CHAR_PTR = const char*;
 
-enum class EventType {
-    MARK = 0,
-    PUSH_OR_POP,
-    START_OR_STOP,
-    MARK_EX
-};
+enum class EventType { MARK = 0, PUSH_OR_POP, START_OR_STOP, MARK_EX };
 
 class MsprofTxManager : public analysis::dvvp::common::singleton::Singleton<MsprofTxManager> {
 public:
-
     MsprofTxManager();
     ~MsprofTxManager() override;
 
@@ -58,7 +52,7 @@ public:
 
     // stamp message manage
     int32_t SetStampCategory(ACL_PROF_STAMP_PTR stamp, uint32_t category) const;
-    int32_t SetStampPayload(ACL_PROF_STAMP_PTR stamp, const int32_t type, const void *value) const;
+    int32_t SetStampPayload(ACL_PROF_STAMP_PTR stamp, const int32_t type, const void* value) const;
     int32_t SetStampTraceMessage(ACL_PROF_STAMP_PTR stamp, CONST_CHAR_PTR msg, uint32_t msgLen) const;
 
     // mark stamp
@@ -71,17 +65,17 @@ public:
     int32_t Pop() const;
 
     // stamp map manage
-    int RangeStart(ACL_PROF_STAMP_PTR stamp, uint32_t *rangeId) const;
+    int RangeStart(ACL_PROF_STAMP_PTR stamp, uint32_t* rangeId) const;
     int32_t RangeStop(uint32_t rangeId) const;
     void RegisterReporterCallback(const ProfAdditionalBufPushCallback func);
     void RegisterRuntimeTxCallback(const ProfMarkExCallback func);
-    int32_t ReportData(MsprofTxInfo &info) const;
+    int32_t ReportData(MsprofTxInfo& info) const;
 
 private:
-    int32_t MarkExPoint(aclrtStream stream, MsprofTxInfo &info);
+    int32_t MarkExPoint(aclrtStream stream, MsprofTxInfo& info);
 
 private:
-    int32_t ReportStampData(MsprofStampInstance *stamp) const;
+    int32_t ReportStampData(MsprofStampInstance* stamp) const;
 
     bool isInit_;
     std::mutex mtx_;
@@ -93,7 +87,7 @@ private:
     std::mutex markExMtx_;
 };
 
-}
-}
+} // namespace MsprofTx
+} // namespace Msprof
 
 #endif // PROFILER_MSPROFTXMANAGER_H

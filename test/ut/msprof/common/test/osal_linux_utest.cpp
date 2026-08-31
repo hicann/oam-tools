@@ -21,8 +21,7 @@
 
 class OSAL_LINUX_TEST : public testing::Test {
 protected:
-    virtual void SetUp()
-    {}
+    virtual void SetUp() {}
     virtual void TearDown()
     {
         GlobalMockObject::verify();
@@ -38,15 +37,9 @@ TEST_F(OSAL_LINUX_TEST, LinuxSleep)
     EXPECT_EQ(OSAL_EN_ERROR, LinuxSleep(OSAL_MAX_SLEEP_MILLSECOND_USING_USLEEP));
 }
 
-TEST_F(OSAL_LINUX_TEST, LinuxGetPid)
-{
-    EXPECT_GE(LinuxGetPid(), 0);
-}
+TEST_F(OSAL_LINUX_TEST, LinuxGetPid) { EXPECT_GE(LinuxGetPid(), 0); }
 
-TEST_F(OSAL_LINUX_TEST, LinuxGetTid)
-{
-    EXPECT_EQ(OSAL_EN_ERROR, LinuxGetTid());
-}
+TEST_F(OSAL_LINUX_TEST, LinuxGetTid) { EXPECT_EQ(OSAL_EN_ERROR, LinuxGetTid()); }
 
 TEST_F(OSAL_LINUX_TEST, LinuxSocket)
 {
@@ -63,16 +56,16 @@ TEST_F(OSAL_LINUX_TEST, LinuxSocket)
     serv_add.sin_addr.s_addr = 0;
     serv_add.sin_port = htons(p);
 
-    int32_t ret = LinuxBind(listenfd, (OsalSockAddr *)&serv_add, stAddrLen);
+    int32_t ret = LinuxBind(listenfd, (OsalSockAddr*)&serv_add, stAddrLen);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
 
     ret = LinuxListen(listenfd, 5);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
 
-    connfd = LinuxAccept(listenfd, (OsalSockAddr *)nullptr, nullptr);
+    connfd = LinuxAccept(listenfd, (OsalSockAddr*)nullptr, nullptr);
     ASSERT_EQ(OSAL_EN_ERROR, connfd);
 
-    ret = LinuxConnect(listenfd, (OsalSockAddr *)&serv_add, stAddrLen);
+    ret = LinuxConnect(listenfd, (OsalSockAddr*)&serv_add, stAddrLen);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
 }
 
@@ -88,17 +81,14 @@ TEST_F(OSAL_LINUX_TEST, LinuxSocketSend)
     ASSERT_EQ(OSAL_EN_ERROR, result);
 }
 
-TEST_F(OSAL_LINUX_TEST, LinuxGetErrorCode)
-{
-    ASSERT_EQ(errno, LinuxGetErrorCode());
-}
+TEST_F(OSAL_LINUX_TEST, LinuxGetErrorCode) { ASSERT_EQ(errno, LinuxGetErrorCode()); }
 
 TEST_F(OSAL_LINUX_TEST, LinuxCreateProcess)
 {
     int pid = -1;
-    char *argv[] = {(char *)"ls", (char *)"-al", nullptr};
-    char *envp[] = {(char *)"PATH=/bin", nullptr};
-    char *filename = (char *)"/bin/ls";
+    char* argv[] = {(char*)"ls", (char*)"-al", nullptr};
+    char* envp[] = {(char*)"PATH=/bin", nullptr};
+    char* filename = (char*)"/bin/ls";
     char redirectLog[1024] = "/tmp/osal_linux_utest_createprocess.txt";
     int status = 0;
     OsalArgvEnv env;
@@ -112,7 +102,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxCreateProcess)
     ASSERT_EQ(OSAL_EN_ERROR, LinuxWaitPid(pid, &status, 0));
 }
 
-VOID *UTtest_callback(VOID *pstArg)
+VOID* UTtest_callback(VOID* pstArg)
 {
     int32_t pid = LinuxGetPid();
     int32_t tid = LinuxGetTid();
@@ -130,22 +120,22 @@ TEST_F(OSAL_LINUX_TEST, LinuxCreateTaskWithThreadAttr)
 
     OsalThreadAttr attr;
     memset_s(&attr, sizeof(attr), 0, sizeof(attr));
-    attr.detachFlag = 0;  // not detach
+    attr.detachFlag = 0; // not detach
     attr.policyFlag = 1;
     attr.policy = OSAL_THREAD_SCHED_RR;
     attr.priorityFlag = 1;
-    attr.priority = 1;  // 1-99
+    attr.priority = 1; // 1-99
     attr.stackFlag = 1;
-    attr.stackSize = 20480;  // 20K
+    attr.stackSize = 20480; // 20K
 
     int32_t ret = LinuxCreateTaskWithThreadAttr(&stThreadHandle, nullptr, &attr);
     ASSERT_EQ(OSAL_EN_INVALID_PARAM, ret);
 
-    attr.stackSize = 1024;  // 1k
+    attr.stackSize = 1024; // 1k
     ret = LinuxCreateTaskWithThreadAttr(&stThreadHandle, &stFuncBlock, &attr);
     ASSERT_EQ(OSAL_EN_INVALID_PARAM, ret);
 
-    attr.priority = 100;  // 1-99
+    attr.priority = 100; // 1-99
     ret = LinuxCreateTaskWithThreadAttr(&stThreadHandle, &stFuncBlock, &attr);
     ASSERT_EQ(OSAL_EN_INVALID_PARAM, ret);
 
@@ -192,7 +182,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetTickCount)
 
 TEST_F(OSAL_LINUX_TEST, LinuxGetFileSize)
 {
-    char *pathname = (CHAR *)"./llt/abl/msprof/ut/common/CMakeLists.txt";
+    char* pathname = (CHAR*)"./llt/abl/msprof/ut/common/CMakeLists.txt";
 
     uint64_t length = 0;
     int32_t ret = LinuxGetFileSize(pathname, &length);
@@ -209,7 +199,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetFileSize)
 
 TEST_F(OSAL_LINUX_TEST, LinuxGetDiskFreeSpace)
 {
-    char *pathname = (CHAR *)"/var/";
+    char* pathname = (CHAR*)"/var/";
     struct statvfs buf;
     fsblkcnt_t total_size;
     fsblkcnt_t used_size;
@@ -233,10 +223,10 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetDiskFreeSpace)
 
 TEST_F(OSAL_LINUX_TEST, LinuxIsDir)
 {
-    char *pathname = (CHAR *)"./llt/abl/msprof/ut/common/CMakeLists.txt";
+    char* pathname = (CHAR*)"./llt/abl/msprof/ut/common/CMakeLists.txt";
     int32_t ret = LinuxIsDir(pathname);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
-    pathname = (CHAR *)"./llt/abl/msprof/ut/common";
+    pathname = (CHAR*)"./llt/abl/msprof/ut/common";
     ret = LinuxIsDir(pathname);
     ASSERT_EQ(-1, ret);
 
@@ -251,15 +241,15 @@ TEST_F(OSAL_LINUX_TEST, LinuxIsDir)
 
 TEST_F(OSAL_LINUX_TEST, LinuxDirName)
 {
-    char *path = "llt/abl/msprof/ut/common/";
-    char *tmp = "llt/abl/msprof/ut";
+    char* path = "llt/abl/msprof/ut/common/";
+    char* tmp = "llt/abl/msprof/ut";
     MOCKER(dirname).stubs().will(returnValue(tmp));
-    char *dir = LinuxDirName(path);
+    char* dir = LinuxDirName(path);
     printf("dir=%s,dirname\n", dir);
     ASSERT_NE(nullptr, dir);
 
     MOCKER(basename).stubs().will(returnValue(tmp));
-    char *base = LinuxBaseName(path);
+    char* base = LinuxBaseName(path);
     printf("base=%s,basename\n", base);
     ASSERT_NE(nullptr, base);
 
@@ -293,14 +283,11 @@ TEST_F(OSAL_LINUX_TEST, LinuxChdir)
     ASSERT_EQ(OSAL_EN_OK, ret);
 }
 
-int testFilter(const struct dirent *entry)
-{
-    return entry->d_name[0] == 't';
-}
+int testFilter(const struct dirent* entry) { return entry->d_name[0] == 't'; }
 
 TEST_F(OSAL_LINUX_TEST, LinuxScandir)
 {
-    OsalDirent **entryList;
+    OsalDirent** entryList;
     int count;
     int i;
     char testDir[64] = "./llt/abl/msprof/ut/common/";
@@ -350,7 +337,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetLocalTime)
     LinuxGetLocalTime(&st);
     printf("%d-%d-%d %d-%d-%d\n ", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
-    MOCKER(localtime_r).stubs().will(returnValue((struct tm *)nullptr));
+    MOCKER(localtime_r).stubs().will(returnValue((struct tm*)nullptr));
     ret = LinuxGetLocalTime(&st);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
     GlobalMockObject::reset();
@@ -362,7 +349,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetLocalTime)
 TEST_F(OSAL_LINUX_TEST, LinuxSetCurrentThreadName)
 {
     char threadName[] = "test-thread-name";
-    MOCKER((int (*)(char *))prctl).stubs().will(returnValue(OSAL_EN_ERROR));
+    MOCKER((int (*)(char*))prctl).stubs().will(returnValue(OSAL_EN_ERROR));
     int32_t ret = LinuxSetCurrentThreadName(threadName);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
     GlobalMockObject::reset();
@@ -402,20 +389,20 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetOsVersion)
     ASSERT_EQ(OSAL_EN_ERROR, ret);
     GlobalMockObject::reset();
 
-    MOCKER((int (*)(char *, long unsigned int, long unsigned int))snprintf_s).stubs().will(returnValue(-1));
+    MOCKER((int (*)(char*, long unsigned int, long unsigned int))snprintf_s).stubs().will(returnValue(-1));
     ret = LinuxGetOsVersion(osVersionInfo, OSAL_MIN_OS_VERSION_SIZE);
     ASSERT_EQ(OSAL_EN_ERROR, ret);
     GlobalMockObject::reset();
 }
 
-int32_t CpuInfoStrToIntStub(const char *str)
+int32_t CpuInfoStrToIntStub(const char* str)
 {
     if (str == NULL) {
         return 0;
     }
 
     errno = 0;
-    char *endPtr = NULL;
+    char* endPtr = NULL;
     const int32_t decimalBase = 10;
     int64_t out = strtol(str, &endPtr, decimalBase);
     if (endPtr == str || *endPtr != '\0') {
@@ -433,7 +420,7 @@ int32_t CpuInfoStrToIntStub(const char *str)
 
 TEST_F(OSAL_LINUX_TEST, LinuxGetCpuInfo)
 {
-    OsalCpuDesc *desc = nullptr;
+    OsalCpuDesc* desc = nullptr;
     int32_t count = 0;
     int32_t ret = 0;
 
@@ -447,14 +434,9 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetCpuInfo)
 
     GlobalMockObject::reset();
     char hisiVersion[100] = "CPU implementer: 0x48";
-    char *stubChar = nullptr;
-    MOCKER(fgets)
-        .stubs()
-        .will(returnValue(&hisiVersion[0]))
-        .then(returnValue(stubChar));
-    MOCKER(uname)
-        .stubs()
-        .will(returnValue(OSAL_EN_OK));
+    char* stubChar = nullptr;
+    MOCKER(fgets).stubs().will(returnValue(&hisiVersion[0])).then(returnValue(stubChar));
+    MOCKER(uname).stubs().will(returnValue(OSAL_EN_OK));
     ret = LinuxGetCpuInfo(&desc, &count);
     free(desc);
     desc = NULL;
@@ -480,13 +462,13 @@ TEST_F(OSAL_LINUX_TEST, LinuxDlopen)
 
     MOCKER(dlsym).stubs().will(returnValue((void*)1));
     EXPECT_EQ(nullptr, LinuxDlsym(nullptr, nullptr));
-    EXPECT_NE(nullptr, LinuxDlsym((void *)1, "test"));
+    EXPECT_NE(nullptr, LinuxDlsym((void*)1, "test"));
 
     MOCKER(dlclose).stubs().will(returnValue(0));
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxDlclose(nullptr));
     EXPECT_EQ(OSAL_EN_OK, LinuxDlclose((void*)1));
 
-    char *ret = "test";
+    char* ret = "test";
     MOCKER(dlerror).stubs().will(returnValue(ret));
     EXPECT_EQ(ret, LinuxDlerror());
 }
@@ -496,7 +478,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetOptLong)
     MOCKER(getopt_long).stubs().will(returnValue(0));
     int32_t longIndex = 0;
     char* argv[] = {"test"};
-    char *opts = "";
+    char* opts = "";
     OsalStructOption options[0] = {};
     EXPECT_EQ(0, LinuxGetOptLong(0, argv, opts, options, &longIndex));
 }
@@ -545,15 +527,12 @@ TEST_F(OSAL_LINUX_TEST, LinuxCreateTaskWithThreadAttr_StackAndDetach)
     pthread_join(stThreadHandle, nullptr);
 }
 
-TEST_F(OSAL_LINUX_TEST, LinuxJoinTask_NullHandle)
-{
-    EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxJoinTask(nullptr));
-}
+TEST_F(OSAL_LINUX_TEST, LinuxJoinTask_NullHandle) { EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxJoinTask(nullptr)); }
 
 TEST_F(OSAL_LINUX_TEST, LinuxGetFileSize_Success)
 {
-    const CHAR *path = (CHAR *)"./test_osal_tmp_file.txt";
-    FILE *fp = fopen(path, "w");
+    const CHAR* path = (CHAR*)"./test_osal_tmp_file.txt";
+    FILE* fp = fopen(path, "w");
     ASSERT_NE(nullptr, fp);
     (void)fprintf(fp, "hello");
     (void)fclose(fp);
@@ -567,7 +546,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetFileSize_Success)
 
 TEST_F(OSAL_LINUX_TEST, LinuxIsDir_Success)
 {
-    const CHAR *dirPath = (CHAR *)"./test_osal_tmp_dir";
+    const CHAR* dirPath = (CHAR*)"./test_osal_tmp_dir";
     (void)mkdir(dirPath, 0755);
     EXPECT_EQ(OSAL_EN_OK, LinuxIsDir(dirPath));
     (void)rmdir(dirPath);
@@ -575,8 +554,8 @@ TEST_F(OSAL_LINUX_TEST, LinuxIsDir_Success)
 
 TEST_F(OSAL_LINUX_TEST, LinuxAccess)
 {
-    const CHAR *path = (CHAR *)"./test_osal_access.txt";
-    FILE *fp = fopen(path, "w");
+    const CHAR* path = (CHAR*)"./test_osal_access.txt";
+    FILE* fp = fopen(path, "w");
     ASSERT_NE(nullptr, fp);
     (void)fclose(fp);
 
@@ -590,7 +569,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxAccess)
 
 TEST_F(OSAL_LINUX_TEST, LinuxMkdir_Success)
 {
-    const CHAR *dirPath = (CHAR *)"./test_osal_mkdir_tmp";
+    const CHAR* dirPath = (CHAR*)"./test_osal_mkdir_tmp";
     (void)rmdir(dirPath);
     int32_t ret = LinuxMkdir(dirPath, 0755);
     EXPECT_EQ(OSAL_EN_OK, ret);
@@ -599,8 +578,8 @@ TEST_F(OSAL_LINUX_TEST, LinuxMkdir_Success)
 
 TEST_F(OSAL_LINUX_TEST, LinuxChmod)
 {
-    const CHAR *path = (CHAR *)"./test_osal_chmod.txt";
-    FILE *fp = fopen(path, "w");
+    const CHAR* path = (CHAR*)"./test_osal_chmod.txt";
+    FILE* fp = fopen(path, "w");
     ASSERT_NE(nullptr, fp);
     (void)fclose(fp);
 
@@ -611,9 +590,9 @@ TEST_F(OSAL_LINUX_TEST, LinuxChmod)
 
 TEST_F(OSAL_LINUX_TEST, LinuxScandirFree)
 {
-    OsalDirent **entryList = (OsalDirent **)OsalMalloc(sizeof(OsalDirent *) * 2);
+    OsalDirent** entryList = (OsalDirent**)OsalMalloc(sizeof(OsalDirent*) * 2);
     ASSERT_NE(nullptr, entryList);
-    entryList[0] = (OsalDirent *)OsalMalloc(sizeof(OsalDirent));
+    entryList[0] = (OsalDirent*)OsalMalloc(sizeof(OsalDirent));
     entryList[1] = nullptr;
     LinuxScandirFree(entryList, 2);
 
@@ -623,7 +602,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxScandirFree)
 
 TEST_F(OSAL_LINUX_TEST, LinuxRmdir)
 {
-    const CHAR *dirPath = (CHAR *)"./test_osal_rmdir_tmp";
+    const CHAR* dirPath = (CHAR*)"./test_osal_rmdir_tmp";
     (void)mkdir(dirPath, 0755);
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxRmdir(nullptr));
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxRmdir("./nonexistent_dir_xyz"));
@@ -632,8 +611,8 @@ TEST_F(OSAL_LINUX_TEST, LinuxRmdir)
 
 TEST_F(OSAL_LINUX_TEST, LinuxUnlink)
 {
-    const CHAR *path = (CHAR *)"./test_osal_unlink.txt";
-    FILE *fp = fopen(path, "w");
+    const CHAR* path = (CHAR*)"./test_osal_unlink.txt";
+    FILE* fp = fopen(path, "w");
     ASSERT_NE(nullptr, fp);
     (void)fclose(fp);
 
@@ -655,30 +634,24 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetErrorFormatMessage)
     EXPECT_EQ(nullptr, LinuxGetErrorFormatMessage(0, buf, sizeof(buf)));
 }
 
-TEST_F(OSAL_LINUX_TEST, LinuxStatGet)
-{
-    EXPECT_EQ(OSAL_EN_ERROR, LinuxStatGet("./test.txt", nullptr));
-}
+TEST_F(OSAL_LINUX_TEST, LinuxStatGet) { EXPECT_EQ(OSAL_EN_ERROR, LinuxStatGet("./test.txt", nullptr)); }
 
-TEST_F(OSAL_LINUX_TEST, LinuxDup)
-{
-    EXPECT_EQ(OSAL_EN_ERROR, LinuxDup(0, 1));
-}
+TEST_F(OSAL_LINUX_TEST, LinuxDup) { EXPECT_EQ(OSAL_EN_ERROR, LinuxDup(0, 1)); }
 
 TEST_F(OSAL_LINUX_TEST, LinuxOpen_Close_Write)
 {
-    const CHAR *path = (CHAR *)"./test_osal_open.txt";
+    const CHAR* path = (CHAR*)"./test_osal_open.txt";
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxOpen(nullptr, O_RDONLY, 0644));
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxOpen(path, -1, 0644));
 
     int32_t fd = LinuxOpen(path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     EXPECT_GE(fd, 0);
 
-    const char *data = "hello world";
-    OsalSsize written = LinuxWrite(fd, (VOID *)data, strlen(data));
+    const char* data = "hello world";
+    OsalSsize written = LinuxWrite(fd, (VOID*)data, strlen(data));
     EXPECT_EQ((OsalSsize)strlen(data), written);
 
-    EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxWrite(-1, (VOID *)data, strlen(data)));
+    EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxWrite(-1, (VOID*)data, strlen(data)));
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxWrite(fd, nullptr, 10));
 
     EXPECT_EQ(OSAL_EN_OK, LinuxClose(fd));
@@ -688,14 +661,14 @@ TEST_F(OSAL_LINUX_TEST, LinuxOpen_Close_Write)
 
 TEST_F(OSAL_LINUX_TEST, LinuxOpen_InvalidMode)
 {
-    const CHAR *path = (CHAR *)"./test_osal_open_invalid.txt";
+    const CHAR* path = (CHAR*)"./test_osal_open_invalid.txt";
     EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxOpen(path, O_WRONLY | O_CREAT, 0));
 }
 
 TEST_F(OSAL_LINUX_TEST, LinuxSetCurrentThreadName_Success)
 {
     const char threadName[] = "ut-thread";
-    MOCKER((int (*)(char *))prctl).stubs().will(returnValue(0));
+    MOCKER((int (*)(char*))prctl).stubs().will(returnValue(0));
     int32_t ret = LinuxSetCurrentThreadName(threadName);
     EXPECT_EQ(OSAL_EN_OK, ret);
     GlobalMockObject::reset();
@@ -710,14 +683,11 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetOptInd_Arg)
 TEST_F(OSAL_LINUX_TEST, LinuxDlclose_Error)
 {
     MOCKER(dlclose).stubs().will(returnValue(-1));
-    EXPECT_EQ(OSAL_EN_ERROR, LinuxDlclose((void *)0x1));
+    EXPECT_EQ(OSAL_EN_ERROR, LinuxDlclose((void*)0x1));
     GlobalMockObject::reset();
 }
 
-TEST_F(OSAL_LINUX_TEST, LinuxGetLocalTime_Null)
-{
-    EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxGetLocalTime(nullptr));
-}
+TEST_F(OSAL_LINUX_TEST, LinuxGetLocalTime_Null) { EXPECT_EQ(OSAL_EN_INVALID_PARAM, LinuxGetLocalTime(nullptr)); }
 
 TEST_F(OSAL_LINUX_TEST, LinuxGetTimeOfDay_Error)
 {
@@ -730,7 +700,7 @@ TEST_F(OSAL_LINUX_TEST, LinuxGetTimeOfDay_Error)
 TEST_F(OSAL_LINUX_TEST, OsalMalloc)
 {
     EXPECT_EQ(nullptr, OsalMalloc(0));
-    void *ptr = OsalMalloc(100);
+    void* ptr = OsalMalloc(100);
     ASSERT_NE(nullptr, ptr);
     OsalFree(ptr);
     OsalFree(nullptr);
@@ -738,10 +708,10 @@ TEST_F(OSAL_LINUX_TEST, OsalMalloc)
 
 TEST_F(OSAL_LINUX_TEST, OsalCalloc)
 {
-    void *ptr = OsalCalloc(100);
+    void* ptr = OsalCalloc(100);
     ASSERT_NE(nullptr, ptr);
     for (int i = 0; i < 100; i++) {
-        EXPECT_EQ(0, ((char *)ptr)[i]);
+        EXPECT_EQ(0, ((char*)ptr)[i]);
     }
     OsalFree(ptr);
     EXPECT_EQ(nullptr, OsalCalloc(0));
@@ -749,7 +719,7 @@ TEST_F(OSAL_LINUX_TEST, OsalCalloc)
 
 TEST_F(OSAL_LINUX_TEST, OsalConstFree)
 {
-    void *ptr = OsalMalloc(50);
+    void* ptr = OsalMalloc(50);
     ASSERT_NE(nullptr, ptr);
     OsalConstFree(ptr);
     OsalConstFree(nullptr);

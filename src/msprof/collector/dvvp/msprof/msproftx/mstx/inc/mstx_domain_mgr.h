@@ -49,10 +49,10 @@ public:
 
     mstxDomainHandle_t CreateDomainHandle(const char* name);
     void DestroyDomainHandle(mstxDomainHandle_t domain);
-    bool GetDomainNameHashByHandle(mstxDomainHandle_t domain, uint64_t &name);
+    bool GetDomainNameHashByHandle(mstxDomainHandle_t domain, uint64_t& name);
     uint64_t GetDefaultDomainNameHash();
-    void SetMstxDomainsEnabled(const std::string &mstxDomainInclude, const std::string &mstxDomainExclude);
-    bool IsDomainEnabled(const uint64_t &domainNameHash);
+    void SetMstxDomainsEnabled(const std::string& mstxDomainInclude, const std::string& mstxDomainExclude);
+    bool IsDomainEnabled(const uint64_t& domainNameHash);
 
 private:
     struct mstxDomainSetting {
@@ -73,7 +73,7 @@ private:
     std::atomic<bool> domainSet_{false};
     mstxDomainSetting domainSetting_;
 };
-}
-}
-}
+} // namespace Mstx
+} // namespace Dvvp
+} // namespace Collector
 #endif

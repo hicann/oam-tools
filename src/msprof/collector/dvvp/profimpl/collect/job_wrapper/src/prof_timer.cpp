@@ -40,62 +40,51 @@ using namespace analysis::dvvp::common::config;
 using namespace analysis::dvvp::common::utils;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 
-const char * const PROC_FILE = "/proc";
-const char * const PROC_COMM_FILE = "comm";
-const char * const PROC_CPU = "cpu";
-const char * const PROC_SELF = "self";
-const char * const PROC_PID_STAT = "stat";
-const char * const PROC_TID_STAT = "stat";
-const char * const PROC_PID_MEM = "statm";
+const char* const PROC_FILE = "/proc";
+const char* const PROC_COMM_FILE = "comm";
+const char* const PROC_CPU = "cpu";
+const char* const PROC_SELF = "self";
+const char* const PROC_PID_STAT = "stat";
+const char* const PROC_TID_STAT = "stat";
+const char* const PROC_PID_MEM = "statm";
 
-const char * const PROC_TASK = "task";
-const char * const PROC_CPUFREQ_SYS_ROOT = "/sys/devices/system/cpu";
-const char * const PROC_CPUFREQ_CUR = "cpu0/cpufreq/scaling_cur_freq";
+const char* const PROC_TASK = "task";
+const char* const PROC_CPUFREQ_SYS_ROOT = "/sys/devices/system/cpu";
+const char* const PROC_CPUFREQ_CUR = "cpu0/cpufreq/scaling_cur_freq";
 
-const char * const PROF_PID_MEM_FILE = "Memory.data";
-const char * const PROF_PID_STAT_FILE = "CpuUsage.data";
+const char* const PROF_PID_MEM_FILE = "Memory.data";
+const char* const PROF_PID_STAT_FILE = "CpuUsage.data";
 
-const char * const PROF_DATA_TIMER_STAMP = "TimeStamp:";
-const char * const PROF_DATA_INDEX = "\nIndex:";
-const char * const PROF_DATA_LEN = "\nDataLen:";
-const char * const PROF_DATA_PROCESSNAME = "ProcessName:";
+const char* const PROF_DATA_TIMER_STAMP = "TimeStamp:";
+const char* const PROF_DATA_INDEX = "\nIndex:";
+const char* const PROF_DATA_LEN = "\nDataLen:";
+const char* const PROF_DATA_PROCESSNAME = "ProcessName:";
 
 constexpr int NETDEV_STATS_DEFAULT_PORT_ID = 0;
 const std::string LIBDCMI_LIB_PATH = "libdcmi.so";
 
-inline std::string ConstructNetDevStatsData(const uint64_t timeStamp, const dcmi_network_pkt_stats_info &stat)
+inline std::string ConstructNetDevStatsData(const uint64_t timeStamp, const dcmi_network_pkt_stats_info& stat)
 {
     std::stringstream ss;
-    ss << timeStamp << ' '
-       << stat.mac_tx_pfc_pkt_num << ' ' << stat.mac_rx_pfc_pkt_num << ' '
-       << stat.mac_tx_total_oct_num << ' ' << stat.mac_rx_total_oct_num << ' '
-       << stat.mac_tx_bad_oct_num << ' ' << stat.mac_rx_bad_oct_num << ' '
-       << stat.roce_tx_all_pkt_num << ' ' << stat.roce_rx_all_pkt_num << ' '
-       << stat.roce_tx_err_pkt_num << ' ' << stat.roce_rx_err_pkt_num << ' '
-       << stat.roce_tx_cnp_pkt_num << ' ' << stat.roce_rx_cnp_pkt_num << ' '
-       << stat.roce_new_pkt_rty_num << ' '
-       << stat.nic_tx_all_oct_num << ' ' << stat.nic_rx_all_oct_num << '\n';
+    ss << timeStamp << ' ' << stat.mac_tx_pfc_pkt_num << ' ' << stat.mac_rx_pfc_pkt_num << ' '
+       << stat.mac_tx_total_oct_num << ' ' << stat.mac_rx_total_oct_num << ' ' << stat.mac_tx_bad_oct_num << ' '
+       << stat.mac_rx_bad_oct_num << ' ' << stat.roce_tx_all_pkt_num << ' ' << stat.roce_rx_all_pkt_num << ' '
+       << stat.roce_tx_err_pkt_num << ' ' << stat.roce_rx_err_pkt_num << ' ' << stat.roce_tx_cnp_pkt_num << ' '
+       << stat.roce_rx_cnp_pkt_num << ' ' << stat.roce_new_pkt_rty_num << ' ' << stat.nic_tx_all_oct_num << ' '
+       << stat.nic_rx_all_oct_num << '\n';
     return ss.str();
 }
 
-TimerHandler::TimerHandler(TimerHandlerTag tag)
-    : tag_(tag)
-{
-}
+TimerHandler::TimerHandler(TimerHandlerTag tag) : tag_(tag) {}
 
-TimerHandler::~TimerHandler()
-{
-}
+TimerHandler::~TimerHandler() {}
 
-TimerHandlerTag TimerHandler::GetTag()
-{
-    return tag_;
-}
+TimerHandlerTag TimerHandler::GetTag() { return tag_; }
 
-ProcTimerHandler::ProcTimerHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                   SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                   SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                   SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcTimerHandler::ProcTimerHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : TimerHandler(attr->tag),
       buf_(attr->bufSize),
       isInited_(false),
@@ -103,13 +92,13 @@ ProcTimerHandler::ProcTimerHandler(SHARED_PTR_ALIA<TimerAttr> attr,
       sampleIntervalNs_(attr->sampleInterval),
       index_(0),
       srcFileName_(attr->srcFileName),
-      retFileName_("data/" + attr->retFileName), param_(param), jobCtx_(jobCtx), upLoader_(upLoader)
-{
-}
+      retFileName_("data/" + attr->retFileName),
+      param_(param),
+      jobCtx_(jobCtx),
+      upLoader_(upLoader)
+{}
 
-ProcTimerHandler::~ProcTimerHandler()
-{
-}
+ProcTimerHandler::~ProcTimerHandler() {}
 
 int32_t ProcTimerHandler::Init()
 {
@@ -172,11 +161,12 @@ int32_t ProcTimerHandler::Execute()
                 break;
             }
             std::string canonicalizedPath = Utils::CanonicalizePath(srcFileName_);
-            FUNRET_CHECK_EXPR_ACTION_LOGW(canonicalizedPath.empty(), break,
-                "The srcFileName_: %s does not exist or permission denied.", srcFileName_.c_str());
+            FUNRET_CHECK_EXPR_ACTION_LOGW(
+                canonicalizedPath.empty(), break, "The srcFileName_: %s does not exist or permission denied.",
+                srcFileName_.c_str());
             if_.open(canonicalizedPath, std::ifstream::in);
-            FUNRET_CHECK_EXPR_ACTION_LOGW(!if_.is_open(), break, "File %s did not open successfully",
-                canonicalizedPath.c_str());
+            FUNRET_CHECK_EXPR_ACTION_LOGW(
+                !if_.is_open(), break, "File %s did not open successfully", canonicalizedPath.c_str());
             ParseProcFile(if_, src);
             if_.close();
 
@@ -193,7 +183,7 @@ int32_t ProcTimerHandler::Execute()
     return PROFILING_SUCCESS;
 }
 
-void ProcTimerHandler::PacketData(std::string &dest, std::string &data, uint32_t headSize)
+void ProcTimerHandler::PacketData(std::string& dest, std::string& data, uint32_t headSize)
 {
     if (data.size() == 0) {
         MSPROF_LOGW("data is empty, fileName:%s", srcFileName_.c_str());
@@ -216,7 +206,7 @@ void ProcTimerHandler::PacketData(std::string &dest, std::string &data, uint32_t
     dest += "\n";
 }
 
-void ProcTimerHandler::StoreData(std::string &data)
+void ProcTimerHandler::StoreData(std::string& data)
 {
     if (data.size() == 0) {
         return;
@@ -241,8 +231,9 @@ void ProcTimerHandler::StoreData(std::string &data)
     if (dataBuf == nullptr) {
         return;
     }
-    errno_t err = memcpy_s(static_cast<void *>(const_cast<UNSIGNED_CHAR_PTR>(buf_.GetBuffer() + usedSize)),
-                           spaceSize, data.c_str(), data.size());
+    errno_t err = memcpy_s(
+        static_cast<void*>(const_cast<UNSIGNED_CHAR_PTR>(buf_.GetBuffer() + usedSize)), spaceSize, data.c_str(),
+        data.size());
     if (err != EOK) {
         MSPROF_LOGE("memcpy stat data failed: %d", static_cast<int32_t>(err));
         MSPROF_INNER_ERROR("EK9999", "memcpy stat data failed: %d", static_cast<int32_t>(err));
@@ -309,7 +300,7 @@ void ProcTimerHandler::FlushBuf()
     }
 }
 
-bool ProcTimerHandler::CheckFileSize(const std::string &file) const
+bool ProcTimerHandler::CheckFileSize(const std::string& file) const
 {
     int64_t len = analysis::dvvp::common::utils::Utils::GetFileSize(file);
     if (len < 0 || len > MSVP_LARGE_FILE_MAX_LEN) {
@@ -319,7 +310,7 @@ bool ProcTimerHandler::CheckFileSize(const std::string &file) const
     return true;
 }
 
-bool ProcTimerHandler::IsValidData(std::ifstream &ifs, std::string &data) const
+bool ProcTimerHandler::IsValidData(std::ifstream& ifs, std::string& data) const
 {
     bool isValid = false;
     std::string buf;
@@ -331,10 +322,10 @@ bool ProcTimerHandler::IsValidData(std::ifstream &ifs, std::string &data) const
     return isValid;
 }
 
-ProcHostCpuHandler::ProcHostCpuHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                       SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcHostCpuHandler::ProcHostCpuHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader)
 {
     // "/proc/{pid}/task"
@@ -345,30 +336,27 @@ ProcHostCpuHandler::ProcHostCpuHandler(SHARED_PTR_ALIA<TimerAttr> attr,
     taskSrc_ += PROC_TASK;
 }
 
-ProcHostCpuHandler::~ProcHostCpuHandler()
-{
-}
+ProcHostCpuHandler::~ProcHostCpuHandler() {}
 
-ProcHostCpuFreqHandler::ProcHostCpuFreqHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                               SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcHostCpuFreqHandler::ProcHostCpuFreqHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader), sysCpuRoot_(PROC_CPUFREQ_SYS_ROOT), cpuFreqAvailable_(true)
 {
     taskSrc_ = std::string(PROC_FILE) + MSVP_SLASH + std::to_string(param->host_sys_pid) + MSVP_SLASH + PROC_TASK;
     const std::string cpuFreqProbeFile = sysCpuRoot_ + MSVP_SLASH + PROC_CPUFREQ_CUR;
     if (!Utils::IsFileExist(cpuFreqProbeFile)) {
         cpuFreqAvailable_ = false;
-        MSPROF_LOGW("Host cpu frequency profiling is not supported in current environment, missing file: %s",
+        MSPROF_LOGW(
+            "Host cpu frequency profiling is not supported in current environment, missing file: %s",
             cpuFreqProbeFile.c_str());
     }
 }
 
-ProcHostCpuFreqHandler::~ProcHostCpuFreqHandler()
-{
-}
+ProcHostCpuFreqHandler::~ProcHostCpuFreqHandler() {}
 
-bool ProcHostCpuFreqHandler::GetThreadCpu(const std::string &statFile, int32_t &cpuId) const
+bool ProcHostCpuFreqHandler::GetThreadCpu(const std::string& statFile, int32_t& cpuId) const
 {
     if (!CheckFileSize(statFile)) {
         MSPROF_LOGW("The stat file is invalid or empty: %s", statFile.c_str());
@@ -410,7 +398,7 @@ bool ProcHostCpuFreqHandler::GetThreadCpu(const std::string &statFile, int32_t &
     return true;
 }
 
-void ProcHostCpuFreqHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
+void ProcHostCpuFreqHandler::ParseProcFile(std::ifstream& ifs, std::string& data)
 {
     UNUSED(ifs);
     if (!cpuFreqAvailable_) {
@@ -423,7 +411,7 @@ void ProcHostCpuFreqHandler::ParseProcFile(std::ifstream &ifs, std::string &data
     }
 
     std::set<int32_t> cpuIds;
-    for (const auto &tidDir : tidDirs) {
+    for (const auto& tidDir : tidDirs) {
         int32_t cpuId = -1;
         if (GetThreadCpu(tidDir + MSVP_SLASH + PROC_TID_STAT, cpuId)) {
             cpuIds.insert(cpuId);
@@ -447,7 +435,7 @@ void ProcHostCpuFreqHandler::ParseProcFile(std::ifstream &ifs, std::string &data
     }
 }
 
-void ProcHostCpuHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, std::string &data)
+void ProcHostCpuHandler::ParseProcFile(std::ifstream& ifs /* = ios::in */, std::string& data)
 {
     UNUSED(ifs);
     data.reserve(PROC_STAT_USELESS_DATA_SIZE);
@@ -467,7 +455,7 @@ void ProcHostCpuHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, std::
     data += procData;
 }
 
-void ProcHostCpuHandler::ParseSysTime(std::string &data)
+void ProcHostCpuHandler::ParseSysTime(std::string& data)
 {
     std::string line;
     std::ifstream fin;
@@ -484,7 +472,7 @@ void ProcHostCpuHandler::ParseSysTime(std::string &data)
     fin.close();
 }
 
-void ProcHostCpuHandler::ParseProcTidStat(std::string &data)
+void ProcHostCpuHandler::ParseProcTidStat(std::string& data)
 {
     std::string line;
     std::ifstream fin;
@@ -501,8 +489,8 @@ void ProcHostCpuHandler::ParseProcTidStat(std::string &data)
             continue;
         }
         statFile = Utils::CanonicalizePath(statFile);
-        FUNRET_CHECK_EXPR_ACTION_LOGW(statFile.empty(), continue,
-            "The statFile: %s does not exist or permission denied.", statFile.c_str());
+        FUNRET_CHECK_EXPR_ACTION_LOGW(
+            statFile.empty(), continue, "The statFile: %s does not exist or permission denied.", statFile.c_str());
         fin.open(statFile, std::ifstream::in);
         FUNRET_CHECK_EXPR_ACTION_LOGW(!fin.is_open(), continue, "File %s did not open successfully.", statFile.c_str());
         while (std::getline(fin, line)) {
@@ -512,10 +500,10 @@ void ProcHostCpuHandler::ParseProcTidStat(std::string &data)
     }
 }
 
-ProcHostMemHandler::ProcHostMemHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                       SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcHostMemHandler::ProcHostMemHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader)
 {
     // "/proc/{pid}/statm"
@@ -526,11 +514,9 @@ ProcHostMemHandler::ProcHostMemHandler(SHARED_PTR_ALIA<TimerAttr> attr,
     statmSrc_ += PROC_PID_MEM;
 }
 
-ProcHostMemHandler::~ProcHostMemHandler()
-{
-}
+ProcHostMemHandler::~ProcHostMemHandler() {}
 
-void ProcHostMemHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, std::string &data)
+void ProcHostMemHandler::ParseProcFile(std::ifstream& ifs /* = ios::in */, std::string& data)
 {
     UNUSED(ifs);
     data.reserve(PROC_STAT_USELESS_DATA_SIZE);
@@ -548,7 +534,7 @@ void ProcHostMemHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, std::
     data += procData;
 }
 
-void ProcHostMemHandler::ParseProcMemUsage(std::string &data)
+void ProcHostMemHandler::ParseProcMemUsage(std::string& data)
 {
     std::string line;
     std::ifstream fin;
@@ -557,30 +543,27 @@ void ProcHostMemHandler::ParseProcMemUsage(std::string &data)
         return;
     }
     std::string canonicalizedPath = Utils::CanonicalizePath(statmSrc_);
-    FUNRET_CHECK_EXPR_ACTION_LOGW(canonicalizedPath.empty(), return,
-        "The statmSrc_: %s does not exist or permission denied.", statmSrc_.c_str());
+    FUNRET_CHECK_EXPR_ACTION_LOGW(
+        canonicalizedPath.empty(), return, "The statmSrc_: %s does not exist or permission denied.", statmSrc_.c_str());
     fin.open(canonicalizedPath, std::ifstream::in);
-    FUNRET_CHECK_EXPR_ACTION_LOGW(!fin.is_open(), return, "File %s did not open successfully.",
-        canonicalizedPath.c_str());
+    FUNRET_CHECK_EXPR_ACTION_LOGW(
+        !fin.is_open(), return, "File %s did not open successfully.", canonicalizedPath.c_str());
     if (std::getline(fin, line)) {
         data += line + "\n";
     }
     fin.close();
 }
 
-ProcHostNetworkHandler::ProcHostNetworkHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                               SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcHostNetworkHandler::ProcHostNetworkHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader)
-{
-}
+{}
 
-ProcHostNetworkHandler::~ProcHostNetworkHandler()
-{
-}
+ProcHostNetworkHandler::~ProcHostNetworkHandler() {}
 
-void ProcHostNetworkHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, std::string &data)
+void ProcHostNetworkHandler::ParseProcFile(std::ifstream& ifs /* = ios::in */, std::string& data)
 {
     UNUSED(ifs);
     data.reserve(PROC_STAT_USELESS_DATA_SIZE);
@@ -592,7 +575,7 @@ void ProcHostNetworkHandler::ParseProcFile(std::ifstream &ifs /* = ios::in */, s
     ParseNetStat(data);
 }
 
-void ProcHostNetworkHandler::ParseNetStat(std::string &data)
+void ProcHostNetworkHandler::ParseNetStat(std::string& data)
 {
     std::string line;
     std::ifstream fin;
@@ -610,26 +593,23 @@ void ProcHostNetworkHandler::ParseNetStat(std::string &data)
     fin.close();
 }
 
-ProcStatFileHandler::ProcStatFileHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                         SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                         SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                         SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcStatFileHandler::ProcStatFileHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader)
-{
-}
+{}
 
-ProcStatFileHandler::~ProcStatFileHandler()
-{
-}
+ProcStatFileHandler::~ProcStatFileHandler() {}
 
-void ProcStatFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
+void ProcStatFileHandler::ParseProcFile(std::ifstream& ifs, std::string& data)
 {
     data.reserve(PROC_STAT_USELESS_DATA_SIZE);
 
     std::string buf;
 
     while (std::getline(ifs, buf)) {
-        std::transform (buf.begin(), buf.end(), buf.begin(), static_cast<int32_t (*)(int32_t)>(std::tolower));
+        std::transform(buf.begin(), buf.end(), buf.begin(), static_cast<int32_t (*)(int32_t)>(std::tolower));
 
         if (buf.find(PROC_CPU) != std::string::npos) {
             data += buf;
@@ -640,19 +620,16 @@ void ProcStatFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
     }
 }
 
-ProcPidStatFileHandler::ProcPidStatFileHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                               SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcPidStatFileHandler::ProcPidStatFileHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader), pid_(attr->pid)
-{
-}
+{}
 
-ProcPidStatFileHandler::~ProcPidStatFileHandler()
-{
-}
+ProcPidStatFileHandler::~ProcPidStatFileHandler() {}
 
-void ProcPidStatFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
+void ProcPidStatFileHandler::ParseProcFile(std::ifstream& ifs, std::string& data)
 {
     data.reserve(PROC_PID_STAT_DATA_SIZE);
     if (IsValidData(ifs, data)) {
@@ -667,7 +644,7 @@ void ProcPidStatFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data
         ifStat_.open(PROF_PROC_STAT, std::ifstream::in);
         FUNRET_CHECK_EXPR_ACTION_LOGW(!ifStat_.is_open(), return, "File %s did not open successfully.", PROF_PROC_STAT);
         while (std::getline(ifStat_, buf)) {
-            std::transform (buf.begin(), buf.end(), buf.begin(), static_cast<int32_t (*)(int32_t)>(std::tolower));
+            std::transform(buf.begin(), buf.end(), buf.begin(), static_cast<int32_t (*)(int32_t)>(std::tolower));
 
             if (buf.find(PROC_CPU) != std::string::npos) {
                 data += buf;
@@ -680,19 +657,16 @@ void ProcPidStatFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data
     }
 }
 
-ProcMemFileHandler::ProcMemFileHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                       SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                       SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcMemFileHandler::ProcMemFileHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader)
-{
-}
+{}
 
-ProcMemFileHandler::~ProcMemFileHandler()
-{
-}
+ProcMemFileHandler::~ProcMemFileHandler() {}
 
-void ProcMemFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
+void ProcMemFileHandler::ParseProcFile(std::ifstream& ifs, std::string& data)
 {
     data.reserve(PROC_MEM_USELESS_DATA_SIZE);
 
@@ -703,19 +677,16 @@ void ProcMemFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
     }
 }
 
-ProcPidMemFileHandler::ProcPidMemFileHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                             SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                             SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                             SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcPidMemFileHandler::ProcPidMemFileHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : ProcTimerHandler(attr, param, jobCtx, upLoader), pid_(attr->pid)
-{
-}
+{}
 
-ProcPidMemFileHandler::~ProcPidMemFileHandler()
-{
-}
+ProcPidMemFileHandler::~ProcPidMemFileHandler() {}
 
-void ProcPidMemFileHandler::ParseProcFile(std::ifstream &ifs, std::string &data)
+void ProcPidMemFileHandler::ParseProcFile(std::ifstream& ifs, std::string& data)
 {
     data.reserve(PROC_PID_MEM_DATA_SIZE);
     if (IsValidData(ifs, data)) {
@@ -739,20 +710,20 @@ void ProcPidFileHandler::Execute()
     }
 }
 
-ProcAllPidsFileHandler::ProcAllPidsFileHandler(SHARED_PTR_ALIA<TimerAttr> attr,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
-                                               SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
-                                               SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
+ProcAllPidsFileHandler::ProcAllPidsFileHandler(
+    SHARED_PTR_ALIA<TimerAttr> attr, SHARED_PTR_ALIA<analysis::dvvp::message::ProfileParams> param,
+    SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx,
+    SHARED_PTR_ALIA<analysis::dvvp::transport::Uploader> upLoader)
     : TimerHandler(attr->tag),
       devId_(attr->devId),
-      prevTimeStamp_(0), sampleIntervalNs_(attr->sampleInterval),
-      param_(param), jobCtx_(jobCtx), upLoader_(upLoader)
-{
-}
+      prevTimeStamp_(0),
+      sampleIntervalNs_(attr->sampleInterval),
+      param_(param),
+      jobCtx_(jobCtx),
+      upLoader_(upLoader)
+{}
 
-ProcAllPidsFileHandler::~ProcAllPidsFileHandler()
-{
-}
+ProcAllPidsFileHandler::~ProcAllPidsFileHandler() {}
 
 int32_t ProcAllPidsFileHandler::Init()
 {
@@ -782,7 +753,7 @@ int32_t ProcAllPidsFileHandler::Uinit()
     return PROFILING_SUCCESS;
 }
 
-void ProcAllPidsFileHandler::GetProcessName(uint32_t pid, std::string &processName)
+void ProcAllPidsFileHandler::GetProcessName(uint32_t pid, std::string& processName)
 {
     std::string fileName(PROC_FILE);
     fileName += "/";
@@ -792,7 +763,8 @@ void ProcAllPidsFileHandler::GetProcessName(uint32_t pid, std::string &processNa
 
     int64_t len = analysis::dvvp::common::utils::Utils::GetFileSize(fileName);
     if (len < 0 || len > MSVP_SMALL_FILE_MAX_LEN) {
-        MSPROF_LOGW("The %s file size[%" PRId64 "] is not in the range between 0 to %" PRId64 " or does not exist.",
+        MSPROF_LOGW(
+            "The %s file size[%" PRId64 "] is not in the range between 0 to %" PRId64 " or does not exist.",
             fileName.c_str(), len, MSVP_SMALL_FILE_MAX_LEN);
         return;
     }
@@ -805,7 +777,7 @@ void ProcAllPidsFileHandler::GetProcessName(uint32_t pid, std::string &processNa
     ifs.close();
 }
 
-void ProcAllPidsFileHandler::GetCurPids(std::vector<uint32_t> &curPids) const
+void ProcAllPidsFileHandler::GetCurPids(std::vector<uint32_t>& curPids) const
 {
     std::vector<std::string> pidDirs;
     pidDirs.reserve(PROC_PID_NUM);
@@ -824,10 +796,9 @@ void ProcAllPidsFileHandler::GetCurPids(std::vector<uint32_t> &curPids) const
     std::sort(curPids.begin(), curPids.end());
 }
 
-void ProcAllPidsFileHandler::GetNewExitPids(std::vector<uint32_t> &curPids,
-                                            std::vector<uint32_t> &prevPids,
-                                            std::vector<uint32_t> &newPids,
-                                            std::vector<uint32_t> &exitPids) const
+void ProcAllPidsFileHandler::GetNewExitPids(
+    std::vector<uint32_t>& curPids, std::vector<uint32_t>& prevPids, std::vector<uint32_t>& newPids,
+    std::vector<uint32_t>& exitPids) const
 {
     size_t curPidsSize = curPids.size();
     size_t prevPidsSize = prevPids.size();
@@ -859,7 +830,7 @@ void ProcAllPidsFileHandler::GetNewExitPids(std::vector<uint32_t> &curPids,
     }
 }
 
-void ProcAllPidsFileHandler::HandleNewPids(std::vector<uint32_t> &newPids)
+void ProcAllPidsFileHandler::HandleNewPids(std::vector<uint32_t>& newPids)
 {
     TimerHandlerTag tag = GetTag();
     SHARED_PTR_ALIA<ProcPidFileHandler> pidFileHandler = nullptr;
@@ -871,45 +842,44 @@ void ProcAllPidsFileHandler::HandleNewPids(std::vector<uint32_t> &newPids)
         MSVP_MAKE_SHARED0(pidFileHandler, ProcPidFileHandler, return);
 
         std::string str;
-        std::string pidSrcMemFileName =  std::string(PROC_FILE) + "/"
-                                         + std::to_string(newPids[i]) + "/" + PROC_PID_MEM;
-        std::string pidSrcStatFileName = std::string(PROC_FILE) + "/"
-                                         + std::to_string(newPids[i]) + "/" + PROC_PID_STAT;
+        std::string pidSrcMemFileName = std::string(PROC_FILE) + "/" + std::to_string(newPids[i]) + "/" + PROC_PID_MEM;
+        std::string pidSrcStatFileName =
+            std::string(PROC_FILE) + "/" + std::to_string(newPids[i]) + "/" + PROC_PID_STAT;
 
         std::string pidRetMemFileName = PROF_PID_MEM_FILE;
         pidRetMemFileName += str;
         std::string pidStatMemFileName = PROF_PID_STAT_FILE;
         pidStatMemFileName += str;
 
-        const uint32_t procPidMemBufSize = (1 << 12); // 1 << 12, the size of per data is about 100Byte
+        const uint32_t procPidMemBufSize = (1 << 12);  // 1 << 12, the size of per data is about 100Byte
         const uint32_t procPidStatBufSize = (1 << 12); // 1 << 12, the size of per stat data is about 300Byte
         SHARED_PTR_ALIA<TimerAttr> attrMem = nullptr;
-        MSVP_MAKE_SHARED4(attrMem, TimerAttr, GetTag(), static_cast<int32_t>(devId_), procPidMemBufSize,
-            sampleIntervalNs_, return);
+        MSVP_MAKE_SHARED4(
+            attrMem, TimerAttr, GetTag(), static_cast<int32_t>(devId_), procPidMemBufSize, sampleIntervalNs_, return);
         attrMem->srcFileName = pidSrcMemFileName;
         attrMem->retFileName = std::to_string(newPids[i]) + "-" + pidRetMemFileName;
         attrMem->pid = newPids[i];
         MSVP_MAKE_SHARED4(pidMemHandler, ProcPidMemFileHandler, attrMem, param_, jobCtx_, upLoader_, return);
         SHARED_PTR_ALIA<TimerAttr> attrStat = nullptr;
-        MSVP_MAKE_SHARED4(attrStat, TimerAttr, GetTag(), static_cast<int32_t>(devId_), procPidStatBufSize,
-            sampleIntervalNs_, return);
+        MSVP_MAKE_SHARED4(
+            attrStat, TimerAttr, GetTag(), static_cast<int32_t>(devId_), procPidStatBufSize, sampleIntervalNs_, return);
         attrStat->srcFileName = pidSrcStatFileName;
         attrStat->retFileName = std::to_string(newPids[i]) + "-" + pidStatMemFileName;
         attrStat->pid = newPids[i];
         MSVP_MAKE_SHARED4(pidStatHandler, ProcPidStatFileHandler, attrStat, param_, jobCtx_, upLoader_, return);
         if (pidMemHandler->Init() == PROFILING_SUCCESS && pidStatHandler->Init() == PROFILING_SUCCESS) {
-            if (tag == PROF_ALL_PID || tag ==  PROF_HOST_ALL_PID || tag == PROF_HOST_ALL_PID_CPU) {
+            if (tag == PROF_ALL_PID || tag == PROF_HOST_ALL_PID || tag == PROF_HOST_ALL_PID_CPU) {
                 pidFileHandler->statHandler_ = pidStatHandler;
             }
-            if (tag == PROF_ALL_PID || tag ==  PROF_HOST_ALL_PID || tag == PROF_HOST_ALL_PID_MEM) {
+            if (tag == PROF_ALL_PID || tag == PROF_HOST_ALL_PID || tag == PROF_HOST_ALL_PID_MEM) {
                 pidFileHandler->memHandler_ = pidMemHandler;
             }
-            pidsMap_.insert(std::pair<uint32_t, SHARED_PTR_ALIA<ProcPidFileHandler> >(newPids[i], pidFileHandler));
+            pidsMap_.insert(std::pair<uint32_t, SHARED_PTR_ALIA<ProcPidFileHandler>>(newPids[i], pidFileHandler));
         }
     }
 }
 
-void ProcAllPidsFileHandler::HandleExitPids(std::vector<uint32_t> &exitPids)
+void ProcAllPidsFileHandler::HandleExitPids(std::vector<uint32_t>& exitPids)
 {
     const size_t size = exitPids.size();
     for (size_t i = 0; i < size; i++) {
@@ -938,10 +908,10 @@ int32_t ProcAllPidsFileHandler::Execute()
         GetCurPids(curPids);
 
         static const uint32_t CHANGE_PIDS_NUM = 16;
-        std::vector<uint32_t> newPids(curPids.size() > prevPids_.size() ?
-            curPids.size() - prevPids_.size() : CHANGE_PIDS_NUM);
-        std::vector<uint32_t> exitPids(curPids.size() > prevPids_.size() ?
-            curPids.size() - prevPids_.size() : CHANGE_PIDS_NUM);
+        std::vector<uint32_t> newPids(
+            curPids.size() > prevPids_.size() ? curPids.size() - prevPids_.size() : CHANGE_PIDS_NUM);
+        std::vector<uint32_t> exitPids(
+            curPids.size() > prevPids_.size() ? curPids.size() - prevPids_.size() : CHANGE_PIDS_NUM);
 
         GetNewExitPids(curPids, prevPids_, newPids, exitPids);
         HandleExitPids(exitPids);
@@ -955,14 +925,15 @@ int32_t ProcAllPidsFileHandler::Execute()
     return PROFILING_SUCCESS;
 }
 
-void ProcAllPidsFileHandler::ParseProcFile(const std::ifstream &ifs /* = ios::in */,
-    const std::string &data /* = "" */) const
+void ProcAllPidsFileHandler::ParseProcFile(
+    const std::ifstream& ifs /* = ios::in */, const std::string& data /* = "" */) const
 {
     UNUSED(ifs);
     UNUSED(data);
 }
 
-NetDevStatsHandler::NetDevStatsHandler(size_t bufSize, uint64_t sampleIntervalNs, std::string jobId,
+NetDevStatsHandler::NetDevStatsHandler(
+    size_t bufSize, uint64_t sampleIntervalNs, std::string jobId,
     SHARED_PTR_ALIA<analysis::dvvp::message::JobContext> jobCtx)
     : TimerHandler(PROF_NETDEV_STATS),
       isInited_(false),
@@ -972,7 +943,8 @@ NetDevStatsHandler::NetDevStatsHandler(size_t bufSize, uint64_t sampleIntervalNs
       isDcmiV2Supported_(false),
       retFileName_("data/netdev_stats.data"),
       jobId_(jobId),
-      jobCtx_(jobCtx) {}
+      jobCtx_(jobCtx)
+{}
 
 int32_t NetDevStatsHandler::Init()
 {
@@ -991,17 +963,17 @@ int32_t NetDevStatsHandler::Init()
     }
     if (isDcmiV2Supported_) {
         ret = dcmiV2Init_();
- 	    if (ret != PROFILING_SUCCESS) {
- 	        MSPROF_LOGW("NetDevStatsHandler dcmi init failed, ret=%d", ret);
- 	        return PROFILING_FAILED;
- 	    }
- 	} else {
- 	    if (dcmiInit_() != PROFILING_SUCCESS) {
- 	        MSPROF_LOGE("NetDevStatsHandler dcmi init failed");
- 	        MSPROF_INNER_ERROR("EK9999", "NetDevStatsHandler dcmi init failed");
- 	        return PROFILING_FAILED;
- 	    }
- 	}
+        if (ret != PROFILING_SUCCESS) {
+            MSPROF_LOGW("NetDevStatsHandler dcmi init failed, ret=%d", ret);
+            return PROFILING_FAILED;
+        }
+    } else {
+        if (dcmiInit_() != PROFILING_SUCCESS) {
+            MSPROF_LOGE("NetDevStatsHandler dcmi init failed");
+            MSPROF_INNER_ERROR("EK9999", "NetDevStatsHandler dcmi init failed");
+            return PROFILING_FAILED;
+        }
+    }
     prevTimeStamp_ = 0;
     isInited_ = true;
     return PROFILING_SUCCESS;
@@ -1038,18 +1010,18 @@ int32_t NetDevStatsHandler::Execute()
         auto dcmiCardId = iter.second.first;
         auto dcmiDeviceId = iter.second.second;
         if (isDcmiV2Supported_) {
-           auto ret = dcmiV2GetNetdevPktStatsInfo_(devId, NETDEV_STATS_DEFAULT_PORT_ID, &statsInfo);
-           if (ret != PROFILING_SUCCESS) {
-               MSPROF_LOGW("NetDevStatsHandler get netdev pkt stats info failed devId %u, ret=%d", devId, ret);
-               break;
-           }
+            auto ret = dcmiV2GetNetdevPktStatsInfo_(devId, NETDEV_STATS_DEFAULT_PORT_ID, &statsInfo);
+            if (ret != PROFILING_SUCCESS) {
+                MSPROF_LOGW("NetDevStatsHandler get netdev pkt stats info failed devId %u, ret=%d", devId, ret);
+                break;
+            }
         } else {
-           if (dcmiGetNetdevPktStatsInfo_(dcmiCardId, dcmiDeviceId, NETDEV_STATS_DEFAULT_PORT_ID, &statsInfo) !=
-               PROFILING_SUCCESS) {
-               MSPROF_LOGE("NetDevStatsHandler get netdev pkt stats info failed devId %u", devId);
-               MSPROF_INNER_ERROR("EK9999", "NetDevStatsHandler get netdev pkt stats info failed");
-               break;
-           }
+            if (dcmiGetNetdevPktStatsInfo_(dcmiCardId, dcmiDeviceId, NETDEV_STATS_DEFAULT_PORT_ID, &statsInfo) !=
+                PROFILING_SUCCESS) {
+                MSPROF_LOGE("NetDevStatsHandler get netdev pkt stats info failed devId %u", devId);
+                MSPROF_INNER_ERROR("EK9999", "NetDevStatsHandler get netdev pkt stats info failed");
+                break;
+            }
         }
         auto packedData = ConstructNetDevStatsData(curTimeStamp, statsInfo);
         StoreData(devId, std::move(packedData));
@@ -1057,7 +1029,7 @@ int32_t NetDevStatsHandler::Execute()
     return PROFILING_SUCCESS;
 }
 
-bool NetDevStatsHandler::GetDcmiCardDevId(uint32_t devId, int &dcmiCardId, int &dcmiDevId) const
+bool NetDevStatsHandler::GetDcmiCardDevId(uint32_t devId, int& dcmiCardId, int& dcmiDevId) const
 {
     constexpr int MAX_CARD_NUM = 64;
     int cardNum = 0;
@@ -1115,8 +1087,9 @@ void NetDevStatsHandler::StoreData(uint32_t devId, std::string data)
         return;
     }
     size_t usedSize = buf->GetUsedSize();
-    errno_t err = memcpy_s(static_cast<void *>(const_cast<UNSIGNED_CHAR_PTR>(dataBuf + usedSize)),
-                           buf->GetFreeSize(), data.c_str(), data.size());
+    errno_t err = memcpy_s(
+        static_cast<void*>(const_cast<UNSIGNED_CHAR_PTR>(dataBuf + usedSize)), buf->GetFreeSize(), data.c_str(),
+        data.size());
     if (err != EOK) {
         MSPROF_LOGE("memcpy stat data failed: %d", err);
         MSPROF_INNER_ERROR("EK9999", "memcpy stat data failed: %d", err);
@@ -1187,8 +1160,8 @@ int32_t NetDevStatsHandler::RegisterDevTask(uint32_t devId)
         }
         devTaskBufs_.emplace(devId, std::move(buf));
         dcmiCardDevIdMap_.emplace(devId, std::make_pair(dcmiCardId, dcmiDevId));
-        MSPROF_LOGI("Netdev stats task is registered for devId %u, dcmiCardId %d, dcmiDevId %d",
-            devId, dcmiCardId, dcmiDevId);
+        MSPROF_LOGI(
+            "Netdev stats task is registered for devId %u, dcmiCardId %d, dcmiDevId %d", devId, dcmiCardId, dcmiDevId);
     } else {
         MSPROF_LOGW("Netdev stats task is already registered for devId %u", devId);
     }
@@ -1249,8 +1222,8 @@ int32_t NetDevStatsHandler::LoadDcmiApi()
 void NetDevStatsHandler::HandleDcmiV2SupFlag()
 {
     DcmiV2GetDcmiVersionFunc dcmiV2GetDcmiVersion = nullptr;
-    dcmiV2GetDcmiVersion = reinterpret_cast<DcmiV2GetDcmiVersionFunc>(
-        OsalDlsym(dcmiLibHandle_, "dcmiv2_get_dcmi_version"));
+    dcmiV2GetDcmiVersion =
+        reinterpret_cast<DcmiV2GetDcmiVersionFunc>(OsalDlsym(dcmiLibHandle_, "dcmiv2_get_dcmi_version"));
     if (dcmiV2GetDcmiVersion == nullptr) {
         isDcmiV2Supported_ = false;
         return;
@@ -1290,14 +1263,14 @@ int32_t NetDevStatsHandler::LoadDcmiV1Api()
         MSPROF_LOGE("Failed to dlsym dcmi_get_card_list");
         return PROFILING_FAILED;
     }
-    dcmiGetDeviceNumInCard_ = reinterpret_cast<DcmiGetDeviceNumInCardFunc_>(
-        OsalDlsym(dcmiLibHandle_, "dcmi_get_device_num_in_card"));
+    dcmiGetDeviceNumInCard_ =
+        reinterpret_cast<DcmiGetDeviceNumInCardFunc_>(OsalDlsym(dcmiLibHandle_, "dcmi_get_device_num_in_card"));
     if (dcmiGetDeviceNumInCard_ == nullptr) {
         MSPROF_LOGE("Failed to dlsym dcmi_get_device_num_in_card");
         return PROFILING_FAILED;
     }
-    dcmiGetNetdevPktStatsInfo_ = reinterpret_cast<DcmiGetNetdevPktStatsInfoFunc>(
-        OsalDlsym(dcmiLibHandle_, "dcmi_get_netdev_pkt_stats_info"));
+    dcmiGetNetdevPktStatsInfo_ =
+        reinterpret_cast<DcmiGetNetdevPktStatsInfoFunc>(OsalDlsym(dcmiLibHandle_, "dcmi_get_netdev_pkt_stats_info"));
     if (dcmiGetNetdevPktStatsInfo_ == nullptr) {
         MSPROF_LOGE("Failed to dlsym dcmi_get_netdev_pkt_stats_info");
         return PROFILING_FAILED;
@@ -1305,16 +1278,9 @@ int32_t NetDevStatsHandler::LoadDcmiV1Api()
     return PROFILING_SUCCESS;
 }
 
-ProfTimer::ProfTimer(SHARED_PTR_ALIA<TimerParam> timerParam)
-    : isStarted_(false), timerParam_(timerParam)
-{
-}
+ProfTimer::ProfTimer(SHARED_PTR_ALIA<TimerParam> timerParam) : isStarted_(false), timerParam_(timerParam) {}
 
-ProfTimer::~ProfTimer()
-{
-    Stop();
-}
-
+ProfTimer::~ProfTimer() { Stop(); }
 
 int32_t ProfTimer::Handler()
 {
@@ -1410,7 +1376,7 @@ int32_t ProfTimer::Stop()
     return ret;
 }
 
-void ProfTimer::Run(const error_message::ErrorManagerContext &errorContext)
+void ProfTimer::Run(const error_message::ErrorManagerContext& errorContext)
 {
     MsprofErrorManager::instance()->SetErrorContext(errorContext);
     do {
@@ -1419,10 +1385,7 @@ void ProfTimer::Run(const error_message::ErrorManagerContext &errorContext)
     } while (isStarted_);
 }
 
-TimerManager::TimerManager()
-    : profTimerCnt_(0)
-{
-}
+TimerManager::TimerManager() : profTimerCnt_(0) {}
 
 TimerManager::~TimerManager()
 {
@@ -1463,8 +1426,7 @@ void TimerManager::StopProfTimer()
     }
 }
 
-void TimerManager::RegisterProfTimerHandler(TimerHandlerTag tag,
-    SHARED_PTR_ALIA<TimerHandler> handler)
+void TimerManager::RegisterProfTimerHandler(TimerHandlerTag tag, SHARED_PTR_ALIA<TimerHandler> handler)
 {
     std::lock_guard<std::mutex> lk(profTimerMtx_);
     if (profTimer_ != nullptr && handler != nullptr) {
@@ -1485,6 +1447,6 @@ SHARED_PTR_ALIA<TimerHandler> TimerManager::GetProfTimerHandler(TimerHandlerTag 
     std::lock_guard<std::mutex> lk(profTimerMtx_);
     return profTimer_ != nullptr ? profTimer_->GetTimerHandler(tag) : nullptr;
 }
-}
-}
-}
+} // namespace JobWrapper
+} // namespace Dvvp
+} // namespace Analysis

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef PROF_PLUGIN_MANAGER_H
 #define PROF_PLUGIN_MANAGER_H
 #include "singleton/singleton.h"
 #include "prof_plugin.h"
 namespace ProfAPI {
-using PROF_PLUGIN_PTR = ProfPlugin *;
+using PROF_PLUGIN_PTR = ProfPlugin*;
 class ProfPluginManager : public analysis::dvvp::common::singleton::Singleton<ProfPluginManager> {
 public:
     PROF_PLUGIN_PTR GetProfPlugin(void);
@@ -27,5 +27,5 @@ public:
     PROF_PLUGIN_PTR profPlugin_{nullptr};
 };
 
-}
+} // namespace ProfAPI
 #endif

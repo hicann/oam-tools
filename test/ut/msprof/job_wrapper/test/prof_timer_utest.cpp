@@ -23,23 +23,23 @@
 #include "transport/hdc/hdc_transport.h"
 #include "utils/utils.h"
 
-
 using namespace analysis::dvvp::common::error;
 using namespace Analysis::Dvvp::JobWrapper;
 using namespace Analysis::Dvvp::MsprofErrMgr;
 
-class PROF_STAT_FILE_HANDLER_TEST: public testing::Test {
+class PROF_STAT_FILE_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -54,92 +54,81 @@ public:
 };
 
 /////////////////////////////////////////////////////////////
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, Init) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, Init)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
-    //Inited
+    // Inited
     statHandler.isInited_ = true;
     EXPECT_EQ(PROFILING_FAILED, statHandler.Init());
-    //buf init failed
+    // buf init failed
     statHandler.isInited_ = false;
     EXPECT_EQ(PROFILING_FAILED, statHandler.Init());
-    //succ
+    // succ
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Init());
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, UInit) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, UInit)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
     statHandler.isInited_ = false;
-    //UInited
+    // UInited
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Uinit());
-    //succ
+    // succ
     statHandler.isInited_ = true;
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Uinit());
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, Execute) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, Execute)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
 
-    //Not Inited
+    // Not Inited
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Execute());
-    //prevTimeStamp_ break;
-    MOCKER(analysis::dvvp::common::utils::Utils::GetClockMonotonicRaw)
-        .stubs()
-        .will(returnValue((unsigned long long)1));
+    // prevTimeStamp_ break;
+    MOCKER(analysis::dvvp::common::utils::Utils::GetClockMonotonicRaw).stubs().will(returnValue((unsigned long long)1));
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Init());
     statHandler.prevTimeStamp_ = 1;
-    statHandler.sampleIntervalNs_= 1;
+    statHandler.sampleIntervalNs_ = 1;
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Execute());
-    //open file failed
+    // open file failed
     statHandler.prevTimeStamp_ = 0;
     statHandler.srcFileName_ = "./test/test";
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Execute());
-    //srcFileName is empty
+    // srcFileName is empty
     statHandler.srcFileName_ = "";
-    MOCKER_CPP_VIRTUAL(&statHandler, &Analysis::Dvvp::JobWrapper::ProcStatFileHandler::ParseProcFile)
-        .stubs();
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::StoreData)
-        .stubs();
+    MOCKER_CPP_VIRTUAL(&statHandler, &Analysis::Dvvp::JobWrapper::ProcStatFileHandler::ParseProcFile).stubs();
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::StoreData).stubs();
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Execute());
-    //succ
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::PacketData)
-        .stubs();
+    // succ
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::PacketData).stubs();
     statHandler.srcFileName_ = "./test";
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Execute());
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, PacketData) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, PacketData)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
@@ -149,31 +138,28 @@ TEST_F(PROF_STAT_FILE_HANDLER_TEST, PacketData) {
     std::string dest;
     std::string data;
     unsigned int headSize = 1;
-    //data null
+    // data null
     statHandler.PacketData(dest, data, headSize);
-    //succ
+    // succ
     data = "test";
     statHandler.PacketData(dest, data, headSize);
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, SendData) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, SendData)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
     EXPECT_EQ(PROFILING_FAILED, statHandler.Init());
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Init());
 
-    MOCKER_CPP(&analysis::dvvp::transport::Uploader::UploadData,
-        int(analysis::dvvp::transport::Uploader::*)(const void *, int))
+    MOCKER_CPP(
+        &analysis::dvvp::transport::Uploader::UploadData, int(analysis::dvvp::transport::Uploader::*)(const void*, int))
         .stubs()
         .will(returnValue(0));
 
@@ -183,24 +169,20 @@ TEST_F(PROF_STAT_FILE_HANDLER_TEST, SendData) {
     statHandler.SendData((const unsigned char*)buf.c_str(), buf.size());
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, FlushBuf) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, FlushBuf)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
     EXPECT_EQ(PROFILING_FAILED, statHandler.Init());
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Init());
 
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::SendData)
-        .stubs();
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::SendData).stubs();
     statHandler.buf_.usedSize_ = 1;
     statHandler.isInited_ = true;
 
@@ -208,35 +190,30 @@ TEST_F(PROF_STAT_FILE_HANDLER_TEST, FlushBuf) {
     statHandler.isInited_ = false;
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, StoreData) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, StoreData)
+{
     GlobalMockObject::verify();
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
 
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::SendData)
-        .stubs();
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::FlushBuf)
-        .stubs();
-    MOCKER(memcpy_s)
-        .stubs()
-        .will(returnValue(EOF))
-        .then(returnValue(EOK));
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::SendData).stubs();
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::FlushBuf).stubs();
+    MOCKER(memcpy_s).stubs().will(returnValue(EOF)).then(returnValue(EOK));
 
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Init());
-    //size = 0
+    // size = 0
     std::string data;
     statHandler.StoreData(data);
-    //memcpy failed
+    // memcpy failed
     data = "123";
     statHandler.StoreData(data);
-    //free > size; bufSize = 10
+    // free > size; bufSize = 10
     data = "123";
     statHandler.StoreData(data);
     statHandler.StoreData(data);
-    //free < size
+    // free < size
     data = "1234567890a";
     statHandler.StoreData(data);
 
@@ -245,15 +222,12 @@ TEST_F(PROF_STAT_FILE_HANDLER_TEST, StoreData) {
     EXPECT_EQ(PROFILING_SUCCESS, statHandler.Uinit());
 }
 
-TEST_F(PROF_STAT_FILE_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_STAT_FILE_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcStatFileHandler statHandler(attr, param, jobCtx, upLoader);
@@ -274,18 +248,19 @@ TEST_F(PROF_STAT_FILE_HANDLER_TEST, ParseProcFile) {
     remove("./test");
 }
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_PID_STAT_FILE_HANDLER_TEST: public testing::Test {
+class PROF_PID_STAT_FILE_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -300,15 +275,12 @@ public:
     unsigned int pid = 1;
 };
 
-TEST_F(PROF_PID_STAT_FILE_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_PID_STAT_FILE_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_STAT, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     attr->pid = pid;
@@ -331,18 +303,19 @@ TEST_F(PROF_PID_STAT_FILE_HANDLER_TEST, ParseProcFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_HOST_CPU_HANDLER_TEST: public testing::Test {
+class PROF_HOST_CPU_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -356,16 +329,13 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
     ProcHostCpuHandler hostCpuHandler(attr, param, jobCtx, upLoader);
     EXPECT_EQ(PROFILING_FAILED, hostCpuHandler.Init());
@@ -377,11 +347,11 @@ TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcFile) {
     hostCpuHandler.ParseProcFile(ifs, data);
 }
 
-TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseSysTime) {
+TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseSysTime)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
     ProcHostCpuHandler hostCpuHandler(attr, param, jobCtx, upLoader);
     std::string data = "PROF_HOST_CPU_HANDLER_TEST/ParseSysTime";
@@ -394,15 +364,15 @@ TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseSysTime) {
     EXPECT_TRUE(check);
 }
 
-TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcTidStat) {
+TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcTidStat)
+{
     GlobalMockObject::verify();
 
     MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcTimerHandler::CheckFileSize)
         .stubs()
         .will(returnValue(false))
         .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_CPU, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
     ProcHostCpuHandler hostCpuHandler(attr, param, jobCtx, upLoader);
 
@@ -416,18 +386,19 @@ TEST_F(PROF_HOST_CPU_HANDLER_TEST, ParseProcTidStat) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_HOST_CPU_FREQ_HANDLER_TEST: public testing::Test {
+class PROF_HOST_CPU_FREQ_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int bufSize = 10;
     unsigned int sampleIntervalMs = 20;
@@ -439,7 +410,8 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpu) {
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpu)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
@@ -468,7 +440,8 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpu) {
     remove("/tmp/prof_host_cpu_freq_valid_stat");
 }
 
-TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithoutCommandTerminator) {
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithoutCommandTerminator)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
@@ -485,7 +458,8 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithoutCommandTerminator) {
     remove("/tmp/prof_host_cpu_freq_no_command_end_stat");
 }
 
-TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithNegativeCpuId) {
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithNegativeCpuId)
+{
     GlobalMockObject::verify();
 
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
@@ -506,13 +480,11 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithNegativeCpuId) {
     remove("/tmp/prof_host_cpu_freq_negative_cpu_stat");
 }
 
-TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
@@ -548,13 +520,11 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFile) {
     analysis::dvvp::common::utils::Utils::RemoveDir("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST/");
 }
 
-TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCpuFreqUnsupported) {
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCpuFreqUnsupported)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
 
     std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
@@ -571,18 +541,19 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCpuFreqUnsupported) {
     EXPECT_TRUE(data.empty());
 }
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_HOST_MEM_HANDLER_TEST: public testing::Test {
+class PROF_HOST_MEM_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -596,15 +567,12 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_HOST_MEM_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_HOST_MEM_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_MEM, 0, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_PROC_MEM, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
     ProcHostMemHandler hostMemHandler(attr, param, jobCtx, upLoader);
     EXPECT_EQ(PROFILING_FAILED, hostMemHandler.Init());
@@ -617,18 +585,19 @@ TEST_F(PROF_HOST_MEM_HANDLER_TEST, ParseProcFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_HOST_NETWORK_HANDLER_TEST: public testing::Test {
+class PROF_HOST_NETWORK_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -642,15 +611,12 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_HOST_NETWORK_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_HOST_NETWORK_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_SYS_NETWORK, 0, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_SYS_NETWORK, 0, bufSize, sampleIntervalMs});
     attr->retFileName = retFileName;
     ProcHostNetworkHandler hostNetworkHandler(attr, param, jobCtx, upLoader);
     EXPECT_EQ(PROFILING_FAILED, hostNetworkHandler.Init());
@@ -663,18 +629,19 @@ TEST_F(PROF_HOST_NETWORK_HANDLER_TEST, ParseProcFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_MEM_FILE_HANDLER_TEST: public testing::Test {
+class PROF_MEM_FILE_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -688,15 +655,12 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_MEM_FILE_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_MEM_FILE_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_MEM, devId, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_MEM, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     ProcMemFileHandler memHandler(attr, param, jobCtx, upLoader);
@@ -718,18 +682,19 @@ TEST_F(PROF_MEM_FILE_HANDLER_TEST, ParseProcFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_PID_MEM_FILE_HANDLER_TEST: public testing::Test {
+class PROF_PID_MEM_FILE_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int bufSize = 10;
@@ -744,15 +709,12 @@ public:
     unsigned int pid = 1;
 };
 
-TEST_F(PROF_PID_MEM_FILE_HANDLER_TEST, ParseProcFile) {
+TEST_F(PROF_PID_MEM_FILE_HANDLER_TEST, ParseProcFile)
+{
     GlobalMockObject::verify();
 
-    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init)
-        .stubs()
-        .will(returnValue(false))
-        .then(returnValue(true));
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_MEM, devId, bufSize,
-        sampleIntervalMs});
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(false)).then(returnValue(true));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_SYS_MEM, devId, bufSize, sampleIntervalMs});
     attr->srcFileName = srcFileName;
     attr->retFileName = retFileName;
     attr->pid = pid;
@@ -775,18 +737,19 @@ TEST_F(PROF_PID_MEM_FILE_HANDLER_TEST, ParseProcFile) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_ALL_PID_FILE_HANDLER_TEST: public testing::Test {
+class PROF_ALL_PID_FILE_HANDLER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int sampleIntervalMs = 100;
@@ -797,49 +760,44 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-void fake_get_child_dirs(const std::string &dir, bool is_recur, std::vector<std::string>& pidDirs)
+void fake_get_child_dirs(const std::string& dir, bool is_recur, std::vector<std::string>& pidDirs)
 {
     pidDirs.push_back("/proc/1");
     pidDirs.push_back("/proc/2");
     pidDirs.push_back("/proc/test");
 }
 
-TEST_F(PROF_ALL_PID_FILE_HANDLER_TEST, Init) {
+TEST_F(PROF_ALL_PID_FILE_HANDLER_TEST, Init)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0, sampleIntervalMs});
     ProcAllPidsFileHandler allPidsHandler(attr, param, jobCtx, upLoader);
 
-    MOCKER(analysis::dvvp::common::utils::Utils::GetChildDirs)
-        .stubs()
-        .will(invoke(fake_get_child_dirs));
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::GetNewExitPids)
-        .stubs();
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::HandleExitPids)
-        .stubs();
-    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::HandleNewPids)
-        .stubs();
-    //Init
+    MOCKER(analysis::dvvp::common::utils::Utils::GetChildDirs).stubs().will(invoke(fake_get_child_dirs));
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::GetNewExitPids).stubs();
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::HandleExitPids).stubs();
+    MOCKER_CPP(&Analysis::Dvvp::JobWrapper::ProcAllPidsFileHandler::HandleNewPids).stubs();
+    // Init
     EXPECT_EQ(PROFILING_SUCCESS, allPidsHandler.Init());
-    //Execute
+    // Execute
     EXPECT_EQ(PROFILING_SUCCESS, allPidsHandler.Execute());
-    //ParseProcFile
+    // ParseProcFile
     std::ifstream ifs;
     std::string data;
     allPidsHandler.ParseProcFile(ifs, data);
-    //GetProcessname
+    // GetProcessname
     allPidsHandler.GetProcessName(0, data);
 }
 
-TEST_F(PROF_ALL_PID_FILE_HANDLER_TEST, GetNewExitPids) {
+TEST_F(PROF_ALL_PID_FILE_HANDLER_TEST, GetNewExitPids)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0,
-        sampleIntervalMs});
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0, sampleIntervalMs});
     ProcAllPidsFileHandler allPidsHandler(attr, param, jobCtx, upLoader);
 
-    //GetNewExitPids
+    // GetNewExitPids
     std::vector<unsigned int> newPids;
     std::vector<unsigned int> exitPids;
 
@@ -853,35 +811,36 @@ TEST_F(PROF_ALL_PID_FILE_HANDLER_TEST, GetNewExitPids) {
 
     allPidsHandler.GetNewExitPids(curPids, prevPids, newPids, exitPids);
 
-    //prevPidsSize > curPidsSize
+    // prevPidsSize > curPidsSize
     prevPids.push_back(6);
     allPidsHandler.GetNewExitPids(curPids, prevPids, newPids, exitPids);
 
     EXPECT_EQ(curPids[1], newPids[0]);
     EXPECT_EQ(prevPids[1], exitPids[0]);
 
-    //HandleNewPids
+    // HandleNewPids
     allPidsHandler.HandleNewPids(prevPids);
     allPidsHandler.HandleNewPids(newPids);
-    //HandleExitPids
+    // HandleExitPids
     allPidsHandler.HandleExitPids(exitPids);
-    //Execute
+    // Execute
     allPidsHandler.Execute();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-class PROF_TIMER_TEST: public testing::Test {
+class PROF_TIMER_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         param = std::make_shared<analysis::dvvp::message::ProfileParams>();
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
 
         auto transport = std::shared_ptr<analysis::dvvp::transport::HDCTransport>(
-                new analysis::dvvp::transport::HDCTransport(session));
+            new analysis::dvvp::transport::HDCTransport(session));
         upLoader = std::make_shared<analysis::dvvp::transport::Uploader>(transport);
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
+
 public:
     unsigned int devId = 0;
     unsigned int sampleIntervalMs = 100;
@@ -892,68 +851,55 @@ public:
     std::shared_ptr<analysis::dvvp::transport::Uploader> upLoader;
 };
 
-TEST_F(PROF_TIMER_TEST, Handler) {
+TEST_F(PROF_TIMER_TEST, Handler)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerParam> timerParam(
-            new TimerParam(1000));
+    std::shared_ptr<TimerParam> timerParam(new TimerParam(1000));
     ProfTimer timerHandler(timerParam);
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0,
-        sampleIntervalMs});
-    std::shared_ptr<ProcAllPidsFileHandler> allPidsHandler(
-            new ProcAllPidsFileHandler(attr, param, jobCtx, upLoader));
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0, sampleIntervalMs});
+    std::shared_ptr<ProcAllPidsFileHandler> allPidsHandler(new ProcAllPidsFileHandler(attr, param, jobCtx, upLoader));
 
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.RegisterTimerHandler(PROF_ALL_PID, allPidsHandler));
     EXPECT_EQ(1, timerHandler.Handler());
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.RemoveTimerHandler(PROF_ALL_PID));
 }
 
-TEST_F(PROF_TIMER_TEST, Start) {
+TEST_F(PROF_TIMER_TEST, Start)
+{
     GlobalMockObject::verify();
 
-    MOCKER(mmCreateTaskWithThreadAttr)
-        .stubs()
-        .will(returnValue(EN_OK));
-    MOCKER(mmJoinTask)
-        .stubs()
-        .will(returnValue(EN_OK));
+    MOCKER(mmCreateTaskWithThreadAttr).stubs().will(returnValue(EN_OK));
+    MOCKER(mmJoinTask).stubs().will(returnValue(EN_OK));
 
-    MOCKER(setitimer)
-        .stubs()
-        .will(returnValue(-1))
-        .then(returnValue(0))
-        .then(returnValue(-1))
-        .then(returnValue(0));
+    MOCKER(setitimer).stubs().will(returnValue(-1)).then(returnValue(0)).then(returnValue(-1)).then(returnValue(0));
 
-    std::shared_ptr<TimerParam> timerParam(
-            new TimerParam(1000));
+    std::shared_ptr<TimerParam> timerParam(new TimerParam(1000));
     ProfTimer timerHandler(timerParam);
-    //start failed
+    // start failed
     timerHandler.isStarted_ = true;
     EXPECT_EQ(PROFILING_FAILED, timerHandler.Start());
-    //setitimer failed
+    // setitimer failed
     timerHandler.isStarted_ = false;
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.Start());
-    //start succ
+    // start succ
     EXPECT_EQ(PROFILING_FAILED, timerHandler.Start());
-    //stop failed setitimer failed
+    // stop failed setitimer failed
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.Stop());
-    //stop succ
-    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0,
-        sampleIntervalMs});
-    std::shared_ptr<ProcAllPidsFileHandler> allPidsHandler(
-            new ProcAllPidsFileHandler(attr, param, jobCtx, upLoader));
+    // stop succ
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_ALL_PID, devId, 0, sampleIntervalMs});
+    std::shared_ptr<ProcAllPidsFileHandler> allPidsHandler(new ProcAllPidsFileHandler(attr, param, jobCtx, upLoader));
 
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.RegisterTimerHandler(PROF_ALL_PID, allPidsHandler));
     timerHandler.isStarted_ = true;
     EXPECT_EQ(PROFILING_SUCCESS, timerHandler.Stop());
 }
 
-TEST_F(PROF_TIMER_TEST, run) {
+TEST_F(PROF_TIMER_TEST, run)
+{
     GlobalMockObject::verify();
 
-    std::shared_ptr<TimerParam> timerParam(
-            new TimerParam(1000));
+    std::shared_ptr<TimerParam> timerParam(new TimerParam(1000));
     EXPECT_NE(nullptr, timerParam);
     ProfTimer timerHandler(timerParam);
     auto errorContext = MsprofErrorManager::instance()->GetErrorManagerContext();
@@ -962,15 +908,15 @@ TEST_F(PROF_TIMER_TEST, run) {
 
 class PROF_NET_DEV_STATS_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         jobCtx = std::make_shared<analysis::dvvp::message::JobContext>();
         jobCtx->job_id = "0";
         jobCtx->dev_id = "0";
-        jobCtx->tag    = "tag";
+        jobCtx->tag = "tag";
     }
-    virtual void TearDown() {
-        GlobalMockObject::verify();
-    }
+    virtual void TearDown() { GlobalMockObject::verify(); }
+
 public:
     std::shared_ptr<analysis::dvvp::message::JobContext> jobCtx;
 };
@@ -1002,11 +948,16 @@ TEST_F(PROF_NET_DEV_STATS_TEST, RemoveDevTask_NotRegistered)
 // File-scope stubs for NetDevStatsHandler tests
 static int g_dcmi_init_ok_stub() { return 0; }
 static int g_dcmi_init_fail_stub() { return -1; }
-static int g_dcmi_card_list_zero_stub(int *cardNum, int *, int) { if (cardNum) *cardNum = 0; return 0; }
-static int g_dcmi_card_list_fail_stub(int *, int *, int) { return -1; }
-static int g_dcmi_dev_num_stub(int, int *) { return 0; }
-static int g_dcmi_pkt_stub(int, int, int, struct dcmi_network_pkt_stats_info *) { return 0; }
-static int g_dcmi_v2_pkt_fail_stub(int, int, struct dcmi_network_pkt_stats_info *) { return -1; }
+static int g_dcmi_card_list_zero_stub(int* cardNum, int*, int)
+{
+    if (cardNum)
+        *cardNum = 0;
+    return 0;
+}
+static int g_dcmi_card_list_fail_stub(int*, int*, int) { return -1; }
+static int g_dcmi_dev_num_stub(int, int*) { return 0; }
+static int g_dcmi_pkt_stub(int, int, int, struct dcmi_network_pkt_stats_info*) { return 0; }
+static int g_dcmi_v2_pkt_fail_stub(int, int, struct dcmi_network_pkt_stats_info*) { return -1; }
 
 TEST_F(PROF_NET_DEV_STATS_TEST, Init_LoadDcmiFails)
 {
@@ -1021,14 +972,14 @@ TEST_F(PROF_NET_DEV_STATS_TEST, Init_LoadDcmiV1AllSym_ThenV1InitFails)
     // OsalDlopen returns non-null handle, dcmiv2_get_dcmi_version returns null
     // -> isDcmiV2Supported_ = false. LoadDcmiV1Api succeeds (syms non-null),
     // then dcmiInit_ returns failure -> Init FAILED via dcmiInit_() != SUCCESS.
-    MOCKER(OsalDlopen).stubs().will(returnValue((void *)0x12345678));
+    MOCKER(OsalDlopen).stubs().will(returnValue((void*)0x12345678));
     MOCKER(OsalDlsym)
         .stubs()
-        .will(returnValue((void *)nullptr))                                // v2 version
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_init_fail_stub))) // dcmi_init
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_card_list_zero_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_dev_num_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_pkt_stub)));
+        .will(returnValue((void*)nullptr))                                  // v2 version
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_init_fail_stub))) // dcmi_init
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_card_list_zero_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_dev_num_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_pkt_stub)));
 
     NetDevStatsHandler h(64, 1000, "0", jobCtx);
     int32_t ret = h.Init();
@@ -1039,14 +990,14 @@ TEST_F(PROF_NET_DEV_STATS_TEST, RegisterDevTask_NoDcmiCardList)
 {
     // OsalDlopen succeeds, all v1 syms succeed, dcmi_init succeeds (=0)
     // GetDcmiCardDevId fails because dcmiGetCardList_ stub returns failure
-    MOCKER(OsalDlopen).stubs().will(returnValue((void *)0x12345678));
+    MOCKER(OsalDlopen).stubs().will(returnValue((void*)0x12345678));
     MOCKER(OsalDlsym)
         .stubs()
-        .will(returnValue((void *)nullptr))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_card_list_fail_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_dev_num_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_pkt_stub)));
+        .will(returnValue((void*)nullptr))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_init_ok_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_card_list_fail_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_dev_num_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_pkt_stub)));
 
     NetDevStatsHandler h(64, 1000, "0", jobCtx);
     EXPECT_EQ(PROFILING_SUCCESS, h.Init());
@@ -1061,14 +1012,14 @@ TEST_F(PROF_NET_DEV_STATS_TEST, RegisterDevTask_NoDcmiCardList)
 
 TEST_F(PROF_NET_DEV_STATS_TEST, Init_DoubleInit_Fails)
 {
-    MOCKER(OsalDlopen).stubs().will(returnValue((void *)0x12345678));
+    MOCKER(OsalDlopen).stubs().will(returnValue((void*)0x12345678));
     MOCKER(OsalDlsym)
         .stubs()
-        .will(returnValue((void *)nullptr))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_card_list_zero_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_dev_num_stub)))
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_pkt_stub)));
+        .will(returnValue((void*)nullptr))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_init_ok_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_card_list_zero_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_dev_num_stub)))
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_pkt_stub)));
 
     NetDevStatsHandler h(64, 1000, "0", jobCtx);
     EXPECT_EQ(PROFILING_SUCCESS, h.Init());
@@ -1081,12 +1032,13 @@ TEST_F(PROF_NET_DEV_STATS_TEST, Execute_V2GetNetdevPktStatsInfo_Fails)
     // V2 path: OsalDlopen succeeds, dcmiv2_get_dcmi_version non-null (isDcmiV2Supported_=true),
     // dcmiv2_init succeeds, RegisterDevTask succeeds (v2 uses devId directly),
     // Execute() calls dcmiV2GetNetdevPktStatsInfo_ which returns failure -> covers line 943.
-    MOCKER(OsalDlopen).stubs().will(returnValue((void *)0x12345678));
+    MOCKER(OsalDlopen).stubs().will(returnValue((void*)0x12345678));
     MOCKER(OsalDlsym)
         .stubs()
-        .will(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))      // dcmiv2_get_dcmi_version (non-null)
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_init_ok_stub)))      // dcmiv2_init (returns 0)
-        .then(returnValue(reinterpret_cast<void *>(&g_dcmi_v2_pkt_fail_stub))); // dcmiv2_get_netdev_pkt_stats_info (returns -1)
+        .will(returnValue(reinterpret_cast<void*>(&g_dcmi_init_ok_stub))) // dcmiv2_get_dcmi_version (non-null)
+        .then(returnValue(reinterpret_cast<void*>(&g_dcmi_init_ok_stub))) // dcmiv2_init (returns 0)
+        .then(returnValue(
+            reinterpret_cast<void*>(&g_dcmi_v2_pkt_fail_stub))); // dcmiv2_get_netdev_pkt_stats_info (returns -1)
 
     NetDevStatsHandler h(64, 1000, "0", jobCtx);
     EXPECT_EQ(PROFILING_SUCCESS, h.Init());

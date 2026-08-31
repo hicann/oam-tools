@@ -40,13 +40,13 @@ public:
     DynProfClient() = default;
     ~DynProfClient() override = default;
 
-    void SetParams(const std::string &params);
+    void SetParams(const std::string& params);
     int32_t Start() override;
     int32_t Stop() override;
     bool IsCliStarted() const;
 
 protected:
-    void Run(const error_message::ErrorManagerContext &errorContext) override;
+    void Run(const error_message::ErrorManagerContext& errorContext) override;
 
 private:
     void DynProfCliInitProcFunc();
@@ -58,14 +58,14 @@ private:
     void DynProfCliProcStop(const int32_t cliSockFd);
     void DynProfCliProcQuit(const int32_t cliSockFd) const;
     void DynProfCliHelpInfo() const;
-    int32_t DynProfCliConnectSocket(const int32_t cliSockFd, const std::string &srvSockDomain) const;
+    int32_t DynProfCliConnectSocket(const int32_t cliSockFd, const std::string& srvSockDomain) const;
     void DynProfCliStopSocket(int32_t cliSockFd);
     void CheckServerPidsIfValid();
-    int TryReadInputCmd(std::string &inputCmd) const;
+    int TryReadInputCmd(std::string& inputCmd) const;
     void SetSocketTimeout();
 
     std::set<int32_t> cliSockFds_;
-    std::atomic<bool> cliStarted_ { false };
+    std::atomic<bool> cliStarted_{false};
     std::string dynProfParams_;
     std::map<DynProfCliCmd, ProcFunc> procFuncMap_;
     std::map<int32_t, int32_t> cliSockFdMap_;
@@ -76,7 +76,7 @@ class DynProfCliMgr : public analysis::dvvp::common::singleton::Singleton<DynPro
 
 public:
     ~DynProfCliMgr() override;
-    int32_t StartDynProfCli(const std::string &params);
+    int32_t StartDynProfCli(const std::string& params);
     void StopDynProfCli();
     void SetKeyPid(const std::vector<int32_t> pids);
     std::set<int32_t> GetKeyPid() const;
@@ -91,8 +91,8 @@ public:
 
 private:
     DynProfCliMgr() = default;
-    bool enabled_ { false };
-    bool isAppMode_ { false }; // --application
+    bool enabled_{false};
+    bool isAppMode_{false};     // --application
     std::set<int32_t> keyPids_; // --application: msprofbin pid; --pid: app pid
     SHARED_PTR_ALIA<Collector::Dvvp::DynProf::DynProfClient> dynProfCli_;
 };

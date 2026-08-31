@@ -54,11 +54,10 @@ STATIC void PrintOutPutDir()
         return;
     }
     auto& outputDirInfo = MsprofManager::instance()->rMode_->jobResultDir_;
-    CmdLog::CmdInfoLog("Process profiling data complete. Data is saved in %s",
-        outputDirInfo.c_str());
+    CmdLog::CmdInfoLog("Process profiling data complete. Data is saved in %s", outputDirInfo.c_str());
 }
 
-STATIC void SetEnvList(CONST_CHAR_PTR &envp, std::vector<std::string> &envpList)
+STATIC void SetEnvList(CONST_CHAR_PTR& envp, std::vector<std::string>& envpList)
 {
     uint32_t envpLen = 0;
     constexpr uint32_t maxEnvpLen = 4096;
@@ -84,9 +83,9 @@ STATIC void StopProfiling(int signum)
 }
 
 #ifdef __PROF_LLT
-int LltMain(int argc, const char **argv, const char **envp)
+int LltMain(int argc, const char** argv, const char** envp)
 #else
-int main(int argc, const char **argv, const char **envp)
+int main(int argc, const char** argv, const char** envp)
 #endif
 {
     std::vector<std::string> envpList;
@@ -119,9 +118,7 @@ int main(int argc, const char **argv, const char **envp)
         CmdLog::CmdErrorLog("Start profiling failed");
         return PROFILING_FAILED;
     }
-    signal(SIGINT, [](int signum) {
-        StopProfiling(signum);
-    });
+    signal(SIGINT, [](int signum) { StopProfiling(signum); });
     CmdLog::CmdInfoLog("Start profiling....");
     auto ret = MsprofManager::instance()->MsProcessCmd();
     if (ret != PROFILING_SUCCESS) {

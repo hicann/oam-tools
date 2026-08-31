@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #ifndef PROF_ATLS_PLUGIN_H
 #define PROF_ATLS_PLUGIN_H
 #include <map>
@@ -23,11 +23,12 @@ namespace ProfAPI {
 using ProfCommand = MsprofCommandHandle;
 class ProfAtlsPlugin : public ProfPlugin, public analysis::dvvp::common::singleton::Singleton<ProfAtlsPlugin> {
     friend analysis::dvvp::common::singleton::Singleton<ProfAtlsPlugin>;
+
 public:
-    int32_t ProfInit(uint32_t type, void *data, uint32_t dataLen) override;
-    int32_t ProfStart(uint32_t dataType, const void *data, uint32_t length) override;
-    int32_t ProfStop(uint32_t dataType, const void *data, uint32_t length) override;
-    int32_t ProfSetConfig(uint32_t configType, const char *config, size_t configLength) override;
+    int32_t ProfInit(uint32_t type, void* data, uint32_t dataLen) override;
+    int32_t ProfStart(uint32_t dataType, const void* data, uint32_t length) override;
+    int32_t ProfStop(uint32_t dataType, const void* data, uint32_t length) override;
+    int32_t ProfSetConfig(uint32_t configType, const char* config, size_t configLength) override;
     int32_t ProfRegisterCallback(uint32_t moduleId, ProfCommandHandle handle) override;
     int32_t ProfReportData(uint32_t moduleId, uint32_t type, void* data, uint32_t len) override;
     int32_t ProfReportApi(uint32_t agingFlag, const MsprofApi* api) override;
@@ -47,12 +48,15 @@ public:
     int32_t ProfRegisterCtrl(MsprofCtrlHandle handle);
     int32_t ProfRegisterDeviceNotify(MsprofSetDeviceHandle handle);
     int32_t ProfSetProfCommand(VOID_PTR command, uint32_t len);
-    int32_t ProfGetDeviceIdByGeModelIdx(const uint32_t geModelIdx, uint32_t *deviceId);
+    int32_t ProfGetDeviceIdByGeModelIdx(const uint32_t geModelIdx, uint32_t* deviceId);
     int32_t RegisterProfileCallback(int32_t callbackType, VOID_PTR callback, uint32_t len);
+
 protected:
     ProfAtlsPlugin();
+
 private:
     int32_t RegisterProfileCallbackC(int32_t callbackType, VOID_PTR callback);
+
 private:
     MsprofReportHandle reporter_{nullptr};
     MsprofCtrlHandle profCtrl_{nullptr};
@@ -69,11 +73,11 @@ private:
     ProfReportRegTypeInfoCFunc profReportRegTypeInfoC_{nullptr};
     ProfReportGetHashIdCFunc profReportGetHashIdC_{nullptr};
     ProfHostFreqIsEnableCFunc profHostFreqIsEnableC_{nullptr};
-    std::map<uint32_t, uint32_t> deviceIdMaps_;  // (moduleId, deviceId)
+    std::map<uint32_t, uint32_t> deviceIdMaps_; // (moduleId, deviceId)
     std::mutex atlasDeviceMapsMutex_;
     std::map<uint64_t, bool> deviceStates_; // id is deviceid << 32 | chipid;
     std::mutex atlasDeviceStateMutex_;
     ProfCommand command_;
 };
-}
+} // namespace ProfAPI
 #endif

@@ -26,14 +26,14 @@ using namespace analysis::dvvp::common::error;
 
 class INFO_JSON_TEST : public testing::Test {
 protected:
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         GlobalMockObject::verify();
         jobInfo = ("64");
         devices = ("0");
         hostpid = 15151;
     }
-    virtual void TearDown() {
-    }
+    virtual void TearDown() {}
 
 public:
     std::string jobInfo;
@@ -41,14 +41,13 @@ public:
     int hostpid;
 };
 
-TEST_F(INFO_JSON_TEST, DrvGetAiCpuCoreIdWithCoreNum) {
+TEST_F(INFO_JSON_TEST, DrvGetAiCpuCoreIdWithCoreNum)
+{
     GlobalMockObject::verify();
     int device_id = 0;
     DeviceInfo dev_info;
 
-    MOCKER(halGetDeviceInfo)
-        .stubs()
-        .will(returnValue(DRV_ERROR_NONE));
+    MOCKER(halGetDeviceInfo).stubs().will(returnValue(DRV_ERROR_NONE));
 
     dev_info.aiCpuCoreNum = 8;
     InfoJson infoJson(jobInfo, devices, hostpid);
