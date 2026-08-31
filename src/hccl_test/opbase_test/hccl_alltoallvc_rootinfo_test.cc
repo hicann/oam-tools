@@ -28,7 +28,7 @@ HcclTest* hccl::init_opbase_ptr(HcclTest* opbase)
     return opbase;
 }
 
-void hccl::delete_opbase_ptr(HcclTest *&opbase)
+void hccl::delete_opbase_ptr(HcclTest*& opbase)
 {
     delete opbase;
     opbase = nullptr;
@@ -42,9 +42,7 @@ HcclOpBaseAlltoallvcTest::HcclOpBaseAlltoallvcTest()
     recv_counts = nullptr;
 }
 
-HcclOpBaseAlltoallvcTest::~HcclOpBaseAlltoallvcTest()
-{
-}
+HcclOpBaseAlltoallvcTest::~HcclOpBaseAlltoallvcTest() {}
 
 void HcclOpBaseAlltoallvcTest::malloc_send_recv_buf()
 {
@@ -80,10 +78,10 @@ int HcclOpBaseAlltoallvcTest::check_buf_result()
     ACLCHECK(aclrtMallocHost((void**)&check_buf, malloc_kSize));
     ACLCHECK(aclrtMemcpy((void*)check_buf, malloc_kSize, (void*)recv_buff, malloc_kSize, ACL_MEMCPY_DEVICE_TO_HOST));
     // 构造 recv_disp
-    u64 *recv_disp = (u64 *)malloc(sizeof(u64) * rank_size);
+    u64* recv_disp = (u64*)malloc(sizeof(u64) * rank_size);
     if (recv_disp == nullptr) {
         return HCCL_E_PTR;
-    } 
+    }
     recv_disp[0] = 0;
     for (int i = 1; i < rank_size; ++i) {
         recv_disp[i] = recv_disp[i - 1] + recv_counts[i - 1];
@@ -96,16 +94,14 @@ int HcclOpBaseAlltoallvcTest::check_buf_result()
     return 0;
 }
 
-
 size_t HcclOpBaseAlltoallvcTest::init_malloc_Ksize_by_data()
 {
-    u64 alignedData =
-        data->count >= rank_size * granularity ? rank_size * granularity : rank_size;
+    u64 alignedData = data->count >= rank_size * granularity ? rank_size * granularity : rank_size;
     data->count = (data->count + alignedData - 1) / alignedData * alignedData;
     return data->count * data->type_size;
 }
 
-void HcclOpBaseAlltoallvcTest::init_send_recv_size_by_data(size_t &send_bytes, size_t &recv_bytes)
+void HcclOpBaseAlltoallvcTest::init_send_recv_size_by_data(size_t& send_bytes, size_t& recv_bytes)
 {
     send_bytes = malloc_kSize;
     recv_bytes = malloc_kSize;
@@ -134,20 +130,22 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
     hccl_host_buf_init(host_buf, data->count, dtype, rank_id + 1);
     ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
     // 输入数据量，根据条件判断是否开启仅计算device执行时间
- 	ACLCHECK(start_profile_device_time_if_needed(128*1024*1024));
+    ACLCHECK(start_profile_device_time_if_needed(128 * 1024 * 1024));
 
     for (int j = 0; j < warmup_iters; ++j) {
-        HCCLCHECK(HcclAlltoAllVC((void*)send_buff, send_count_matrix, (HcclDataType)dtype,
-                                 (void*)recv_buff, (HcclDataType)dtype, hccl_comm, stream));
+        HCCLCHECK(HcclAlltoAllVC(
+            (void*)send_buff, send_count_matrix, (HcclDataType)dtype, (void*)recv_buff, (HcclDataType)dtype, hccl_comm,
+            stream));
     }
 
     ACLCHECK(aclrtRecordEvent(start_event, stream));
     for (int i = 0; i < iters; ++i) {
-        HCCLCHECK(HcclAlltoAllVC((void*)send_buff, send_count_matrix, (HcclDataType)dtype,
-                                 (void*)recv_buff, (HcclDataType)dtype, hccl_comm, stream));
+        HCCLCHECK(HcclAlltoAllVC(
+            (void*)send_buff, send_count_matrix, (HcclDataType)dtype, (void*)recv_buff, (HcclDataType)dtype, hccl_comm,
+            stream));
     }
     ACLCHECK(aclrtRecordEvent(end_event, stream));
-    ACLCHECK(end_profile_device_time_if_needed(128*1024*1024));
+    ACLCHECK(end_profile_device_time_if_needed(128 * 1024 * 1024));
     ACLCHECK(aclrtSynchronizeStream(stream));
 
     float time;
@@ -155,9 +153,11 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
 
     if (check >= 1) {
         if (iters || warmup_iters) {
-            ACLCHECK(aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
-            HCCLCHECK(HcclAlltoAllVC((void*)send_buff, send_count_matrix, (HcclDataType)dtype,
-                                     (void*)recv_buff, (HcclDataType)dtype, hccl_comm, stream));
+            ACLCHECK(
+                aclrtMemcpy((void*)send_buff, malloc_kSize, (void*)host_buf, malloc_kSize, ACL_MEMCPY_HOST_TO_DEVICE));
+            HCCLCHECK(HcclAlltoAllVC(
+                (void*)send_buff, send_count_matrix, (HcclDataType)dtype, (void*)recv_buff, (HcclDataType)dtype,
+                hccl_comm, stream));
             ACLCHECK(aclrtSynchronizeStream(stream));
         }
         ACLCHECK(check_buf_result());
@@ -167,4 +167,4 @@ int HcclOpBaseAlltoallvcTest::hccl_op_base_test()
     free_send_recv_buf();
     return 0;
 }
-}
+} // namespace hccl

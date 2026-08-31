@@ -24,16 +24,16 @@
 
 namespace hccl {
 
-class HcclOpBaseAlltoallvcTest : public HcclOpBaseTest
-{
+class HcclOpBaseAlltoallvcTest : public HcclOpBaseTest {
 public:
     HcclOpBaseAlltoallvcTest();
     virtual ~HcclOpBaseAlltoallvcTest();
 
     virtual int hccl_op_base_test() override;
+
 protected:
     size_t init_malloc_Ksize_by_data() override;
-    void init_send_recv_size_by_data(size_t &send_bytes, size_t &recv_bytes) override;
+    void init_send_recv_size_by_data(size_t& send_bytes, size_t& recv_bytes) override;
 
 private:
     void malloc_send_recv_buf();

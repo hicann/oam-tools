@@ -30,35 +30,36 @@ constexpr s32 HCCL_TEST_REDUCE_RESERVED = 4;
 constexpr s32 HCCL_TEST_DATA_TYPE_RESERVED = 17;
 constexpr s32 HCCL_TEST_ACCELERATOR_CONFIG_RESERVED = 8;
 constexpr u32 HCCL_TEST_DATATYPE_BF16_SAT = 13;
-HcclReduceOp test_ops[HCCL_TEST_REDUCE_RESERVED] = {
-    HCCL_REDUCE_SUM, HCCL_REDUCE_PROD, HCCL_REDUCE_MAX, HCCL_REDUCE_MIN};
-const char *test_opnames[HCCL_TEST_REDUCE_RESERVED] = {"sum", "prod", "max", "min"};
-const char *test_accelerator_config[HCCL_TEST_ACCELERATOR_CONFIG_RESERVED] = {
-    "default", "host_ts", "aicpu_ts", "aiv", "aiv_only", "ccu_ms", "ccu_sched", "aicpu"};
+HcclReduceOp test_ops[HCCL_TEST_REDUCE_RESERVED]
+    = {HCCL_REDUCE_SUM, HCCL_REDUCE_PROD, HCCL_REDUCE_MAX, HCCL_REDUCE_MIN};
+const char* test_opnames[HCCL_TEST_REDUCE_RESERVED] = {"sum", "prod", "max", "min"};
+const char* test_accelerator_config[HCCL_TEST_ACCELERATOR_CONFIG_RESERVED]
+    = {"default", "host_ts", "aicpu_ts", "aiv", "aiv_only", "ccu_ms", "ccu_sched", "aicpu"};
 
-HcclDataType test_types[HCCL_TEST_DATA_TYPE_RESERVED] = {HCCL_DATA_TYPE_INT8, /**< int8 */
-    HCCL_DATA_TYPE_INT16,                                                     /**< int16 */
-    HCCL_DATA_TYPE_INT32,                                                     /**< int32 */
-    HCCL_DATA_TYPE_FP16,                                                      /**< fp16 */
-    HCCL_DATA_TYPE_FP32,                                                      /**< fp32 */
-    HCCL_DATA_TYPE_INT64,                                                     /**< int64 */
-    HCCL_DATA_TYPE_UINT64,                                                    /**< uint64 */
-    HCCL_DATA_TYPE_UINT8,                                                     /**< uint8 */
-    HCCL_DATA_TYPE_UINT16,                                                    /**< uint16 */
-    HCCL_DATA_TYPE_UINT32,                                                    /**< uint32 */
-    HCCL_DATA_TYPE_FP64,                                                      /**< fp64 */
-    HCCL_DATA_TYPE_BFP16,                                                     /**< bfp16 */
-    HCCL_DATA_TYPE_INT128,                                                    /**< int128 */
-    HCCL_DATA_TYPE_HIF8,                                                      /**< hif8 */
-    HCCL_DATA_TYPE_FP8E4M3,                                                   /**< fp8e4m3 */
-    HCCL_DATA_TYPE_FP8E5M2,                                                   /**< fp8e5m2 */
-    HCCL_DATA_TYPE_FP8E8M0                                                    /**< fp8e8m0 */
+HcclDataType test_types[HCCL_TEST_DATA_TYPE_RESERVED] = {
+    HCCL_DATA_TYPE_INT8,    /**< int8 */
+    HCCL_DATA_TYPE_INT16,   /**< int16 */
+    HCCL_DATA_TYPE_INT32,   /**< int32 */
+    HCCL_DATA_TYPE_FP16,    /**< fp16 */
+    HCCL_DATA_TYPE_FP32,    /**< fp32 */
+    HCCL_DATA_TYPE_INT64,   /**< int64 */
+    HCCL_DATA_TYPE_UINT64,  /**< uint64 */
+    HCCL_DATA_TYPE_UINT8,   /**< uint8 */
+    HCCL_DATA_TYPE_UINT16,  /**< uint16 */
+    HCCL_DATA_TYPE_UINT32,  /**< uint32 */
+    HCCL_DATA_TYPE_FP64,    /**< fp64 */
+    HCCL_DATA_TYPE_BFP16,   /**< bfp16 */
+    HCCL_DATA_TYPE_INT128,  /**< int128 */
+    HCCL_DATA_TYPE_HIF8,    /**< hif8 */
+    HCCL_DATA_TYPE_FP8E4M3, /**< fp8e4m3 */
+    HCCL_DATA_TYPE_FP8E5M2, /**< fp8e5m2 */
+    HCCL_DATA_TYPE_FP8E8M0  /**< fp8e8m0 */
 };
-const char *test_typenames[HCCL_TEST_DATA_TYPE_RESERVED] = {
-    "int8", "int16", "int32", "fp16", "fp32", "int64", "uint64", "uint8", "uint16", "uint32", "fp64", "bfp16",
-    "int128", "hif8", "fp8e4m3", "fp8e5m2", "fp8e8m0"};
+const char* test_typenames[HCCL_TEST_DATA_TYPE_RESERVED]
+    = {"int8",   "int16", "int32", "fp16",   "fp32", "int64",   "uint64",  "uint8",  "uint16",
+       "uint32", "fp64",  "bfp16", "int128", "hif8", "fp8e4m3", "fp8e5m2", "fp8e8m0"};
 
-int get_hccl_op_from_str(char *str)
+int get_hccl_op_from_str(char* str)
 {
     for (int op = 0; op < HCCL_TEST_REDUCE_RESERVED; op++) {
         if (strcmp(str, test_opnames[op]) == 0) {
@@ -69,7 +70,7 @@ int get_hccl_op_from_str(char *str)
     return -1;
 }
 
-int get_hccl_dtype_from_str(char *str)
+int get_hccl_dtype_from_str(char* str)
 {
     for (int t = 0; t < HCCL_TEST_DATA_TYPE_RESERVED; t++) {
         if (strcmp(str, test_typenames[t]) == 0) {
@@ -82,7 +83,7 @@ int get_hccl_dtype_from_str(char *str)
     return -1;
 }
 
-int get_accelerator_config_value_from_str(char *str)
+int get_accelerator_config_value_from_str(char* str)
 {
     for (int t = 0; t < HCCL_TEST_ACCELERATOR_CONFIG_RESERVED; t++) {
         if (strcmp(str, test_accelerator_config[t]) == 0) {
@@ -92,7 +93,7 @@ int get_accelerator_config_value_from_str(char *str)
     return -1;
 }
 
-static void get_host_name(char *hostName, int maxlen)
+static void get_host_name(char* hostName, int maxlen)
 {
     gethostname(hostName, maxlen);
     for (int i = 0; i < maxlen; i++) {
@@ -104,7 +105,7 @@ static void get_host_name(char *hostName, int maxlen)
     return;
 }
 
-static uint64_t get_host_hash(const char *string)
+static uint64_t get_host_hash(const char* string)
 {
     // Based on DJB2, result = result * 33 + char
     uint64_t result = 5381;
@@ -114,11 +115,11 @@ static uint64_t get_host_hash(const char *string)
     return result;
 }
 
-static long parsesize(const char *value)
+static long parsesize(const char* value)
 {
     long long int units;
     long size;
-    char *size_lit;
+    char* size_lit;
     size = strtol(value, &size_lit, 0);
     if (strlen(size_lit) == 1) {
         switch (*size_lit) {
@@ -146,12 +147,9 @@ static long parsesize(const char *value)
     return size * units;
 }
 
-u32 sal_str_len(const char *s, u32 maxLen = INT_MAX)
-{
-    return strnlen(s, maxLen);
-}
+u32 sal_str_len(const char* s, u32 maxLen = INT_MAX) { return strnlen(s, maxLen); }
 
-int is_all_digit(const char *strNum)
+int is_all_digit(const char* strNum)
 {
     // 参数有效性检查
     if (strNum == NULL) {
@@ -169,7 +167,7 @@ int is_all_digit(const char *strNum)
     return 0;
 }
 
-long strtol_alldigit(const char *optarg)
+long strtol_alldigit(const char* optarg)
 {
     long ret = is_all_digit(optarg);
     if (ret != 0) {
@@ -220,20 +218,20 @@ aclrtMemAttr use_ddr_mem()
     constexpr char ASCEND310B[] = "Ascend310B";
     constexpr char AS31XM1X[] = "AS31XM1X";
     std::string socVersion = aclrtGetSocName();
-    if (socVersion.compare(0, strlen(ASCEND310P), ASCEND310P) == 0 ||
-        socVersion.compare(0, strlen(BS9SX1A), BS9SX1A) == 0 ||
-        socVersion.compare(0, strlen(ASCEND610), ASCEND610) == 0 ||
-        socVersion.compare(0, strlen(ASCEND610LITE), ASCEND610LITE) == 0 ||
-        socVersion.compare(0, strlen(BS9SX2A), BS9SX2A) == 0 ||
-        socVersion.compare(0, strlen(MC61AM21A), MC61AM21A) == 0 ||
-        socVersion.compare(0, strlen(ASCEND310B), ASCEND310B) == 0 ||
-        socVersion.compare(0, strlen(AS31XM1X), AS31XM1X) == 0) {
+    if (socVersion.compare(0, strlen(ASCEND310P), ASCEND310P) == 0
+        || socVersion.compare(0, strlen(BS9SX1A), BS9SX1A) == 0
+        || socVersion.compare(0, strlen(ASCEND610), ASCEND610) == 0
+        || socVersion.compare(0, strlen(ASCEND610LITE), ASCEND610LITE) == 0
+        || socVersion.compare(0, strlen(BS9SX2A), BS9SX2A) == 0
+        || socVersion.compare(0, strlen(MC61AM21A), MC61AM21A) == 0
+        || socVersion.compare(0, strlen(ASCEND310B), ASCEND310B) == 0
+        || socVersion.compare(0, strlen(AS31XM1X), AS31XM1X) == 0) {
         return aclrtMemAttr::ACL_DDR_MEM_HUGE;
     }
     return aclrtMemAttr::ACL_HBM_MEM_HUGE;
 }
 
-int check_alloc_memory_size(size_t &alloc_size)
+int check_alloc_memory_size(size_t& alloc_size)
 {
     size_t freeMem = 0;
     size_t totalMem = 0;
@@ -244,10 +242,9 @@ int check_alloc_memory_size(size_t &alloc_size)
         return HCCL_E_MEMORY;
     }
     if (alloc_size > freeMem) {
-        printf("Alloc memory size is larger than free memory, allocSize: %zu, freeMem: %zu, totalMem: %zu\n",
-            alloc_size,
-            freeMem,
-            totalMem);
+        printf(
+            "Alloc memory size is larger than free memory, allocSize: %zu, freeMem: %zu, totalMem: %zu\n", alloc_size,
+            freeMem, totalMem);
         return HCCL_E_MEMORY;
     }
     return HCCL_SUCCESS;
@@ -307,7 +304,10 @@ void HcclTest::print_help()
     printf("[-f,--stepfactor <increment factor>] \n\t");
     printf("[-n,--iters <iteration count>] \n\t");
     printf("[-o,--op <sum/prod/min/max>] \n\t");
-    printf("[-d,--datatype <int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] \n\t");
+    printf(
+        "[-d,--datatype "
+        "<int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] "
+        "\n\t");
     printf("[-r,--root <root>] \n\t");
     printf("[-w,--warmup_iters <warmup iteration count>] \n\t");
     printf("[-c,--check <result verification> 0:disabled 1:quiet 2:verbose (default 1)] \n\t");
@@ -317,7 +317,9 @@ void HcclTest::print_help()
         printf("[-z,--zero_copy  0:disabled 1:enabled.] \n\t");
         printf("[-s,--nslb  0:disabled 1:enabled.] \n\t");
     }
-    printf("[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not support aicpu_ts.] \n\t");
+    printf(
+        "[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not "
+        "support aicpu_ts.] \n\t");
     printf("[-h,--help]\n");
     return;
 }
@@ -341,12 +343,12 @@ int HcclTest::check_data_count()
         printf("invalid option: maxbytes < minbytes, Check the [-b,--minbytes] and [-e,--maxbytes] options.\n");
         return -1;
     } else {
-        if (stepbytes_flag != 0) {  // 用户配置了增量步长
+        if (stepbytes_flag != 0) { // 用户配置了增量步长
             data->step_bytes = temp_step_bytes;
-        } else {  // 用户未配置增量步长
+        } else { // 用户未配置增量步长
             if (data->max_bytes == data->min_bytes) {
-                data->step_bytes =
-                    1;  // 用户配置数据量的起始值和结束值相同，但未配置增量步长，为防止进入死循环，设置增量步长为1
+                data->step_bytes
+                    = 1; // 用户配置数据量的起始值和结束值相同，但未配置增量步长，为防止进入死循环，设置增量步长为1
             }
             if (data->max_bytes > data->min_bytes) {
                 data->step_bytes = (data->max_bytes - data->min_bytes) / defaultStepFactor;
@@ -402,19 +404,24 @@ int HcclTest::check_only_device_exec_time()
     }
 
     if (only_device_exec_time == 1 && warmup_iters > 100) {
-        printf("Error: [-w,--warmup_iters] is invalid, onlydevicetime is 1, but warmup_iters > 100, "
-            "warmup_iters must be less than or equal to 100, now warmup_iters is %d\n", warmup_iters);
+        printf(
+            "Error: [-w,--warmup_iters] is invalid, onlydevicetime is 1, but warmup_iters > 100, "
+            "warmup_iters must be less than or equal to 100, now warmup_iters is %d\n",
+            warmup_iters);
         return -1;
     }
 
     if (only_device_exec_time == 1 && iters > 100) {
-        printf("Error: [-n,--iters] is invalid, onlydevicetime is 1, but iters > 100, "
-            "iters must be less than or equal to 100, now iters is %d\n", iters);
+        printf(
+            "Error: [-n,--iters] is invalid, onlydevicetime is 1, but iters > 100, "
+            "iters must be less than or equal to 100, now iters is %d\n",
+            iters);
         return -1;
     }
 
     if (only_device_exec_time == 1 && accelerator_config == 2) {
-        printf("Error: [-a,--accelerator_config] is invalid, onlydevicetime is 1, but accelerator_config is aicpu_ts\n");
+        printf(
+            "Error: [-a,--accelerator_config] is invalid, onlydevicetime is 1, but accelerator_config is aicpu_ts\n");
         return -1;
     }
     return 0;
@@ -453,10 +460,11 @@ int HcclTest::check_cmd_line()
         return -1;
     }
 
-    if (root_rank >= rank_size || root_rank < 0)  // 如果指定的root rank大于等于rank_size
+    if (root_rank >= rank_size || root_rank < 0) // 如果指定的root rank大于等于rank_size
     {
-        printf("Error: [-r,--root <root>] is invalid, root rank must be greater than or equal to 0 and less than or "
-               "equal to %d.\n",
+        printf(
+            "Error: [-r,--root <root>] is invalid, root rank must be greater than or equal to 0 and less than or "
+            "equal to %d.\n",
             rank_size - 1);
         return -1;
     }
@@ -472,8 +480,9 @@ int HcclTest::check_cmd_line()
     }
 
     if (npus < 1 || npus > dev_count) {
-        printf("Error: [-p,--npus <npus used for one node>] is invalid, npus must be greater than or equal to 1 and "
-               "less than or equal to %d.\n",
+        printf(
+            "Error: [-p,--npus <npus used for one node>] is invalid, npus must be greater than or equal to 1 and "
+            "less than or equal to %d.\n",
             dev_count);
         return -1;
     }
@@ -493,7 +502,7 @@ int HcclTest::check_cmd_line()
 int HcclTest::get_env_resource()
 {
     // 支持profiling
-    const char *profiling_env = getenv("HCCL_TEST_PROFILING");
+    const char* profiling_env = getenv("HCCL_TEST_PROFILING");
     if (profiling_env != NULL) {
         profiling_flag = atoi(profiling_env);
         u32 nLength = sal_str_len(profiling_env);
@@ -512,7 +521,7 @@ int HcclTest::get_env_resource()
     }
 
     // 获取HCCL BUFFER SIZE
-    const char *cclBuffSize_env = getenv("HCCL_BUFFSIZE");
+    const char* cclBuffSize_env = getenv("HCCL_BUFFSIZE");
     if (cclBuffSize_env != NULL) {
         hccl_buffsize = atoi(cclBuffSize_env);
         u32 nLength = sal_str_len(cclBuffSize_env);
@@ -541,13 +550,13 @@ int HcclTest::get_env_resource()
     // 开启profiling
     if (profiling_flag == 1) {
         std::string prof_path = "/var/log/npu/profiling";
-        const char *profiling_env_path = getenv("HCCL_TEST_PROFILING_PATH");
+        const char* profiling_env_path = getenv("HCCL_TEST_PROFILING_PATH");
         if (profiling_env_path != NULL) {
             prof_path = profiling_env_path;
         }
         aclprofInit(prof_path.c_str(), prof_path.size());
-        uint32_t profSwitch = ACL_PROF_ACL_API | ACL_PROF_TASK_TIME | ACL_PROF_AICORE_METRICS | ACL_PROF_AICPU |
-                              ACL_PROF_HCCL_TRACE | ACL_PROF_MSPROFTX | ACL_PROF_RUNTIME_API;
+        uint32_t profSwitch = ACL_PROF_ACL_API | ACL_PROF_TASK_TIME | ACL_PROF_AICORE_METRICS | ACL_PROF_AICPU
+                              | ACL_PROF_HCCL_TRACE | ACL_PROF_MSPROFTX | ACL_PROF_RUNTIME_API;
         uint32_t deviceIdList = dev_id;
         int devNum = 1;
         profiling_config = aclprofCreateConfig(&deviceIdList, devNum, ACL_AICORE_PIPE_UTILIZATION, nullptr, profSwitch);
@@ -558,13 +567,13 @@ int HcclTest::get_env_resource()
 
 int HcclTest::set_env_resource()
 {
-    const char *retry_env = getenv("HCCL_OP_RETRY_ENABLE");
+    const char* retry_env = getenv("HCCL_OP_RETRY_ENABLE");
     if (retry_env != NULL) {
         return 0;
     } else {
         // 重执行开关
         int overwrite = 1; // 强制覆盖已存在的变量
-        if(setenv("HCCL_OP_RETRY_ENABLE", "L0:0, L1:0, L2:0", overwrite) == -1) {
+        if (setenv("HCCL_OP_RETRY_ENABLE", "L0:0, L1:0, L2:0", overwrite) == -1) {
             printf("setenv HCCL_OP_RETRY_ENABLE failed\n");
             return -1;
         }
@@ -600,7 +609,7 @@ int HcclTest::parse_opt(int opt)
             break;
         case 'f':
             stepfactor_flag++;
-            char *temp;
+            char* temp;
             data->step_factor = strtof(optarg, &temp);
             break;
         case 'n':
@@ -649,7 +658,7 @@ int HcclTest::parse_opt(int opt)
     return 0;
 }
 
-int HcclTest::parse_cmd_line(int argc, char *argv[])
+int HcclTest::parse_cmd_line(int argc, char* argv[])
 {
     int opt = -1;
     int longindex = 0;
@@ -659,9 +668,9 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
     std::vector<struct option> longopts = build_longopts(is910_95);
 
-    const char *opModeEnv = getenv("HCCL_OP_EXPANSION_MODE");
+    const char* opModeEnv = getenv("HCCL_OP_EXPANSION_MODE");
     if (is910_95 && opModeEnv == nullptr) { // 需要确保环境变量未配置
-        accelerator_config = 6; // 910_95场景，修改默认加速器模式为CCU_SCHED
+        accelerator_config = 6;             // 910_95场景，修改默认加速器模式为CCU_SCHED
     }
     while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
         ret = parse_opt(opt);
@@ -682,7 +691,7 @@ int HcclTest::parse_cmd_line(int argc, char *argv[])
     return 0;
 }
 
-int HcclTest::getAviDevs(const char *devs, std::vector<int> &dev_ids)
+int HcclTest::getAviDevs(const char* devs, std::vector<int>& dev_ids)
 {
     std::string use_devs(devs);
     std::string pattern = ",";
@@ -718,7 +727,7 @@ int HcclTest::get_mpi_proc()
     rank_id = proc_rank;
     rank_size = proc_size;
 
-    const char *devs = getenv("HCCL_TEST_USE_DEVS");
+    const char* devs = getenv("HCCL_TEST_USE_DEVS");
     if (devs != NULL) {
         std::vector<int> dev_ids;
         int ret = getAviDevs(devs, dev_ids);
@@ -739,15 +748,9 @@ int HcclTest::get_mpi_proc()
     return 0;
 }
 
-int HcclTest::hccl_op_base_test()
-{
-    return 0;
-}
+int HcclTest::hccl_op_base_test() { return 0; }
 
-int HcclTest::destory_alloc_buf()
-{
-    return 0;
-}
+int HcclTest::destory_alloc_buf() { return 0; }
 
 bool HcclTest::IsSupport910_95()
 {
@@ -765,15 +768,15 @@ bool HcclTest::IsSupport910_95()
 
 int HcclTest::set_device_sat_mode()
 {
-    const char *soc_name_ptr = aclrtGetSocName();
+    const char* soc_name_ptr = aclrtGetSocName();
     if (soc_name_ptr == nullptr) {
         printf("aclrtGetSocName failed");
         return -1;
     }
 
     std::string support_soc_name = "Ascend910B";
-    if (support_soc_name.length() != strlen(soc_name_ptr) &&
-        support_soc_name.compare(0, support_soc_name.length(), soc_name_ptr, 0, support_soc_name.length()) == 0) {
+    if (support_soc_name.length() != strlen(soc_name_ptr)
+        && support_soc_name.compare(0, support_soc_name.length(), soc_name_ptr, 0, support_soc_name.length()) == 0) {
         ACLCHECK(aclrtSetDeviceSatMode(ACL_RT_OVERFLOW_MODE_INFNAN));
     }
     return 0;
@@ -781,8 +784,8 @@ int HcclTest::set_device_sat_mode()
 
 size_t get_reseved_size(size_t send_bytes, size_t recv_bytes, size_t physicalGranularity)
 {
-   return (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity) +
-                       (((recv_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity);
+    return (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity)
+           + (((recv_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity);
 }
 
 int HcclTest::start_test()
@@ -791,27 +794,27 @@ int HcclTest::start_test()
     size_t reserve_mem = 0;
     auto diff = 0L;
     auto begin = system_clock::now();
-    if (enable_zero_copy)
-    {
+    if (enable_zero_copy) {
         // 获取send recv内存大小
         data->data_size = data->min_bytes;
         if (!(stepbytes_flag && !data->step_bytes)) {
             for (; data->data_size <= data->max_bytes;
-                 (data->step_factor <= 1.0 ? data->data_size += data->step_bytes
-                                           : data->data_size *= data->step_factor)) {
+                 (data->step_factor <= 1.0 ? data->data_size += data->step_bytes :
+                                             data->data_size *= data->step_factor)) {
             }
         }
 
         size_t send_bytes = 0;
         size_t recv_bytes = 0;
         // 设置内存对齐大小 默认对齐128字节，开启zero_copy，默认对齐2M
-        prop = {aclrtMemHandleType::ACL_MEM_HANDLE_TYPE_NONE,
-            aclrtMemAllocationType::ACL_MEM_ALLOCATION_TYPE_PINNED,
-            use_ddr_mem(),
-            {dev_id, aclrtMemLocationType::ACL_MEM_LOCATION_TYPE_DEVICE},
-            0};
-        auto status =
-            aclrtMemGetAllocationGranularity(&prop, ACL_RT_MEM_ALLOC_GRANULARITY_MINIMUM, &physicalGranularity);
+        prop
+            = {aclrtMemHandleType::ACL_MEM_HANDLE_TYPE_NONE,
+               aclrtMemAllocationType::ACL_MEM_ALLOCATION_TYPE_PINNED,
+               use_ddr_mem(),
+               {dev_id, aclrtMemLocationType::ACL_MEM_LOCATION_TYPE_DEVICE},
+               0};
+        auto status
+            = aclrtMemGetAllocationGranularity(&prop, ACL_RT_MEM_ALLOC_GRANULARITY_MINIMUM, &physicalGranularity);
         if (status != ACL_SUCCESS) {
             physicalGranularity = 2 * 1024 * 1024;
         }
@@ -892,8 +895,8 @@ int HcclTest::init_hcclComm_without_nslb()
         config.hcclOpExpansionMode = accelerator_config;
         if (enable_symmetric_memory) {
             size_t reserve_size = get_max_symmetric_memory_size();
-            size_t max_mem_size_per_rank = std::max(SYMMETRIC_MEMORY_STRIDE,
-                (reserve_size + static_cast<size_t>(GIGA) - 1) / static_cast<size_t>(GIGA));
+            size_t max_mem_size_per_rank = std::max(
+                SYMMETRIC_MEMORY_STRIDE, (reserve_size + static_cast<size_t>(GIGA) - 1) / static_cast<size_t>(GIGA));
             config.hcclSymWinMaxMemSizePerRank = max_mem_size_per_rank;
         }
         HCCLCHECK(HcclCommInitRootInfoConfig(rank_size, &comm_id, rank_id, &config, &hccl_comm));
@@ -910,11 +913,9 @@ int HcclTest::init_hcclComm()
     MPI_Status status;
     // 在root_rank获取root_info
     if (rank_id == root_rank) {
-        printf("the minbytes is %llu, maxbytes is %llu, iters is %d, warmup_iters is %d\n",
-            data->min_bytes,
-            data->max_bytes,
-            iters,
-            warmup_iters);
+        printf(
+            "the minbytes is %llu, maxbytes is %llu, iters is %d, warmup_iters is %d\n", data->min_bytes,
+            data->max_bytes, iters, warmup_iters);
         HcclResult getRootInfo = HcclGetRootInfo(&comm_id);
         if (getRootInfo == HCCL_SUCCESS) {
             // 将root_info广播到通信域内的其他rank
@@ -933,7 +934,7 @@ int HcclTest::init_hcclComm()
         // 非根进程接收数据
         MPI_Ibcast(&comm_id, HCCL_ROOT_INFO_BYTES, MPI_CHAR, root_rank, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
-        if (strcmp(reinterpret_cast<const char *>(&comm_id), "invalid") == 0) {
+        if (strcmp(reinterpret_cast<const char*>(&comm_id), "invalid") == 0) {
             // 检测到无效数据
             printf("Process %d received invalid data from root process %d\n", rank_id, root_rank);
             return -1;
@@ -948,9 +949,9 @@ int HcclTest::init_hcclComm()
             return 0;
         }
         // 配置nslb使能的场景 == 1 才生效
-        HcclCommConfig config= { 0 };
+        HcclCommConfig config = {0};
         HcclCommConfigInit(&config);
-        const char *ip = comm_id.internal;
+        const char* ip = comm_id.internal;
         // 当前port字段目的只是提供一个拼接的id， 不具有实际意义
         uint32_t port = 11;
         uint32_t ipaddress = (uint32_t)inet_addr(ip);
@@ -960,7 +961,9 @@ int HcclTest::init_hcclComm()
         HCCLCHECK(HcclCommInitRootInfoConfig(rank_size, &comm_id, rank_id, &config, &hccl_comm));
     } else {
         auto ret = init_hcclComm_without_nslb();
-        if (ret != 0) {return ret;}
+        if (ret != 0) {
+            return ret;
+        }
     }
 
     return 0;
@@ -986,7 +989,7 @@ int HcclTest::opbase_test_by_data_size()
         }
     }
     if (enable_zero_copy) {
-        for (auto &&mem_handle : phy_alloc_mem_handle) {
+        for (auto&& mem_handle : phy_alloc_mem_handle) {
             HCCLCHECK(HcclCommDeactivateCommMemory(hccl_comm, mem_handle.first));
             ACLCHECK(aclrtUnmapMem(mem_handle.first));
             ACLCHECK(aclrtFreePhysical(mem_handle.second));
@@ -1012,7 +1015,7 @@ int HcclTest::destory_hcclComm()
     return 0;
 }
 
-void HcclTest::get_buff_size(size_t &send_bytes, size_t &recv_bytes)
+void HcclTest::get_buff_size(size_t& send_bytes, size_t& recv_bytes)
 {
     init_data_count();
     malloc_kSize = init_malloc_Ksize_by_data();
@@ -1029,8 +1032,7 @@ size_t HcclTest::get_max_symmetric_memory_size()
     data->data_size = data->min_bytes;
     if (!(stepbytes_flag && !data->step_bytes)) {
         for (; data->data_size < data->max_bytes;
-                (data->step_factor <= 1.0 ? data->data_size += data->step_bytes
-                                        : data->data_size *= data->step_factor)) {
+             (data->step_factor <= 1.0 ? data->data_size += data->step_bytes : data->data_size *= data->step_factor)) {
         }
     }
 
@@ -1041,7 +1043,7 @@ size_t HcclTest::get_max_symmetric_memory_size()
     return symmetric_memory_size;
 }
 
-int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_bytes)
+int HcclTest::prepare_zero_copy(const size_t& send_bytes, const size_t& recv_bytes)
 {
     if (!enable_zero_copy || ((send_bytes + recv_bytes) == 0)) {
         return HCCL_SUCCESS;
@@ -1058,32 +1060,28 @@ int HcclTest::prepare_zero_copy(const size_t &send_bytes, const size_t &recv_byt
         printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
-    status = aclrtMapMem(reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte),
-        malloc_mem - current_alloc_phy_mem_byte,
-        0,
-        mem_handle,
-        0);
+    status = aclrtMapMem(
+        reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte),
+        malloc_mem - current_alloc_phy_mem_byte, 0, mem_handle, 0);
     if (status != ACL_SUCCESS) {
         printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
-    status = HcclCommActivateCommMemory(hccl_comm,
-        reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte),
-        malloc_mem - current_alloc_phy_mem_byte,
-        0,
-        mem_handle,
-        0);
+    status = HcclCommActivateCommMemory(
+        hccl_comm, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte),
+        malloc_mem - current_alloc_phy_mem_byte, 0, mem_handle, 0);
     if (status != 0) {
         printf("[%s][%d] HcclCommValidMemory failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
-    phy_alloc_mem_handle.push_back(std::make_pair(
-        reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte), mem_handle));
+    phy_alloc_mem_handle.push_back(
+        std::make_pair(
+            reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte), mem_handle));
     current_alloc_phy_mem_byte = malloc_mem;
     return 0;
 
 enableerr0:
-    for (auto &&mem_handle : phy_alloc_mem_handle) {
+    for (auto&& mem_handle : phy_alloc_mem_handle) {
         HCCLCHECK(HcclCommDeactivateCommMemory(hccl_comm, mem_handle.first));
         ACLCHECK(aclrtUnmapMem(mem_handle.first));
         ACLCHECK(aclrtFreePhysical(mem_handle.second));
@@ -1093,24 +1091,24 @@ enableerr0:
 }
 
 int HcclTest::alloc_hccl_send_recv_buffer(
-    void *&send_buff, const size_t &send_bytes, void *&recv_buff, const size_t &recv_bytes)
+    void*& send_buff, const size_t& send_bytes, void*& recv_buff, const size_t& recv_bytes)
 {
     if (enable_zero_copy) {
         // 2M对齐
         send_buff = vir_ptr;
-        recv_buff = reinterpret_cast<void *>(
-            reinterpret_cast<uintptr_t>(vir_ptr) +
-            (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity));
-    } else if(enable_symmetric_memory) {
+        recv_buff = reinterpret_cast<void*>(
+            reinterpret_cast<uintptr_t>(vir_ptr)
+            + (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity));
+    } else if (enable_symmetric_memory) {
         send_buff = vir_ptr;
-        recv_buff = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(vir_ptr) + send_bytes);
+        recv_buff = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + send_bytes);
     } else {
         // 申请集合通信操作的内存
         if (send_bytes) {
-            ACLCHECK(aclrtMalloc((void **)&send_buff, send_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
+            ACLCHECK(aclrtMalloc((void**)&send_buff, send_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
         }
         if (recv_bytes) {
-            ACLCHECK(aclrtMalloc((void **)&recv_buff, recv_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
+            ACLCHECK(aclrtMalloc((void**)&recv_buff, recv_bytes, ACL_MEM_MALLOC_HUGE_ONLY));
         }
     }
     return 0;
@@ -1136,7 +1134,7 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
     return HCCL_SUCCESS;
 }
 
-void HcclTest::fill_physical_mem_prop(aclrtPhysicalMemProp &prop, int32_t deviceId)
+void HcclTest::fill_physical_mem_prop(aclrtPhysicalMemProp& prop, int32_t deviceId)
 {
     prop.handleType = ACL_MEM_HANDLE_TYPE_NONE;
     prop.allocationType = ACL_MEM_ALLOCATION_TYPE_PINNED;
@@ -1146,7 +1144,7 @@ void HcclTest::fill_physical_mem_prop(aclrtPhysicalMemProp &prop, int32_t device
     prop.reserve = 0;
 }
 
-int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
+int HcclTest::hccl_mem_alloc(size_t size, void** ptr, aclrtDrvMemHandle* handle)
 {
     if (ptr == nullptr || size == 0 || handle == nullptr) {
         printf("[%s][%d] Invalid parameter: ptr[%p], size[%zu].\n", __FUNCTION__, __LINE__, ptr, size);
@@ -1169,7 +1167,7 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
 
     if (IsSupport910_95()) {
         aclError allocRet = aclrtMalloc(ptr, allocSize, ACL_MEM_MALLOC_HUGE_ONLY);
-        if(allocRet != ACL_SUCCESS) {
+        if (allocRet != ACL_SUCCESS) {
             printf("[%s][%d] aclrtMalloc failed.\n", __FUNCTION__, __LINE__);
             if (*ptr != nullptr) {
                 aclrtFree(*ptr);
@@ -1185,15 +1183,15 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
         printf("[%s][%d] aclrtReserveMemAddress failed.\n", __FUNCTION__, __LINE__);
         return HCCL_E_RUNTIME;
     }
-    void *virPtr = *ptr;
+    void* virPtr = *ptr;
     ret = aclrtMallocPhysical(handle, allocSize, &prop, 0);
-    if(ret != ACL_SUCCESS) {
+    if (ret != ACL_SUCCESS) {
         printf("[%s][%d] aclrtMallocPhysical failed.\n", __FUNCTION__, __LINE__);
         aclrtReleaseMemAddress(virPtr);
         return HCCL_E_RUNTIME;
     }
     ret = aclrtMapMem(virPtr, allocSize, 0, *handle, 0);
-    if(ret != ACL_SUCCESS) {
+    if (ret != ACL_SUCCESS) {
         printf("[%s][%d] aclrtMapMem failed.\n", __FUNCTION__, __LINE__);
         aclrtFreePhysical(*handle);
         aclrtReleaseMemAddress(virPtr);
@@ -1203,7 +1201,7 @@ int HcclTest::hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle)
     return HCCL_SUCCESS;
 }
 
-int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
+int HcclTest::hccl_mem_free(void* ptr, aclrtDrvMemHandle& handle)
 {
     if (ptr == nullptr) {
         return HCCL_SUCCESS;
@@ -1237,7 +1235,7 @@ int HcclTest::hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle)
     return HCCL_SUCCESS;
 }
 
-int HcclTest::register_symmetric_memory(HcclCommSymWindow &sym_win)
+int HcclTest::register_symmetric_memory(HcclCommSymWindow& sym_win)
 {
     if (!enable_symmetric_memory) {
         return HCCL_SUCCESS;
@@ -1248,7 +1246,7 @@ int HcclTest::register_symmetric_memory(HcclCommSymWindow &sym_win)
     return 0;
 }
 
-int HcclTest::deregister_symmetric_memory(HcclCommSymWindow &sym_win)
+int HcclTest::deregister_symmetric_memory(HcclCommSymWindow& sym_win)
 {
     if (enable_symmetric_memory) {
         HCCLCHECK(HcclCommSymWinDeregister(sym_win));
@@ -1280,4 +1278,4 @@ aclError HcclTest::end_profile_device_time_if_needed(size_t data_size)
     return ACL_SUCCESS;
 }
 
-}  // namespace hccl
+} // namespace hccl

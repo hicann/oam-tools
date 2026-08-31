@@ -78,34 +78,34 @@ const size_t SYMMETRIC_MEMORY_STRIDE = 16ULL;
         }                                                                                                   \
     } while (0)
 
-#define HCCLCHECK(cmd)                                                                                    \
-    do {                                                                                                  \
-        HcclResult ret = cmd;                                                                             \
-        if (ret != HCCL_SUCCESS) {                                                                        \
+#define HCCLCHECK(cmd)                                                                          \
+    do {                                                                                        \
+        HcclResult ret = cmd;                                                                   \
+        if (ret != HCCL_SUCCESS) {                                                              \
             printf("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
-            return ret;                                                                                   \
-        }                                                                                                 \
+            return ret;                                                                         \
+        }                                                                                       \
     } while (0)
 
-#define HCCLROOTRANKCHECK(cmd)                                                                            \
-    do {                                                                                                  \
-        HcclResult ret = cmd;                                                                             \
-        if (ret != HCCL_SUCCESS && ret != HCCL_E_PARA) {                                                  \
+#define HCCLROOTRANKCHECK(cmd)                                                                  \
+    do {                                                                                        \
+        HcclResult ret = cmd;                                                                   \
+        if (ret != HCCL_SUCCESS && ret != HCCL_E_PARA) {                                        \
             printf("hccl interface return err %s:%d, retcode: %d \n", __FILE__, __LINE__, ret); \
-            return ret;                                                                                   \
-        }                                                                                                 \
+            return ret;                                                                         \
+        }                                                                                       \
     } while (0)
 
 #ifdef HCCL_TEST_LOG_ENABLE
 
-#define HCCL_TEST_LOG(format, ... )                                                 \
-    do {                                                                            \
-        char buffer[80];                                                            \
-        auto now = std::chrono::system_clock::now();                                \
-        std::time_t now_time = std::chrono::system_clock::to_time_t(now);           \
-        std::tm* local_time = std::localtime(&now_time);                            \
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", local_time);     \
-        printf("[%s:%d] [%s]: " format, __FILE__, __LINE__, buffer, __VA_ARGS__);   \
+#define HCCL_TEST_LOG(format, ...)                                                \
+    do {                                                                          \
+        char buffer[80];                                                          \
+        auto now = std::chrono::system_clock::now();                              \
+        std::time_t now_time = std::chrono::system_clock::to_time_t(now);         \
+        std::tm* local_time = std::localtime(&now_time);                          \
+        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", local_time);   \
+        printf("[%s:%d] [%s]: " format, __FILE__, __LINE__, buffer, __VA_ARGS__); \
     } while (0)
 
 #else
@@ -123,7 +123,7 @@ public:
     void print_help();
 
     int parse_opt(int opt);
-    int parse_cmd_line(int argc, char *argv[]);
+    int parse_cmd_line(int argc, char* argv[]);
 
     int check_data_count();
     int check_cmd_line();
@@ -132,11 +132,10 @@ public:
     // 计算当前进程rank号, 同一个服务器内的rank从0开始编号[0,nDev-1]
     int get_mpi_proc();
 
-    int getAviDevs(const char *devs, std::vector<int> &dev_ids);
+    int getAviDevs(const char* devs, std::vector<int>& dev_ids);
 
     virtual int hccl_op_base_test();
-    virtual void init_data_count()
-    {}
+    virtual void init_data_count() {}
     virtual int destory_alloc_buf(); // 销毁集合通信内存资源
     virtual int init_hcclComm();
     virtual int init_hcclComm_without_nslb();
@@ -153,44 +152,42 @@ public:
     int device_init();
     aclError start_profile_device_time_if_needed(size_t data_size);
     aclError end_profile_device_time_if_needed(size_t data_size);
+
 protected:
-    virtual size_t init_malloc_Ksize_by_data()
-    {
-        return 0;
-    }
-    virtual void init_send_recv_size_by_data(size_t &send_bytes, size_t &recv_bytes)
+    virtual size_t init_malloc_Ksize_by_data() { return 0; }
+    virtual void init_send_recv_size_by_data(size_t& send_bytes, size_t& recv_bytes)
     {
         send_bytes = 0;
         recv_bytes = 0;
     }
-    void get_buff_size(size_t &send_bytes, size_t &recv_bytes);
+    void get_buff_size(size_t& send_bytes, size_t& recv_bytes);
     size_t get_max_symmetric_memory_size();
     // 如果不需要初始化send or recv，则返回0
-    int prepare_zero_copy(const size_t &send_bytes, const size_t &recv_bytes);
-    int alloc_hccl_send_recv_buffer(
-        void *&send_buff, const size_t &send_bytes, void *&recv_buff, const size_t &recv_bytes);
+    int prepare_zero_copy(const size_t& send_bytes, const size_t& recv_bytes);
+    int
+    alloc_hccl_send_recv_buffer(void*& send_buff, const size_t& send_bytes, void*& recv_buff, const size_t& recv_bytes);
     int free_send_recv_buff_and_disable_local_buffer();
-    int hccl_mem_free(void *ptr, aclrtDrvMemHandle &handle);
-    int hccl_mem_alloc(size_t size, void **ptr, aclrtDrvMemHandle *handle);
-    int register_symmetric_memory(HcclCommSymWindow &sym_win);
-    int deregister_symmetric_memory(HcclCommSymWindow &sym_win);
-    void fill_physical_mem_prop(aclrtPhysicalMemProp &prop, int32_t deviceId);
+    int hccl_mem_free(void* ptr, aclrtDrvMemHandle& handle);
+    int hccl_mem_alloc(size_t size, void** ptr, aclrtDrvMemHandle* handle);
+    int register_symmetric_memory(HcclCommSymWindow& sym_win);
+    int deregister_symmetric_memory(HcclCommSymWindow& sym_win);
+    void fill_physical_mem_prop(aclrtPhysicalMemProp& prop, int32_t deviceId);
 
 private:
     int set_device_sat_mode();
     bool IsSupport910_95();
 
 public:
-    DataSize *data{nullptr};
-    void *vir_ptr{nullptr};
+    DataSize* data{nullptr};
+    void* vir_ptr{nullptr};
     bool enable_zero_copy{false};
     size_t malloc_kSize{0};
-    void *send_buff{nullptr};
-    void *recv_buff{nullptr};
-    std::vector<std::pair<void *, aclrtDrvMemHandle>> phy_alloc_mem_handle;
+    void* send_buff{nullptr};
+    void* recv_buff{nullptr};
+    std::vector<std::pair<void*, aclrtDrvMemHandle>> phy_alloc_mem_handle;
     aclrtPhysicalMemProp prop;
-    size_t granularity{128};                      // 默认128 Byte
-    size_t physicalGranularity{2 * 1024 * 1024};  // zero_copy默认对齐2M
+    size_t granularity{128};                     // 默认128 Byte
+    size_t physicalGranularity{2 * 1024 * 1024}; // zero_copy默认对齐2M
 
     long data_parsed_begin = 64 * 1024 * 1024;
     long data_parsed_end = 64 * 1024 * 1024;
@@ -222,8 +219,8 @@ public:
     bool print_dump = true;
     bool need_ranksize_alignment = false;
     bool enable_symmetric_memory{false};
-    aclrtDrvMemHandle symmetric_handle{nullptr};    // 注册对称内存用到的物理内存handle
-    size_t symmetric_memory_size{0};                 // 注册对称内存所需的最大内存大小
+    aclrtDrvMemHandle symmetric_handle{nullptr}; // 注册对称内存用到的物理内存handle
+    size_t symmetric_memory_size{0};             // 注册对称内存所需的最大内存大小
 
 private:
     // 当前进程在通信域(MPI_COMM_WORLD)内的进程号
@@ -234,14 +231,14 @@ private:
     int local_rank = 0;
     int npus = -1;
     int profiling_flag = 0;
-    aclprofConfig *profiling_config = NULL;
+    aclprofConfig* profiling_config = NULL;
     int npus_flag = 0;
     int nslb_flag = 0;
     u64 hccl_buffsize = 200;
 };
 
 HcclTest* init_opbase_ptr(HcclTest* opbase);
-void delete_opbase_ptr(HcclTest *&opbase);
-}  // namespace hccl
+void delete_opbase_ptr(HcclTest*& opbase);
+} // namespace hccl
 
 #endif

@@ -33,7 +33,7 @@ static inline float fp32_from_bits(uint32_t w)
     union {
         uint32_t as_bits;
         float as_value;
-    } fp32 = { w };
+    } fp32 = {w};
     return fp32.as_value;
 }
 
@@ -42,7 +42,7 @@ static inline uint32_t fp32_to_bits(float f)
     union {
         float as_value;
         uint32_t as_bits;
-    } fp32 = { f };
+    } fp32 = {f};
     return fp32.as_bits;
 }
 
@@ -73,15 +73,16 @@ static inline uint16_t fp16_ieee_from_fp32_value(float f)
     return (sign >> 16) | (shl1_w > UINT32_C(0xFF000000) ? UINT16_C(0x7E00) : nonsign);
 }
 
-static inline uint16_t fp32tobf16(float x){
-	float y = x;
-    int *p = (int *) &y;
+static inline uint16_t fp32tobf16(float x)
+{
+    float y = x;
+    int* p = (int*)&y;
     unsigned int exp, man;
     exp = *p & 0x7F800000u;
     man = *p & 0x007FFFFFu;
     if (exp == 0 && man == 0) {
         // zero
-        return x; 
+        return x;
     }
     if (exp == 0x7F800000u) {
         // infinity or Nans
@@ -90,7 +91,7 @@ static inline uint16_t fp32tobf16(float x){
     // Normalized number
     // round to nearest
     float r = x;
-    int *pr = (int *) &r;
+    int* pr = (int*)&r;
     *pr &= 0xff800000; // r has the same exp as x
     r = r / 256;
     y = x + r;
@@ -100,21 +101,23 @@ static inline uint16_t fp32tobf16(float x){
     return y;
 }
 
-typedef void(*HostBufInitFunc)(void *, u64, int);
-extern std::map<int,HostBufInitFunc> functionMap;
+typedef void (*HostBufInitFunc)(void*, u64, int);
+extern std::map<int, HostBufInitFunc> functionMap;
 
-typedef void(*ReduceCheckBufInitFunc)(void *, u64, int, int, int);
-extern std::map<int,ReduceCheckBufInitFunc> functionReduceMap;
+typedef void (*ReduceCheckBufInitFunc)(void*, u64, int, int, int);
+extern std::map<int, ReduceCheckBufInitFunc> functionReduceMap;
 
-typedef int(*AllToAllCheckResult)(const void*, u64*, u64*, int, int, int, int);
-extern std::map<int,AllToAllCheckResult> functionAllToAllMap;
+typedef int (*AllToAllCheckResult)(const void*, u64*, u64*, int, int, int, int);
+extern std::map<int, AllToAllCheckResult> functionAllToAllMap;
 
-extern void hccl_host_buf_init(void *dst_buf, unsigned long long count, int dtype, int val);
-extern void hccl_reduce_check_buf_init(
-    void *dst_buf, unsigned long long count, int dtype, int op, int val, int rank_size);
-extern int hccl_alltoallv_check_result(void *check_buf, unsigned long long *recv_counts, unsigned long long *recv_disp,
-    int rank_id, int rank_size, int dtype, int check_level);
-extern bool hccl_alltoall_check_result(const void *recv_buff, const std::size_t count, const int nRanks,
-    const int rank, const std::vector<std::uint8_t> &pattern);
+extern void hccl_host_buf_init(void* dst_buf, unsigned long long count, int dtype, int val);
+extern void
+hccl_reduce_check_buf_init(void* dst_buf, unsigned long long count, int dtype, int op, int val, int rank_size);
+extern int hccl_alltoallv_check_result(
+    void* check_buf, unsigned long long* recv_counts, unsigned long long* recv_disp, int rank_id, int rank_size,
+    int dtype, int check_level);
+extern bool hccl_alltoall_check_result(
+    const void* recv_buff, const std::size_t count, const int nRanks, const int rank,
+    const std::vector<std::uint8_t>& pattern);
 
 #endif
