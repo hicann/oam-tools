@@ -1,0 +1,42 @@
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+# typos 拼写检查词表（typos 从仓库根目录自动发现本文件，无需在钩子参数中指定）
+# 收录昇腾/CANN 项目专有词避免误报，与 .pre-commit-config.yaml 中 codespell -L
+# 的项目词部分保持一致（主线原 ignore-words-list 全量镜像）；extend-words 自映射
+# 写法是 typos 官方推荐的白名单方式，且大小写不敏感（cann 一条即覆盖 CANN/Cann）。
+# 注意：本文件必须收录词表中会被 typos 字典误报的全部词条——.pre-commit-config.yaml
+# 的 -L 参数串本身含这些词，typos 会扫描该文件。
+# 目录级豁免（主线仍屏蔽的存量目录）在 .pre-commit-config.yaml 的 typos 钩子
+# exclude 中维护；后续遇到新的误报词在下方追加即可。
+[default.extend-words]
+cann = "cann"     # CANN（昇腾异构计算架构）
+oam = "oam"       # OAM-Tools（本仓）
+msprof = "msprof" # 性能调优工具
+aicerr = "aicerr" # msaicerr（AI Core Error 分析）
+hccl = "hccl"     # HCCL（集合通信库）
+tbe = "tbe"       # TBE（Tensor Boost Engine，昇腾张量引擎）
+te = "te"         # 沿用主线 codespell 词表
+nin = "nin"       # 沿用主线 codespell 词表
+fo = "fo"         # 沿用主线 codespell 词表
+optin = "optin"   # 沿用主线 codespell 词表
+alog = "alog"     # 昇腾 AI CPU 日志组件
+abl = "abl"       # 沿用主线 codespell 词表
+opend = "opend"   # OpEnd（算子执行结束标识）
+mata = "mata"     # dha(mata) 设备术语
+valu = "valu"     # 设备错误码字段（VALU）
+nd = "nd"         # ND tensor format
+copyin = "copyin" # Ascend C CopyIn API
+enque = "enque"   # Ascend C EnQue API

@@ -1,22 +1,38 @@
-# 约束 pre-commit 最小版本：本配置用了 `stages: [pre-commit]` 新 stage 名，
-# 旧版 pre-commit 加载时会报非法 stage 导致所有钩子失效。3.2.0 起支持该名。
-minimum_pre_commit_version: "3.2.0"
+minimum_pre_commit_version: 4.0.0
+exclude: ^LICENSES/|\.(html|csv|svg)$
+
+default_stages: [pre-commit]
+ci:
+  autofix_prs: false
+  autoupdate_schedule: monthly
 
 repos:
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v16.0.0
+  # pre-commit 基础检查
+  - repo: https://gitcode.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-json
+
+  # C++ 代码格式化检查
+  - repo: https://gitcode.com/pre-commit-clang/mirrors-clang-format
+    rev: v18.1.8
     hooks:
       - id: clang-format
-        types_or: [c++, c]
-        # 流水线 precommit 会对本次改动命中的 C/C++ 文件跑 clang-format，
-        # 但存量代码不符合 .clang-format 风格，一改到就被卡。先屏蔽当前已存在
-        # C/C++ 的目录（experiment/、src/{hccl_test,msprof,third_party}、
-        # test/），只对新增目录/新 src 子包生效；存量目录整改后再逐个摘除。
-        # msaicerr（src 与 test/{ut,st}）已整改完毕，故不在屏蔽列表内；
-        # test/*/msaicerr/res 是采集自设备的原始样本，不做格式化。
+        files: \.(c|h|cpp|hpp|cc|hh|cxx|hxx)$
+        # 不传 --style 内联配置：该镜像钩子默认 args 为 ["-style=file"]，
+        # 即使用仓库根目录 .clang-format。传内联参数会整体覆盖 .clang-format，
+        # 导致钩子与开发者手动/IDE 执行 clang-format 的结果不一致。
         exclude: |
           (?x)^(
-            experiment/
+            build/
+            | experiment/
             | src/(
               hccl_test
               | msprof
@@ -26,100 +42,27 @@ repos:
             | test/(ut|st)/msaicerr/res/
           )
 
-  # OAT compliance check (Open Source Audit Tool)
-  # require_serial + pass_filenames=false: oat_check.sh 内部自行收集 staged
-  # 文件，只调用一次。避免 pass_filenames=true 时每文件单独触发一次 OAT
-  # 扫描，导致 oat-py 在 CI 环境中偶发不生成 PlainReport 报告而误报失败。
-  - repo: local
-    hooks:
-      - id: oat-check
-        name: OAT Compliance Check
-        entry: bash scripts/oat_check.sh
-        language: system
-        pass_filenames: false
-        require_serial: true
-        stages: [pre-commit]
-        verbose: true
-
-  # Python 格式检查 + 基础 lint（ruff）。默认只查本次改动的 .py，不扫存量文件。
-  # 注意：不启用 ruff-format。本仓存量 Python 代码不符合 ruff-format 风格，
-  # 一旦它重排被碰到的整个文件，会把不属于本次改动的存量代码也写进 diff，
-  # 既违反精准修改、又让云端增量 codecheck 把重排行当新增来误报（重复代码/超大函数等）。
+  # Python 代码检查
   - repo: https://gitcode.com/gh_mirrors/ru/ruff-pre-commit
-    rev: v0.9.9
+    rev: v0.14.14
     hooks:
-      - id: ruff
-        args: [--fix]
-        # 先屏蔽当前已存在 Python 的目录（存量代码不符合规则会卡门禁），
-        # 只对新增目录/新 src 子包生效；存量整改后再逐个摘除。与 bandit 保持一致。
-        # msaicerr（src 与 test/{ut,st}）已整改完毕，故不在屏蔽列表内。
-        # test/*/msaicerr/res/ 是采集自设备的样本与第三方桩包，不是源码，
-        # 且本钩子带 --fix 会改写它们，故与 pylint 一样排除。
-        exclude: |
-          (?x)^(
-            \.claude/
-            | cmake/
-            | experiment/
-            | scripts/
-            | skills/
-            | src/asys/
-            | test/(?!(ut|st)/msaicerr/)
-            | test/(ut|st)/msaicerr/res/
-          )
-
-  # Python 代码检查（pylint，放宽贴近云端 codecheck，避免本地比云端更严）。
-  # 说明：test/{ut,st}/msaicerr 与 src 走同一套 pylint/bandit 规则，不设测试专用的
-  # 放宽钩子。实测该测试树在下面这套参数下 pylint 10.00/10、bandit -ll 无 medium+，
-  # 无需豁免——私有方法测试统一用 getattr(obj, "_name") 取，/tmp 字面量属 B108 Low
-  # 级、被 -ll 过滤。新增用例请沿用同样写法，不要改为放宽规则。
-  - repo: https://gitcode.com/gh_mirrors/pyl/pylint
-    # 用 3.3.x：pylint 4.x 要求 Python>=3.10，而 CI pre-commit 环境是 3.9，
-    # 装 4.x 会失败导致整个 pre-commit 任务报错。3.3.9 兼容 Python 3.9。
-    rev: v3.3.9
-    hooks:
-      - id: pylint
-        args:
-          # pylint 隔离环境不装项目依赖，import-error/no-name-in-module 必关；
-          # C(convention)/R(refactor) 是与华为规范无关的命名/重构噪声，一并关闭。
-          - --disable=C,R,import-error,no-name-in-module,wrong-import-order
-          - --max-line-length=120
-        # 先屏蔽当前已存在 Python 的目录，只对新增目录/新 src 子包生效；
-        # 存量整改后再逐个摘除。与 bandit 保持一致。
-        # msaicerr（src 与 test/{ut,st}）已整改完毕，故不在屏蔽列表内。
-        # 但排除 test/*/msaicerr/res/：该目录是采集自设备的样本与第三方桩包
-        # （res/package/tbe/common/platform 必须与真实模块路径同名），并非源码；
-        # 一起分析会让桩包遮蔽标准库 platform，使 src 的 platform.machine() 误报 E1101。
-        exclude: |
-          (?x)^(
-            \.claude/
-            | cmake/
-            | experiment/
-            | scripts/
-            | skills/
-            | src/asys/
-            | test/(?!(ut|st)/msaicerr/)
-            | test/(ut|st)/msaicerr/res/
-          )
-
-  # 增量行 codecheck：本地复现云端"只查本次改动行"的增量行为。
-  # 云端 codecheck 对行宽(C0301)/超大函数(R0915)/staticmethod(R6301)按增量行卡门禁，
-  # 但上面的 pylint 按整文件检查且关掉了 C/R，无法对这几类预警；若整文件放开又会被
-  # 存量违规淹没、比云端更严。此钩子用 pylint 全量检查后只保留命中 staged 改动行的告警，
-  # 既能 push 前预警自己引入的违规，又不被存量违规阻塞。
-  - repo: local
-    hooks:
-      - id: incremental-codecheck
-        name: Incremental codecheck (changed lines only)
-        entry: python3 scripts/incremental_codecheck.py
-        language: python
-        # 钩子内部用 ruff 驱动检查，需在隔离环境装 ruff。
-        additional_dependencies: [ruff==0.9.9]
+      - id: ruff-check
+        args: ["--output-format", "github", "--fix"]
         types: [python]
-        require_serial: true
-        # 先屏蔽当前已存在 Python 的目录，只对新增目录/新 src 子包生效；
-        # 存量整改后再逐个摘除。与 bandit 保持一致。
-        # msaicerr（src 与 test/{ut,st}）已整改完毕，故不在屏蔽列表内。
-        # test/*/msaicerr/res/ 同 pylint：样本与桩包不是源码，不参与增量检查。
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/asys/
+            | test/(?!(ut|st)/msaicerr/)
+            | test/(ut|st)/msaicerr/res/
+          )
+      - id: ruff-format
+        types: [python]
+        # 屏蔽范围与 ruff-check 一致，理由同上。
         exclude: |
           (?x)^(
             \.claude/
@@ -133,19 +76,16 @@ repos:
           )
 
   # Python 安全检查（bandit，仅 medium 及以上严重度）。
+  # 用 1.8.6：bandit 1.9.x 要求 Python>=3.10，CI pre-commit 环境是 3.9，
+  # 装 1.9.x 会失败。1.8.6 是兼容 Python 3.9 的最新版。
+  # 屏蔽范围与 ruff 一致：存量目录整改后再逐个摘除。
+  # msaicerr（src 与 test/{ut,st}）已整改完毕（bandit -ll 无 medium+ 告警），
+  # 不在屏蔽列表内；test/{ut,st}/msaicerr/res/ 是设备样本与桩包，不做安全扫描。
   - repo: https://gitcode.com/gh_mirrors/ba/bandit
-    # 用 1.8.6：bandit 1.9.x 要求 Python>=3.10，CI pre-commit 环境是 3.9，
-    # 装 1.9.x 会失败。1.8.6 是兼容 Python 3.9 的最新版。
     rev: 1.8.6
     hooks:
       - id: bandit
         args: [-ll]
-        # 同 clang-format：流水线 precommit 对改动命中的 .py 跑 bandit，存量代码
-        # 触发的告警会卡门禁。先屏蔽当前已存在 Python 的目录（src/asys、
-        # test/、skills/、experiment/、scripts/、cmake/、.claude/），只对新增目录/
-        # 新 src 子包生效；存量目录整改后再逐个摘除。
-        # msaicerr（src 与 test/{ut,st}）已整改完毕，故不在屏蔽列表内。
-        # test/*/msaicerr/res/ 同 pylint：样本与桩包不是源码，不做安全扫描。
         exclude: |
           (?x)^(
             \.claude/
@@ -158,19 +98,60 @@ repos:
             | test/(ut|st)/msaicerr/res/
           )
 
-  # 拼写检查（codespell），与 CI 的 StaticCheck_codespell_check 对齐。
+  # 拼写检查
   - repo: https://gitcode.com/gh_mirrors/co/codespell
-    rev: v2.4.2
+    rev: v2.4.1
     hooks:
       - id: codespell
-        # 跳过二进制/构建产物目录；ignore-words-list 收录项目专有缩写避免误判，
-        # 后续遇新误判词追加即可（codespell 按小写匹配）。
-        # test/*/res/ 是采集自设备的原始日志/落盘数据，属实测样本不能改写，整目录跳过。
-        # skip 用 test/*/*/res/* 而非 ./test/*/*/res：codespell 拿 fnmatch 整串匹配
-        # 传入的文件路径（pre-commit 传的是不带 ./ 的仓库相对路径），目录形态的模式
-        # 匹不上 res 下的嵌套文件；实测对 test/ut/msaicerr/res/... 只有带尾部 /* 的
-        # 模式能命中，且不能带前导 ./。
-        # nd/copyin/enque 是昇腾专有词（ND 为 tensor format，CopyIn/EnQue 是 Ascend C API）。
-        args:
-          - --skip=*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules,test/*/*/res/*
-          - --ignore-words-list=cann,oam,msprof,aicerr,hccl,tbe,te,nin,fo,optin,alog,abl,OpEnd,mata,VALU,nd,copyin,enque
+        # -L 词表 = 社区模板词表 + 主线原 ignore-words-list 的项目专有词
+        # （oam/msprof/aicerr/hccl/te/nin/fo/optin/abl/OpEnd/mata/VALU/nd/enque）。
+        # 注意：codespell 小写词条大小写不敏感（cann 即可压住 CANN/Cann），
+        # 带大写的词条仅精确匹配（ND 压不住 nd），故模板大写词与主线小写词并存。
+        # --skip 不跳过源码文件（与主线行为一致，主线 codespell 一直检查
+        # .py/.cpp 等），仅跳过二进制/构建产物目录；test/*/*/res/* 是采集自
+        # 设备的原始日志/落盘样本，不能改写，整目录跳过（fnmatch 需尾部 /*
+        # 且不能带 ./ 前缀才能命中嵌套文件）。
+        args: [
+            "-L",
+            "CANN,cann,NNAL,nnal,ASCEND,ascend,EnQue,CopyIn,ArchType,AND,ND,tbe,copyin,alog,oam,msprof,aicerr,hccl,te,nin,fo,optin,abl,OpEnd,mata,VALU,nd,enque",
+            "--skip",
+            "*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules,test/*/*/res/*",
+          ]
+
+  # typos 检查
+  - repo: https://gitcode.com/gh_mirrors/ty/typos
+    rev: v1.32.0
+    hooks:
+      - id: typos
+        args: ["--force-exclude"]
+        exclude: |
+          (?x)^(
+            \.claude/
+            | cmake/
+            | experiment/
+            | scripts/
+            | skills/
+            | src/(
+              asys
+              | hccl_test
+              | msprof
+              | third_party
+            )/
+            | test/(?!(ut|st)/msaicerr/)
+            | test/(ut|st)/msaicerr/res/
+          )
+
+  # OAT 合规性检查 (Open Source Audit Tool)
+  # require_serial + pass_filenames=false：oat_check.sh 内部自行收集 staged
+  # 文件，只调用一次。避免 pass_filenames=true 时每文件单独触发一次 OAT
+  # 扫描，导致 oat-py 在 CI 环境中偶发不生成 PlainReport 报告而误报失败。
+  - repo: local
+    hooks:
+      - id: oat-check
+        name: OAT Compliance Check
+        entry: bash scripts/oat_check.sh
+        language: system
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-commit]
+        verbose: true
