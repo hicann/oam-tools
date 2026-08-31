@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from collect.stackcore.stackcore_collect import ParseStackCore
+
+
+__all__ = ["ParseStackCore"]

@@ -66,13 +66,19 @@ def collect_cmd_graph_files(graph_target_dir):
 
     env_var = EnvVarName()
     if env_var.npu_collect_path:
-        log_debug("Get env NPU_COLLECT_PATH successfully, add NPU_COLLECT_PATH to graph collect path.")
+        log_debug(
+            "Get env NPU_COLLECT_PATH successfully, add NPU_COLLECT_PATH to graph collect path."
+        )
         collect_graph_path_list.append(env_var.npu_collect_path)
     if env_var.dump_graph_path:
-        log_debug("Get env DUMP_GRAPH_PATH successfully, add DUMP_GRAPH_PATH to graph collect path.")
+        log_debug(
+            "Get env DUMP_GRAPH_PATH successfully, add DUMP_GRAPH_PATH to graph collect path."
+        )
         collect_graph_path_list.append(env_var.dump_graph_path)
     if env_var.work_path:
-        log_debug("Get env ASCEND_WORK_PATH successfully, add ASCEND_WORK_PATH to graph collect path.")
+        log_debug(
+            "Get env ASCEND_WORK_PATH successfully, add ASCEND_WORK_PATH to graph collect path."
+        )
         collect_graph_path_list.append(env_var.work_path)
     collect_graph_path_list.append(env_var.current_path)
 
@@ -84,14 +90,18 @@ def collect_cmd_graph_files(graph_target_dir):
 
 
 def collect_graph(output_root_path):
-    if (ParamDict().get_command() == consts.launch_cmd) and (not ParamDict().get_ini("graph") == "1"):  # 1: open
+    if (ParamDict().get_command() == consts.launch_cmd) and (
+        not ParamDict().get_ini("graph") == "1"
+    ):  # 1: open
         log_debug("graph is not set on, not collect graph files")
         return
 
     ret = False
     graph_target_dir = os.path.join(output_root_path, "dfx", "graph")
     if ParamDict().get_command() == consts.launch_cmd:
-        npu_collect_path = os.path.join(ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates")
+        npu_collect_path = os.path.join(
+            ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates"
+        )
         graph_source_dir = os.path.join(npu_collect_path, "extra-info", "graph")
         if f.check_dir(graph_source_dir):
             log_debug("Graph source check success, path={}.".format(graph_source_dir))

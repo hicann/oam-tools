@@ -33,8 +33,9 @@ import pytest
 def find_repo_root(start):
     """按标记文件向上查找仓库根；找不到返回 None（由调用方 skip）。"""
     for candidate in [start, *start.parents]:
-        if (candidate / "scripts" / "run_tests.sh").is_file() \
-                and (candidate / "CMakeLists.txt").is_file():
+        if (candidate / "scripts" / "run_tests.sh").is_file() and (
+            candidate / "CMakeLists.txt"
+        ).is_file():
             return candidate
     return None
 
@@ -119,7 +120,11 @@ def run_validator(tmp_path, scenario):
         case=case,
     )
     completed = subprocess.run(
-        [BASH, "-c", script], capture_output=True, text=True, timeout=120, check=False,
+        [BASH, "-c", script],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
     )
     assert completed.returncode == 0, (
         f"驱动脚本执行失败: rc={completed.returncode}\n{completed.stderr}"
@@ -146,7 +151,12 @@ GTEST_HEALTHY = b"""----- running /x/a_utest -----
 
 
 def test_gtest_healthy_log_passes(tmp_path):
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=GTEST_HEALTHY, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(
+            case="msprof_ut", framework="gtest", log_bytes=GTEST_HEALTHY, exit_code=0
+        ),
+    )
     assert res["STATUS"] == "PASS"
     assert res["PASSED"] == "2"
     assert res["FAILED"] == "0"
@@ -165,7 +175,10 @@ def test_gtest_marker_glued_mid_line_still_counted(tmp_path):
  [       OK ] S.LeadingSpace (0 ms)
 [  PASSED  ] 2 tests.
 """
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"标记拼行被误判: {res}"
     assert res["PASSED"] == "2"
 
@@ -188,7 +201,10 @@ no device available
 [  SKIPPED ] S.Skipped
   YOU HAVE 2 DISABLED TESTS
 """
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"GTEST_SKIP 被误判: {res}"
     assert res["PASSED"] == "1"
     # SKIPPED 两个来源都要计入：GTEST_SKIP 汇总 1 + DISABLED 2
@@ -204,7 +220,10 @@ def test_gtest_truncated_target_with_nonzero_exit_is_crash(tmp_path):
 ----- running /x/job_wrapper -----
 [ RUN      ] JOB.Process
 """
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1),
+    )
     assert res["STATUS"] == "CRASH", f"真截断未被识别: {res}"
     assert res["PASSED"] == "-", "崩溃时计数不可信，应显示 -"
     assert "1/2" in res["NOTES"], f"未报告 target 收尾比例: {res}"
@@ -219,15 +238,19 @@ def test_gtest_target_marker_glued_to_previous_output(tmp_path):
     恰好与 finished 相等——真截断反而判不出 CRASH，残缺的 passed/failed 被
     当完整数据展示。故写标记处必须前置 \\n。
     """
-    log = (b"----- running /x/a_utest -----\n"
-           b"[ RUN      ] S.A\n"
-           b"[       OK ] S.A (0 ms)\n"
-           b"[  PASSED  ] 1 test.\n"
-           b"crash mid-printf no newline"          # 上一个 target 末行无换行
-           b"\n----- running /x/b_utest -----\n"   # 写入处已前置 \n
-           b"[ RUN      ] S.B\n")
-    res = run_validator(tmp_path, Scenario(
-        case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1))
+    log = (
+        b"----- running /x/a_utest -----\n"
+        b"[ RUN      ] S.A\n"
+        b"[       OK ] S.A (0 ms)\n"
+        b"[  PASSED  ] 1 test.\n"
+        b"crash mid-printf no newline"  # 上一个 target 末行无换行
+        b"\n----- running /x/b_utest -----\n"  # 写入处已前置 \n
+        b"[ RUN      ] S.B\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1),
+    )
     assert res["STATUS"] == "CRASH", f"真截断未判 CRASH: {res}"
     assert "b_utest" in res["NOTES"], f"last target 指错二进制: {res}"
 
@@ -235,8 +258,9 @@ def test_gtest_target_marker_glued_to_previous_output(tmp_path):
 def test_marker_written_with_leading_newline():
     """写 target 标记必须用前置 \\n，保证它总从行首起。"""
     content = (REPO_ROOT / "scripts" / "run_tests.sh").read_text(encoding="utf-8")
-    assert "printf '\\n----- running %s -----\\n'" in content, \
+    assert "printf '\\n----- running %s -----\\n'" in content, (
         "写 target 标记应前置 \\n，否则上一个二进制末行无换行时标记被拼行、漏判 CRASH"
+    )
 
 
 def test_grep_guard_catches_forms_without_e_flag():
@@ -278,7 +302,10 @@ def test_gtest_missing_summary_but_clean_exit_is_not_crash(tmp_path):
 [ RUN      ] S.Other
 [       OK ] S.Other (0 ms)
 """
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"退出码0却判崩溃: {res}"
 
 
@@ -290,16 +317,21 @@ def test_gtest_binary_bytes_do_not_break_counting(tmp_path):
     binary 判定生效时，不带 -a 的 grep -o 只打印 "binary file matches"，
     计数全部丢失、失败清单还会混入该假条目。
     """
-    log = (b"----- running /x/a_utest -----\n"
-           b"[ RUN      ] S.Plain\n"
-           b"device raw output: \x00\x80\xff binary junk\n"
-           b"[       OK ] S.Plain (0 ms)\n"
-           b"[ RUN      ] S.Bad\n"
-           b"[  FAILED  ] S.Bad (0 ms)\n"
-           b"[  PASSED  ] 1 test.\n"
-           b"[  FAILED  ] 1 test, listed below:\n"
-           b"[  FAILED  ] S.Bad\n")
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1))
+    log = (
+        b"----- running /x/a_utest -----\n"
+        b"[ RUN      ] S.Plain\n"
+        b"device raw output: \x00\x80\xff binary junk\n"
+        b"[       OK ] S.Plain (0 ms)\n"
+        b"[ RUN      ] S.Bad\n"
+        b"[  FAILED  ] S.Bad (0 ms)\n"
+        b"[  PASSED  ] 1 test.\n"
+        b"[  FAILED  ] 1 test, listed below:\n"
+        b"[  FAILED  ] S.Bad\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=1),
+    )
     assert res["PASSED"] == "1", f"binary 日志导致计数丢失: {res}"
     assert res["FAILED"] == "1", f"binary 日志导致计数丢失: {res}"
     assert res["STATUS"] == "FAIL"
@@ -310,11 +342,16 @@ def test_gtest_binary_bytes_do_not_break_counting(tmp_path):
 
 def test_gtest_crash_marker_extracted_from_binary_log(tmp_path):
     """崩溃日志往往正是含 NUL 字节的那一类，marker 摘要不能为空。"""
-    log = (b"----- running /x/a_utest -----\n"
-           b"[ RUN      ] S.Boom\n"
-           b"junk \x00\x80 bytes\n"
-           b"Segmentation fault (core dumped)\n")
-    res = run_validator(tmp_path, Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=139))
+    log = (
+        b"----- running /x/a_utest -----\n"
+        b"[ RUN      ] S.Boom\n"
+        b"junk \x00\x80 bytes\n"
+        b"Segmentation fault (core dumped)\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msprof_ut", framework="gtest", log_bytes=log, exit_code=139),
+    )
     assert res["STATUS"] == "CRASH"
     assert "Segmentation fault" in res["NOTES"], f"crash marker 摘要为空: {res}"
 
@@ -332,7 +369,10 @@ def test_pytest_counts_include_skipped(tmp_path):
         "============ 281 passed, 74 skipped in 57.77s ============",
         "TOTAL    5017    653  85.00%",
     )
-    res = run_validator(tmp_path, Scenario(case="asys_st", framework="pytest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="asys_st", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS"
     assert res["PASSED"] == "281"
     assert res["SKIPPED"] == "74", f"skipped 未被解析: {res}"
@@ -348,7 +388,10 @@ def test_pytest_coverage_7975_does_not_pass_baseline_80(tmp_path):
         "============ 200 passed, 5 skipped in 12.30s ============",
         "TOTAL    4577    927  79.75%",
     )
-    res = run_validator(tmp_path, Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["BASELINE"] == "80", f"基线应固定为 80: {res}"
     assert res["STATUS"] == "FAIL", f"79.75% 被误判为达标: {res}"
     assert "msaicerr_st" in res["BELOW"], f"未计入低于基线清单: {res}"
@@ -359,7 +402,10 @@ def test_pytest_coverage_just_above_baseline_passes(tmp_path):
         "============ 247 passed, 5 skipped in 12.30s ============",
         "TOTAL    4577    912  80.07%",
     )
-    res = run_validator(tmp_path, Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"80.07% 应达标: {res}"
     assert res["BELOW"] == "", f"不应计入低于基线清单: {res}"
 
@@ -370,10 +416,16 @@ def test_pytest_coverage_missing_fails_for_suite_that_should_collect(tmp_path):
     原先见 "-" 即跳过校验，使 coverage report/lcov 失败时只要用例通过
     就 PASS、退出码 0——门禁在最该拦的时候失效。
     """
-    log = make_pytest_log(
-        "============ 200 passed in 12.30s ============",
-    ) + b"No data to report.\n"
-    res = run_validator(tmp_path, Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0))
+    log = (
+        make_pytest_log(
+            "============ 200 passed in 12.30s ============",
+        )
+        + b"No data to report.\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msaicerr_st", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "FAIL", f"覆盖率缺失被放行: {res}"
     assert "msaicerr_st" in res["MISSING"], f"未计入缺失清单: {res}"
     assert "coverage expected" in res["NOTES"], f"未说明缺失原因: {res}"
@@ -385,7 +437,10 @@ def test_pytest_no_coverage_scope_suite_is_not_gated(tmp_path):
     与"应产出却缺失"必须区分，否则会把无口径的套件误判为 FAIL。
     """
     log = make_pytest_log("============ 7 passed in 65.57s ============")
-    res = run_validator(tmp_path, Scenario(case="install_st", framework="pytest", log_bytes=log, exit_code=0))
+    res = run_validator(
+        tmp_path,
+        Scenario(case="install_st", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"无覆盖率口径的套件被门禁误伤: {res}"
     assert res["COV"] == "-"
     assert res["MISSING"] == "", f"不应计入缺失清单: {res}"
@@ -393,27 +448,49 @@ def test_pytest_no_coverage_scope_suite_is_not_gated(tmp_path):
 
 def test_msprof_coverage_not_gated_without_cov_flag(tmp_path):
     """msprof 的 gcov 受 --cov 门控，未开启时不应要求覆盖率。"""
-    res = run_validator(tmp_path, Scenario(
-        case="msprof_ut", framework="gtest", log_bytes=GTEST_HEALTHY,
-        exit_code=0, run_cov="false"))
+    res = run_validator(
+        tmp_path,
+        Scenario(
+            case="msprof_ut",
+            framework="gtest",
+            log_bytes=GTEST_HEALTHY,
+            exit_code=0,
+            run_cov="false",
+        ),
+    )
     assert res["STATUS"] == "PASS"
     assert res["MISSING"] == "", f"未开 --cov 却要求 msprof 覆盖率: {res}"
 
 
 def test_msprof_coverage_gated_with_cov_flag(tmp_path):
     """开了 --cov 时 msprof 必须有覆盖率，缺失即判 FAIL。"""
-    res = run_validator(tmp_path, Scenario(
-        case="msprof_ut", framework="gtest", log_bytes=GTEST_HEALTHY,
-        exit_code=0, run_cov="true"))
+    res = run_validator(
+        tmp_path,
+        Scenario(
+            case="msprof_ut",
+            framework="gtest",
+            log_bytes=GTEST_HEALTHY,
+            exit_code=0,
+            run_cov="true",
+        ),
+    )
     assert res["STATUS"] == "FAIL", f"开 --cov 但覆盖率缺失应判 FAIL: {res}"
     assert "msprof_ut" in res["MISSING"]
 
 
 def test_msprof_coverage_below_baseline_fails(tmp_path):
     """gcov 覆盖率低于基线同样判 FAIL（预置 R_COV 模拟 lcov 结果）。"""
-    res = run_validator(tmp_path, Scenario(
-        case="msprof_ut", framework="gtest", log_bytes=GTEST_HEALTHY,
-        exit_code=0, run_cov="true", presets='R_COV[msprof_ut]=79.90'))
+    res = run_validator(
+        tmp_path,
+        Scenario(
+            case="msprof_ut",
+            framework="gtest",
+            log_bytes=GTEST_HEALTHY,
+            exit_code=0,
+            run_cov="true",
+            presets="R_COV[msprof_ut]=79.90",
+        ),
+    )
     assert res["STATUS"] == "FAIL", f"79.90% 应低于基线 80: {res}"
     assert "msprof_ut" in res["BELOW"]
 
@@ -427,8 +504,9 @@ def test_coverage_report_requests_two_decimal_precision():
     基线判定读该行即误判达标。故用静态断言把 flag 钉住。
     """
     content = (REPO_ROOT / "scripts" / "run_tests.sh").read_text(encoding="utf-8")
-    assert "coverage report --precision=2" in content, \
+    assert "coverage report --precision=2" in content, (
         "coverage report 缺少 --precision=2，整数百分比会把 79.75% 显示成 80%"
+    )
 
 
 def test_coverage_dirs_cleaned_before_collection():
@@ -441,10 +519,13 @@ def test_coverage_dirs_cleaned_before_collection():
     """
     content = (REPO_ROOT / "scripts" / "run_tests.sh").read_text(encoding="utf-8")
     # pytest 与 gcov 两条采集路径都要清理
-    assert content.count('rm -rf "${cov_dir}"') >= 2, \
+    assert content.count('rm -rf "${cov_dir}"') >= 2, (
         "pytest 与 gcov 两处采集前都应 rm -rf 覆盖率目录，防止读到旧产物"
-    for marker in ('rm -rf "${cov_dir}" "${BUILD_OUTPUT_DIR}/${case_name}_html"',
-                   'rm -rf "${cov_dir}" "${html_dir}"'):
+    )
+    for marker in (
+        'rm -rf "${cov_dir}" "${BUILD_OUTPUT_DIR}/${case_name}_html"',
+        'rm -rf "${cov_dir}" "${html_dir}"',
+    ):
         assert marker in content, f"缺少清理语句: {marker}"
 
 
@@ -465,8 +546,9 @@ def test_stale_gcda_cleared_before_binaries_run():
     assert "gcno" not in clean_stmt, "删除语句只能匹配 .gcda，不可扩到 .gcno"
     run_idx = content.find('"${ut_bin}" 2>&1 | tee -a "${output_file}"')
     assert run_idx != -1, "未找到 gtest 二进制运行语句，本用例的位置断言已失效"
-    assert clean_idx < run_idx, \
+    assert clean_idx < run_idx, (
         ".gcda 清理必须在二进制运行之前，否则删掉的是本轮自己的覆盖率数据"
+    )
 
 
 def find_grep_short_opts(line):
@@ -518,25 +600,33 @@ def test_importerror_text_in_log_does_not_fail_passing_suite(tmp_path):
     实测曾因扫正文把 704 passed / 0 failed 判成 FAIL，且失败清单为空——
     报了个查不下去的错。pytest 的 failed/error 计数才是权威信号。
     """
-    log = (b"WARNING: failed to import te or tbe to compile op, skipped it. "
-           b"error: ImportError: No module named 'te'\n"
-           b"Traceback (most recent call last):\n"
-           b"  File \"x.py\", line 1, in <module>\n"
-           b"============ 704 passed, 15 skipped in 12.41s ============\n"
-           b"Name    Stmts   Miss  Cover\nTOTAL    4577    457  90.00%\n")
-    res = run_validator(tmp_path, Scenario(
-        case="msaicerr_ut", framework="pytest", log_bytes=log, exit_code=0))
+    log = (
+        b"WARNING: failed to import te or tbe to compile op, skipped it. "
+        b"error: ImportError: No module named 'te'\n"
+        b"Traceback (most recent call last):\n"
+        b'  File "x.py", line 1, in <module>\n'
+        b"============ 704 passed, 15 skipped in 12.41s ============\n"
+        b"Name    Stmts   Miss  Cover\nTOTAL    4577    457  90.00%\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msaicerr_ut", framework="pytest", log_bytes=log, exit_code=0),
+    )
     assert res["STATUS"] == "PASS", f"日志含 ImportError/Traceback 字样被误判: {res}"
     assert res["PASSED"] == "704"
 
 
 def test_real_collection_error_still_fails(tmp_path):
     """真实的导入失败会被 pytest 计为 collection error，仍须判 FAIL。"""
-    log = (b"ImportError while importing test module 'test_x.py'\n"
-           b"============ 1 error in 0.30s ============\n"
-           b"Name    Stmts   Miss  Cover\nTOTAL    4577    457  90.00%\n")
-    res = run_validator(tmp_path, Scenario(
-        case="msaicerr_ut", framework="pytest", log_bytes=log, exit_code=2))
+    log = (
+        b"ImportError while importing test module 'test_x.py'\n"
+        b"============ 1 error in 0.30s ============\n"
+        b"Name    Stmts   Miss  Cover\nTOTAL    4577    457  90.00%\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="msaicerr_ut", framework="pytest", log_bytes=log, exit_code=2),
+    )
     assert res["STATUS"] == "FAIL", f"真实 collection error 未判 FAIL: {res}"
     assert "collection/runner error" in res["NOTES"], f"未说明原因: {res}"
 
@@ -545,10 +635,15 @@ def test_pytest_failed_case_list_strips_prefix(tmp_path):
     log = make_pytest_log(
         "============ 2 failed, 547 passed in 51.48s ============",
         "TOTAL    5017    653  87.00%",
-    ) + (b"=========== short test summary info ===========\n"
-         b"FAILED test/ut/x/test_a.py::test_one - AssertionError: boom\n"
-         b"FAILED test/ut/x/test_a.py::test_two - AssertionError: bam\n")
-    res = run_validator(tmp_path, Scenario(case="asys_ut", framework="pytest", log_bytes=log, exit_code=1))
+    ) + (
+        b"=========== short test summary info ===========\n"
+        b"FAILED test/ut/x/test_a.py::test_one - AssertionError: boom\n"
+        b"FAILED test/ut/x/test_a.py::test_two - AssertionError: bam\n"
+    )
+    res = run_validator(
+        tmp_path,
+        Scenario(case="asys_ut", framework="pytest", log_bytes=log, exit_code=1),
+    )
     assert res["STATUS"] == "FAIL"
     assert res["FAILED"] == "2"
     assert "test_one" in res["FAILLIST"]

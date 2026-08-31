@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from profiling.asys_profiling import AsysProfiling
+
+
+__all__ = ["AsysProfiling"]

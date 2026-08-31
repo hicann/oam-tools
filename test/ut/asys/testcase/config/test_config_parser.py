@@ -16,28 +16,26 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import pytest
-import os
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import configparser
 
-from testcase.conftest import ASYS_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from config import AsysConfigParser
 from ..conftest import AssertTest
 
 
 def setup_module():
-    print("TestConfigParser ut test start.")
+    print("TestConfigParser ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestConfigParser ut test finsh.")
+    print("TestConfigParser ut test finish.")  # noqa: T201  # test diagnostic output
 
 
 class TestConfigParser(AssertTest):
-
     def setup_method(self):
         self.parser = AsysConfigParser()
         self.ini_confs = configparser.ConfigParser()
@@ -54,23 +52,27 @@ class TestConfigParser(AssertTest):
         pass
 
     def test_parse_success(self, mocker):
-        mocker.patch("common.FileOperate.read_file", side_effect=(self.dep_confs, self.ini_confs))
+        mocker.patch(
+            "common.FileOperate.read_file", side_effect=(self.dep_confs, self.ini_confs)
+        )
         mocker.patch("params.ParamDict.get_command", return_value="launch")
         mocker.patch("params.ParamDict.set_deps")
         mocker.patch("params.ParamDict.set_ini")
         self.assertTrue(self.parser.parse())
 
     def test_parse_deps_failed(self, mocker):
-        mocker.patch("common.FileOperate.read_file", side_effect=(False, self.ini_confs))
+        mocker.patch(
+            "common.FileOperate.read_file", side_effect=(False, self.ini_confs)
+        )
         mocker.patch("params.ParamDict.get_command", return_value="launch")
         mocker.patch("params.ParamDict.set_deps")
         self.assertTrue(not self.parser.parse())
 
     def test_parse_ini_failed(self, mocker):
-        mocker.patch("common.FileOperate.read_file", side_effect=(self.dep_confs, False))
+        mocker.patch(
+            "common.FileOperate.read_file", side_effect=(self.dep_confs, False)
+        )
         mocker.patch("params.ParamDict.get_command", return_value="launch")
         mocker.patch("params.ParamDict.set_deps")
         mocker.patch("params.ParamDict.set_ini")
         self.assertTrue(not self.parser.parse())
-
-

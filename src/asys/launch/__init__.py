@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from launch.asys_launch import AsysLaunch
+
+
+__all__ = ["AsysLaunch"]

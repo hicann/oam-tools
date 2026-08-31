@@ -21,7 +21,12 @@ from threading import Thread
 
 from common import log_error, log_warning
 from common import RetCode
-from common.const import DETECT_DEFAULT_TIMEOUT, CPU_DETECT_ERROR_CODE_MIN, CPU_DETECT_ERROR_CODE_MAX, ScreenResult
+from common.const import (
+    DETECT_DEFAULT_TIMEOUT,
+    CPU_DETECT_ERROR_CODE_MIN,
+    CPU_DETECT_ERROR_CODE_MAX,
+    ScreenResult,
+)
 from params import ParamDict
 
 ERROR_DEVICE_ID = -1
@@ -29,15 +34,13 @@ ERROR_DEVICE_ID = -1
 
 class AmlStressDtestctType(ctypes.Structure):
     _fields_ = [
-        ('STRESS_DETECT_ALL', ctypes.c_int),
-        ('STRESS_DETECT_TYPE_MAX', ctypes.c_int)
+        ("STRESS_DETECT_ALL", ctypes.c_int),
+        ("STRESS_DETECT_TYPE_MAX", ctypes.c_int),
     ]
 
 
 class AmlStressDetectInfo(ctypes.Structure):
-    _fields_ = [
-        ('type', AmlStressDtestctType)
-    ]
+    _fields_ = [("type", AmlStressDtestctType)]
 
 
 def get_devices_master_id(device_obj, all_devices):
@@ -63,8 +66,10 @@ def run_stress_detect(device_id, device_obj, ret):
     info.type.STRESS_DETECT_ALL = 0
 
     try:
-        ret_code = device_obj.ascend_ml.AmlStressDetect(ctypes.c_int32(device_id), ctypes.byref(info))
-    except Exception as e:
+        ret_code = device_obj.ascend_ml.AmlStressDetect(
+            ctypes.c_int32(device_id), ctypes.byref(info)
+        )
+    except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
         log_error(f"Run stress_detect failed, error_msg: {e}")
         ret_code = None
 
@@ -92,14 +97,18 @@ def run_hbm(device_id, device_obj, ret):
         hbm_ecc_before = 0
     try:
         ret_code = device_obj.ascend_ml.AmlHbmDetectWithType(
-            ctypes.c_int32(device_id), ctypes.c_uint32(timeout), ctypes.c_uint32(hbm_type)
+            ctypes.c_int32(device_id),
+            ctypes.c_uint32(timeout),
+            ctypes.c_uint32(hbm_type),
         )
-    except Exception as e:
+    except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
         log_error(f"Run hbm detect failed, error_msg: {e}")
         ret_code = None
     hbm_ecc_after = device_obj.get_ecc_isolated_page(device_id)
     if hbm_ecc_before == "-" or hbm_ecc_after == "-":
-        log_warning("The statistics of all uncorrectable ECC errors in the lifecycle cannot be queried.")
+        log_warning(
+            "The statistics of all uncorrectable ECC errors in the lifecycle cannot be queried."
+        )
         hbm_ecc_count = "-"
     else:
         hbm_ecc_count = hbm_ecc_after - hbm_ecc_before
@@ -119,14 +128,18 @@ def run_cpu(device_id, device_obj, ret):
         timeout = DETECT_DEFAULT_TIMEOUT
 
     try:
-        ret_code = device_obj.ascend_ml.AmlCpuDetect(ctypes.c_int32(device_id), ctypes.c_uint32(timeout))
-    except Exception as e:
+        ret_code = device_obj.ascend_ml.AmlCpuDetect(
+            ctypes.c_int32(device_id), ctypes.c_uint32(timeout)
+        )
+    except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
         log_error(f"Run cpu detect failed, error_msg: {e}")
         ret_code = None
 
     if ret_code == 0:
         ret[device_id] = ScreenResult.PASS.value
-    elif ret_code and CPU_DETECT_ERROR_CODE_MIN <= ret_code <= CPU_DETECT_ERROR_CODE_MAX:
+    elif (
+        ret_code and CPU_DETECT_ERROR_CODE_MIN <= ret_code <= CPU_DETECT_ERROR_CODE_MAX
+    ):
         ret[device_id] = ScreenResult.FAIL.value
     else:
         ret[device_id] = ScreenResult.WARN.value
@@ -143,8 +156,10 @@ def run_aicore_stl(device_id, device_obj, ret):
         ret[device_id] = ScreenResult.WARN.value
         return ret
     try:
-        ret_code = device_obj.aml_aicore_stl.AmlAicoreStlDetect(ctypes.c_int32(device_id))
-    except Exception as e:
+        ret_code = device_obj.aml_aicore_stl.AmlAicoreStlDetect(
+            ctypes.c_int32(device_id)
+        )
+    except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
         log_error(f"Run aicore_stl_detect failed, error_msg: {e}")
         ret_code = None
 

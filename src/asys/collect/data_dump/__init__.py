@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from collect.data_dump.data_dump_collect import collect_data_dump
+
+
+__all__ = ["collect_data_dump"]

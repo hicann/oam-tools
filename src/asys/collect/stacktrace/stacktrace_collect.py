@@ -20,11 +20,15 @@ import os
 import re
 import time
 
-from common import get_cann_log_path
 from common import log_error, popen_run_cmd, log_warning, log_info
 from common import FileOperate as f
 from common.file_operate import COPY_MODE
-from common.const import ATRACE_LOG_NAME, RetCode, CHECK_BIN_MAX_TIMEOUT, CHECK_BIN_DEFAULT_TIMEOUT
+from common.const import (
+    ATRACE_LOG_NAME,
+    RetCode,
+    CHECK_BIN_MAX_TIMEOUT,
+    CHECK_BIN_DEFAULT_TIMEOUT,
+)
 from params import ParamDict
 from collect.stacktrace import AscendTraceDll
 from drv import EnvVarName
@@ -36,6 +40,7 @@ class AsysStackTrace(AscendTraceDll):
     """
     Send signal to export stackcore
     """
+
     def __init__(self):
         super(AsysStackTrace, self).__init__()
         self.run_mode = ParamDict().get_arg("run_mode")
@@ -49,26 +54,33 @@ class AsysStackTrace(AscendTraceDll):
     def _get_target_work_path(self):
         target_env_file = os.path.join("/proc", str(self.remote_id), "environ")
         try:
-            with open(target_env_file, "r") as target_env:
+            with open(
+                target_env_file, "r", encoding="utf-8", errors="ignore"
+            ) as target_env:
                 env_content = target_env.read()
-            env_list = env_content.split('\0')
+            env_list = env_content.split("\0")
             env_name = "ASCEND_WORK_PATH"
             for env in env_list:
                 if not env:
                     continue
-                
+
                 env_info = env.split("=", 1)
                 if len(env_info) >= 2 and env_info[0] == env_name:
                     return env_info[1]
             return None
         except PermissionError:
-            log_warning(f"permission denied: cannot read env of process {self.remote_id}.")
+            log_warning(
+                f"permission denied: cannot read env of process {self.remote_id}."
+            )
             return None
         except FileNotFoundError:
             log_warning(f"process {self.remote_id} does not exist: {target_env_file}.")
             return None
-        except Exception as e:
+        except OSError as e:
             log_warning(f"failed to get env for process {self.remote_id}：{str(e)}.")
+            return None
+        except UnicodeDecodeError as e:
+            log_warning(f"failed to decode env for process {self.remote_id}: {str(e)}.")
             return None
 
     def _set_trace_work_path(self):
@@ -76,18 +88,27 @@ class AsysStackTrace(AscendTraceDll):
         target_work_path = self._get_target_work_path()
         if target_work_path:
             self.trace_work_path = os.path.join(target_work_path, ATRACE_LOG_NAME)
-            log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
-                    f"get from environment variables of process {self.remote_id}.")
+            log_info(
+                f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
+                f"get from environment variables of process {self.remote_id}."
+            )
         else:
-            self.trace_work_path = os.path.join(asys_env_var.home_path, "ascend", ATRACE_LOG_NAME)
-            log_info(f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
-                    f"get from default path.")
+            self.trace_work_path = os.path.join(
+                asys_env_var.home_path, "ascend", ATRACE_LOG_NAME
+            )
+            log_info(
+                f"bin file generate path is {os.path.abspath(self.trace_work_path)}, "
+                f"get from default path."
+            )
         return
 
     def _get_bin_file_path(self, all_exists_bin):
         for path, _, files in os.walk(os.path.abspath(self.trace_work_path)):
             for file in files:
-                if not (file.startswith(f"stackcore_tracer_35_{self.remote_id}_") and file.endswith(".bin")):
+                if not (
+                    file.startswith(f"stackcore_tracer_35_{self.remote_id}_")
+                    and file.endswith(".bin")
+                ):
                     continue
                 bin_file_path = os.path.join(path, file)
                 if bin_file_path in all_exists_bin:
@@ -95,16 +116,20 @@ class AsysStackTrace(AscendTraceDll):
                 return bin_file_path
 
     def _get_exists_bin_file_num(self):
-        cmd = f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
-              f"stackcore_tracer_35_{self.remote_id}_*.bin | wc -l"
+        cmd = (
+            f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/"
+            f"stackcore_tracer_35_{self.remote_id}_*.bin | wc -l"
+        )
         ret = popen_run_cmd(cmd).replace("\n", "")
         if not ret.isdigit():
             return 0
         return int(ret)
 
     def _get_last_bin_file_name(self):
-        cmd = f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/" \
-              f"stackcore_tracer_35_{self.remote_id}_*.bin | head -n 1 | awk \'{{print $9}}\'"
+        cmd = (
+            f"ls -lt {os.path.abspath(self.trace_work_path)}/trace_*/stackcore_event_{self.remote_id}_*/"
+            f"stackcore_tracer_35_{self.remote_id}_*.bin | head -n 1 | awk '{{print $9}}'"
+        )
         return popen_run_cmd(cmd).replace("\n", "")
 
     def _wait_bin_file_generate(self, exists_bin_file_num):
@@ -124,14 +149,18 @@ class AsysStackTrace(AscendTraceDll):
                 time.sleep(EVERY_ROUND_TIME)
                 continue
             return bin_file_name
-        log_error(f"get the stackcore bin file in path {os.path.abspath(self.trace_work_path)} timeout.")
+        log_error(
+            f"get the stackcore bin file in path {os.path.abspath(self.trace_work_path)} timeout."
+        )
         return None
 
     def _check_other_param(self):
         task_dir = ParamDict().get_arg("task_dir")
         tar = ParamDict().get_arg("tar")
         if task_dir or tar:
-            log_error("'--task_dir', and '--tar' can be used only when '-r' is not used.")
+            log_error(
+                "'--task_dir', and '--tar' can be used only when '-r' is not used."
+            )
             return False
         if isinstance(self.timeout, int) and not isinstance(self.timeout, bool):
             if self.timeout <= 0 or self.timeout > CHECK_BIN_MAX_TIMEOUT:
@@ -143,13 +172,15 @@ class AsysStackTrace(AscendTraceDll):
 
     def _check_remote_id_validity(self):
         if self.remote_id < 2:
-            log_error(f'The value of "--remote" must be greater than 1, input: {self.remote_id}.')
+            log_error(
+                f'The value of "--remote" must be greater than 1, input: {self.remote_id}.'
+            )
             return False
 
         try:
             os.kill(self.remote_id, 0)
-        except Exception:
-            log_error(f'No such process, id: {self.remote_id}.')
+        except (OSError, OverflowError):
+            log_error(f"No such process, id: {self.remote_id}.")
             return False
 
         # check remote pid ?
@@ -161,12 +192,14 @@ class AsysStackTrace(AscendTraceDll):
         return True
 
     def _get_all_tid_of_process(self, current_pid):
-        cmd = fr"ps -efT | grep ' {self.remote_id} ' | grep -v {current_pid} | awk '{{print $2}}' | xargs ps -Lf \
+        cmd = (
+            rf"ps -efT | grep ' {self.remote_id} ' | grep -v {current_pid} | awk '{{print $2}}' | xargs ps -Lf \
                  | awk '{{print $4}}'"
+        )
         ret = popen_run_cmd(cmd).split("\n")
         ret = [i for i in ret if i.isdigit()]
         if len(ret) < 2:
-            log_error(f'Get pid failed by remote: {self.remote_id}.')
+            log_error(f"Get pid failed by remote: {self.remote_id}.")
             return []
         return ret
 
@@ -218,7 +251,7 @@ class AsysStackTrace(AscendTraceDll):
                 log_path = os.path.join(folder_path, file)
                 try:
                     os.remove(log_path)
-                except OSError as e:
+                except OSError:
                     continue
 
     def run(self):
@@ -231,7 +264,9 @@ class AsysStackTrace(AscendTraceDll):
             return False
 
         if self.remote_id is False or not self.is_all_task:
-            log_error('"-r=stacktrace" must be used together with "--remote" and "--all".')
+            log_error(
+                '"-r=stacktrace" must be used together with "--remote" and "--all".'
+            )
             return False
 
         if self.trace_dll == RetCode.FAILED:
@@ -239,9 +274,11 @@ class AsysStackTrace(AscendTraceDll):
 
         if not self._check_remote_id_validity():
             return False
-        log_warning(f"This command sends signal 35 to the process:{self.remote_id}. "
-                    "If the process is executed to disable signal receiving through the environment variable "
-                    f"ASCEND_COREDUMP_SIGNAL=none, the process:{self.remote_id} will be killed. ")
+        log_warning(
+            f"This command sends signal 35 to the process:{self.remote_id}. "
+            "If the process is executed to disable signal receiving through the environment variable "
+            f"ASCEND_COREDUMP_SIGNAL=none, the process:{self.remote_id} will be killed. "
+        )
         if not self.quiet:
             log_warning("Are you sure that signal reception is not disabled? (Y/N)")
             if input().upper() != "Y":
@@ -250,7 +287,7 @@ class AsysStackTrace(AscendTraceDll):
         self._set_trace_work_path()
 
         if not self._check_collect_stacktrace_parallel():
-            log_error('Collect stacktrace not support Parallelism.')
+            log_error("Collect stacktrace not support Parallelism.")
             return False
 
         exists_bin_num = self._get_exists_bin_file_num()

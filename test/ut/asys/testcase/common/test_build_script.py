@@ -16,6 +16,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import re
 from pathlib import Path
 
@@ -40,7 +44,9 @@ def test_safe_rm_dir_defined():
 
 def test_clean_cpack_staging_uses_safe_rm_dir():
     build_content = get_build_script_content()
-    match = re.search(r"\nclean_cpack_staging\(\) \{(?P<body>.*?)\n\}", build_content, re.S)
+    match = re.search(
+        r"\nclean_cpack_staging\(\) \{(?P<body>.*?)\n\}", build_content, re.S
+    )
     assert match is not None
 
     function_body = match.group("body")
@@ -49,7 +55,10 @@ def test_clean_cpack_staging_uses_safe_rm_dir():
 
 def test_package_cleans_cpack_staging_before_make_package():
     build_content = get_build_script_content()
-    assert 'make ${VERBOSE} -j${THREAD_NUM} && clean_cpack_staging "${BUILD_PATH}" && make package' in build_content
+    assert (
+        'make ${VERBOSE} -j${THREAD_NUM} && clean_cpack_staging "${BUILD_PATH}" && make package'
+        in build_content
+    )
 
 
 def test_stale_artifacts_cleaned_before_make_package():
@@ -68,18 +77,21 @@ def test_artifact_moved_by_package_type():
     # PACKAGE_TYPE 取值含 deb,rpm 与 all（一次产出多个包），故先展开成后缀列表再逐个搬，
     # 不能直接用 cann*.${PACKAGE_TYPE}（cann*.all / cann*.deb,rpm 匹配不到任何产物）。
     build_content = get_build_script_content()
-    assert 'compgen -G "cann*.${sfx}"' in build_content, \
-        "产物应按展开后的单个后缀查找"
-    assert 'mv cann*.${sfx} "$BUILD_OUT_PATH"' in build_content, \
+    assert 'compgen -G "cann*.${sfx}"' in build_content, "产物应按展开后的单个后缀查找"
+    assert 'mv cann*.${sfx} "$BUILD_OUT_PATH"' in build_content, (
         "应搬运展开后各后缀的全部产物"
+    )
     # 后缀列表必须覆盖多包取值，否则 all / deb,rpm 会漏搬。
-    assert 'all)     PKG_SUFFIXES="deb rpm run"' in build_content, \
+    assert 'all)     PKG_SUFFIXES="deb rpm run"' in build_content, (
         "all 应展开为 deb rpm run 三种后缀"
-    assert 'deb,rpm) PKG_SUFFIXES="deb rpm"' in build_content, \
+    )
+    assert 'deb,rpm) PKG_SUFFIXES="deb rpm"' in build_content, (
         "deb,rpm 应展开为 deb rpm 两种后缀"
+    )
     # 不应再按固定顺序 for ext in run rpm deb 扫描（旧写法会先命中残留 run）。
-    assert "for ext in run rpm deb" not in build_content, \
+    assert "for ext in run rpm deb" not in build_content, (
         "不应按固定顺序扫描 run/rpm/deb（会先命中残留旧产物）"
+    )
 
 
 def test_pkg_type_accepts_all_cann_cmake_values():
@@ -87,5 +99,6 @@ def test_pkg_type_accepts_all_cann_cmake_values():
     # 分支一致：run / rpm / deb / deb,rpm / all。少一个会让流水线无法从 build.sh
     # 产出对应包类型。
     build_content = get_build_script_content()
-    assert "run|rpm|deb|deb,rpm|all)" in build_content, \
+    assert "run|rpm|deb|deb,rpm|all)" in build_content, (
         "--pkg-type 应接受 run/rpm/deb/deb,rpm/all 全部取值"
+    )

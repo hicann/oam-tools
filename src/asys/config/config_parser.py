@@ -35,20 +35,16 @@ class IniConfItem(NamedTuple):
 
 
 ASYS_INI_VALUE_MAP = {
-    "graph": IniConfItem(
-        "graph", {"TRUE": "1", "FALSE": "0"}, "TRUE"
-    ),
-    "ops": IniConfItem(
-        "ops", {"TRUE": "1", "FALSE": "0"}, "TRUE"
-    ),
-    "dump_ge_graph": IniConfItem(
-        "DUMP_GE_GRAPH", {"1": "1", "2": "2", "3": "3"}, "2"
-    ),
+    "graph": IniConfItem("graph", {"TRUE": "1", "FALSE": "0"}, "TRUE"),
+    "ops": IniConfItem("ops", {"TRUE": "1", "FALSE": "0"}, "TRUE"),
+    "dump_ge_graph": IniConfItem("DUMP_GE_GRAPH", {"1": "1", "2": "2", "3": "3"}, "2"),
     "dump_graph_level": IniConfItem(
         "DUMP_GRAPH_LEVEL", {"1": "1", "2": "2", "3": "3"}, "2"
     ),
     "log_level": IniConfItem(
-        "ASCEND_GLOBAL_LOG_LEVEL", {"DEBUG": "0", "INFO": "1", "WARNING": "2", "ERROR": "3", "NULL": "4"}, "INFO"
+        "ASCEND_GLOBAL_LOG_LEVEL",
+        {"DEBUG": "0", "INFO": "1", "WARNING": "2", "ERROR": "3", "NULL": "4"},
+        "INFO",
     ),
     "log_event_enable": IniConfItem(
         "ASCEND_GLOBAL_EVENT_ENABLE", {"FALSE": "0", "TRUE": "1"}, "TRUE"
@@ -60,7 +56,6 @@ ASYS_INI_VALUE_MAP = {
 
 
 class AsysConfigParser:
-
     def __init__(self):
         self.dep_file_path = os.path.join(get_project_conf(), "dependent_package.csv")
         self.ini_file_path = os.path.join(get_project_conf(), "asys.ini")
@@ -95,8 +90,10 @@ class AsysConfigParser:
             ini_value = info_item.conf_val_map.get(conf_v)
             if ini_value is None:
                 ini_value = info_item.conf_val_map.get(info_item.default_key)
-                log_warning(f"ini conf item {ini_name} value error: {conf_v} is not in available range, "
-                            f"use default value: {info_item.default_key}.")
+                log_warning(
+                    f"ini conf item {ini_name} value error: {conf_v} is not in available range, "
+                    f"use default value: {info_item.default_key}."
+                )
             ParamDict().set_ini(ini_name, ini_value)
 
         return RetCode.SUCCESS

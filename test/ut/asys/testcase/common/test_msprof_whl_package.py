@@ -16,6 +16,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 """msprofbin/CMakeLists.txt 中 msprof whl 预解包进包方式的看护。
 
 背景：whl 预解包由旧的 install(CODE ...)（安装期 pip + chmod 555）改为构建期
@@ -47,9 +51,7 @@ def get_install_directory_block():
     """抽取解包目录的 install(DIRECTORY "${_msprof_extracted_dir}/" ...) 块。"""
     content = get_cmake_content()
     match = re.search(
-        r'install\(DIRECTORY\s+"\$\{_msprof_extracted_dir\}/".*?\)',
-        content,
-        re.S,
+        r'install\(DIRECTORY\s+"\$\{_msprof_extracted_dir\}/".*?\)', content, re.S
     )
     assert match is not None, "未找到解包目录的 install(DIRECTORY ...) 声明"
     return match.group(0)
@@ -63,8 +65,9 @@ def test_extraction_happens_at_build_time():
     assert "${CMAKE_CURRENT_BINARY_DIR}/msprof_whl_extracted" in content
     # 不应再用旧的 install(CODE ...) 在安装期跑 pip（排除注释行，只看实际语句）。
     code_lines = [ln for ln in content.splitlines() if not ln.lstrip().startswith("#")]
-    assert not any("install(CODE" in ln for ln in code_lines), \
+    assert not any("install(CODE" in ln for ln in code_lines), (
         "不应回退到安装期 install(CODE) 解包方式"
+    )
 
 
 ROOT_CMAKE = REPO_ROOT / "CMakeLists.txt"
@@ -99,9 +102,7 @@ def resolve_cmake_var(name, package_type):
     branch = branches.group("pkg" if package_type in PKG_PACKAGE_TYPES else "run")
     pattern = re.compile(r"set\(" + re.escape(name) + r"\s+([^)]+)\)")
     declared = pattern.search(branch) or pattern.search(content)
-    assert declared is not None, (
-        f"{package_type}: 根 CMakeLists.txt 未定义 {name}"
-    )
+    assert declared is not None, f"{package_type}: 根 CMakeLists.txt 未定义 {name}"
     return declared.group(1).strip()
 
 
@@ -168,7 +169,9 @@ def expand_destination(destination, package_type):
             )
             expanded = expanded.replace("${" + name + "}", value)
     # 自检：展开必须彻底，否则下面的落点断言会因残留 ${...} 而失去意义。
-    assert "${" not in expanded, f"{package_type}: DESTINATION 仍有未展开变量 {expanded}"
+    assert "${" not in expanded, (
+        f"{package_type}: DESTINATION 仍有未展开变量 {expanded}"
+    )
     return expanded
 
 
@@ -194,7 +197,9 @@ def test_install_directory_declares_file_555_but_no_dir_perms():
     # 目录权限不声明：交回 cmake 默认的 755。unlink 只看父目录写位，目录必须带
     # owner 写位，否则 build/_CPack_Packages/ 下的产物无法 rm -rf（CI 随机失败）。
     block = get_install_directory_block()
-    file_perm = re.search(r"FILE_PERMISSIONS\s+(.*?)(?:DIRECTORY_PERMISSIONS|PATTERN|\))", block, re.S)
+    file_perm = re.search(
+        r"FILE_PERMISSIONS\s+(.*?)(?:DIRECTORY_PERMISSIONS|PATTERN|\))", block, re.S
+    )
     assert file_perm is not None, "install(DIRECTORY) 应显式声明 FILE_PERMISSIONS 555"
     perms = file_perm.group(1)
     # 555 = READ + EXECUTE for OWNER/GROUP/WORLD，且不含任何 WRITE。
@@ -205,8 +210,9 @@ def test_install_directory_declares_file_555_but_no_dir_perms():
     # 目录权限一律不得摘掉 owner 写位：要么不声明，要么声明里必须含 OWNER_WRITE。
     dir_perm = re.search(r"DIRECTORY_PERMISSIONS\s+(.*?)(?:PATTERN|\))", block, re.S)
     if dir_perm is not None:
-        assert "OWNER_WRITE" in dir_perm.group(1), \
+        assert "OWNER_WRITE" in dir_perm.group(1), (
             "若声明 DIRECTORY_PERMISSIONS，必须含 OWNER_WRITE，否则产物目录无法删除"
+        )
 
 
 def test_sentinel_file_excluded_from_package():
@@ -227,8 +233,9 @@ def test_no_chmod_at_build_time():
     # 无法写入被锁成只读的目录。
     content = get_cmake_content()
     code_lines = [ln for ln in content.splitlines() if not ln.lstrip().startswith("#")]
-    assert not any("chmod" in ln for ln in code_lines), \
+    assert not any("chmod" in ln for ln in code_lines), (
         "构建期不应出现 chmod（权限应仅由 install(DIRECTORY) 声明式设置）"
+    )
 
 
 def test_extraction_guarded_by_whl_existence():
@@ -239,8 +246,9 @@ def test_extraction_guarded_by_whl_existence():
     # 等价；多个 whl 时 if(EXISTS) 会因列表拼成分号串而误判为假、静默跳过
     # 解包，if(msprof_whl) 无此问题（多 whl 另由前置 FATAL_ERROR 拦住）。
     content = get_cmake_content()
-    assert "if(msprof_whl)" in content, \
+    assert "if(msprof_whl)" in content, (
         "解包段应由 if(msprof_whl) 守卫，缺失 whl 时静默跳过"
+    )
 
 
 def test_extracted_dir_cleaned_before_pip():
@@ -258,11 +266,7 @@ def test_extracted_dir_cleaned_before_pip():
 def get_install_programs_whl_block():
     """抽取 whl 自身的 install(PROGRAMS ${msprof_whl} ...) 块。"""
     content = get_cmake_content()
-    match = re.search(
-        r'install\(PROGRAMS\s+\$\{msprof_whl\}.*?\)',
-        content,
-        re.S,
-    )
+    match = re.search(r"install\(PROGRAMS\s+\$\{msprof_whl\}.*?\)", content, re.S)
     assert match is not None, "未找到 whl 的 install(PROGRAMS ...) 声明"
     return match.group(0)
 

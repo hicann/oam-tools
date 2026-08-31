@@ -32,20 +32,20 @@ def _check_supported_chips(device_obj, device_id, operate):
     aic_supported_chips = options[ConfigOptionName.AIC_VOLTAGE.value][operate]
     bus_supported_chips = options[ConfigOptionName.BUS_VOLTAGE.value][operate]
     chip_info = device_obj.get_chip_info(device_id)
-    aic_res = (
-        ALL_SUPPORTED_CHIP_TYPE in aic_supported_chips or 
-        any(re.search(rf"{i}", chip_info) for i in aic_supported_chips)
+    aic_res = ALL_SUPPORTED_CHIP_TYPE in aic_supported_chips or any(
+        re.search(rf"{i}", chip_info) for i in aic_supported_chips
     )
-    bus_res = (
-        ALL_SUPPORTED_CHIP_TYPE in aic_supported_chips or 
-        any(re.search(rf"{i}", chip_info) for i in bus_supported_chips)
+    bus_res = ALL_SUPPORTED_CHIP_TYPE in aic_supported_chips or any(
+        re.search(rf"{i}", chip_info) for i in bus_supported_chips
     )
     return aic_res, bus_res, chip_info
 
 
 def get_stress_detect_config(device_id, device_obj):
     """config get stress_detect, aic & bus volt"""
-    aic_res, bus_res, _ = _check_supported_chips(device_obj, device_id, ConfigOperateType.GET.value)
+    aic_res, bus_res, _ = _check_supported_chips(
+        device_obj, device_id, ConfigOperateType.GET.value
+    )
     config_data = []
     aic_info = device_obj.get_device_aic_info(device_id)
     if aic_info[1] != device_obj.UNSUPPORTED_KEY_WORDS[-1] and aic_res:
@@ -55,7 +55,7 @@ def get_stress_detect_config(device_id, device_obj):
         config_data.append(["Bus Voltage (MV)", bus_info[0]])
     # get ai core volt & bus volt, all failed
     if not config_data:
-        log_error(f'Configuration unsuccessfully get, on device {device_id}.')
+        log_error(f"Configuration unsuccessfully get, on device {device_id}.")
         return False
 
     table_header = [[f"Device ID: {device_id}", "CURRENT CONFIGURATION"]]
@@ -67,7 +67,9 @@ def get_stress_detect_config(device_id, device_obj):
 
 def restore_stress_detect_config(device_id, device_obj):
     """config restore stress_detect, aic & bus volt"""
-    aic_res, bus_res, chip_info = _check_supported_chips(device_obj, device_id, ConfigOperateType.RESTORE.value)
+    aic_res, bus_res, chip_info = _check_supported_chips(
+        device_obj, device_id, ConfigOperateType.RESTORE.value
+    )
     if not aic_res and not bus_res:
         log_error(f"Restore aic_voltage and bus_voltage not supported at {chip_info}")
         return False

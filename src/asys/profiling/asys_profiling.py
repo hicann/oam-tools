@@ -22,6 +22,7 @@ import subprocess
 from datetime import datetime, timezone
 
 from common import log_error, log_info, log_debug
+from common.cmd_run import BASH
 from common.const import MAX_PERIOD, UNKNOWN, LP_MODE_NO, LP_MODE_AIC, LP_MODE_LP
 from params import ParamDict
 from common import AsysProfilingSupportedChip, ChipHandler
@@ -29,7 +30,7 @@ from common import AsysProfilingSupportedChip, ChipHandler
 support_profiling_list = set(["aicore", "dvpp", "os", "link", "memory", "power"])
 
 
-class AsysProfiling():
+class AsysProfiling:
     def __init__(self):
         self.device_id = int(ParamDict().get_arg("device_id"))
         self.period = ParamDict().get_arg("period", 0)
@@ -77,7 +78,9 @@ class AsysProfiling():
         return out_cmd
 
     def concat_aicore(self, cmd):
-        concat_cmd = f"--ai-core=on --aic-mode=sample-based --aic-metrics={self.aic_metrics}"
+        concat_cmd = (
+            f"--ai-core=on --aic-mode=sample-based --aic-metrics={self.aic_metrics}"
+        )
         log_debug("Concat aicore command.")
         out_cmd = cmd + " " + concat_cmd
         return out_cmd
@@ -86,8 +89,10 @@ class AsysProfiling():
         if not self._check_param():
             return False
         log_info(f"Run mode is {self.run_modes}.")
-        cmd = (f"msprof --output={shlex.quote(self.output_path)} --sys-period={str(self.period)} "
-                f"--sys-devices={self.device_id} ") 
+        cmd = (
+            f"msprof --output={shlex.quote(self.output_path)} --sys-period={str(self.period)} "
+            f"--sys-devices={self.device_id} "
+        )
         for run_mode in self.run_modes:
             func_name = "concat_" + run_mode
             func = getattr(self, func_name, None)
@@ -105,41 +110,57 @@ class AsysProfiling():
         ret, _chip_info = profiling_supported.get_supported_chip_info(self.device_id)
         if not ret:
             if _chip_info == UNKNOWN:
-                log_error(f"device id {self.device_id} is invalid, please enter a valid value.")
+                log_error(
+                    f"device id {self.device_id} is invalid, please enter a valid value."
+                )
                 return False
             else:
                 log_error(f"The profiling command does not support {_chip_info}.")
                 return False
 
-        self.run_modes = set(self.run_modes.split(','))
+        self.run_modes = set(self.run_modes.split(","))
         if not self.run_modes.issubset(support_profiling_list):
-            log_error("Run mode type is unsupported, run 'asys profiling -h' to get help.")
+            log_error(
+                "Run mode type is unsupported, run 'asys profiling -h' to get help."
+            )
             return False
 
         handler = ChipHandler().get_handler(_chip_info)
         if handler is None:
             log_error(f"{_chip_info} is not supported.")
             return False
-        if 'dvpp' in self.run_modes and not getattr(handler, "support_dvpp", lambda: True)():
+        if (
+            "dvpp" in self.run_modes
+            and not getattr(handler, "support_dvpp", lambda: True)()
+        ):
             log_error(f"{_chip_info} does not support dvpp profiling.")
             return False
         if handler.need_lp_param():
             self.lp_mode = LP_MODE_LP
-        elif 'aicore' not in self.run_modes:
+        elif "aicore" not in self.run_modes:
             self.lp_mode = LP_MODE_AIC
 
         utc_dt = datetime.now(timezone.utc)  # UTC time
-        dir_name = utc_dt.astimezone().strftime('%Y%m%d%H%M%S%f')[:-3]
+        dir_name = utc_dt.astimezone().strftime("%Y%m%d%H%M%S%f")[:-3]
         if not self.output_path:
             self.output_path = f"asys_profiling_result_{dir_name}"
         else:
-            self.output_path = os.path.join(self.output_path, f"asys_profiling_result_{dir_name}")
+            self.output_path = os.path.join(
+                self.output_path, f"asys_profiling_result_{dir_name}"
+            )
         return True
 
     def _run_cmd(self, cmd):
         log_info(f"Start run: {cmd}, please wait about {self.period} seconds.")
         # Run msprof command
-        ret = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, encoding='utf-8', env=os.environ)
+        ret = subprocess.run(
+            [BASH, "-c", cmd],
+            shell=False,
+            stdout=subprocess.PIPE,
+            encoding="utf-8",
+            env=os.environ,
+            check=False,
+        )
         if ret.returncode == 0:
             log_info(f"Succeeded in running profiling.\n{ret.stdout}")
         else:

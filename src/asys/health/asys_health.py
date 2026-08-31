@@ -29,6 +29,7 @@ from view import generate_report
 
 class AsysHealth:
     """device health check"""
+
     def __init__(self):
         self.device = DeviceInfo()
 
@@ -61,15 +62,17 @@ class AsysHealth:
             err_info = ret[device_id]
             table_header = [
                 [f"Device ID: {device_id}", f"Overall Health: {err_info[0]}"],
-                ["", f"ErrorCode Num: {len(err_info[1])}"]
+                ["", f"ErrorCode Num: {len(err_info[1])}"],
             ]
             table_data = {NONE: err_info[1]}
             save_str += generate_report(table_header, table_data, split_line=True)
         try:
-            output_file = os.path.join(ParamDict().asys_output_timestamp_dir, "health_result.txt")
+            output_file = os.path.join(
+                ParamDict().asys_output_timestamp_dir, "health_result.txt"
+            )
             with open(output_file, "w", encoding="utf8") as file:
                 file.write(save_str)
-        except Exception as e:
+        except OSError as e:
             log_error(f"Failed to save result: {e}.")
 
     def run_health_check(self, diagnose_devices):
@@ -88,13 +91,17 @@ class AsysHealth:
         if device_id is False:
             # without '-d', displays brief information about all devices.
             highest_status = self._get_highest_status(ret)
-            table_header = [[f"Group of {len(ret)} Device", f"Overall Health: {highest_status}"]]
-            table_data = {NONE: [[f"Device ID: {idx}", ret[idx][0]] for idx in sorted(ret.keys())]}
+            table_header = [
+                [f"Group of {len(ret)} Device", f"Overall Health: {highest_status}"]
+            ]
+            table_data = {
+                NONE: [[f"Device ID: {idx}", ret[idx][0]] for idx in sorted(ret.keys())]
+            }
         else:
             # with '-d', displays detailed information about the input device.
             table_header = [
                 [f"Device ID: {device_id}", f"Overall Health: {ret[device_id][0]}"],
-                ["", f"ErrorCode Num: {len(ret[device_id][1])}"]
+                ["", f"ErrorCode Num: {len(ret[device_id][1])}"],
             ]
             table_data = {NONE: ret[device_id][1]}
             # Only the first five records are displayed on the screen.

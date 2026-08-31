@@ -16,13 +16,12 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-from argparse import Namespace
-import pytest
-from ..conftest import CONF_SRC_PATH, ASYS_SRC_PATH
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
 
-sys.argv[0] = CONF_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
+from argparse import Namespace
+
 
 from config_cmd import AsysConfig
 from params import ParamDict
@@ -32,12 +31,12 @@ from common.chip_handler import g_device_map
 
 
 class AsysConfig0:
-    def AmlStressRestore(self, *args):
+    def AmlStressRestore(self, *_args):
         return 0
 
 
 class AsysConfig1:
-    def AmlStressRestore(self, *args):
+    def AmlStressRestore(self, *_args):
         return 1
 
 
@@ -67,17 +66,16 @@ class TestAsysConfig(AssertTest):
         self.assertTrue(AsysConfig().run())
         captured = capsys.readouterr()
         expect_ret = """
- +---------------------------+----------------------------+ 
- | Device ID: 1              | CURRENT CONFIGURATION      | 
- +===========================+============================+ 
- | AI Core Voltage (MV)      | 850                        | 
- | Bus Voltage (MV)          | 900                        | 
- +---------------------------+----------------------------+ 
+ +---------------------------+----------------------------+
+ | Device ID: 1              | CURRENT CONFIGURATION      |
+ +===========================+============================+
+ | AI Core Voltage (MV)      | 850                        |
+ | Bus Voltage (MV)          | 900                        |
+ +---------------------------+----------------------------+
 """
         self.assertTrue(captured.out == expect_ret)
 
     def test_asys_config_get_mode_without_d(self, mocker, capsys):
-
         args = Namespace(
             d=None, get=True, restore=False, stress_detect=True, subparser_name="config"
         )
@@ -94,12 +92,12 @@ class TestAsysConfig(AssertTest):
         self.assertTrue(AsysConfig().run())
         captured = capsys.readouterr()
         expect_ret = """
- +---------------------------+----------------------------+ 
- | Device ID: 0              | CURRENT CONFIGURATION      | 
- +===========================+============================+ 
- | AI Core Voltage (MV)      | 850                        | 
- | Bus Voltage (MV)          | 900                        | 
- +---------------------------+----------------------------+ 
+ +---------------------------+----------------------------+
+ | Device ID: 0              | CURRENT CONFIGURATION      |
+ +===========================+============================+
+ | AI Core Voltage (MV)      | 850                        |
+ | Bus Voltage (MV)          | 900                        |
+ +---------------------------+----------------------------+
 """
         self.assertTrue(captured.out == expect_ret)
 
@@ -192,11 +190,11 @@ class TestAsysConfig(AssertTest):
         self.assertTrue(AsysConfig().run())
         captured = capsys.readouterr()
         expect_ret = """
- +---------------------------+----------------------------+ 
- | Device ID: 1              | CURRENT CONFIGURATION      | 
- +===========================+============================+ 
- | AI Core Voltage (MV)      | 850                        | 
- +---------------------------+----------------------------+ 
+ +---------------------------+----------------------------+
+ | Device ID: 1              | CURRENT CONFIGURATION      |
+ +===========================+============================+
+ | AI Core Voltage (MV)      | 850                        |
+ +---------------------------+----------------------------+
 """
         self.assertTrue(captured.out == expect_ret)
 
@@ -221,11 +219,11 @@ class TestAsysConfig(AssertTest):
         self.assertTrue(AsysConfig().run())
         captured = capsys.readouterr()
         expect_ret = """
- +-----------------------+----------------------------+ 
- | Device ID: 1          | CURRENT CONFIGURATION      | 
- +=======================+============================+ 
- | Bus Voltage (MV)      | 900                        | 
- +-----------------------+----------------------------+ 
+ +-----------------------+----------------------------+
+ | Device ID: 1          | CURRENT CONFIGURATION      |
+ +=======================+============================+
+ | Bus Voltage (MV)      | 900                        |
+ +-----------------------+----------------------------+
 """
         self.assertTrue(captured.out == expect_ret)
 

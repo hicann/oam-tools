@@ -31,8 +31,12 @@ def compress_output_dir_tar():
     output_dir = ParamDict().asys_output_timestamp_dir
     if not (output_dir and f.check_dir(output_dir)):
         return
-    with tarfile.open(os.path.join(os.path.dirname(output_dir), os.path.basename(output_dir) + ".tar.gz"), "w:gz") \
-            as tar:
+    with tarfile.open(
+        os.path.join(
+            os.path.dirname(output_dir), os.path.basename(output_dir) + ".tar.gz"
+        ),
+        "w:gz",
+    ) as tar:
         tar.add(output_dir, arcname=os.path.basename(output_dir))
 
     # remove output dir

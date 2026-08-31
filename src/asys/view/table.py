@@ -33,19 +33,20 @@ def _split_cell(cell, width):
     cell = str(cell)
     if not cell:
         return [""]
-    return [cell[i:i + width] for i in range(0, len(cell), width)]
+    return [cell[i : i + width] for i in range(0, len(cell), width)]
 
 
 def _iter_row_lines(row, column_widths):
-    cell_lines = [_split_cell(cell, column_widths[index]) for index, cell in enumerate(row)]
+    cell_lines = [
+        _split_cell(cell, column_widths[index]) for index, cell in enumerate(row)
+    ]
     if not cell_lines:
         yield []
         return
     line_count = max(len(lines) for lines in cell_lines)
     for line_index in range(line_count):
         yield [
-            lines[line_index] if line_index < len(lines) else ""
-            for lines in cell_lines
+            lines[line_index] if line_index < len(lines) else "" for lines in cell_lines
         ]
 
 
@@ -75,7 +76,7 @@ def write_data(table_string, data_value, column_widths, split_line):
             table_string += ADD_SUB
             for i, _ in enumerate(column_widths):
                 # Align the cells in each column
-                table_string += format_cell("", column_widths[i], '-') + SUB_ADD
+                table_string += format_cell("", column_widths[i], "-") + SUB_ADD
             table_string += "\n"
     return table_string
 
@@ -109,7 +110,9 @@ def generate_report(table_header, table_data, split_line=False):
         key_list[0] = data_key
         table_row.append(key_list)
         table_row += data_value
-    column_widths = [max(len(str(row[i])) for row in table_row) for i in range(len(table_row[0]))]
+    column_widths = [
+        max(len(str(row[i])) for row in table_row) for i in range(len(table_row[0]))
+    ]
     # Create the formatted table string
     table_string = "\n"
     table_string += ADD_SUB
@@ -118,7 +121,7 @@ def generate_report(table_header, table_data, split_line=False):
             column_widths[i] = MAX_CHAR_LINE
         column_widths[i] += 5
         # Align the cells in each column
-        table_string += str().ljust(column_widths[i], '-') + SUB_ADD
+        table_string += str().ljust(column_widths[i], "-") + SUB_ADD
     table_string += "\n"
 
     table_string = write_header(table_string, table_header, column_widths)
@@ -127,7 +130,7 @@ def generate_report(table_header, table_data, split_line=False):
     table_string += " +="
     for i, _ in enumerate(column_widths):
         # Align the cells in each column
-        table_string += str().ljust(column_widths[i], '=') + "=+ "
+        table_string += str().ljust(column_widths[i], "=") + "=+ "
     table_string += "\n"
     # Table content data
     for data_key, data_value in table_data.items():
@@ -137,7 +140,7 @@ def generate_report(table_header, table_data, split_line=False):
                 table_string += ADD_SUB
                 for i, cell in enumerate(wrapped_row):
                     # Align the cells in each column
-                    table_string += format_cell(cell, column_widths[i], '-') + SUB_ADD
+                    table_string += format_cell(cell, column_widths[i], "-") + SUB_ADD
                 table_string += "\n"
         table_string = write_data(table_string, data_value, column_widths, split_line)
 
@@ -145,6 +148,7 @@ def generate_report(table_header, table_data, split_line=False):
         table_string += ADD_SUB
         for i, _ in enumerate(column_widths):
             # Align the cells in each column
-            table_string += format_cell("", column_widths[i], '-') + SUB_ADD
+            table_string += format_cell("", column_widths[i], "-") + SUB_ADD
         table_string += "\n"
-    return table_string.replace("-+ -", "-+--").replace("=+ =", "=+==")
+    table_string = table_string.replace("-+ -", "-+--").replace("=+ =", "=+==")
+    return "\n".join(line.rstrip() for line in table_string.split("\n"))

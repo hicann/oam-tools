@@ -19,6 +19,8 @@
 import json
 import os.path
 import re
+import shutil
+import subprocess
 
 from params import ParamDict
 from common import consts
@@ -29,15 +31,32 @@ from drv import EnvVarName
 
 __all__ = ["collect_ops"]
 
+GREP = shutil.which("grep") or "/bin/grep"
+
+
+def _grep_lines(pattern, path):
+    """grep -inrE pattern path, return matching lines (list)."""
+    try:
+        ret = subprocess.run(
+            [GREP, "-inrE", pattern, path],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+            check=False,
+        )
+    except OSError as error:
+        log_debug(f"Run grep for '{pattern}' failed, {error}")
+        return []
+    return ret.stdout.splitlines(keepends=True)
+
 
 def get_sk_kernel_name(plog):
     """
     Obtains kernelName from the SuperKernel scenario marker print in plog.
     """
     sk_marker = "Begin to dump callback exception"
-    cmd_ret = os.popen(f"grep '{sk_marker}' -inrE {plog}")
-    sk_lines = cmd_ret.readlines()
-    cmd_ret.close()
+    sk_lines = _grep_lines(sk_marker, plog)
     if not sk_lines:
         return None
     sk_regexp = r"kernelName=([^\n]*?)\.\s*$"
@@ -55,15 +74,17 @@ def is_sk_scenario(output_root_path):
     device-side files are generated.
     """
     sk_marker = "Begin to dump callback exception"
-    run_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "run", "plog")
-    debug_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "debug", "plog")
+    run_plog = os.path.join(
+        output_root_path, "dfx", "log", "host", "cann", "run", "plog"
+    )
+    debug_plog = os.path.join(
+        output_root_path, "dfx", "log", "host", "cann", "debug", "plog"
+    )
     for plog in [run_plog, debug_plog]:
         if not f.check_dir(plog):
             continue
-        cmd_ret = os.popen(f"grep '{sk_marker}' -inrE {plog}")
-        sk_lines = cmd_ret.readlines()
-        cmd_ret.close()
-        if sk_lines:
+        cmd_ret = _grep_lines(sk_marker, plog)
+        if cmd_ret:
             return True
     return False
 
@@ -72,9 +93,16 @@ def get_fault_kernel_name(output_root_path):
     """
     Obtains fault_kernel_name from plog.
     """
-    error_msg = ["Aicore kernel execute failed|AI Core kernel execution failed", "fftsplus task execute failed"]
-    run_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "run", "plog")
-    debug_plog = os.path.join(output_root_path, "dfx", "log", "host", "cann", "debug", "plog")
+    error_msg = [
+        "Aicore kernel execute failed|AI Core kernel execution failed",
+        "fftsplus task execute failed",
+    ]
+    run_plog = os.path.join(
+        output_root_path, "dfx", "log", "host", "cann", "run", "plog"
+    )
+    debug_plog = os.path.join(
+        output_root_path, "dfx", "log", "host", "cann", "debug", "plog"
+    )
     plog_files = [run_plog, debug_plog]
     for plog in plog_files:
         if not f.check_dir(plog):
@@ -85,19 +113,19 @@ def get_fault_kernel_name(output_root_path):
             return sk_kernel_name
         plog_lines = []
         for msg in error_msg:
-            cmd_ret = os.popen(f"grep '{msg}' -inrE {plog}")
-            plog_lines += cmd_ret.readlines()
-            cmd_ret.close()
+            plog_lines += _grep_lines(msg, plog)
         if len(plog_lines) == 0:
             continue
 
-        static_regexp = r" stream_id=\d+,.*?task_id=\d+,.*?fault kernel_name=.*?,.*?" \
-                        r" fault kernel info ext=(.*?),"
+        static_regexp = (
+            r" stream_id=\d+,.*?task_id=\d+,.*?fault kernel_name=.*?,.*?"
+            r" fault kernel info ext=(.*?),"
+        )
         dynamic_regexp = r" stream_id=\d+,.*?task_id=\d+,.*?fault kernel_name=(.*?),"
 
         for regexp in [static_regexp, dynamic_regexp]:
             kernel_name_ret = re.findall(regexp, plog_lines[0])
-            if not kernel_name_ret or kernel_name_ret[0] == 'none':
+            if not kernel_name_ret or kernel_name_ret[0] == "none":
                 continue
             kernel_name = kernel_name_ret[0]
             return kernel_name.replace("_mix_aic", "").replace("_mix_aiv", "")
@@ -110,12 +138,14 @@ def get_all_kernel_name_from_file(file_path):
     """
     all_kernel_name = []
     try:
-        with open(file_path, 'r') as json_file:
+        with open(file_path, "r", encoding="utf-8") as json_file:
             dict_obj = json.load(json_file)
         all_kernel_name.append(dict_obj.get("binFileName"))
         all_kernel_name.append(dict_obj.get("kernelName"))
-        all_kernel_name += [kernel.get("kernelName") for kernel in dict_obj.get("kernelList", [])]
-    except Exception as e:
+        all_kernel_name += [
+            kernel.get("kernelName") for kernel in dict_obj.get("kernelList", [])
+        ]
+    except (OSError, ValueError, AttributeError, TypeError) as e:
         log_debug(f"Failed to load the '{file_path}', {e}")
         return all_kernel_name
 
@@ -135,7 +165,9 @@ def get_fault_kernel_name_files(collect_path, kernel_name):
         for file in files:
             file_path = os.path.join(path, file)
             # ASCEND_OPP_PATH only needs to read files in the '/kernel/'.
-            if not file.endswith(".json") or (collect_path == opp_path and "kernel" not in path.split("/")):
+            if not file.endswith(".json") or (
+                collect_path == opp_path and "kernel" not in path.split("/")
+            ):
                 continue
             # read all JSON files and check whether they contain kernel_name.
             if kernel_name not in get_all_kernel_name_from_file(file_path):
@@ -180,15 +212,21 @@ def collect_ops_from_dump(output_root_path):
 
 
 def collect_ops_files_env_var(output_root_path, ops_target_dir):
-
     collect_path_list = []
     task_dir = ParamDict().get_arg("task_dir")
     # ops files priority: NPU_COLLECT_PATH > ASCEND_CACHE_PATH > ASCEND_WORK_PATH > $HOME/atc_data >
     # ASCEND_CUSTOM_OPP_PATH > ASCEND_OPP_PATH > ./
     env_var = EnvVarName()
-    for collect_path in [task_dir, env_var.npu_collect_path, env_var.cache_path, env_var.work_path,
-                         os.path.join(env_var.home_path, "atc_data"), env_var.custom_opp_path, env_var.opp_path,
-                         env_var.current_path]:
+    for collect_path in [
+        task_dir,
+        env_var.npu_collect_path,
+        env_var.cache_path,
+        env_var.work_path,
+        os.path.join(env_var.home_path, "atc_data"),
+        env_var.custom_opp_path,
+        env_var.opp_path,
+        env_var.current_path,
+    ]:
         if collect_path and f.check_dir(collect_path):
             collect_path_list.append(collect_path)
 
@@ -203,7 +241,9 @@ def collect_ops_files_env_var(output_root_path, ops_target_dir):
 
 
 def check_launch_ops():
-    if (ParamDict().get_command() == consts.launch_cmd) and (not ParamDict().get_ini("ops") == "1"):
+    if (ParamDict().get_command() == consts.launch_cmd) and (
+        not ParamDict().get_ini("ops") == "1"
+    ):
         log_debug("ops is not set on, not collect ops files")
         return False
     return True
@@ -216,9 +256,15 @@ def collect_debug_kernel(output_root_path):
         log_debug("ASCEND_OPP_PATH not set")
         return
     debug_kernel_path = os.path.join(opp_path, "debug_kernel")
-    if debug_kernel_path and f.check_access(debug_kernel_path) and f.check_dir(debug_kernel_path):
+    if (
+        debug_kernel_path
+        and f.check_access(debug_kernel_path)
+        and f.check_dir(debug_kernel_path)
+    ):
         if f.list_dir(debug_kernel_path):
-            debug_kernel_target_path = os.path.join(ops_target_dir, os.path.basename(debug_kernel_path))
+            debug_kernel_target_path = os.path.join(
+                ops_target_dir, os.path.basename(debug_kernel_path)
+            )
             if debug_kernel_target_path.startswith(debug_kernel_path):
                 log_debug("Cannot copy debug_kernel to %s" % debug_kernel_target_path)
             else:
@@ -226,17 +272,22 @@ def collect_debug_kernel(output_root_path):
 
 
 def collect_file(output_root_path):
-
     ops_target_dir = os.path.join(output_root_path, "dfx", "ops")
     ret = False
     if ParamDict().get_command() == consts.launch_cmd:
         ops_source_dir = os.path.join(
-            ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates", "extra-info", "ops")
+            ParamDict().asys_output_timestamp_dir,
+            "npu_collect_intermediates",
+            "extra-info",
+            "ops",
+        )
         if f.check_dir(ops_source_dir):
             ret = f.collect_dir(ops_source_dir, ops_target_dir, MOVE_MODE)
     # SK场景下只生成host.o，没有device .o/.json，按算子名搜索必然失败，跳过兜底搜索
     elif is_sk_scenario(output_root_path):
-        log_info("SuperKernel scenario detected, skip searching operator files by kernel name.")
+        log_info(
+            "SuperKernel scenario detected, skip searching operator files by kernel name."
+        )
         ret = True
     else:
         ret = collect_ops_files_env_var(output_root_path, ops_target_dir)
@@ -255,7 +306,14 @@ def collect_cfg_json(output_root_path, cfg_dir, json_dir, config):
         for file in files:
             if not file.endswith(".json"):
                 continue
-            dst_dir = os.path.join(output_root_path, "dfx", "ops", config, cfg_dir, os.path.relpath(path, json_dir))
+            dst_dir = os.path.join(
+                output_root_path,
+                "dfx",
+                "ops",
+                config,
+                cfg_dir,
+                os.path.relpath(path, json_dir),
+            )
             if not os.path.exists(dst_dir):
                 os.makedirs(dst_dir)
             ret = ret and f.copy_file_to_dir(os.path.join(path, file), dst_dir)
@@ -273,7 +331,7 @@ def collect_opp_config(output_root_path):
         log_debug(f"The {config_path} is not a file.")
         return False
     try:
-        with open(config_path, 'r') as cfg:
+        with open(config_path, "r", encoding="utf-8") as cfg:
             cfg_content = cfg.read()
     except PermissionError:
         log_warning(f"The {config_path} file does not have the read permission.")
@@ -289,9 +347,13 @@ def collect_opp_config(output_root_path):
         # remove front and back spaces
         _cfg_dir = cfg_dir.strip()
         json_dir = os.path.join(opp_path, "vendors", _cfg_dir)
-        ret = ret and collect_cfg_json(output_root_path, _cfg_dir, json_dir, "vendor_config")
+        ret = ret and collect_cfg_json(
+            output_root_path, _cfg_dir, json_dir, "vendor_config"
+        )
 
-    ret = ret and f.copy_file_to_dir(config_path, os.path.join(output_root_path, "dfx", "ops", "vendor_config"))
+    ret = ret and f.copy_file_to_dir(
+        config_path, os.path.join(output_root_path, "dfx", "ops", "vendor_config")
+    )
     return ret
 
 

@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from diagnose.asys_diagnose import AsysDiagnose
+
+
+__all__ = ["AsysDiagnose"]

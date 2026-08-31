@@ -42,7 +42,7 @@ opp_kernels = ["ops_cv", "ops_legacy", "ops_math", "ops_nn", "ops_transformer"]
 SUPPORT_CHIPS = ChipHandler().get_support_chip_regex_list()
 
 
-class AsysDiagnose():
+class AsysDiagnose:
     """"""
 
     def __init__(self):
@@ -58,8 +58,10 @@ class AsysDiagnose():
         if device_id is False:
             devices_ret = [ret[key][0] for key in sorted(ret.keys())]
             devices_ecc = [ret[key][1] for key in sorted(ret.keys())]
-            if ((ScreenResult.PASS.value in devices_ret and ScreenResult.WARN.value in devices_ret) or
-                    len(devices_ret) == 1):
+            if (
+                ScreenResult.PASS.value in devices_ret
+                and ScreenResult.WARN.value in devices_ret
+            ) or len(devices_ret) == 1:
                 devices_str = ", ".join(devices_ret)
             else:
                 devices_str = f"{devices_ret[0]} - All"
@@ -68,13 +70,13 @@ class AsysDiagnose():
 
         hbm_table = "HBM Detect"
         if device_id is False and len(devices_ecc) != 1:
-            devices_hbm = ("(" + link_symbol.join(devices_ecc) + ")")
+            devices_hbm = "(" + link_symbol.join(devices_ecc) + ")"
             ret_data_str = [[hbm_table, devices_str], ["", devices_hbm]]
         elif len(devices_ecc) == 1:
-            devices_str += ("(" + link_symbol.join(devices_ecc) + ")")
+            devices_str += "(" + link_symbol.join(devices_ecc) + ")"
             ret_data_str = [[hbm_table, devices_str]]
         else:
-            devices_str += ("(" + ret[device_id][1] + ")")
+            devices_str += "(" + ret[device_id][1] + ")"
             ret_data_str = [[hbm_table, devices_str]]
 
         return ret_data_str
@@ -124,14 +126,16 @@ class AsysDiagnose():
         # save result to file
         output_path = ParamDict().get_arg("output")
         utc_dt = datetime.now(timezone.utc)  # UTC time
-        dir_name = utc_dt.astimezone().strftime('%Y%m%d%H%M%S%f')[:-3]
+        dir_name = utc_dt.astimezone().strftime("%Y%m%d%H%M%S%f")[:-3]
         if output_path is not False:
             try:
-                output_file = os.path.join(ParamDict().get_arg("output"), f"diagnose_result_{dir_name}.txt")
+                output_file = os.path.join(
+                    ParamDict().get_arg("output"), f"diagnose_result_{dir_name}.txt"
+                )
                 with open(output_file, "w", encoding="utf8") as file:
                     file.write(ret_str)
                 log_info(f"output file: {os.path.abspath(output_file)}", force=True)
-            except Exception as e:
+            except (OSError, TypeError) as e:
                 log_error(f"Failed to save result: {e}.")
 
     def _check_support(self, run_mode):
@@ -149,27 +153,37 @@ class AsysDiagnose():
             # check opp_kernel, ${install_path}/latest/opp_kernel
             opp_path = EnvVarName().opp_path
             if not opp_path:
-                log_error("The diagnose command can be executed only after the opp_kernel is installed.")
+                log_error(
+                    "The diagnose command can be executed only after the opp_kernel is installed."
+                )
                 return False
             for ops in opp_kernels:
-                if not os.path.isfile(os.path.join(opp_path, "..", "share", "info", ops, "version.info")):
-                    log_error(f"The diagnose command can be executed only after the {ops} is installed.")
+                if not os.path.isfile(
+                    os.path.join(opp_path, "..", "share", "info", ops, "version.info")
+                ):
+                    log_error(
+                        f"The diagnose command can be executed only after the {ops} is installed."
+                    )
                     return False
 
         timeout = ParamDict().get_arg("timeout")
         if run_mode == HBM_MODE and timeout is not False:
             if timeout < HBM_MIN_TIMEOUT or timeout > DETECT_MAX_TIMEOUT:
-                log_error(f"The value of timeout must be in the range of [{HBM_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}].")
+                log_error(
+                    f"The value of timeout must be in the range of [{HBM_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}]."
+                )
                 return False
 
         if run_mode == CPU_MODE and timeout is not False:
             if timeout < CPU_MIN_TIMEOUT or timeout > DETECT_MAX_TIMEOUT:
-                log_error(f"The value of timeout must be in the range of [{CPU_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}].")
+                log_error(
+                    f"The value of timeout must be in the range of [{CPU_MIN_TIMEOUT}, {DETECT_MAX_TIMEOUT}]."
+                )
                 return False
         if run_mode == AICORE_STL_MODE and timeout is not False:
             log_warning(
                 "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored.",
-                force=True
+                force=True,
             )
         if self.devices_num == 0:
             return False
@@ -189,7 +203,9 @@ class AsysDiagnose():
             for i in range(self.devices_num):
                 ret, _chip_info = diagnose_supported.get_supported_chip_info(i)
                 if not ret:
-                    log_error(f"The diagnose command does not support on device_{i}: {_chip_info}.")
+                    log_error(
+                        f"The diagnose command does not support on device_{i}: {_chip_info}."
+                    )
                     continue
                 diagnose_devices.append(i)
                 chip_info = _chip_info
@@ -222,7 +238,10 @@ class AsysDiagnose():
         # load dll: libascend_ml.so (or libaml_aicore_stl.so for AICore STL mode)
         if run_mode == AICORE_STL_MODE:
             self.device_obj.aml_aicore_stl = LoadSoType().get_aml_aicore_stl()
-            if self.device_obj.aml_aicore_stl == RetCode.FAILED or self.device_obj.aml_aicore_stl is None:
+            if (
+                self.device_obj.aml_aicore_stl == RetCode.FAILED
+                or self.device_obj.aml_aicore_stl is None
+            ):
                 log_error("Failed to load libaml_aicore_stl.so for aicore_stl_detect.")
                 return False
         elif self.device_obj.ascend_ml == RetCode.FAILED:
@@ -236,13 +255,17 @@ class AsysDiagnose():
             log_error(f"{chip_info} is not supported.")
             return False
         ret = handler.run_diagnose(self.device_obj, diagnose_devices, run_mode)
-        
+
         # ret add not support device
         if device_id is False:
             for i in range(self.devices_num):
                 if i in diagnose_devices:
                     continue
-                ret[i] = [ScreenResult.WARN.value, "0"] if run_mode == HBM_MODE else ScreenResult.WARN.value
+                ret[i] = (
+                    [ScreenResult.WARN.value, "0"]
+                    if run_mode == HBM_MODE
+                    else ScreenResult.WARN.value
+                )
 
         if ScreenResult.WARN.value in ret.values():
             log_warning("Diagnosis results have failed, please analyze aml logs")
@@ -261,15 +284,19 @@ class AsysDiagnose():
         return output
 
     def env_detect(self, run_mode):
-        device_id = ParamDict().get_arg('device_id')
-        msaicerr_path = ParamDict().tools_path.parents[1].joinpath("msaicerr", "msaicerr.py")
+        device_id = ParamDict().get_arg("device_id")
+        msaicerr_path = (
+            ParamDict().tools_path.parents[1].joinpath("msaicerr", "msaicerr.py")
+        )
         log_debug(f"Start load msaicerr tools path: {msaicerr_path}")
         log_debug(f"Device num is {self.devices_num}")
         if not self.devices_num:
-            log_error(f"The chip does not have a device for execution.")
+            log_error("The chip does not have a device for execution.")
             return False
         if not os.path.exists(msaicerr_path):
-            log_error("The path of the msaicerr tool cannot be found, please install the whole package.")
+            log_error(
+                "The path of the msaicerr tool cannot be found, please install the whole package."
+            )
             return False
         res = {}
         output = ""
@@ -281,10 +308,14 @@ class AsysDiagnose():
             output = self.run_msaicerr_cmd(msaicerr_path, device_id, res)
         self.print_save(device_id, res, run_mode)
         if ScreenResult.FAIL.value in res.values():
-            debug_info_path = Path(os.getcwd(), 'debug_info.txt')
-            if not f.check_access(os.getcwd(), os.W_OK) or (debug_info_path.exists() and
-                                                            not f.check_access(debug_info_path, os.W_OK)):
-                log_error("The current directory or debug_info.txt is immutable, Please check.")
+            debug_info_path = Path(os.getcwd(), "debug_info.txt")
+            if not f.check_access(os.getcwd(), os.W_OK) or (
+                debug_info_path.exists()
+                and not f.check_access(debug_info_path, os.W_OK)
+            ):
+                log_error(
+                    "The current directory or debug_info.txt is immutable, Please check."
+                )
 
             else:
                 sys.stdout.write(output)
@@ -312,6 +343,8 @@ class AsysDiagnose():
             if chip_info != UNKNOWN and re.search("950", chip_info):
                 stl_devices.append(dev)
             else:
-                log_warning(f"device_{dev} ({chip_info}) does not support aicore_stl_detect "
-                            "(Ascend950 only), skipped.")
+                log_warning(
+                    f"device_{dev} ({chip_info}) does not support aicore_stl_detect "
+                    "(Ascend950 only), skipped."
+                )
         return stl_devices

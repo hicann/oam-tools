@@ -26,25 +26,44 @@ from common import get_device
 from common import FileOperate as f
 from common import timeout_decorator
 from common import log_error
-from common.const import UNKNOWN, NONE, MEMORY_FREQUENCY, HBM_FREQUENCY, CONTROL_CPU_FREQUENCY, CannPkg
-from common.const import AI_CORE_USE, AI_CPU_USE, CONTROL_CPU_USE, MEM_BANDWIDTH_USE, NOT_SUPPORT, MAX_CHAR_LINE
-from common.const import ConfigOperateType, ConfigOptionName, ALL_NOT_SUPPORTED_CHIP_TYPE, ALL_SUPPORTED_CHIP_TYPE
+from common.const import (
+    UNKNOWN,
+    NONE,
+    MEMORY_FREQUENCY,
+    HBM_FREQUENCY,
+    CONTROL_CPU_FREQUENCY,
+    CannPkg,
+)
+from common.const import (
+    AI_CORE_USE,
+    AI_CPU_USE,
+    CONTROL_CPU_USE,
+    MEM_BANDWIDTH_USE,
+    NOT_SUPPORT,
+    MAX_CHAR_LINE,
+)
+from common.const import (
+    ConfigOperateType,
+    ConfigOptionName,
+    ALL_NOT_SUPPORTED_CHIP_TYPE,
+    ALL_SUPPORTED_CHIP_TYPE,
+)
 from common.const import GET_DEVICES_INFO_TIMEOUT
 from params import ParamDict
 from view import generate_report
 
-CPU_TABLE_TITLE = ' CPU Information '
-AIC_TABLE_TITLE = ' AI Core Information '
-BUS_TABLE_TITLE = ' Bus Information '
-MEM_TABLE_TITLE = ' Memory Information '
+CPU_TABLE_TITLE = " CPU Information "
+AIC_TABLE_TITLE = " AI Core Information "
+BUS_TABLE_TITLE = " Bus Information "
+MEM_TABLE_TITLE = " Memory Information "
 
-HOST_VERSION = ' Host Version '
-DEVICE_VERSION = ' Device Version '
+HOST_VERSION = " Host Version "
+DEVICE_VERSION = " Device Version "
 
-PCIE_INFO = ' PCIe Info '
+PCIE_INFO = " PCIe Info "
 
 LSPCI_GREP_VERSION = "lspci | grep -E 'd100|d500|d801|d802|d803|d806'"
-GET_COUNT = 'wc -l'
+GET_COUNT = "wc -l"
 
 
 class AsysInfo:
@@ -69,8 +88,9 @@ class AsysInfo:
                 break
             table_data[PCIE_INFO].append([query_name, count])
         if table_data[PCIE_INFO]:
-            table_data[PCIE_INFO][1][1] = int(table_data[PCIE_INFO][0][1]) \
-                                              - int(table_data[PCIE_INFO][2][1])
+            table_data[PCIE_INFO][1][1] = int(table_data[PCIE_INFO][0][1]) - int(
+                table_data[PCIE_INFO][2][1]
+            )
         else:
             del table_data[PCIE_INFO]
 
@@ -110,10 +130,14 @@ class AsysInfo:
             "Arch Info": self.device_info.get_device_info_loop(
                 self.device_num, self.device_info.get_npu_arch, UNKNOWN
             ),
-            "Control CPU Count": str(ccpu_count * self.device_num) + f" ({ccpu_count} * {self.device_num})",
-            "AI CPU Count": str(aicpu_count * self.device_num) + f" ({aicpu_count} * {self.device_num})",
-            "AI Core Count": str(aicore_count * self.device_num) + f" ({aicore_count} * {self.device_num})",
-            "AI Vector Count": str(vector_count * self.device_num) + f" ({vector_count} * {self.device_num})",
+            "Control CPU Count": str(ccpu_count * self.device_num)
+            + f" ({ccpu_count} * {self.device_num})",
+            "AI CPU Count": str(aicpu_count * self.device_num)
+            + f" ({aicpu_count} * {self.device_num})",
+            "AI Core Count": str(aicore_count * self.device_num)
+            + f" ({aicore_count} * {self.device_num})",
+            "AI Vector Count": str(vector_count * self.device_num)
+            + f" ({vector_count} * {self.device_num})",
         }
         for query_name, query_cmds in device_info_query_cmds.items():
             table_data[" Device Info "].append([query_name, query_cmds])
@@ -122,11 +146,7 @@ class AsysInfo:
         """
         return hardware info report
         """
-        table_data = {
-            " Host Info ": [],
-            " Device Info ": [],
-            PCIE_INFO: []
-        }
+        table_data = {" Host Info ": [], " Device Info ": [], PCIE_INFO: []}
         # Host Info
         self.__get_host_info(table_data)
         # Device Info
@@ -151,7 +171,7 @@ class AsysInfo:
             if len(env_value) > MAX_CHAR_LINE:
                 env_info.append([env_name, env_value[:MAX_CHAR_LINE]])
                 for i in range(MAX_CHAR_LINE, len(env_value), MAX_CHAR_LINE):
-                    env_info.append(["", env_value[i:i + MAX_CHAR_LINE]])
+                    env_info.append(["", env_value[i : i + MAX_CHAR_LINE]])
             else:
                 env_info.append([env_name, env_value])
         if env_info:
@@ -160,7 +180,9 @@ class AsysInfo:
     @staticmethod
     def __software_set_dep(table_data):
         dependent_packet = []
-        dep_info = f.read_file(os.path.join(get_project_conf(), "dependent_package.csv"))
+        dep_info = f.read_file(
+            os.path.join(get_project_conf(), "dependent_package.csv")
+        )
         for item in dep_info:
             info = run_command(item[1])
             if info == "NONE":
@@ -175,9 +197,8 @@ class AsysInfo:
         supported_chips = self.config_table[option][ConfigOperateType.GET.value]
         if ALL_NOT_SUPPORTED_CHIP_TYPE in supported_chips:
             return False
-        if (
-            ALL_SUPPORTED_CHIP_TYPE in supported_chips or
-            any(re.search(rf"{i}", self._chip_info) for i in supported_chips)
+        if ALL_SUPPORTED_CHIP_TYPE in supported_chips or any(
+            re.search(rf"{i}", self._chip_info) for i in supported_chips
         ):
             return True
         return False
@@ -193,34 +214,48 @@ class AsysInfo:
             install_path = get_ascend_home()
             for pag_name in CannPkg.get_all_pkg_list():
                 if pag_name in [CannPkg.firmware, CannPkg.driver]:
-                    version = run_command('cat {}/{}/version.info {}'.format(install_path, pag_name, grep_version))
+                    version = run_command(
+                        "cat {}/{}/version.info {}".format(
+                            install_path, pag_name, grep_version
+                        )
+                    )
                 else:
-                    version = run_command('cat {}/cann/share/info/{}/version.info {}'.format(install_path, pag_name,
-                                                                                    grep_version))
+                    version = run_command(
+                        "cat {}/cann/share/info/{}/version.info {}".format(
+                            install_path, pag_name, grep_version
+                        )
+                    )
                 if version == "":
                     version = "None"
                 table_data[DEVICE_VERSION].append([pag_name, version])
         else:
-            driver_version = run_command(f"cat /var/davinci/driver/version.info {grep_version}")
+            driver_version = run_command(
+                f"cat /var/davinci/driver/version.info {grep_version}"
+            )
             table_data[DEVICE_VERSION].append([CannPkg.driver, driver_version])
             firmware_version = run_command(f"cat /fw/version.info {grep_version}")
             table_data[DEVICE_VERSION].append([CannPkg.firmware, firmware_version])
-            runtime_version = run_command(f"cat /usr/local/Ascend/latest/runtime/version.info {grep_version}")
+            runtime_version = run_command(
+                f"cat /usr/local/Ascend/latest/runtime/version.info {grep_version}"
+            )
             if not runtime_version or runtime_version == "NONE":
-                runtime_version = run_command(f"cat /usr/local/Ascend/runtime/version.info {grep_version}")
+                runtime_version = run_command(
+                    f"cat /usr/local/Ascend/runtime/version.info {grep_version}"
+                )
             table_data[DEVICE_VERSION].append(["runtime", runtime_version])
 
     def get_software_info(self, write_file=False):
         """
         return software info report
         """
-        table_data = {
-            HOST_VERSION: [],
-            DEVICE_VERSION: []
-        }
+        table_data = {HOST_VERSION: [], DEVICE_VERSION: []}
         os_version_path = os.sep + "etc/*release"
-        table_data[HOST_VERSION].append(["Kernel", run_command('uname -r')])
-        os_version = run_command("cat " + os_version_path + """ | grep PRETTY_NAME | awk -v FS='"' '{print $2}'""")
+        table_data[HOST_VERSION].append(["Kernel", run_command("uname -r")])
+        os_version = run_command(
+            "cat "
+            + os_version_path
+            + """ | grep PRETTY_NAME | awk -v FS='"' '{print $2}'"""
+        )
         table_data[HOST_VERSION].append(["OS", os_version])
 
         self.__software_set_pkg(table_data)
@@ -241,28 +276,48 @@ class AsysInfo:
             ai_cpu_c = self.device_info.get_aicpu_count(device_id)
             c_cpu_c = self.device_info.get_ccpu_count(device_id)
             c_cpu_v = NOT_SUPPORT
-            c_cpu_f = self.device_info.get_device_frequency(device_id, CONTROL_CPU_FREQUENCY)
+            c_cpu_f = self.device_info.get_device_frequency(
+                device_id, CONTROL_CPU_FREQUENCY
+            )
         else:
             ai_cpu_c, c_cpu_c, c_cpu_v, c_cpu_f = cpu_info
 
         cpu_info_list = []
-        self.__table_data_append(cpu_info_list, ["AI CPU Count", ai_cpu_c], ConfigOptionName.ACPU_CNT.value)
+        self.__table_data_append(
+            cpu_info_list, ["AI CPU Count", ai_cpu_c], ConfigOptionName.ACPU_CNT.value
+        )
         self.__table_data_append(
             cpu_info_list,
-            ["AI CPU Usage (%)", self.device_info.get_device_utilization_rate(device_id, AI_CPU_USE)],
+            [
+                "AI CPU Usage (%)",
+                self.device_info.get_device_utilization_rate(device_id, AI_CPU_USE),
+            ],
             ConfigOptionName.ACPU_USAGE.value,
         )
-        self.__table_data_append(cpu_info_list, ["Control CPU Count", c_cpu_c], ConfigOptionName.CCPU_CNT.value)
         self.__table_data_append(
             cpu_info_list,
-            ["Control CPU Usage (%)", self.device_info.get_device_utilization_rate(device_id, CONTROL_CPU_USE)],
+            ["Control CPU Count", c_cpu_c],
+            ConfigOptionName.CCPU_CNT.value,
+        )
+        self.__table_data_append(
+            cpu_info_list,
+            [
+                "Control CPU Usage (%)",
+                self.device_info.get_device_utilization_rate(
+                    device_id, CONTROL_CPU_USE
+                ),
+            ],
             ConfigOptionName.CCPU_USAGE.value,
         )
         self.__table_data_append(
-            cpu_info_list, ["Control CPU Frequency (MHZ)", c_cpu_f], ConfigOptionName.CCPU_FREQUENCY.value
+            cpu_info_list,
+            ["Control CPU Frequency (MHZ)", c_cpu_f],
+            ConfigOptionName.CCPU_FREQUENCY.value,
         )
         self.__table_data_append(
-            cpu_info_list, ["Control CPU Voltage (MV)", c_cpu_v], ConfigOptionName.CCPU_VOLTAGE.value
+            cpu_info_list,
+            ["Control CPU Voltage (MV)", c_cpu_v],
+            ConfigOptionName.CCPU_VOLTAGE.value,
         )
         if cpu_info_list:
             table_data[CPU_TABLE_TITLE] = cpu_info_list
@@ -279,16 +334,27 @@ class AsysInfo:
         else:
             aic_c, aic_v, aic_f = aic_info
         aic_info_list = []
-        self.__table_data_append(aic_info_list, ["AI Core Count", aic_c], ConfigOptionName.AIC_CNT.value)
+        self.__table_data_append(
+            aic_info_list, ["AI Core Count", aic_c], ConfigOptionName.AIC_CNT.value
+        )
         self.__table_data_append(
             aic_info_list,
-            ["AI Core Usage (%)", self.device_info.get_device_utilization_rate(device_id, AI_CORE_USE)],
+            [
+                "AI Core Usage (%)",
+                self.device_info.get_device_utilization_rate(device_id, AI_CORE_USE),
+            ],
             ConfigOptionName.AIC_USAGE.value,
         )
         self.__table_data_append(
-            aic_info_list, ["AI Core Frequency (MHZ)", aic_f], ConfigOptionName.AIC_FREQUENCY.value
+            aic_info_list,
+            ["AI Core Frequency (MHZ)", aic_f],
+            ConfigOptionName.AIC_FREQUENCY.value,
         )
-        self.__table_data_append(aic_info_list, ["AI Core Voltage (MV)", aic_v], ConfigOptionName.AIC_VOLTAGE.value)
+        self.__table_data_append(
+            aic_info_list,
+            ["AI Core Voltage (MV)", aic_v],
+            ConfigOptionName.AIC_VOLTAGE.value,
+        )
         if aic_info_list:
             table_data[AIC_TABLE_TITLE] = aic_info_list
         else:
@@ -296,14 +362,34 @@ class AsysInfo:
 
     def __add_status_bus_info(self, table_data, device_id):
         accuracy_device = get_device(device_id)
-        bus_v, ring_f, cpu_f, mate_f, l2_buf_f = accuracy_device.get_device_bus_info(device_id)
+        bus_v, ring_f, cpu_f, mate_f, l2_buf_f = accuracy_device.get_device_bus_info(
+            device_id
+        )
         bus_info_list = []
-        self.__table_data_append(bus_info_list, ["Bus Voltage (MV)", bus_v], ConfigOptionName.BUS_VOLTAGE.value)
-        self.__table_data_append(bus_info_list, ["Ring Frequency (MHZ)", ring_f], ConfigOptionName.RING_FREQUENCY.value)
-        self.__table_data_append(bus_info_list, ["CPU Frequency (MHZ)", cpu_f], ConfigOptionName.CPU_FREQUENCY.value)
-        self.__table_data_append(bus_info_list, ["Mata Frequency (MHZ)", mate_f], ConfigOptionName.MATA_FREQUENCY.value)
         self.__table_data_append(
-            bus_info_list, ["L2buffer Frequency (MHZ)", l2_buf_f], ConfigOptionName.L2BUFFER_FREQUENCY.value
+            bus_info_list,
+            ["Bus Voltage (MV)", bus_v],
+            ConfigOptionName.BUS_VOLTAGE.value,
+        )
+        self.__table_data_append(
+            bus_info_list,
+            ["Ring Frequency (MHZ)", ring_f],
+            ConfigOptionName.RING_FREQUENCY.value,
+        )
+        self.__table_data_append(
+            bus_info_list,
+            ["CPU Frequency (MHZ)", cpu_f],
+            ConfigOptionName.CPU_FREQUENCY.value,
+        )
+        self.__table_data_append(
+            bus_info_list,
+            ["Mata Frequency (MHZ)", mate_f],
+            ConfigOptionName.MATA_FREQUENCY.value,
+        )
+        self.__table_data_append(
+            bus_info_list,
+            ["L2buffer Frequency (MHZ)", l2_buf_f],
+            ConfigOptionName.L2BUFFER_FREQUENCY.value,
         )
         if bus_info_list:
             table_data[BUS_TABLE_TITLE] = bus_info_list
@@ -312,34 +398,68 @@ class AsysInfo:
 
     def __add_status_memory_info(self, table_data, device_id):
         ddr_total, ddr_use = self.device_info.get_device_memory_info(device_id)
-        hbm_total, hbm_use, _, hbm_bandwidth = get_device(device_id).get_device_hbm_info(device_id)
+        hbm_total, hbm_use, _, hbm_bandwidth = get_device(
+            device_id
+        ).get_device_hbm_info(device_id)
 
         memory_info_list = []
         if ddr_total != NOT_SUPPORT:
-            ddr_bandwidth = self.device_info.get_device_utilization_rate(device_id, MEM_BANDWIDTH_USE)
-            ddr_frequency = self.device_info.get_device_frequency(device_id, MEMORY_FREQUENCY)
-            self.__table_data_append(memory_info_list, ["DDR Total (MB)", ddr_total], ConfigOptionName.DDR_TOTAL.value)
-            self.__table_data_append(memory_info_list, ["DDR Used (MB)", ddr_use], ConfigOptionName.DDR_USED.value)
-            self.__table_data_append(
-                memory_info_list, ["DDR Bandwidth Usage (%)", ddr_bandwidth], ConfigOptionName.DDR_BANDWIDTH.value
+            ddr_bandwidth = self.device_info.get_device_utilization_rate(
+                device_id, MEM_BANDWIDTH_USE
+            )
+            ddr_frequency = self.device_info.get_device_frequency(
+                device_id, MEMORY_FREQUENCY
             )
             self.__table_data_append(
-                memory_info_list, ["DDR Frequency (MHZ)", ddr_frequency], ConfigOptionName.DDR_FREQUENCY.value
+                memory_info_list,
+                ["DDR Total (MB)", ddr_total],
+                ConfigOptionName.DDR_TOTAL.value,
+            )
+            self.__table_data_append(
+                memory_info_list,
+                ["DDR Used (MB)", ddr_use],
+                ConfigOptionName.DDR_USED.value,
+            )
+            self.__table_data_append(
+                memory_info_list,
+                ["DDR Bandwidth Usage (%)", ddr_bandwidth],
+                ConfigOptionName.DDR_BANDWIDTH.value,
+            )
+            self.__table_data_append(
+                memory_info_list,
+                ["DDR Frequency (MHZ)", ddr_frequency],
+                ConfigOptionName.DDR_FREQUENCY.value,
             )
 
         if hbm_total != NOT_SUPPORT:
             hbm_v, hbm_f = self.device_info.get_device_hbm_volt_freq(device_id)
             if hbm_f == NOT_SUPPORT:
                 hbm_f = self.device_info.get_device_frequency(device_id, HBM_FREQUENCY)
-            self.__table_data_append(memory_info_list, ["HBM Total (MB)", hbm_total], ConfigOptionName.HBM_TOTAL.value)
-            self.__table_data_append(memory_info_list, ["HBM Used (MB)", hbm_use], ConfigOptionName.HBM_USED.value)
             self.__table_data_append(
-                memory_info_list, ["HBM Bandwidth Usage (%)", hbm_bandwidth], ConfigOptionName.HBM_BANDWIDTH_USE.value
+                memory_info_list,
+                ["HBM Total (MB)", hbm_total],
+                ConfigOptionName.HBM_TOTAL.value,
             )
             self.__table_data_append(
-                memory_info_list, ["HBM Frequency (MHZ)", hbm_f], ConfigOptionName.HBM_FREQUENCY.value
+                memory_info_list,
+                ["HBM Used (MB)", hbm_use],
+                ConfigOptionName.HBM_USED.value,
             )
-            self.__table_data_append(memory_info_list, ["HBM Voltage (MV)", hbm_v], ConfigOptionName.HBM_VOLTAGE.value)
+            self.__table_data_append(
+                memory_info_list,
+                ["HBM Bandwidth Usage (%)", hbm_bandwidth],
+                ConfigOptionName.HBM_BANDWIDTH_USE.value,
+            )
+            self.__table_data_append(
+                memory_info_list,
+                ["HBM Frequency (MHZ)", hbm_f],
+                ConfigOptionName.HBM_FREQUENCY.value,
+            )
+            self.__table_data_append(
+                memory_info_list,
+                ["HBM Voltage (MV)", hbm_v],
+                ConfigOptionName.HBM_VOLTAGE.value,
+            )
 
         if memory_info_list:
             table_data[MEM_TABLE_TITLE] = memory_info_list
@@ -355,23 +475,32 @@ class AsysInfo:
             CPU_TABLE_TITLE: [],
             AIC_TABLE_TITLE: [],
             BUS_TABLE_TITLE: [],
-            MEM_TABLE_TITLE: []
+            MEM_TABLE_TITLE: [],
         }
         # add public information
         self._chip_info = self.device_info.get_chip_info(device_id)
-        self.__table_data_append(table_data[NONE], ["Chip Name", self._chip_info], ConfigOptionName.CHIP_NAME.value)
         self.__table_data_append(
-            table_data[NONE], ["Power (W)", self.device_info.get_device_power(device_id)], ConfigOptionName.POWER.value
+            table_data[NONE],
+            ["Chip Name", self._chip_info],
+            ConfigOptionName.CHIP_NAME.value,
         )
         self.__table_data_append(
-            table_data[NONE], 
-            ["Temperature (C)", get_device(device_id).get_device_temperature(device_id)],
-            ConfigOptionName.TEMPERATURE.value
+            table_data[NONE],
+            ["Power (W)", self.device_info.get_device_power(device_id)],
+            ConfigOptionName.POWER.value,
         )
         self.__table_data_append(
-            table_data[NONE], 
-            ["health", self.device_info.get_device_health(device_id)], 
-            ConfigOptionName.HEALTH.value
+            table_data[NONE],
+            [
+                "Temperature (C)",
+                get_device(device_id).get_device_temperature(device_id),
+            ],
+            ConfigOptionName.TEMPERATURE.value,
+        )
+        self.__table_data_append(
+            table_data[NONE],
+            ["health", self.device_info.get_device_health(device_id)],
+            ConfigOptionName.HEALTH.value,
         )
 
         # add cpu information
@@ -409,12 +538,16 @@ class AsysInfo:
             self.get_status_info(device_id)
 
     def run(self):
-        run_mode = ParamDict().get_arg('run_mode')
-        device_id = ParamDict().get_arg('device_id') if ParamDict().get_arg('device_id') else 0
+        run_mode = ParamDict().get_arg("run_mode")
+        device_id = (
+            ParamDict().get_arg("device_id") if ParamDict().get_arg("device_id") else 0
+        )
         try:
             self.run_info(run_mode, device_id)
         except TimeoutError:
-            log_error(f"Timeout in retrieving the {device_id} chip status, Please check for malfunctions.")
+            log_error(
+                f"Timeout in retrieving the {device_id} chip status, Please check for malfunctions."
+            )
             return False
         return True
 

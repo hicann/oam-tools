@@ -16,6 +16,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import pytest
@@ -23,8 +27,6 @@ import pytest
 from .conftest import ASYS_SRC_PATH, CONF_SRC_PATH, ut_root_path
 from .conftest import AssertTest
 
-sys.argv[0] = CONF_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
@@ -39,13 +41,13 @@ from config_cmd import AsysConfig
 
 
 def setup_module():
-    print("TestAsysMain ut test start.")
+    print("TestAsysMain ut test start.")  # noqa: T201  # test diagnostic output
     os.chdir(ut_root_path)
     ParamDict().set_env_type("EP")
 
 
 def teardown_module():
-    print("TestAsysMain ut test finsh.")
+    print("TestAsysMain ut test finish.")  # noqa: T201  # test diagnostic output
     ParamDict.clear()
 
 
@@ -57,7 +59,7 @@ class TestAsysMain(AssertTest):
         "health": "health.asys_health.AsysHealth.run",
         "info": "info.asys_info.AsysInfo.run",
         "analyze": "analyze.asys_analyze.AsysAnalyze.run",
-        "config": "config_cmd.asys_config.AsysConfig.run"
+        "config": "config_cmd.asys_config.AsysConfig.run",
     }
 
     def test_main_no_args(self, mocker):
@@ -65,7 +67,10 @@ class TestAsysMain(AssertTest):
         mocker.patch("cmdline.CommandLineParser.parse", return_value=RetCode.SUCCESS)
         self.assertTrue(asys.main())
 
-    @pytest.mark.parametrize("sub_cmd", ["collect", "launch", "diagnose", "health", "info", "analyze", "config"])
+    @pytest.mark.parametrize(
+        "sub_cmd",
+        ["collect", "launch", "diagnose", "health", "info", "analyze", "config"],
+    )
     def test_main_success(self, mocker, sub_cmd):
         mocker.patch("common.FileOperate.create_dir", return_value=RetCode.SUCCESS)
         mocker.patch("cmdline.cmd_parser.CommandLineParser.parse", return_value=True)
@@ -80,7 +85,10 @@ class TestAsysMain(AssertTest):
         mocker.patch("config.config_parser.AsysConfigParser.parse", return_value=True)
         mocker.patch("params.param_dict.ParamDict.get_command", return_value="collect")
         mocker.patch("params.param_dict.ParamDict.get_arg", return_value="stacktrace")
-        mocker.patch("collect.stacktrace.stacktrace_collect.AsysStackTrace.run", return_value=True)
+        mocker.patch(
+            "collect.stacktrace.stacktrace_collect.AsysStackTrace.run",
+            return_value=True,
+        )
         mocker.patch("os.access", return_value=True)
         self.assertTrue(asys.main())
 
@@ -90,7 +98,10 @@ class TestAsysMain(AssertTest):
         mocker.patch("config.config_parser.AsysConfigParser.parse", return_value=False)
         self.assertTrue(not asys.main())
 
-    @pytest.mark.parametrize("sub_cmd", ["collect", "launch", "diagnose", "health", "info", "analyze", "config"])
+    @pytest.mark.parametrize(
+        "sub_cmd",
+        ["collect", "launch", "diagnose", "health", "info", "analyze", "config"],
+    )
     def test_main_each_command_execute_failed(self, mocker, sub_cmd):
         mocker.patch("common.FileOperate.create_dir", return_value=RetCode.SUCCESS)
         mocker.patch("cmdline.cmd_parser.CommandLineParser.parse", return_value=True)
@@ -107,7 +118,9 @@ class TestAsysMain(AssertTest):
         mocker.patch(self.sub_cmd_class["collect"], return_value=False)
         mocker.patch("params.param_dict.ParamDict.get_env_type", return_value="")
         self.assertTrue(not asys.main())
-        self.assertTrue("Failed to obtain the execution environment type." in caplog.text)
+        self.assertTrue(
+            "Failed to obtain the execution environment type." in caplog.text
+        )
 
     def test_main_conf_parser_error(self, mocker, caplog):
         mocker.patch("common.FileOperate.create_dir", return_value=RetCode.SUCCESS)
@@ -129,21 +142,32 @@ class TestAsysMain(AssertTest):
         self.assertTrue("Create asys output directory failed." in caplog.text)
 
     def test_main_check_args_duplicate_error(self, caplog):
-        sys.argv = [CONF_SRC_PATH, "collect", "--output=/home", "--output=/home/test", "--tar=True"]
+        sys.argv = [
+            CONF_SRC_PATH,
+            "collect",
+            "--output=/home",
+            "--output=/home/test",
+            "--tar=True",
+        ]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
-        self.assertTrue('--tar' in caplog.text)
-        self.assertTrue('--output' in caplog.text)
+        self.assertTrue("--tar" in caplog.text)
+        self.assertTrue("--output" in caplog.text)
         self.assertTrue("args can be specified" in caplog.text)
 
-    @pytest.mark.parametrize(["sub_cmd", "obj", "result"], [("collect", AsysCollect, True),
-                                                     ("collect -r=stacktrace", AsysCollect, False),
-                                                     ("launch", AsysLaunch, True),
-                                                     ("diagnose", AsysDiagnose, False),
-                                                     ("health", AsysHealth, False),
-                                                     ("info", AsysInfo, False),
-                                                     ("analyze", AsysAnalyze, False),
-                                                     ("config", AsysConfig, False)])
+    @pytest.mark.parametrize(
+        ["sub_cmd", "obj", "result"],
+        [
+            ("collect", AsysCollect, True),
+            ("collect -r=stacktrace", AsysCollect, False),
+            ("launch", AsysLaunch, True),
+            ("diagnose", AsysDiagnose, False),
+            ("health", AsysHealth, False),
+            ("info", AsysInfo, False),
+            ("analyze", AsysAnalyze, False),
+            ("config", AsysConfig, False),
+        ],
+    )
     def test_main_check_rc_env_command(self, sub_cmd, obj, result, mocker, caplog):
         mocker.patch("common.FileOperate.create_dir", return_value=RetCode.SUCCESS)
         mocker.patch("cmdline.cmd_parser.CommandLineParser.parse", return_value=True)
@@ -157,21 +181,27 @@ class TestAsysMain(AssertTest):
         self.assertTrue(asys.main() is result)
         if result:
             self.assertTrue(
-                "The RC supports the launch command and the collect command without the -r parameter." not in caplog.text)
+                "The RC supports the launch command and the collect command without the -r parameter."
+                not in caplog.text
+            )
         else:
             self.assertTrue(
-                "The RC supports the launch command and the collect command without the -r parameter." in caplog.text)
+                "The RC supports the launch command and the collect command without the -r parameter."
+                in caplog.text
+            )
 
     def test_clean_env(self, mocker):
         mocker.patch("common.FileOperate.create_dir", return_value=RetCode.SUCCESS)
-        mocker.patch("cmdline.cmd_parser.CommandLineParser.parse", side_effect=SystemExit)
+        mocker.patch(
+            "cmdline.cmd_parser.CommandLineParser.parse", side_effect=SystemExit
+        )
         mocker.patch("config.config_parser.AsysConfigParser.parse", return_value=True)
-        mocker.patch("params.param_dict.ParamDict.get_command", return_value='collect')
-        mocker.patch(self.sub_cmd_class['collect'], return_value=True)
+        mocker.patch("params.param_dict.ParamDict.get_command", return_value="collect")
+        mocker.patch(self.sub_cmd_class["collect"], return_value=True)
         self.assertTrue(not asys.main())
         check = False
         asys.clean_pycache()
         for root, dirs, files in os.walk(ASYS_SRC_PATH):
-            if '__pycache__' in dirs:
+            if "__pycache__" in dirs:
                 check = True
         self.assertTrue(not check)

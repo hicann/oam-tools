@@ -16,35 +16,38 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import os
-from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
+from testcase.conftest import CONF_SRC_PATH
 
 from common import get_project_conf, get_ascend_home, get_log_conf_path
 from ..conftest import AssertTest
 
 
 def setup_module():
-    print("TestPath ut test start.")
+    print("TestPath ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestPath ut test finsh.")
+    print("TestPath ut test finish.")  # noqa: T201  # test diagnostic output
 
 
 class TestPath(AssertTest):
-
     def test_get_project_root(self, mocker):
         mocker.patch("os.path.abspath", return_value="./")
-        self.assertTrue(get_project_conf() == CONF_SRC_PATH + 'conf')
+        self.assertTrue(get_project_conf() == CONF_SRC_PATH + "conf")
 
     def test_get_ascend_home(self, mocker):
         mocker.patch("os.getenv", return_value=None)
         self.assertTrue(get_ascend_home() == "/usr/local/Ascend")
         mocker.patch("os.getenv", return_value="/usr/local/Ascend/latest/toolkit")
         self.assertTrue(get_ascend_home() == "/usr/local/Ascend")
-        mocker.patch("os.getenv", return_value="/usr/local/Ascend/latest/toolkit:/home/wangxu/Ascend/latest/toolkit")
+        mocker.patch(
+            "os.getenv",
+            return_value="/usr/local/Ascend/latest/toolkit:/home/wangxu/Ascend/latest/toolkit",
+        )
         self.assertTrue(get_ascend_home() == "/usr/local/Ascend")
 
     def test_get_log_conf_path(self):

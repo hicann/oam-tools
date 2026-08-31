@@ -16,17 +16,20 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+import tempfile
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import logging
-import sys
 import os
 import csv
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from testcase.conftest import ASYS_SRC_PATH, ut_root_path
+from testcase.conftest import ut_root_path
 
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from common import FileOperate as f
 from common import file_operate
@@ -34,7 +37,7 @@ from ..conftest import AssertTest
 
 
 def setup_module():
-    print("TestFileOperate ut test start.")
+    print("TestFileOperate ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
@@ -47,7 +50,7 @@ class TestFileOperate(AssertTest):
     def setup_method(self):
         testfile = Path(self.test_file_path)
         testfile.touch(exist_ok=True)
-        self.fp = open(testfile)
+        self.fp = open(testfile, encoding="utf-8")
 
     def teardown_method(self):
         if os.path.exists(self.test_file_path):
@@ -256,7 +259,7 @@ class TestFileOperate(AssertTest):
     def test_check_valid_dir_error(self):
         self.assertTrue(not f.check_valid_dir(os.path.join(ut_root_path, "abs")))
 
-    def test_check_vaild_error(self):
+    def test_check_valid_error(self):
         self.assertTrue(not f.check_file(None))
         self.assertTrue(not f.check_dir(False))
         self.assertTrue(f.check_emtpy(""))
@@ -265,7 +268,7 @@ class TestFileOperate(AssertTest):
         self.assertTrue(not f.remove_file(""))
 
     def test_read_config_exec(self, mocker, caplog):
-        temp_file = "/tmp/test_config_table.csv"
+        temp_file = os.path.join(tempfile.gettempdir(), "test_config_table.csv")
         if os.path.exists(temp_file):
             os.remove(temp_file)
         mocker.patch.object(file_operate, "CONFIG_TABLE_FILE", temp_file)
@@ -273,7 +276,7 @@ class TestFileOperate(AssertTest):
         self.assertTrue(result == {})
         self.assertTrue("does not exist" in caplog.text)
 
-        with open(temp_file, "w") as csv_file:
+        with open(temp_file, "w", encoding="utf-8") as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(["Key", "cfg_get", "cfg_set", "cfg_restore"])
             writer.writerow(["Setting1", "get1,get2", "set1,set2", "restore1,restore2"])
@@ -292,16 +295,16 @@ class TestFileOperate(AssertTest):
         self.assertTrue(result == {})
         self.assertTrue("does not exist" in caplog.text)
 
-        with open(temp_file, "w") as csv_file:
+        with open(temp_file, "w", encoding="utf-8") as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(["Key", "cfg_get", "cfg_set", "cfg_restore"])
             writer.writerow(["Setting1", "get1,get2", "set1,set2", "restore1,restore2"])
             writer.writerow(["Setting2", "get3,get4", "set3"])
             writer.writerow(["Setting2", "get3,get4", "restore3"])
-        os.chmod(temp_file, 0o111)
+        os.chmod(temp_file, 0o111)  # nosec B103  # test asserts permission-mask behavior
         self.assertTrue(f().read_config() == {})
         self.assertTrue("Error: Permission denied for file" in caplog.text)
-        os.chmod(temp_file, 0o644)
+        os.chmod(temp_file, 0o644)  # nosec B103  # test asserts permission-mask behavior
 
         self.assertTrue(f().read_config() == {})
         self.assertTrue("format or content is error" in caplog.text)

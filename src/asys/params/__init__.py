@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from params.param_dict import ParamDict
+
+
+__all__ = ["ParamDict"]

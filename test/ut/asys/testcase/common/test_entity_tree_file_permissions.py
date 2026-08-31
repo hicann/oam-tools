@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------
+
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
 """看护 entity 子树的 install(DIRECTORY) 必须显式声明文件权限。
 
 XML 对 tools/{asys,msaicerr,hccl_test,operator_cmp,profiler} 与
@@ -26,6 +30,7 @@ postinst 由 cann-cmake gen_postinst_prerm.py 生成，该脚本不认识 entity
 停在 440（历史上 opp/built-in 即如此）——非 root 用户读不到算子源码。
 故这几处必须在打包期就把文件权限写对，不能依赖安装期递归。
 """
+
 import re
 from pathlib import Path
 
@@ -62,17 +67,31 @@ ENTITY_TREES = (
 
 # 安装后必须可被任意用户读取并进入（555）。缺 WORLD_READ 即非 root 读不到。
 REQUIRED_PERMISSION_KEYWORDS = (
-    "OWNER_READ", "OWNER_EXECUTE",
-    "GROUP_READ", "GROUP_EXECUTE",
-    "WORLD_READ", "WORLD_EXECUTE",
+    "OWNER_READ",
+    "OWNER_EXECUTE",
+    "GROUP_READ",
+    "GROUP_EXECUTE",
+    "WORLD_READ",
+    "WORLD_EXECUTE",
 )
 
 # install(DIRECTORY) 合法关键字，用作 FILE_PERMISSIONS 权限串的终止边界。
 INSTALL_DIRECTORY_KEYWORDS = (
-    "TYPE", "DESTINATION", "FILE_PERMISSIONS", "DIRECTORY_PERMISSIONS",
-    "USE_SOURCE_PERMISSIONS", "OPTIONAL", "MESSAGE_NEVER", "CONFIGURATIONS",
-    "COMPONENT", "EXCLUDE_FROM_ALL", "FILES_MATCHING", "PATTERN", "REGEX",
-    "EXCLUDE", "PERMISSIONS",
+    "TYPE",
+    "DESTINATION",
+    "FILE_PERMISSIONS",
+    "DIRECTORY_PERMISSIONS",
+    "USE_SOURCE_PERMISSIONS",
+    "OPTIONAL",
+    "MESSAGE_NEVER",
+    "CONFIGURATIONS",
+    "COMPONENT",
+    "EXCLUDE_FROM_ALL",
+    "FILES_MATCHING",
+    "PATTERN",
+    "REGEX",
+    "EXCLUDE",
+    "PERMISSIONS",
 )
 
 _FILE_PERMS_RE = re.compile(
@@ -115,7 +134,7 @@ def iter_install_directory_blocks(content):
     for match in re.finditer(r"install\s*\(\s*DIRECTORY", content):
         end = find_statement_end(content, match.start())
         if end != -1:
-            yield content[match.start():end + 1]
+            yield content[match.start() : end + 1]
 
 
 @pytest.mark.parametrize("relative_path, destination_hint", ENTITY_TREES)
@@ -146,9 +165,7 @@ def test_entity_tree_declares_world_readable_file_permissions(
         )
         perms = declared.group(1)
         missing = [
-            keyword
-            for keyword in REQUIRED_PERMISSION_KEYWORDS
-            if keyword not in perms
+            keyword for keyword in REQUIRED_PERMISSION_KEYWORDS if keyword not in perms
         ]
         assert not missing, (
             f"{relative_path}: entity 子树（{destination_hint}）的 FILE_PERMISSIONS "

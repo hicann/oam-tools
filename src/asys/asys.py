@@ -37,15 +37,15 @@ from analyze import AsysAnalyze
 from config_cmd import AsysConfig
 from profiling import AsysProfiling
 
-__all__ = ['main']
+__all__ = ["main"]
 
 
 def _check_args_duplicate():
-    input_args = [arg.split('=')[0] for arg in sys.argv[1:] if '-' in arg.split('=')[0]]
+    input_args = [arg.split("=")[0] for arg in sys.argv[1:] if "-" in arg.split("=")[0]]
     # remove args duplicate
     args_no_duplicate = set(input_args)
     if len(input_args) > len(args_no_duplicate):
-        log_error(f'Only one of the {list(args_no_duplicate)} args can be specified.')
+        log_error(f"Only one of the {list(args_no_duplicate)} args can be specified.")
         return False
     return True
 
@@ -54,8 +54,8 @@ def clean_pycache():
     """clean __pycache__"""
     current_file = os.path.dirname(os.path.abspath(__file__))
     for root, dirs, _ in os.walk(current_file):
-        if '__pycache__' in dirs and os.path.exists(os.path.join(root, '__pycache__')):
-            shutil.rmtree(os.path.join(root, '__pycache__'), ignore_errors=True)
+        if "__pycache__" in dirs and os.path.exists(os.path.join(root, "__pycache__")):
+            shutil.rmtree(os.path.join(root, "__pycache__"), ignore_errors=True)
 
 
 EXECUTE_CMD_FUNC = {
@@ -66,7 +66,7 @@ EXECUTE_CMD_FUNC = {
     consts.health_cmd: AsysHealth,
     consts.analyze_cmd: AsysAnalyze,
     consts.config_cmd: AsysConfig,
-    consts.profiling_cmd: AsysProfiling
+    consts.profiling_cmd: AsysProfiling,
 }
 
 
@@ -88,62 +88,69 @@ def main():
     param_dict = ParamDict()
     command = param_dict.get_command()
     if command is None:
-        if parse_ret == RetCode.SUCCESS:    # -h, --help, and only asys
+        if parse_ret == RetCode.SUCCESS:  # -h, --help, and only asys
             asys_parser.print_help()
             return True
         else:
-            log_error('Arguments parse failed, asys exit.')
+            log_error("Arguments parse failed, asys exit.")
             return False
 
     # info/diagnose/health/config(get)/analyze(aicore_error) close info & warning level log
-    if any([
-        command in [consts.info_cmd, consts.diagnose_cmd, consts.health_cmd],
-        command == consts.config_cmd and param_dict.get_arg('get'),
-        command == consts.analyze_cmd and param_dict.get_arg('run_mode') == 'aicore_error'
-    ]):
+    if any(
+        [
+            command in [consts.info_cmd, consts.diagnose_cmd, consts.health_cmd],
+            command == consts.config_cmd and param_dict.get_arg("get"),
+            command == consts.analyze_cmd
+            and param_dict.get_arg("run_mode") == "aicore_error",
+        ]
+    ):
         close_log()
 
     # 2. check the environment type
     env_ret = param_dict.get_env_type()
     if not env_ret:
-        log_error('Failed to obtain the execution environment type.')
+        log_error("Failed to obtain the execution environment type.")
         return False
-    if env_ret == 'RC':
-        if any([
-            command not in [consts.collect_cmd, consts.launch_cmd],
-            command == consts.collect_cmd and param_dict.get_arg("run_mode")
-        ]):
-            log_error('The RC supports the launch command and the collect command without the -r parameter.')
+    if env_ret == "RC":
+        if any(
+            [
+                command not in [consts.collect_cmd, consts.launch_cmd],
+                command == consts.collect_cmd and param_dict.get_arg("run_mode"),
+            ]
+        ):
+            log_error(
+                "The RC supports the launch command and the collect command without the -r parameter."
+            )
             return False
 
     # 2. read the config file and load configs
     conf_parser = AsysConfigParser()
     conf_res = conf_parser.parse()
     if not conf_res:
-        log_error('Configs parse failed, asys exit.')
+        log_error("Configs parse failed, asys exit.")
         return False
 
-    log_info('asys start.')
+    log_info("asys start.")
 
     if create_out_timestamp_dir() != RetCode.SUCCESS:
-        log_error('Create asys output directory failed.')
+        log_error("Create asys output directory failed.")
         return False
 
     # 3. execute the command
     obj = EXECUTE_CMD_FUNC.get(command)
     task_res = obj().run() if obj else False
 
-    log_info(f'{command} task execute finish.')
+    log_info(f"{command} task execute finish.")
 
     # 4. Compress the output dir using tar.
-    if param_dict.get_arg('tar') in ['T', 'TRUE']:
+    if param_dict.get_arg("tar") in ["T", "TRUE"]:
         compress_output_dir_tar()
 
-    log_info('asys finish.')
+    log_info("asys finish.")
     return task_res
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
     # clean __pycache__ file
     clean_pycache()

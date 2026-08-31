@@ -16,6 +16,10 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 """看护"编译产物目录在编译后可被删除"。
 
 背景：打包声明若把目录权限收紧到 555（r-xr-xr-x，无 owner 写位），这些目录会
@@ -107,10 +111,21 @@ def iter_cmake_files():
 # install(DIRECTORY) 的合法关键字（cmake 官方签名，含 MESSAGE_NEVER）。
 # 用作 DIRECTORY_PERMISSIONS 权限串的终止边界，避免跨声明匹配。
 INSTALL_DIRECTORY_KEYWORDS = (
-    "TYPE", "DESTINATION", "FILE_PERMISSIONS", "DIRECTORY_PERMISSIONS",
-    "USE_SOURCE_PERMISSIONS", "OPTIONAL", "MESSAGE_NEVER", "CONFIGURATIONS",
-    "COMPONENT", "EXCLUDE_FROM_ALL", "FILES_MATCHING", "PATTERN", "REGEX",
-    "EXCLUDE", "PERMISSIONS",
+    "TYPE",
+    "DESTINATION",
+    "FILE_PERMISSIONS",
+    "DIRECTORY_PERMISSIONS",
+    "USE_SOURCE_PERMISSIONS",
+    "OPTIONAL",
+    "MESSAGE_NEVER",
+    "CONFIGURATIONS",
+    "COMPONENT",
+    "EXCLUDE_FROM_ALL",
+    "FILES_MATCHING",
+    "PATTERN",
+    "REGEX",
+    "EXCLUDE",
+    "PERMISSIONS",
 )
 
 
@@ -144,8 +159,9 @@ def test_scan_actually_finds_cmake_files():
     # 且顶层 CMakeLists.txt 的内容确实被读到（而非读成空）。
     code_lines = list(iter_cmake_code_lines())
     assert code_lines, "未读出任何 cmake 代码行，扫描链路可能失效"
-    assert any(rel == Path("CMakeLists.txt") for rel, _ in code_lines), \
+    assert any(rel == Path("CMakeLists.txt") for rel, _ in code_lines), (
         "顶层 CMakeLists.txt 的内容未被读到"
+    )
 
 
 def test_no_directory_permission_decl_drops_owner_write():
@@ -195,7 +211,7 @@ def test_no_cmake_chmod_strips_owner_write():
 @pytest.mark.skipif(
     os.geteuid() == 0,
     reason="root 有 CAP_DAC_OVERRIDE，绕过权限位检查，555 目录下 rmtree 照样成功，"
-           "无法复现普通用户的 PermissionError（云端 UT 以 root 运行）",
+    "无法复现普通用户的 PermissionError（云端 UT 以 root 运行）",
 )
 def test_dir_without_owner_write_blocks_removal(tmp_path):
     # 机制验证：父目录缺 u+w 时，其中的条目无法 unlink，rm -rf 失败。
@@ -211,7 +227,9 @@ def test_dir_without_owner_write_blocks_removal(tmp_path):
     # 收紧为 555（r-xr-xr-x）：可读可遍历，但无写位。
     inner.chmod(0o555)
     try:
-        assert not inner.stat().st_mode & stat.S_IWUSR, "用例前提失败：目录仍带 owner 写位"
+        assert not inner.stat().st_mode & stat.S_IWUSR, (
+            "用例前提失败：目录仍带 owner 写位"
+        )
         with pytest.raises(PermissionError):
             shutil.rmtree(staging)
         assert inner.exists(), "缺 u+w 的目录树本应删除失败"
@@ -220,7 +238,7 @@ def test_dir_without_owner_write_blocks_removal(tmp_path):
         # （如断言未按预期成立），故先判存在再 chmod——否则这里抛
         # FileNotFoundError 会盖住上面断言的真实失败原因。
         if inner.is_dir():
-            inner.chmod(0o755)
+            inner.chmod(0o755)  # nosec B103  # test asserts permission-mask behavior
 
 
 def test_restoring_owner_write_makes_dir_removable(tmp_path):

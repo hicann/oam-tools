@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from config.config_parser import AsysConfigParser
+
+
+__all__ = ["AsysConfigParser"]

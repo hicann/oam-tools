@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from cmdline.cmd_parser import CommandLineParser
+
+
+__all__ = ["CommandLineParser"]

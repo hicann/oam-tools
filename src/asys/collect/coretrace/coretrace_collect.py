@@ -18,14 +18,12 @@
 
 import os
 import subprocess
-import sys
 from threading import Thread, Lock
 
 from common import FileOperate as f
 from common import log_error, log_warning
-from common.cmd_run import check_command, run_linux_cmd
-from common.task_common import out_progress_bar, str_to_hex, is_hexadecimal
-from common.const import ADDR_LEN_HEX
+from common.cmd_run import check_command
+from common.task_common import out_progress_bar
 
 
 class ParseData:
@@ -71,12 +69,15 @@ class ParseCoreTrace:
             self.warn_missing(bin_name_path)
         return bin_name_path
 
-    def run_addr2line(self, cmd):
-        ret = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+    @staticmethod
+    def run_addr2line(cmd):
+        ret = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+        )
         return ret.stdout.readlines()
 
     def parse_addr_src_line(self, fp, data, shift):
-        parsed_line = ''
+        parsed_line = ""
         for bin_name, addrs in data.maps.items():
             if bin_name == "":
                 continue
@@ -89,20 +90,23 @@ class ParseCoreTrace:
                     out = self.run_addr2line(cmd)
                 except (OSError, ValueError) as e:
                     if not self.warned:
-                        log_warning(f"Run \"{' '.join(cmd)}\" failed, error detail: {e}")
+                        log_warning(f'Run "{" ".join(cmd)}" failed, error detail: {e}')
                         self.warned = True
                     out = []
                 if len(out) == 0:
-                    parsed_line += "0x%x    %s    %s" % (fp, delta, bin_name) + '\n' 
+                    parsed_line += "0x%x    %s    %s" % (fp, delta, bin_name) + "\n"
                 else:
                     for func in out:
-                        parsed_line += "0x%x    %s    %s" % (fp, func.strip(), bin_name.strip()) + '\n'
+                        parsed_line += (
+                            "0x%x    %s    %s" % (fp, func.strip(), bin_name.strip())
+                            + "\n"
+                        )
                 return parsed_line
         return parsed_line
 
     def parse_line(self, line, parse_data):
         line_parts = line.split()
-        this_line = line.strip() + '\n'
+        this_line = line.strip() + "\n"
         try:
             if line_parts[0] == "Signal":
                 parse_data.sig = int(line_parts[1])
@@ -111,23 +115,25 @@ class ParseCoreTrace:
                 parse_data.pid = int(line_parts[1])
                 parse_data.tgid = int(line_parts[3])
                 parse_data.comm = line_parts[5]
-                return '\n' + this_line
+                return "\n" + this_line
             elif line_parts[0].startswith("#"):
                 shift = 0 if line_parts[0] == "#0" else 4
-                fp = int(line_parts[1].strip('\x00'), base=16)
+                fp = int(line_parts[1].strip("\x00"), base=16)
                 return self.parse_addr_src_line(fp, parse_data, shift)
             elif line_parts[0] == "[<0>]" or "(deleted)" in line:
                 return this_line
             elif "uburma" in line or "davinci_manager" in line:
-                return ''
+                return ""
             else:
-                start_addr, end_addr = map(lambda x: int(x, base=16), line_parts[0].split("-"))
-                bin_name = line_parts[1].strip('\x00')
+                start_addr, end_addr = map(
+                    lambda x: int(x, base=16), line_parts[0].split("-")
+                )
+                bin_name = line_parts[1].strip("\x00")
                 if bin_name in parse_data.maps:
                     start_addr = min(parse_data.maps[bin_name][0], start_addr)
                     end_addr = max(parse_data.maps[bin_name][1], end_addr)
                 parse_data.maps[bin_name] = [start_addr, end_addr]
-                return ''
+                return ""
         except (IndexError, ValueError):
             return this_line
 
@@ -135,7 +141,7 @@ class ParseCoreTrace:
         if self.file:
             count = len(file_lines)
         parse_data = ParseData()
-        parsed_lines = ''
+        parsed_lines = ""
         for index, line in enumerate(file_lines):
             if self.file:
                 out_progress_bar(count, index)
@@ -151,7 +157,7 @@ class ParseCoreTrace:
         # Check whether the addr2line tools exist.
         if not self.check_tool_exists():
             return False
-        with open(coretrace_file, "r") as fp:
+        with open(coretrace_file, "r", encoding="utf-8") as fp:
             file_lines = fp.readlines()
         if not file_lines:
             log_error(f"The {coretrace_file_name} file is empty.")
@@ -159,11 +165,11 @@ class ParseCoreTrace:
 
         try:
             parsed_lines = self.parse_file(file_lines, count)
-        except Exception as e:
+        except (ValueError, IndexError, TypeError) as e:
             log_error(f"Parse {coretrace_file} failed, error detail: {e}")
             return False
 
-        with open(coretrace_file, 'w') as fw:
+        with open(coretrace_file, "w", encoding="utf-8") as fw:
             fw.writelines(parsed_lines)
         return True
 
@@ -185,7 +191,11 @@ class ParseCoreTrace:
             for file in files:
                 coretrace_file = os.path.join(dirs, file)
                 num += 1
-                t = Thread(target=self.save_file_result, args=(coretrace_file, count, num, results), daemon=True)
+                t = Thread(
+                    target=self.save_file_result,
+                    args=(coretrace_file, count, num, results),
+                    daemon=True,
+                )
                 t.start()
                 threads.append(t)
         # wait for all threads to end.

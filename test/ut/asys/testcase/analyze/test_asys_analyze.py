@@ -16,8 +16,11 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
-import sys
 import shutil
 from argparse import Namespace
 from pathlib import Path
@@ -25,16 +28,8 @@ from queue import Queue
 import subprocess
 
 import pytest
-from testcase.conftest import (
-    ASYS_SRC_PATH,
-    CONF_SRC_PATH,
-    test_trace_tmp,
-    ut_root_path,
-    great_bin,
-)
+from testcase.conftest import test_trace_tmp, ut_root_path, great_bin
 
-sys.argv[0] = CONF_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from analyze import AsysAnalyze
 from collect import AsysCollect
@@ -57,26 +52,30 @@ class Stdin:
 
 
 class PopenMock:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *_args, **_kwargs):
         self.stdin = Stdin()
         self.stdout = None
 
     def communicate(self):
         with open(
-            f"{ut_root_path}/data/coredump/core-coredump-8032-1717033942.txt", "r"
+            f"{ut_root_path}/data/coredump/core-coredump-8032-1717033942.txt",
+            "r",
+            encoding="utf-8",
         ) as f:
             gdb_str = f.read()
         return gdb_str, 0
 
 
 class PopenMockError:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *_args, **_kwargs):
         self.stdin = Stdin()
         self.stdout = None
 
     def communicate(self):
         with open(
-            f"{ut_root_path}/data/coredump/core-coredump-8032-1717033943_error.txt", "r"
+            f"{ut_root_path}/data/coredump/core-coredump-8032-1717033943_error.txt",
+            "r",
+            encoding="utf-8",
         ) as f:
             gdb_str = f.read()
         return gdb_str, 0
@@ -94,7 +93,7 @@ class TestAsysAnalyze(AssertTest):
     def teardown_method():
         ParamDict.clear()
         if os.path.exists(test_trace_tmp):
-            os.chmod(test_trace_tmp, 0o777)
+            os.chmod(test_trace_tmp, 0o777)  # nosec B103  # test asserts permission-mask behavior
             shutil.rmtree(test_trace_tmp)
 
     def test_set_path_file(self, mocker):
@@ -271,7 +270,7 @@ class TestAsysAnalyze(AssertTest):
             ut_root_path, "data/coredump/coredump_reg_info.txt"
         )
         p = PopenMock()
-        stdout = open(coredump_file, "r")
+        stdout = open(coredump_file, "r", encoding="utf-8")
         self.assertTrue(True)
         try:
             p.stdout = stdout
@@ -310,7 +309,7 @@ class TestAsysAnalyze(AssertTest):
             ut_root_path, "data/coredump/coredump_reg_info.txt"
         )
         p = PopenMock()
-        stdout = open(coredump_file, "r")
+        stdout = open(coredump_file, "r", encoding="utf-8")
         p.stdout = stdout
         mocker.patch("subprocess.Popen", return_value=p)
         reg_1 = obj.get_threads_stacks_reg_info()
@@ -392,7 +391,7 @@ class TestAsysAnalyze(AssertTest):
         codedump_err = Path(
             f"{ut_root_path}/data/coredump/core-coredump-8032-1717033943_error.txt"
         )
-        codedump_err.write_text(content)
+        codedump_err.write_text(content, encoding="utf-8")
         coredump_file = os.path.join(
             ut_root_path,
             "data/coredump/stackcore_tracer_atrace_test_40945_1716517732910.txt",
@@ -464,6 +463,28 @@ class TestAsysAnalyze(AssertTest):
             msg == "test.so  section .debug_info is larger than its filesize! "
         )
 
+    def test_asys_analyze_get_source_location_command_error(self, mocker):
+        parse = ParseStackCore(
+            "",
+            os.path.join(
+                ut_root_path,
+                "data/coredump/stackcore_tracer_atrace_test_40945_1716517732910.txt",
+            ),
+        )
+        mocker.patch(
+            "subprocess.check_output",
+            side_effect=subprocess.CalledProcessError(1, "addr2line"),
+        )
+        self.assertTrue(parse.get_source_location("test.so", 10543) == [])
+
+    def test_asys_analyze_write_res_file_type_error(self, mocker, caplog):
+        parse = object.__new__(AsysAnalyze)
+        parse.output = ut_root_path
+        mocker.patch("os.open", return_value=1)
+        mocker.patch("os.fdopen", side_effect=TypeError("invalid content"))
+        parse.write_res_file("result.txt", None)
+        self.assertTrue("invalid content" in caplog.text)
+
     def test_asys_analyze_get_line_with_addr2line(self, mocker):
         self.assertTrue(True)
 
@@ -487,7 +508,7 @@ class TestAsysAnalyze(AssertTest):
             "data/coredump/stackcore_tracer_6_570350_atrace_test_20241010031221412850.txt",
         )
         parse = ParseStackCore(None)
-        with open(stackcore_file, "r") as f:
+        with open(stackcore_file, "r", encoding="utf-8") as f:
             file_lines = f.readlines()
         parse.set_maps_addr_binary_path(file_lines)
         self.assertTrue(
@@ -531,7 +552,7 @@ class TestAsysAnalyze(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(
@@ -551,7 +572,7 @@ class TestAsysAnalyze(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(AsysCollect, "run", return_value=True)
@@ -572,7 +593,7 @@ class TestAsysAnalyze(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch.object(AsysCollect, "run", return_value=False)
         mocker.patch.object(
@@ -592,7 +613,7 @@ class TestAsysAnalyze(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch.object(AsysCollect, "run", return_value=True)
         mocker.patch("os.path.exists", return_value=False)
@@ -758,7 +779,7 @@ class TestAsysAnalyze(AssertTest):
 
     def test_asys_analyze_coretrace_empty_file(self, mocker, caplog):
         coredump_file = os.path.join(ut_root_path, "data/coredump/coretrace_empty")
-        with open(coredump_file, "w") as f:
+        with open(coredump_file, "w", encoding="utf-8"):
             pass
         args = Namespace(
             subparser_name="analyze",

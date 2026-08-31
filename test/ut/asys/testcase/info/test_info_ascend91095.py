@@ -16,20 +16,17 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import sys
 import pytest
 import os
 import subprocess
 
-from testcase.conftest import (
-    CONF_SRC_PATH,
-    ASYS_SRC_PATH,
-    ut_root_path,
-    set_env,
-    unset_env,
-)
+from testcase.conftest import CONF_SRC_PATH, ut_root_path
 
-sys.path.insert(0, ASYS_SRC_PATH)
 import asys
 from params import ParamDict
 from ..conftest import AssertTest
@@ -79,7 +76,8 @@ class TestInfo(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+            check=False,
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.run", return_value=fake_ret)
         ParamDict().set_env_type("EP")
         AsysInfo().get_hardware_info()
@@ -226,30 +224,30 @@ class TestInfo(AssertTest):
         AsysInfo().get_software_info()
         captured = capsys.readouterr()
         except_msg = """
- +------------------------+--------------------+ 
- | Group of 0 Device      | INFORMATION        | 
- +========================+====================+ 
- +--- Host Version -------+--------------------+ 
- | Kernel                 | 7.6.T7.0.B052      | 
- | OS                     | 7.6.T7.0.B052      | 
- +--- Device Version -----+--------------------+ 
- | firmware               | 7.6.T7.0.B052      | 
- | driver                 | 7.6.T7.0.B052      | 
- | runtime                | 7.6.T7.0.B052      | 
- | ge-compiler            | 7.6.T7.0.B052      | 
- | bisheng-compiler       | 7.6.T7.0.B052      | 
- | oam_tools              | 7.6.T7.0.B052      | 
- | dvpp                   | 7.6.T7.0.B052      | 
- | aoe                    | 7.6.T7.0.B052      | 
- | hccl                   | 7.6.T7.0.B052      | 
- | ncs                    | 7.6.T7.0.B052      | 
- | opbase                 | 7.6.T7.0.B052      | 
- | ops_cv                 | 7.6.T7.0.B052      | 
- | ops_legacy             | 7.6.T7.0.B052      | 
- | ops_math               | 7.6.T7.0.B052      | 
- | ops_nn                 | 7.6.T7.0.B052      | 
- | ops_transformer        | 7.6.T7.0.B052      | 
- +------------------------+--------------------+ 
+ +------------------------+--------------------+
+ | Group of 0 Device      | INFORMATION        |
+ +========================+====================+
+ +--- Host Version -------+--------------------+
+ | Kernel                 | 7.6.T7.0.B052      |
+ | OS                     | 7.6.T7.0.B052      |
+ +--- Device Version -----+--------------------+
+ | firmware               | 7.6.T7.0.B052      |
+ | driver                 | 7.6.T7.0.B052      |
+ | runtime                | 7.6.T7.0.B052      |
+ | ge-compiler            | 7.6.T7.0.B052      |
+ | bisheng-compiler       | 7.6.T7.0.B052      |
+ | oam_tools              | 7.6.T7.0.B052      |
+ | dvpp                   | 7.6.T7.0.B052      |
+ | aoe                    | 7.6.T7.0.B052      |
+ | hccl                   | 7.6.T7.0.B052      |
+ | ncs                    | 7.6.T7.0.B052      |
+ | opbase                 | 7.6.T7.0.B052      |
+ | ops_cv                 | 7.6.T7.0.B052      |
+ | ops_legacy             | 7.6.T7.0.B052      |
+ | ops_math               | 7.6.T7.0.B052      |
+ | ops_nn                 | 7.6.T7.0.B052      |
+ | ops_transformer        | 7.6.T7.0.B052      |
+ +------------------------+--------------------+
 """
         self.assertTrue(except_msg == captured.out)
 
@@ -266,37 +264,37 @@ class TestInfo(AssertTest):
         class DeviceInfoMock:
             UNSUPPORTED_KEY_WORDS = ["-"]
 
-            def get_chip_info(self, *args):
+            def get_chip_info(self, *_args):
                 return "Ascend 910B4 V1"
 
-            def get_device_power(self, *args):
+            def get_device_power(self, *_args):
                 return 875
 
-            def get_device_temperature(self, *args):
+            def get_device_temperature(self, *_args):
                 return 56
 
-            def get_device_health(self, *args):
+            def get_device_health(self, *_args):
                 return "Healthy"
 
-            def get_device_cpu_info(self, *args):
+            def get_device_cpu_info(self, *_args):
                 return 6, 1, 930, 2000
 
-            def get_device_aic_info(self, *args):
+            def get_device_aic_info(self, *_args):
                 return 20, 900, 800
 
-            def get_device_bus_info(self, *args):
+            def get_device_bus_info(self, *_args):
                 return 930, 2700, 2000, 2000, 2300
 
-            def get_device_memory_info(self, *args):
+            def get_device_memory_info(self, *_args):
                 return "-", "-"
 
-            def get_device_hbm_info(self, *args):
+            def get_device_hbm_info(self, *_args):
                 return 32768, 2658, 0, 0
 
-            def get_device_utilization_rate(self, *args):
+            def get_device_utilization_rate(self, *_args):
                 return 0
 
-            def get_device_hbm_volt_freq(self, *args):
+            def get_device_hbm_volt_freq(self, *_args):
                 return 1200, 1600
 
             def get_device_count(self):
@@ -308,38 +306,38 @@ class TestInfo(AssertTest):
         AsysInfo().get_status_info(0)
         captured = capsys.readouterr()
         except_msg = """
- +----------------------------------+----------------------+ 
- | Device ID: 0                     | INFORMATION          | 
- +==================================+======================+ 
- | Chip Name                        | Ascend 910B4 V1      | 
- | Power (W)                        | 875                  | 
- | Temperature (C)                  | 56                   | 
- | health                           | Healthy              | 
- +--- CPU Information --------------+----------------------+ 
- | AI CPU Count                     | 6                    | 
- | AI CPU Usage (%)                 | 0                    | 
- | Control CPU Count                | 1                    | 
- | Control CPU Usage (%)            | 0                    | 
- | Control CPU Frequency (MHZ)      | 2000                 | 
- | Control CPU Voltage (MV)         | 930                  | 
- +--- AI Core Information ----------+----------------------+ 
- | AI Core Count                    | 20                   | 
- | AI Core Usage (%)                | 0                    | 
- | AI Core Frequency (MHZ)          | 800                  | 
- | AI Core Voltage (MV)             | 900                  | 
- +--- Bus Information --------------+----------------------+ 
- | Bus Voltage (MV)                 | 930                  | 
- | Ring Frequency (MHZ)             | 2700                 | 
- | CPU Frequency (MHZ)              | 2000                 | 
- | Mata Frequency (MHZ)             | 2000                 | 
- | L2buffer Frequency (MHZ)         | 2300                 | 
- +--- Memory Information -----------+----------------------+ 
- | HBM Total (MB)                   | 32768                | 
- | HBM Used (MB)                    | 2658                 | 
- | HBM Bandwidth Usage (%)          | 0                    | 
- | HBM Frequency (MHZ)              | 1600                 | 
- | HBM Voltage (MV)                 | 1200                 | 
- +----------------------------------+----------------------+ 
+ +----------------------------------+----------------------+
+ | Device ID: 0                     | INFORMATION          |
+ +==================================+======================+
+ | Chip Name                        | Ascend 910B4 V1      |
+ | Power (W)                        | 875                  |
+ | Temperature (C)                  | 56                   |
+ | health                           | Healthy              |
+ +--- CPU Information --------------+----------------------+
+ | AI CPU Count                     | 6                    |
+ | AI CPU Usage (%)                 | 0                    |
+ | Control CPU Count                | 1                    |
+ | Control CPU Usage (%)            | 0                    |
+ | Control CPU Frequency (MHZ)      | 2000                 |
+ | Control CPU Voltage (MV)         | 930                  |
+ +--- AI Core Information ----------+----------------------+
+ | AI Core Count                    | 20                   |
+ | AI Core Usage (%)                | 0                    |
+ | AI Core Frequency (MHZ)          | 800                  |
+ | AI Core Voltage (MV)             | 900                  |
+ +--- Bus Information --------------+----------------------+
+ | Bus Voltage (MV)                 | 930                  |
+ | Ring Frequency (MHZ)             | 2700                 |
+ | CPU Frequency (MHZ)              | 2000                 |
+ | Mata Frequency (MHZ)             | 2000                 |
+ | L2buffer Frequency (MHZ)         | 2300                 |
+ +--- Memory Information -----------+----------------------+
+ | HBM Total (MB)                   | 32768                |
+ | HBM Used (MB)                    | 2658                 |
+ | HBM Bandwidth Usage (%)          | 0                    |
+ | HBM Frequency (MHZ)              | 1600                 |
+ | HBM Voltage (MV)                 | 1200                 |
+ +----------------------------------+----------------------+
 """
         self.assertTrue(except_msg == captured.out)
 
@@ -386,46 +384,46 @@ class TestInfo(AssertTest):
         class DeviceInfoMock:
             UNSUPPORTED_KEY_WORDS = ["-", "-, -"]
 
-            def get_chip_info(self, *args):
+            def get_chip_info(self, *_args):
                 return "Ascend 910_9591 V1"
 
-            def get_aicore_count(self, *args):
+            def get_aicore_count(self, *_args):
                 return 20
 
-            def get_device_voltage(self, *args):
+            def get_device_voltage(self, *_args):
                 return "930(Max)"
 
-            def get_device_aicore_frequency(self, *args):
+            def get_device_aicore_frequency(self, *_args):
                 return "800(Avg)"
 
-            def get_device_power(self, *args):
+            def get_device_power(self, *_args):
                 return 875
 
-            def get_device_temperature(self, *args):
+            def get_device_temperature(self, *_args):
                 return 56
 
-            def get_device_health(self, *args):
+            def get_device_health(self, *_args):
                 return "Healthy"
 
-            def get_device_cpu_info(self, *args):
+            def get_device_cpu_info(self, *_args):
                 return 6, 1, 930, 2000
 
-            def get_device_aic_info(self, *args):
+            def get_device_aic_info(self, *_args):
                 return 20, "-, -", "-, -"
 
-            def get_device_bus_info(self, *args):
+            def get_device_bus_info(self, *_args):
                 return "930, 920", "2700, 2800", 2000, "2700, 2800", "2700, 2800"
 
-            def get_device_memory_info(self, *args):
+            def get_device_memory_info(self, *_args):
                 return "-", "-"
 
-            def get_device_hbm_info(self, *args):
+            def get_device_hbm_info(self, *_args):
                 return 32768, 2658, 0, 0
 
-            def get_device_utilization_rate(self, *args):
+            def get_device_utilization_rate(self, *_args):
                 return 0
 
-            def get_device_hbm_volt_freq(self, *args):
+            def get_device_hbm_volt_freq(self, *_args):
                 return 1200, 1600
 
             def get_device_count(self):
@@ -436,38 +434,38 @@ class TestInfo(AssertTest):
         AsysInfo().get_status_info(0)
         captured = capsys.readouterr()
         expect_msg = """
- +----------------------------------+-------------------------+ 
- | Device ID: 0                     | INFORMATION             | 
- +==================================+=========================+ 
- | Chip Name                        | Ascend 910_9591 V1      | 
- | Power (W)                        | 875                     | 
- | Temperature (C)                  | 56                      | 
- | health                           | Healthy                 | 
- +--- CPU Information --------------+-------------------------+ 
- | AI CPU Count                     | 6                       | 
- | AI CPU Usage (%)                 | 0                       | 
- | Control CPU Count                | 1                       | 
- | Control CPU Usage (%)            | 0                       | 
- | Control CPU Frequency (MHZ)      | 2000                    | 
- | Control CPU Voltage (MV)         | 930                     | 
- +--- AI Core Information ----------+-------------------------+ 
- | AI Core Count                    | 20                      | 
- | AI Core Usage (%)                | 0                       | 
- | AI Core Frequency (MHZ)          | 800(Avg)                | 
- | AI Core Voltage (MV)             | 930(Max)                | 
- +--- Bus Information --------------+-------------------------+ 
- | Bus Voltage (MV)                 | 930, 920                | 
- | Ring Frequency (MHZ)             | 2700, 2800              | 
- | CPU Frequency (MHZ)              | 2000                    | 
- | Mata Frequency (MHZ)             | 2700, 2800              | 
- | L2buffer Frequency (MHZ)         | 2700, 2800              | 
- +--- Memory Information -----------+-------------------------+ 
- | HBM Total (MB)                   | 32768                   | 
- | HBM Used (MB)                    | 2658                    | 
- | HBM Bandwidth Usage (%)          | 0                       | 
- | HBM Frequency (MHZ)              | 1600                    | 
- | HBM Voltage (MV)                 | 1200                    | 
- +----------------------------------+-------------------------+ 
+ +----------------------------------+-------------------------+
+ | Device ID: 0                     | INFORMATION             |
+ +==================================+=========================+
+ | Chip Name                        | Ascend 910_9591 V1      |
+ | Power (W)                        | 875                     |
+ | Temperature (C)                  | 56                      |
+ | health                           | Healthy                 |
+ +--- CPU Information --------------+-------------------------+
+ | AI CPU Count                     | 6                       |
+ | AI CPU Usage (%)                 | 0                       |
+ | Control CPU Count                | 1                       |
+ | Control CPU Usage (%)            | 0                       |
+ | Control CPU Frequency (MHZ)      | 2000                    |
+ | Control CPU Voltage (MV)         | 930                     |
+ +--- AI Core Information ----------+-------------------------+
+ | AI Core Count                    | 20                      |
+ | AI Core Usage (%)                | 0                       |
+ | AI Core Frequency (MHZ)          | 800(Avg)                |
+ | AI Core Voltage (MV)             | 930(Max)                |
+ +--- Bus Information --------------+-------------------------+
+ | Bus Voltage (MV)                 | 930, 920                |
+ | Ring Frequency (MHZ)             | 2700, 2800              |
+ | CPU Frequency (MHZ)              | 2000                    |
+ | Mata Frequency (MHZ)             | 2700, 2800              |
+ | L2buffer Frequency (MHZ)         | 2700, 2800              |
+ +--- Memory Information -----------+-------------------------+
+ | HBM Total (MB)                   | 32768                   |
+ | HBM Used (MB)                    | 2658                    |
+ | HBM Bandwidth Usage (%)          | 0                       |
+ | HBM Frequency (MHZ)              | 1600                    |
+ | HBM Voltage (MV)                 | 1200                    |
+ +----------------------------------+-------------------------+
 """
         self.assertTrue(expect_msg == captured.out)
 

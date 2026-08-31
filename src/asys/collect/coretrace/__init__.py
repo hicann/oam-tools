@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from collect.coretrace.coretrace_collect import ParseCoreTrace
+
+
+__all__ = ["ParseCoreTrace"]

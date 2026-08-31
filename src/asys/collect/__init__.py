@@ -18,3 +18,6 @@
 
 from collect.asys_collect import AsysCollect
 from collect.stacktrace.stacktrace_collect import AsysStackTrace
+
+
+__all__ = ["AsysCollect", "AsysStackTrace"]

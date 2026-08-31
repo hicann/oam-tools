@@ -19,12 +19,9 @@
 from threading import Thread
 from common.device import DeviceInfo
 import common.interface as interface
- 
- 
+
+
 class Ascend91093Handler(DeviceInfo):
-    def __init__(self):
-        super().__init__()
- 
     @classmethod
     def need_lp_param(cls):
         return False
@@ -33,34 +30,39 @@ class Ascend91093Handler(DeviceInfo):
     def support_dvpp(cls):
         return True
 
-    def run_diagnose(self, device_obj, diagnose_devices, run_mode):
+    @staticmethod
+    def run_diagnose(device_obj, diagnose_devices, run_mode):
         """Multi-thread parallel execution"""
         threads = []
         ret = {}
         master_ids = {}
- 
-        logic_master_info = interface.get_devices_master_id(device_obj, diagnose_devices)
+
+        logic_master_info = interface.get_devices_master_id(
+            device_obj, diagnose_devices
+        )
         if run_mode == "hbm_detect":
             _target_func = interface.run_hbm
         elif run_mode == "cpu_detect":
             _target_func = interface.run_cpu
         else:
             return interface.run_diagnose(device_obj, diagnose_devices, run_mode)
- 
+
         for device_id in diagnose_devices:
             if logic_master_info[device_id] not in master_ids:
                 # new thread
-                t = Thread(target=_target_func, args=(device_id, device_obj, ret), daemon=True)
+                t = Thread(
+                    target=_target_func, args=(device_id, device_obj, ret), daemon=True
+                )
                 t.start()
                 threads.append(t)
                 master_ids[logic_master_info[device_id]] = device_id
- 
+
         # wait for all threads to end.
         for t in threads:
             t.join()
- 
+
         ret_logic_id = {}
         for device_id in diagnose_devices:
             ret_logic_id[device_id] = ret[master_ids[logic_master_info[device_id]]]
- 
+
         return ret_logic_id

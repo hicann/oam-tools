@@ -16,14 +16,16 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
-import pytest
 import subprocess
 import shutil
 
 from testcase.conftest import ASYS_SRC_PATH, ut_root_path, test_case_tmp
-sys.path.insert(0, ASYS_SRC_PATH)
 import asys
 
 from params import ParamDict
@@ -32,23 +34,32 @@ from launch import AsysLaunch
 from ..conftest import AssertTest
 from common import FileOperate as f
 
+
 def setup_module():
-    print("TestAsysLaunch ut test start.")
+    print("TestAsysLaunch ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestAsysLaunch ut test finsh.")
+    print("TestAsysLaunch ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestAsysLaunch(AssertTest):
-
     def setup_method(self):
-        ParamDict().asys_output_timestamp_dir = os.path.join(ut_root_path, "asys_output_20230227093645758")
+        ParamDict().asys_output_timestamp_dir = os.path.join(
+            ut_root_path, "asys_output_20230227093645758"
+        )
         ParamDict().set_ini("DUMP_GE_GRAPH", "2")
         ParamDict().set_ini("DUMP_GRAPH_LEVEL", "2")
         ParamDict().set_ini("ASCEND_GLOBAL_LOG_LEVEL", "1")
         ParamDict().set_ini("ASCEND_GLOBAL_EVENT_ENABLE", "1")
         ParamDict().set_ini("ASCEND_SLOG_PRINT_TO_STDOUT", "0")
         ParamDict().set_ini("ASCEND_HOST_LOG_FILE_NUM", "1000")
-        ParamDict().set_ini("NPU_COLLECT_PATH", os.path.join(ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates"))
+        ParamDict().set_ini(
+            "NPU_COLLECT_PATH",
+            os.path.join(
+                ParamDict().asys_output_timestamp_dir, "npu_collect_intermediates"
+            ),
+        )
 
     def teardown_method(self):
         ParamDict.clear()
@@ -56,7 +67,13 @@ class TestAsysLaunch(AssertTest):
     def test_launch_task_success(self, mocker):
         mocker.patch("common.FileOperate.create_dir", return_value=True)
         mocker.patch("params.ParamDict.get_arg", return_value="bash ./test.bash")
-        fake_ret = subprocess.Popen("ls", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "ls",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )  # noqa: S607  # nosec B602  # test mock
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("common.FileOperate.write_file")
@@ -67,7 +84,13 @@ class TestAsysLaunch(AssertTest):
     def test_launch_task_failed(self, mocker):
         mocker.patch("common.FileOperate.create_dir", return_value=True)
         mocker.patch("params.ParamDict.get_arg", return_value="bash ./test.bash")
-        fake_ret = subprocess.Popen("unknow_command", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "unknown_command",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )  # noqa: S607  # nosec B602  # test mock
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("common.FileOperate.write_file")
@@ -78,6 +101,7 @@ class TestAsysLaunch(AssertTest):
     def test_launch_create_env_dir_error(self):
         from launch.asys_launch import AsysLaunch
         from common.const import RetCode
+
         ParamDict().asys_output_timestamp_dir = "./"
 
         obj = AsysLaunch()
@@ -110,13 +134,21 @@ class TestAsysLaunch(AssertTest):
         if not dirs:
             return False
         asys_out_dir = os.path.join(test_case_tmp, dirs[0])
-        self.assertTrue(not os.path.exists(os.path.join(asys_out_dir, "npu_collect_intermediates")))
+        self.assertTrue(
+            not os.path.exists(os.path.join(asys_out_dir, "npu_collect_intermediates"))
+        )
         shutil.rmtree(test_case_tmp)
 
     def test_launch_prepare(self, mocker, caplog):
         mocker.patch("common.FileOperate.create_dir", return_value=True)
         mocker.patch("params.ParamDict.get_arg", return_value="bash ./test.bash")
-        fake_ret = subprocess.Popen("sleep 30", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        fake_ret = subprocess.Popen(
+            "sleep 30",
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+        )  # noqa: S607  # nosec B602  # test mock
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("common.FileOperate.write_file")
@@ -128,7 +160,7 @@ class TestAsysLaunch(AssertTest):
 
     def test_task_out_collect(self, mocker, caplog):
         mocker.patch("os.path.join")
-        mocker.patch.object(f, 'write_file')
+        mocker.patch.object(f, "write_file")
         mocker.patch.object(AsysCollect, "collect", return_value=False)
         launch = AsysLaunch()
         launch.task_out_collect(test_case_tmp)

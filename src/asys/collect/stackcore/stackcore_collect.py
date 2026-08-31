@@ -51,9 +51,9 @@ class ParseStackCore:
     @staticmethod
     def write_res_file(file_name, file_lines):
         try:
-            with open(file_name, "w") as fw:
+            with open(file_name, "w", encoding="utf-8") as fw:
                 fw.writelines(file_lines)
-        except Exception as e:
+        except OSError as e:
             log_error(e)
             return False
         return True
@@ -74,9 +74,11 @@ class ParseStackCore:
     def get_source_location(self, so_name, address):
         """Run the addr2line command to obtain the function name and the line where the function is located."""
         try:
-            output = subprocess.check_output([self.__addr2line, hex(address), '-e', so_name, '-f', '-C', '-s', '-i'],
-                                             stderr=subprocess.STDOUT)
-            output_lines = output.decode().strip().split("\n")
+            output = subprocess.check_output(
+                [self.__addr2line, hex(address), "-e", so_name, "-f", "-C", "-s", "-i"],
+                stderr=subprocess.STDOUT,
+            )
+            output_lines = output.decode(errors="replace").strip().split("\n")
             result_lines = []
             for line in output_lines:
                 if line.startswith(self.__addr2line):
@@ -85,19 +87,27 @@ class ParseStackCore:
                     continue
                 result_lines.append(line)
             return result_lines
-        except Exception as e:
+        except (
+            OSError,
+            TypeError,
+            AttributeError,
+            subprocess.CalledProcessError,
+            UnicodeDecodeError,
+        ):
             self.warning(so_name, f"{so_name} is not permitted to read.")
             return []
 
-    def file_lines_add_stack_num(self, file_lines):
+    @staticmethod
+    def file_lines_add_stack_num(file_lines):
         # stack add line num
         file_lines_with_stack_num = []
         stack_num = 0
         for line in file_lines:
-
             if line.endswith("Ignore\n"):
                 stack_str = f"#0{stack_num}" if stack_num < 10 else f"#{stack_num}"
-                file_lines_with_stack_num.append(f"{stack_str} {' ' * ADDR_LEN_HEX} Ignore\n")
+                file_lines_with_stack_num.append(
+                    f"{stack_str} {' ' * ADDR_LEN_HEX} Ignore\n"
+                )
                 stack_num += 1
                 continue
             if line.startswith("Thread "):
@@ -122,7 +132,9 @@ class ParseStackCore:
         for i in range(0, len(all_func), 2):
             func_name, func_file = all_func[i], all_func[i + 1]
             if i == 0:
-                file_line += f"### {stack_addr} {func_name} in {func_file} from {so_name}\n"
+                file_line += (
+                    f"### {stack_addr} {func_name} in {func_file} from {so_name}\n"
+                )
             else:
                 file_line += f"### {' ' * len(stack_addr)} {func_name} in {func_file} from {so_name}\n"
         return file_line
@@ -148,10 +160,20 @@ class ParseStackCore:
             is_file = False
         else:
             _mode = os.stat(binary_path).st_mode
-            is_file = any([os.path.isfile(binary_path), stat.S_ISBLK(_mode), stat.S_ISCHR(_mode), stat.S_ISSOCK(_mode)])
+            is_file = any(
+                [
+                    os.path.isfile(binary_path),
+                    stat.S_ISBLK(_mode),
+                    stat.S_ISCHR(_mode),
+                    stat.S_ISSOCK(_mode),
+                ]
+            )
         if not is_file:
-            warning_info = f"{so_name} not found in symbol_path directory." if self.symbol_path \
+            warning_info = (
+                f"{so_name} not found in symbol_path directory."
+                if self.symbol_path
                 else f"{binary_path} is not exists."
+            )
             self.warning(so_name, warning_info)
             file_lines[index] = line.replace(line_num, "###")
             return False
@@ -160,8 +182,12 @@ class ParseStackCore:
         else:
             address = str_to_hex(stack_addr) - str_to_hex(delta_addr)
 
-        line_with_addr = self._get_line_with_addr2line(binary_path, address, stack_addr, so_name)
-        file_lines[index] = line_with_addr if line_with_addr else line.replace(line_num, "###")
+        line_with_addr = self._get_line_with_addr2line(
+            binary_path, address, stack_addr, so_name
+        )
+        file_lines[index] = (
+            line_with_addr if line_with_addr else line.replace(line_num, "###")
+        )
         return True
 
     def set_maps_addr_binary_path(self, file_lines):
@@ -198,9 +224,9 @@ class ParseStackCore:
         if not self.check_tool_exists():
             return False
         try:
-            with open(stackcore_file, "r") as fp:
+            with open(stackcore_file, "r", encoding="utf-8") as fp:
                 file_lines = fp.readlines()
-        except Exception as e:
+        except OSError as e:
             self.error(e)
             return False
         if not file_lines:
@@ -228,10 +254,12 @@ class ParseStackCore:
             # If it is not started and is not in stackcore format, it is not processed.
             if not start_up or not re.match("#[0-9]+?", line) or len(line.split()) < 4:
                 continue
-            line_num, stack_addr, delta_addr, binary_path = line.split()[:4]
+            _, stack_addr, delta_addr, _ = line.split()[:4]
             if not (is_hexadecimal(stack_addr) and is_hexadecimal(delta_addr)):
                 continue
-            t = Thread(target=self.parse_line, args=(index, line, file_lines), daemon=True)
+            t = Thread(
+                target=self.parse_line, args=(index, line, file_lines), daemon=True
+            )
             t.start()
             threads.append(t)
         # wait for all threads to end.
@@ -260,7 +288,11 @@ class ParseStackCore:
             for file in files:
                 stackcore_file = os.path.join(dirs, file)
                 num += 1
-                t = Thread(target=self.save_file_result, args=(stackcore_file, count, num, results), daemon=True)
+                t = Thread(
+                    target=self.save_file_result,
+                    args=(stackcore_file, count, num, results),
+                    daemon=True,
+                )
                 t.start()
                 threads.append(t)
         # wait for all threads to end.

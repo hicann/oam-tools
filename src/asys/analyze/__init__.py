@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from analyze.asys_analyze import AsysAnalyze
+
+
+__all__ = ["AsysAnalyze"]

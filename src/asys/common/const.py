@@ -35,12 +35,12 @@ AI_CORE_USE = 2
 AI_CPU_USE = 3
 CONTROL_CPU_USE = 4
 
-NOT_SUPPORT = '-'
-UNKNOWN = 'Unknown'
-NONE = 'none'
+NOT_SUPPORT = "-"
+UNKNOWN = "Unknown"
+NONE = "none"
 
-CANN_LOG_NAME = 'log'
-ATRACE_LOG_NAME = 'atrace'
+CANN_LOG_NAME = "log"
+ATRACE_LOG_NAME = "atrace"
 
 REG_OFF = 0
 REG_THREAD = 1
@@ -69,7 +69,7 @@ LP_MODE_LP = 2
 
 # sigrtmin
 SIGRTMIN = 34
-STACKTRACE = 'stacktrace'
+STACKTRACE = "stacktrace"
 
 DSMI_UB_PORT_NUM = 36
 DL_PORT_RX_VL_NUM = 16
@@ -80,14 +80,14 @@ UB_ENTIRE_STATUS_MAP = {
     0: "DSMI_UB_ALL_PORT_NO_LINK (All ports have no link)",
     1: "DSMI_UB_ALL_PORT_LINK (All ports have link)",
     2: "DSMI_UB_PARTIAL_PORT_LINK (Partial ports have link)",
-    3: "DSMI_UB_NO_NEED_LINK (No link required)"
+    3: "DSMI_UB_NO_NEED_LINK (No link required)",
 }
 
 UB_PORT_STATUS_MAP = {
     0: "DSMI_UB_PORT_STATUS_INITIAL (Initial status)",
     1: "DSMI_UB_PORT_STATUS_FULL_LANE (Full lane normal)",
     2: "DSMI_UB_PORT_STATUS_PARTIAL_LANE (Partial lane normal)",
-    3: "DSMI_UB_PORT_STATUS_NONE_LANE (No lane normal)"
+    3: "DSMI_UB_PORT_STATUS_NONE_LANE (No lane normal)",
 }
 
 BALANCE_ALGORITHM_MAP = {
@@ -98,45 +98,61 @@ BALANCE_ALGORITHM_MAP = {
 
 GET_DEVICES_INFO_TIMEOUT = 10
 
-ALL_NOT_SUPPORTED_CHIP_TYPE = 'NULL'
-ALL_SUPPORTED_CHIP_TYPE = 'ALL'
+ALL_NOT_SUPPORTED_CHIP_TYPE = "NULL"
+ALL_SUPPORTED_CHIP_TYPE = "ALL"
 
-CONFIG_TABLE_FILE = Path(__file__).parent.parent / 'conf' / 'config_table.csv'
+CONFIG_TABLE_FILE = Path(__file__).parent.parent / "conf" / "config_table.csv"
 
 
 class ScreenResult(enum.Enum):
-    PASS = 'Pass'
-    FAIL = 'Fail'
-    WARN = 'Warn'
+    PASS = "Pass"
+    FAIL = "Fail"
+    WARN = "Warn"
 
 
 class CannPkg:
-    firmware = 'firmware'
-    driver = 'driver'
-    runtime = 'runtime'
-    ge_compiler = 'ge-compiler'
-    bisheng_compiler = 'bisheng-compiler'
-    toolkit = 'oam_tools'
-    dvpp = 'dvpp'
-    aoe = 'aoe'
-    hccl = 'hccl'
-    ncs = 'ncs'
-    opbase = 'opbase'
-    ops_cv = 'ops_cv'
-    ops_legacy = 'ops_legacy'
-    ops_math = 'ops_math'
-    ops_nn = 'ops_nn'
-    ops_transformer = 'ops_transformer'
+    firmware = "firmware"
+    driver = "driver"
+    runtime = "runtime"
+    ge_compiler = "ge-compiler"
+    bisheng_compiler = "bisheng-compiler"
+    toolkit = "oam_tools"
+    dvpp = "dvpp"
+    aoe = "aoe"
+    hccl = "hccl"
+    ncs = "ncs"
+    opbase = "opbase"
+    ops_cv = "ops_cv"
+    ops_legacy = "ops_legacy"
+    ops_math = "ops_math"
+    ops_nn = "ops_nn"
+    ops_transformer = "ops_transformer"
 
     @classmethod
     def get_all_pkg_list(cls):
-        return [cls.firmware, cls.driver, cls.runtime, cls.ge_compiler, cls.bisheng_compiler, 
-                cls.toolkit, cls.dvpp, cls.aoe, cls.hccl, cls.ncs, cls.opbase, cls.ops_cv, 
-                cls.ops_legacy, cls.ops_math, cls.ops_nn, cls.ops_transformer]
+        return [
+            cls.firmware,
+            cls.driver,
+            cls.runtime,
+            cls.ge_compiler,
+            cls.bisheng_compiler,
+            cls.toolkit,
+            cls.dvpp,
+            cls.aoe,
+            cls.hccl,
+            cls.ncs,
+            cls.opbase,
+            cls.ops_cv,
+            cls.ops_legacy,
+            cls.ops_math,
+            cls.ops_nn,
+            cls.ops_transformer,
+        ]
 
 
 class Singleton(type):
-    """ Singleton class """
+    """Singleton class"""
+
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -167,83 +183,92 @@ class RetCode(enum.Enum):
 
 
 class ConfigOptionName(enum.Enum):
-    CHIP_NAME = 'chip_name'
-    POWER = 'power'
-    TEMPERATURE = 'temperature'
-    HEALTH = 'health'
-    ACPU_CNT = 'acpu_cnt'
-    ACPU_USAGE = 'acpu_usage'
-    CCPU_USAGE = 'ccpu_usage'
-    CCPU_CNT = 'ccpu_cnt'
-    CCPU_FREQUENCY = 'ccpu_frequency'
-    CCPU_VOLTAGE = 'ccpu_voltage'
-    AIC_CNT = 'aic_cnt'
-    AIC_USAGE = 'aic_usage'
-    AIC_FREQUENCY = 'aic_frequency'
-    AIC_VOLTAGE = 'aic_voltage'
-    BUS_VOLTAGE = 'bus_voltage'
-    CPU_FREQUENCY = 'cpu_frequency'
-    RING_FREQUENCY = 'ring_frequency'
-    MATA_FREQUENCY = 'mata_frequency'
-    L2BUFFER_FREQUENCY = 'l2buffer_frequency'
-    DDR_TOTAL = 'ddr_total'
-    DDR_USED = 'ddr_used'
-    DDR_BANDWIDTH = 'ddr_bandwidth'
-    DDR_FREQUENCY = 'ddr_frequency'
-    HBM_TOTAL = 'hbm_total'
-    HBM_USED = 'hbm_used'
-    HBM_BANDWIDTH_USE = 'hbm_bandwidth_usage'
-    HBM_FREQUENCY = 'hbm_frequency'
-    HBM_VOLTAGE = 'hbm_voltage'
+    CHIP_NAME = "chip_name"
+    POWER = "power"
+    TEMPERATURE = "temperature"
+    HEALTH = "health"
+    ACPU_CNT = "acpu_cnt"
+    ACPU_USAGE = "acpu_usage"
+    CCPU_USAGE = "ccpu_usage"
+    CCPU_CNT = "ccpu_cnt"
+    CCPU_FREQUENCY = "ccpu_frequency"
+    CCPU_VOLTAGE = "ccpu_voltage"
+    AIC_CNT = "aic_cnt"
+    AIC_USAGE = "aic_usage"
+    AIC_FREQUENCY = "aic_frequency"
+    AIC_VOLTAGE = "aic_voltage"
+    BUS_VOLTAGE = "bus_voltage"
+    CPU_FREQUENCY = "cpu_frequency"
+    RING_FREQUENCY = "ring_frequency"
+    MATA_FREQUENCY = "mata_frequency"
+    L2BUFFER_FREQUENCY = "l2buffer_frequency"
+    DDR_TOTAL = "ddr_total"
+    DDR_USED = "ddr_used"
+    DDR_BANDWIDTH = "ddr_bandwidth"
+    DDR_FREQUENCY = "ddr_frequency"
+    HBM_TOTAL = "hbm_total"
+    HBM_USED = "hbm_used"
+    HBM_BANDWIDTH_USE = "hbm_bandwidth_usage"
+    HBM_FREQUENCY = "hbm_frequency"
+    HBM_VOLTAGE = "hbm_voltage"
 
 
 class ConfigOperateType(enum.Enum):
-    GET = 'get'
-    SET = 'set'
-    RESTORE = 'restore'
+    GET = "get"
+    SET = "set"
+    RESTORE = "restore"
 
 
 class Constants:
     @property
     def help_cmd(self):
-        return 'help'
+        return "help"
 
     @property
     def collect_cmd(self):
-        return 'collect'
+        return "collect"
 
     @property
     def launch_cmd(self):
-        return 'launch'
+        return "launch"
 
     @property
     def info_cmd(self):
-        return 'info'
+        return "info"
 
     @property
     def diagnose_cmd(self):
-        return 'diagnose'
+        return "diagnose"
 
     @property
     def health_cmd(self):
-        return 'health'
+        return "health"
 
     @property
     def analyze_cmd(self):
-        return 'analyze'
+        return "analyze"
 
     @property
     def config_cmd(self):
-        return 'config'
+        return "config"
 
     @property
     def profiling_cmd(self):
-        return 'profiling'
+        return "profiling"
 
     @property
     def cmd_set(self):
-        return [self.help_cmd, self.collect_cmd, self.launch_cmd, self.info_cmd, self.diagnose_cmd, self.health_cmd,
-                self.analyze_cmd, self.config_cmd, self.profiling_cmd]
+        return [
+            self.help_cmd,
+            self.collect_cmd,
+            self.launch_cmd,
+            self.info_cmd,
+            self.diagnose_cmd,
+            self.health_cmd,
+            self.analyze_cmd,
+            self.config_cmd,
+            self.profiling_cmd,
+        ]
 
 
 consts = Constants()

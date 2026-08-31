@@ -16,25 +16,27 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import pytest
-import os
 from argparse import Namespace
-from testcase.conftest import ASYS_SRC_PATH, get_root
-sys.path.insert(0, ASYS_SRC_PATH)
+from testcase.conftest import get_root
 
 from params import ParamDict
-from common import FileOperate
 from testcase.conftest import AssertTest
 
+
 def setup_module():
-    print("TestParamDict ut test start.")
+    print("TestParamDict ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestParamDict ut test finsh.")
+    print("TestParamDict ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestParamDict(AssertTest):
-
     def setup_method(self):
         ParamDict.clear()
 
@@ -42,22 +44,46 @@ class TestParamDict(AssertTest):
         pass
 
     def test_get_command(self, mocker):
-        fake_namespace = Namespace(subparser_name="collect", task_dir=get_root(), output=None, tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir=get_root(),
+            output=None,
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_command() == "collect")
 
         mocker.patch("common.FileOperate.check_file", return_value=True)
-        fake_namespace = Namespace(subparser_name="launch", task="bash ./test.bash", output=None, tar=None)
+        fake_namespace = Namespace(
+            subparser_name="launch", task="bash ./test.bash", output=None, tar=None
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_command() == "launch")
 
     def test_get_arg(self, mocker):
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output=None, tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output=None,
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_arg("task_dir") == "./")
 
         mocker.patch("common.FileOperate.check_file", return_value=True)
-        fake_namespace = Namespace(subparser_name="launch", task="bash ./test.bash", output=None, tar=None)
+        fake_namespace = Namespace(
+            subparser_name="launch", task="bash ./test.bash", output=None, tar=None
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_arg("task") == "bash ./test.bash")
 
@@ -77,35 +103,97 @@ class TestParamDict(AssertTest):
         self.assertTrue(ParamDict().get_deps().get("dep2") == "dep2_command")
 
     def test_set_args(self, mocker):
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output=None, tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output=None,
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_arg("task_dir") == "./")
 
         mocker.patch("common.FileOperate.check_file", return_value=True)
-        fake_namespace = Namespace(subparser_name="launch", task="bash ./test.bash", output=None, tar=None)
+        fake_namespace = Namespace(
+            subparser_name="launch", task="bash ./test.bash", output=None, tar=None
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_arg("task") == "bash ./test.bash")
 
     def test_output_setfail(self, mocker):
         # test output empty string
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output="", tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output="",
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         self.assertTrue(not ParamDict().set_args(fake_namespace))
         # test output space string
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output="  ", tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output="  ",
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         self.assertTrue(not ParamDict().set_args(fake_namespace))
         # test output no write perssion
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output=get_root(), tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output=get_root(),
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("common.FileOperate.check_access", return_value=False)
         self.assertTrue(not ParamDict().set_args(fake_namespace))
         # test output create failed
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output=get_root(), tar=None, r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output=get_root(),
+            tar=None,
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         mocker.patch("common.FileOperate.check_dir", return_value=False)
         mocker.patch("common.FileOperate.create_dir", return_value=False)
         self.assertTrue(not ParamDict().set_args(fake_namespace))
 
     def test_output_setsucc(self, mocker):
-        fake_namespace = Namespace(subparser_name="collect", task_dir="./", output=get_root(), tar="True", r=None, remote=None, all=None, quiet=None, timeout=None)
+        fake_namespace = Namespace(
+            subparser_name="collect",
+            task_dir="./",
+            output=get_root(),
+            tar="True",
+            r=None,
+            remote=None,
+            all=None,
+            quiet=None,
+            timeout=None,
+        )
         ParamDict().set_args(fake_namespace)
         self.assertTrue(ParamDict().get_command() == "collect")
         self.assertTrue(ParamDict().get_arg("task_dir") == "./")

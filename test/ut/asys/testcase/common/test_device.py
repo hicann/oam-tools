@@ -16,16 +16,17 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import logging
-import sys
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import pytest
 import os
 import ctypes
 from pathlib import Path
 
-from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH, ut_root_path
+from testcase.conftest import ut_root_path
 
-sys.path.insert(0, ASYS_SRC_PATH)
 from common.device import DeviceInfo
 from common.const import RetCode
 from drv import LoadSoType
@@ -77,15 +78,13 @@ class TestDevice(AssertTest):
     def setup_method(self):
         testfile = Path(self.test_file_path)
         testfile.touch(exist_ok=True)
-        self.fp = open(testfile)
+        self.fp = open(testfile, encoding="utf-8")
 
     def teardown_method(self):
         if os.path.exists(self.test_file_path):
             os.remove(self.test_file_path)
 
     def test_get_device_count(self, mocker):
-        import drv
-
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         deviceinfo = DeviceInfo()
         deviceinfo.get_device_count()
@@ -165,7 +164,7 @@ class TestDevice(AssertTest):
 
         class DreHal:
             @staticmethod
-            def halGetDeviceInfo(*args):
+            def halGetDeviceInfo(*_args):
                 return 0
 
         mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=DreHal())
@@ -176,7 +175,7 @@ class TestDevice(AssertTest):
 
         class DreHal:
             @staticmethod
-            def halGetDeviceInfo(*args):
+            def halGetDeviceInfo(*_args):
                 return 1
 
         mocker.patch("drv.LoadSoType.get_drvhal_env_type", return_value=DreHal())
@@ -225,6 +224,19 @@ class TestDevice(AssertTest):
         mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
         device_info = DeviceInfo()
         self.assertTrue(device_info.get_device_cpu_info(0) == [0] * 4)
+
+    def test_get_device_cpu_info_ctypes_argument_error(self, mocker):
+        # ctypes.ArgumentError 直接继承 Exception，不是 TypeError 子类，
+        # 必须显式出现在 except 元组里，否则会穿透兜底导致 asys 崩溃
+        class AmlDevice:
+            @staticmethod
+            def AmlDeviceGetCpuInfo(device_id, info):
+                raise ctypes.ArgumentError("argument 1: wrong type")
+
+        mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AmlDevice())
+        mocker.patch("drv.LoadSoType.get_env_type", return_value="EP")
+        device_info = DeviceInfo()
+        self.assertTrue(device_info.get_device_cpu_info(0) == ["-"] * 4)
 
     def test_get_device_aic_info(self, mocker):
         device_info = DeviceInfo()

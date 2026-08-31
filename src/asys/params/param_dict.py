@@ -28,7 +28,6 @@ __all__ = ["ParamDict"]
 
 
 class ParamDict(metaclass=Singleton):
-
     def __init__(self):
         self.__command = None
         self.__asys_output_timestamp_dir = None
@@ -87,29 +86,35 @@ class ParamDict(metaclass=Singleton):
     def _set_arg_d(self, args):
         if getattr(args, "d") is not None:
             self.__add_arg("device_id", args.d)
-            log_debug("set arg: -d=\"{0}\" success.".format(self.__args.get("d")))
+            log_debug('set arg: -d="{0}" success.'.format(self.__args.get("d")))
 
     def _set_arg_r(self, args):
         if getattr(args, "r") is not None:
             self.__add_arg("run_mode", args.r)
-            log_debug("set arg: -r=\"{0}\" success.".format(self.__args.get("r")))
+            log_debug('set arg: -r="{0}" success.'.format(self.__args.get("r")))
 
     def _set_arg_tar(self, args):
         arg_name = "tar"
         if getattr(args, arg_name) is not None:
             self.__add_arg(arg_name, args.tar.upper())
-            log_debug("set arg: --output=\"{0}\" success.".format(self.__args.get(arg_name)))
+            log_debug(
+                'set arg: --output="{0}" success.'.format(self.__args.get(arg_name))
+            )
 
     def _set_arg_symbol_path(self, args):
         arg_name = "symbol_path"
         if getattr(args, arg_name) is not None:
             self.__add_arg(arg_name, args.symbol_path.split(","))
-            log_debug("set arg: --symbol_path=\"{0}\" success.".format(self.__args.get(arg_name)))
+            log_debug(
+                'set arg: --symbol_path="{0}" success.'.format(
+                    self.__args.get(arg_name)
+                )
+            )
 
     def _set_arg_common(self, args, arg_name):
         if getattr(args, arg_name) is not None:
-            self.__add_arg(arg_name, eval(f"args.{arg_name}"))
-            log_debug(f"set arg: --{arg_name}=\"{self.__args.get(arg_name)}\" success.")
+            self.__add_arg(arg_name, getattr(args, arg_name))
+            log_debug(f'set arg: --{arg_name}="{self.__args.get(arg_name)}" success.')
 
     def set_args(self, args):
         self.__command = args.subparser_name
@@ -188,4 +193,4 @@ class ParamDict(metaclass=Singleton):
     def _set_arg_p(self, args):
         if getattr(args, "p") is not None:
             self.__add_arg("period", args.p)
-            log_debug("set arg: -p=\"{0}\" success.".format(self.__args.get("p")))
+            log_debug('set arg: -p="{0}" success.'.format(self.__args.get("p")))

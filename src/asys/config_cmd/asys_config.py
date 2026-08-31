@@ -17,7 +17,6 @@
 # ----------------------------------------------------------------------------
 
 import os
-import re
 
 from common import log_error
 from common import AsysConfigSupportedChip, get_device
@@ -28,20 +27,20 @@ from config_cmd.interface import get_stress_detect_config, restore_stress_detect
 
 class AsysConfig:
     def __init__(self):
-        self.is_get_mode = ParamDict().get_arg('get')
-        self.is_restore_mode = ParamDict().get_arg('restore')
-        self.device_id = int(ParamDict().get_arg('device_id'))
+        self.is_get_mode = ParamDict().get_arg("get")
+        self.is_restore_mode = ParamDict().get_arg("restore")
+        self.device_id = int(ParamDict().get_arg("device_id"))
         self.device_obj = get_device(self.device_id)
         self.options = []
 
     def _check_support(self):
         # not support VMs and docker
-        if not run_linux_cmd('systemd-detect-virt', 'none'):
-            log_error('The config command cannot be executed on VMs and docker.')
+        if not run_linux_cmd("systemd-detect-virt", "none"):
+            log_error("The config command cannot be executed on VMs and docker.")
             return False
         # restore mode only support root
         if os.getuid() != 0:
-            log_error('The config --restore command must be executed as the root user.')
+            log_error("The config --restore command must be executed as the root user.")
             return False
 
         # without device
@@ -50,19 +49,25 @@ class AsysConfig:
             return False
         # device_id out of range
         if self.device_id >= devices_num:
-            log_error(f"'-d' value should be in [0, {devices_num}), input {self.device_id}.")
+            log_error(
+                f"'-d' value should be in [0, {devices_num}), input {self.device_id}."
+            )
             return False
-        ret, chip_info = AsysConfigSupportedChip().get_supported_chip_info(self.device_id)
+        ret, chip_info = AsysConfigSupportedChip().get_supported_chip_info(
+            self.device_id
+        )
         if not ret:
-            log_error(f'The config command does not support {chip_info}.')
+            log_error(f"The config command does not support {chip_info}.")
             return False
 
         # check run mode
         if not (self.is_get_mode or self.is_restore_mode):
-            log_error('The config command requires either the --get or --restore argument.')
+            log_error(
+                "The config command requires either the --get or --restore argument."
+            )
             return False
         # check options
-        all_options = ['stress_detect']
+        all_options = ["stress_detect"]
         current_options = []
         for opt in all_options:
             if ParamDict().get_arg(opt):
@@ -77,15 +82,17 @@ class AsysConfig:
     def _run_get_mode(self):
         ret = True
         for opt in self.options:
-            if opt == 'stress_detect':
+            if opt == "stress_detect":
                 ret = ret and get_stress_detect_config(self.device_id, self.device_obj)
         return ret
 
     def _run_restore_mode(self):
         ret = True
         for opt in self.options:
-            if opt == 'stress_detect':
-                ret = ret and restore_stress_detect_config(self.device_id, self.device_obj)
+            if opt == "stress_detect":
+                ret = ret and restore_stress_detect_config(
+                    self.device_id, self.device_obj
+                )
         return ret
 
     def run(self):

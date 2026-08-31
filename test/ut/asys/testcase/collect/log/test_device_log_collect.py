@@ -16,26 +16,25 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import pytest
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
 
-from testcase.conftest import ASYS_SRC_PATH
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
+
 from testcase.conftest import AssertTest
-sys.path.insert(0, ASYS_SRC_PATH)
-import asys
 
-from common import FileOperate
 from collect.log import collect_device_logs
-from testcase.conftest import AssertTest
+
 
 def setup_module():
-    print("TestDeviceLogCollect ut test start.")
+    print("TestDeviceLogCollect ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestDeviceLogCollect ut test finsh.")
+    print("TestDeviceLogCollect ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestDeviceLogCollect(AssertTest):
-
     def setup_method(self):
         pass
 
@@ -43,8 +42,12 @@ class TestDeviceLogCollect(AssertTest):
         pass
 
     def test_device_log_collect_success(self, mocker):
-        mocker.patch("collect.log.device_log_collect.collect_host_driver", return_value=True)
-        mocker.patch("common.FileOperate.list_dir", return_value=["dev-os-3", "dev-os-7"])
+        mocker.patch(
+            "collect.log.device_log_collect.collect_host_driver", return_value=True
+        )
+        mocker.patch(
+            "common.FileOperate.list_dir", return_value=["dev-os-3", "dev-os-7"]
+        )
         mocker.patch("common.FileOperate.collect_dir", return_value=True)
         self.assertTrue(collect_device_logs("./", "./output"))
 
@@ -53,7 +56,9 @@ class TestDeviceLogCollect(AssertTest):
         self.assertTrue(collect_device_logs("./", "./output"))
 
     def test_device_log_collect_failed(self, mocker):
-        mocker.patch("common.FileOperate.list_dir", return_value=["dev-os-0", "device-os"])
+        mocker.patch(
+            "common.FileOperate.list_dir", return_value=["dev-os-0", "device-os"]
+        )
         mocker.patch("common.FileOperate.collect_dir", return_value=False)
         self.assertTrue(not collect_device_logs("./", "./output"))
 
@@ -72,11 +77,19 @@ class TestDeviceLogCollect(AssertTest):
         self.assertTrue(collect_device_logs("./", "./output"))
 
     def test_collect_slogd_failed(self, mocker, caplog):
-        mocker.patch("collect.log.device_log_collect.collect_messages", return_value=True)
-        mocker.patch("collect.log.device_log_collect.collect_stackcore", return_value=True)
+        mocker.patch(
+            "collect.log.device_log_collect.collect_messages", return_value=True
+        )
+        mocker.patch(
+            "collect.log.device_log_collect.collect_stackcore", return_value=True
+        )
         mocker.patch("collect.log.device_log_collect.collect_bbox", return_value=True)
-        mocker.patch("collect.log.device_log_collect.collect_host_driver", return_value=True)
-        mocker.patch("common.FileOperate.list_dir", return_value=["dev-os-0", "device-os"])
+        mocker.patch(
+            "collect.log.device_log_collect.collect_host_driver", return_value=True
+        )
+        mocker.patch(
+            "common.FileOperate.list_dir", return_value=["dev-os-0", "device-os"]
+        )
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("common.FileOperate.collect_dir", return_value=False)
         self.assertTrue(not collect_device_logs("./", "./output"))

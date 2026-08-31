@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from config_cmd.asys_config import AsysConfig
+
+
+__all__ = ["AsysConfig"]

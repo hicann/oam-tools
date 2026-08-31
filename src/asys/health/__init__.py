@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from health.asys_health import AsysHealth
+
+
+__all__ = ["AsysHealth"]

@@ -16,11 +16,14 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import struct
 import random
-import time
 
 path_env = os.environ["PATH"]
 
@@ -38,7 +41,9 @@ def get_root():
 file_path = os.path.dirname(os.path.realpath(__file__))
 ut_root_path = os.path.join(get_root(), "asys")  # root dir: ut
 ASYS_SRC_PATH = os.path.join(file_path, "../../../../", "src/asys/")
+sys.path.insert(0, ASYS_SRC_PATH)
 CONF_SRC_PATH = os.path.join(file_path, "../../../../", "src/asys/")
+sys.argv[0] = CONF_SRC_PATH
 ASYS_MAIN_PATH = os.path.join(ASYS_SRC_PATH, "asys.py")
 test_case_tmp = os.path.join(ut_root_path, "test_tmp")
 test_trace_tmp = os.path.join(ut_root_path, "test_trace_tmp")
@@ -46,7 +51,7 @@ test_trace_tmp = os.path.join(ut_root_path, "test_trace_tmp")
 
 def check_atrace_file(file_name):
     if os.path.exists(file_name):
-        with open(file_name, "r") as fr:
+        with open(file_name, "r", encoding="utf-8") as fr:
             data = fr.read()
             if "item_name0[a]" not in data:
                 return False
@@ -68,7 +73,7 @@ def check_atrace_file(file_name):
 
 def create_dir(dir_path, exist_ok=False):
     try:
-        os.makedirs(dir_path, mode=0o777, exist_ok=exist_ok)
+        os.makedirs(dir_path, mode=0o777, exist_ok=exist_ok)  # nosec B103  # test dir needs subprocess access
         return True
     except OSError:
         return False
@@ -157,16 +162,16 @@ def write_data(fw, item_list):
     item_name, item_type, item_mode, item_length = item_list
     for _ in range(item_length):
         if item_type in [0, 100]:
-            fw.write(struct.pack(f"@s", "a".encode()))
+            fw.write(struct.pack("@s", "a".encode()))
         else:
             if item_type in [1, 2, 101, 102]:
-                fw.write(struct.pack(f"@B", item_type))
+                fw.write(struct.pack("@B", item_type))
             elif item_type in [3, 4, 103, 104]:
-                fw.write(struct.pack(f"@H", item_type))
+                fw.write(struct.pack("@H", item_type))
             elif item_type in [5, 6, 105, 106]:
-                fw.write(struct.pack(f"@I", item_type))
+                fw.write(struct.pack("@I", item_type))
             elif item_type in [7, 8, 107, 108]:
-                fw.write(struct.pack(f"@Q", item_type))
+                fw.write(struct.pack("@Q", item_type))
 
 
 def write_data_segment(fw):
@@ -190,8 +195,8 @@ def write_data_segment(fw):
             write_data(fw, item_list)
 
 
-def great_bin(trace_flie):
-    with open(trace_flie, "wb") as fw:
+def great_bin(trace_file):
+    with open(trace_file, "wb") as fw:
         # magic
         write_data_segment(fw)
 

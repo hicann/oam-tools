@@ -16,17 +16,19 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import shutil
 import sys
 
 import pytest
 
-from .conftest import CONF_SRC_PATH, ASYS_SRC_PATH, test_case_tmp
+from .conftest import CONF_SRC_PATH, test_case_tmp
 from .conftest import AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
-sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
@@ -43,9 +45,8 @@ class RunResult:
 
 
 class TestProfiling(AssertTest):
-
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
         os.mkdir(test_case_tmp)
@@ -54,7 +55,7 @@ class TestProfiling(AssertTest):
         g_device_map.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
@@ -69,14 +70,23 @@ class TestProfiling(AssertTest):
         """
         captured = {}
 
-        def fake_run(cmd, *args, **kwargs):
-            captured["cmd"] = cmd
+        def fake_run(cmd, *_args, **_kwargs):
+            captured["cmd"] = (
+                cmd[2]
+                if isinstance(cmd, list) and len(cmd) == 3 and cmd[1] == "-c"
+                else cmd
+            )
             return RunResult(returncode=0)
 
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910B1")
         mocker.patch("profiling.asys_profiling.subprocess.run", side_effect=fake_run)
-        sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1",
-                    "-r=aicore,dvpp,os,link,memory,power"]
+        sys.argv = [
+            CONF_SRC_PATH,
+            "profiling",
+            "-d=0",
+            "-p=1",
+            "-r=aicore,dvpp,os,link,memory,power",
+        ]
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
         cmd = captured["cmd"]
@@ -92,8 +102,12 @@ class TestProfiling(AssertTest):
         """
         captured = {}
 
-        def fake_run(cmd, *args, **kwargs):
-            captured["cmd"] = cmd
+        def fake_run(cmd, *_args, **_kwargs):
+            captured["cmd"] = (
+                cmd[2]
+                if isinstance(cmd, list) and len(cmd) == 3 and cmd[1] == "-c"
+                else cmd
+            )
             return RunResult(returncode=0)
 
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -109,8 +123,12 @@ class TestProfiling(AssertTest):
         """
         captured = {}
 
-        def fake_run(cmd, *args, **kwargs):
-            captured["cmd"] = cmd
+        def fake_run(cmd, *_args, **_kwargs):
+            captured["cmd"] = (
+                cmd[2]
+                if isinstance(cmd, list) and len(cmd) == 3 and cmd[1] == "-c"
+                else cmd
+            )
             return RunResult(returncode=0)
 
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910B1")
@@ -126,19 +144,32 @@ class TestProfiling(AssertTest):
         """
         captured = {}
 
-        def fake_run(cmd, *args, **kwargs):
-            captured["cmd"] = cmd
+        def fake_run(cmd, *_args, **_kwargs):
+            captured["cmd"] = (
+                cmd[2]
+                if isinstance(cmd, list) and len(cmd) == 3 and cmd[1] == "-c"
+                else cmd
+            )
             return RunResult(returncode=0)
 
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910B1")
         mocker.patch("profiling.asys_profiling.subprocess.run", side_effect=fake_run)
-        sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=aicore",
-                    "--output=%s" % test_case_tmp, "--aic_metrics=Memory"]
+        sys.argv = [
+            CONF_SRC_PATH,
+            "profiling",
+            "-d=0",
+            "-p=1",
+            "-r=aicore",
+            "--output=%s" % test_case_tmp,
+            "--aic_metrics=Memory",
+        ]
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
         self.assertTrue("--aic-metrics=Memory" in captured["cmd"])
-        self.assertTrue("--output=%s" % os.path.join(test_case_tmp, "asys_profiling_result_")
-                        in captured["cmd"])
+        self.assertTrue(
+            "--output=%s" % os.path.join(test_case_tmp, "asys_profiling_result_")
+            in captured["cmd"]
+        )
 
     def test_asys_profiling_period_invalid(self, mocker, caplog):
         """
@@ -185,8 +216,10 @@ class TestProfiling(AssertTest):
         异常用例：msprof 命令执行返回非 0
         """
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910B1")
-        mocker.patch("profiling.asys_profiling.subprocess.run",
-                     return_value=RunResult(returncode=1, stdout="msprof error"))
+        mocker.patch(
+            "profiling.asys_profiling.subprocess.run",
+            return_value=RunResult(returncode=1, stdout="msprof error"),
+        )
         sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=aicore"]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
@@ -222,8 +255,12 @@ class TestProfiling(AssertTest):
         """
         captured = {}
 
-        def fake_run(cmd, *args, **kwargs):
-            captured["cmd"] = cmd
+        def fake_run(cmd, *_args, **_kwargs):
+            captured["cmd"] = (
+                cmd[2]
+                if isinstance(cmd, list) and len(cmd) == 3 and cmd[1] == "-c"
+                else cmd
+            )
             return RunResult(returncode=0)
 
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")

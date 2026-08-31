@@ -18,12 +18,9 @@
 
 import common.interface as interface
 from common.device import DeviceInfo
- 
- 
+
+
 class Ascend910BHandler(DeviceInfo):
-    def __init__(self):
-        super().__init__()
- 
     @classmethod
     def need_lp_param(cls):
         return False
@@ -31,6 +28,7 @@ class Ascend910BHandler(DeviceInfo):
     @classmethod
     def support_dvpp(cls):
         return True
- 
-    def run_diagnose(self, device_obj, diagnose_devices, run_mode):
+
+    @staticmethod
+    def run_diagnose(device_obj, diagnose_devices, run_mode):
         return interface.run_diagnose(device_obj, diagnose_devices, run_mode)

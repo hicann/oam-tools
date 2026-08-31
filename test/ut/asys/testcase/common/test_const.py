@@ -16,23 +16,24 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import pytest
-import os
-from testcase.conftest import ASYS_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 
 from common import consts
 from ..conftest import AssertTest
 
+
 def setup_module():
-    print("TestConst ut test start.")
+    print("TestConst ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestConst ut test finsh.")
+    print("TestConst ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestConst(AssertTest):
-
     def test_consts(self, mocker):
         self.assertTrue(consts.help_cmd == "help")
         self.assertTrue(consts.collect_cmd == "collect")
@@ -43,6 +44,17 @@ class TestConst(AssertTest):
         self.assertTrue(consts.config_cmd == "config")
         self.assertTrue(consts.health_cmd == "health")
         self.assertTrue(consts.profiling_cmd == "profiling")
-        self.assertTrue(consts.cmd_set == ["help", "collect", "launch", "info", "diagnose",
-                                             "health", 'analyze', 'config', 'profiling'])
-
+        self.assertTrue(
+            consts.cmd_set
+            == [
+                "help",
+                "collect",
+                "launch",
+                "info",
+                "diagnose",
+                "health",
+                "analyze",
+                "config",
+                "profiling",
+            ]
+        )

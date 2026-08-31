@@ -16,13 +16,15 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
-import sys
 import shutil
 
-from testcase.conftest import ASYS_SRC_PATH, test_case_tmp
+from testcase.conftest import test_case_tmp
 
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from params import ParamDict
 from health import AsysHealth
@@ -30,18 +32,16 @@ from ..conftest import AssertTest
 
 
 class AsysDeviceInfo:
-
     @staticmethod
-    def get_device_health(*args):
+    def get_device_health(*_args):
         return "Healthy"
 
     @staticmethod
-    def get_device_errorcode(*args):
+    def get_device_errorcode(*_args):
         return [[123456, "00000000"], [123456, "00000000"]]
 
 
 class TestAsysCollect(AssertTest):
-
     def setup_method(self):
         ParamDict.clear()
 
@@ -49,18 +49,18 @@ class TestAsysCollect(AssertTest):
         ParamDict.clear()
 
     def test_health_device_num_failed(self, mocker):
-
         class Args:
             subparser_name = "health"
             d = None
 
-        mocker.patch("health.asys_health.DeviceInfo.get_device_count", return_value=None)
+        mocker.patch(
+            "health.asys_health.DeviceInfo.get_device_count", return_value=None
+        )
         ParamDict().set_env_type("EP")
         ParamDict().set_args(Args())
         self.assertTrue(not AsysHealth().run())
 
     def test_health_1p(self, mocker):
-
         class Args:
             subparser_name = "health"
             d = None
@@ -71,7 +71,6 @@ class TestAsysCollect(AssertTest):
         self.assertTrue(AsysHealth().run())
 
     def test_health_2p(self, mocker):
-
         class Args:
             subparser_name = "health"
             d = None
@@ -102,8 +101,14 @@ class TestAsysCollect(AssertTest):
         from health import AsysHealth
 
         obj = AsysHealth()
-        obj._save_file({0: [AsysDeviceInfo().get_device_health(),
-                            AsysDeviceInfo().get_device_errorcode()]})
+        obj._save_file(
+            {
+                0: [
+                    AsysDeviceInfo().get_device_health(),
+                    AsysDeviceInfo().get_device_errorcode(),
+                ]
+            }
+        )
         self.assertTrue(os.path.isfile(f"{test_case_tmp}/health_result.txt"))
         self.assertTrue(os.listdir(f"{test_case_tmp}") == ["health_result.txt"])
         shutil.rmtree(f"{test_case_tmp}")

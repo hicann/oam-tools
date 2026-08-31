@@ -16,15 +16,17 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import ctypes
 import os
-import sys
 from unittest.mock import MagicMock
 
 import pytest
-from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH, AssertTest
+from testcase.conftest import AssertTest
 
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from common import RetCode
 from drv import LoadSoType
@@ -32,14 +34,14 @@ from drv.env_type import AICORE_STL_SO_NAME, AICORE_STL_SO_SUBPATH
 
 
 def setup_module():
-    print("TestRCEnvTpye ut test start.")
+    print("TestRCEnvType ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestRCEnvTpye ut test finish.")
+    print("TestRCEnvType ut test finish.")  # noqa: T201  # test diagnostic output
 
 
-class TestRCEnvTpye(AssertTest):
+class TestRCEnvType(AssertTest):
     def setup_method(self):
         LoadSoType.clear()
 
@@ -90,7 +92,9 @@ class TestAicoreStlSoPath(AssertTest):
         """so 存在时返回其绝对路径。"""
         so_file = self._make_so(tmp_path)
         monkeypatch.setenv("ASCEND_HOME_PATH", str(tmp_path))
-        self.assertTrue(LoadSoType.get_aicore_stl_so_path() == os.path.realpath(str(so_file)))
+        self.assertTrue(
+            LoadSoType.get_aicore_stl_so_path() == os.path.realpath(str(so_file))
+        )
 
     def test_so_path_none_when_home_unset(self, monkeypatch):
         """ASCEND_HOME_PATH 未设置时返回 None,不抛异常。"""
@@ -119,7 +123,9 @@ class TestAicoreStlSoPath(AssertTest):
         # 传入的路径必须是绝对路径且指向形态子目录的父目录 aicore_stl/
         passed = load_dll.call_args[0][0]
         self.assertTrue(os.path.isabs(passed))
-        self.assertTrue(passed.endswith(os.path.join(AICORE_STL_SO_SUBPATH, AICORE_STL_SO_NAME)))
+        self.assertTrue(
+            passed.endswith(os.path.join(AICORE_STL_SO_SUBPATH, AICORE_STL_SO_NAME))
+        )
 
     def test_load_returns_failed_when_so_absent(self, tmp_path, monkeypatch, mocker):
         """so 缺失时返回 RetCode.FAILED(调用方 asys_diagnose 判的就是这个值),且不调 load_dll。"""

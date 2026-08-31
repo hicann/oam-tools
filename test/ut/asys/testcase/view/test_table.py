@@ -39,7 +39,7 @@ def test_generate_report_wraps_long_cells_without_data_loss(split_line):
     lines = [line for line in report.splitlines() if line]
     column_width = MAX_CHAR_LINE + 5
     chunks = [
-        long_error[index:index + column_width]
+        long_error[index : index + column_width]
         for index in range(0, len(long_error), column_width)
     ]
 
@@ -72,7 +72,7 @@ def test_generate_report_wraps_long_group_names_without_data_loss():
     group_label = "--" + group_name
     column_width = MAX_CHAR_LINE + 5
     chunks = [
-        group_label[index:index + column_width]
+        group_label[index : index + column_width]
         for index in range(0, len(group_label), column_width)
     ]
 

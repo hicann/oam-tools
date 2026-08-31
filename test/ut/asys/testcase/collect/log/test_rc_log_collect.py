@@ -16,29 +16,27 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import pytest
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
 
-from testcase.conftest import ASYS_SRC_PATH, ut_root_path
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
 
-sys.path.insert(0, ASYS_SRC_PATH)
-import asys
 
-from common import FileOperate
+from testcase.conftest import ut_root_path
+
+
 from collect.log import collect_rc_logs
 from testcase.conftest import AssertTest
 
 
 def setup_module():
-    print("TestRCLogCollect ut test start.")
+    print("TestRCLogCollect ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestRCLogCollect ut test finsh.")
+    print("TestRCLogCollect ut test finish.")  # noqa: T201  # test diagnostic output
 
 
 class TestRCLogCollect(AssertTest):
-
     def setup_method(self):
         pass
 
@@ -47,10 +45,15 @@ class TestRCLogCollect(AssertTest):
 
     def test_host_log_collect_failed(self, mocker):
         mocker.patch("collect.log.rc_log_collect.get_log_conf_path", return_value="")
-        mocker.patch("common.FileOperate.list_dir", return_value=ut_root_path + "/data/")
+        mocker.patch(
+            "common.FileOperate.list_dir", return_value=ut_root_path + "/data/"
+        )
         mocker.patch("common.FileOperate.copy_file_to_dir", return_value=True)
         mocker.patch("common.FileOperate.collect_dir", return_value=True)
-        mocker.patch("os.walk", return_value=((f"{ut_root_path}/data/scripts", "", ["msnpureport"]), ))
+        mocker.patch(
+            "os.walk",
+            return_value=((f"{ut_root_path}/data/scripts", "", ["msnpureport"]),),
+        )
         mocker.patch("params.ParamDict.get_command", return_value="collect")
         self.assertTrue(not collect_rc_logs("./"))
 

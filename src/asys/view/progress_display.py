@@ -16,6 +16,7 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+import sys
 import time
 
 __all__ = ["waiting"]
@@ -23,6 +24,7 @@ __all__ = ["waiting"]
 
 def waiting(cycle=1, delay=0.1):
     for _ in range(cycle):
-        for ch in ['-', '\\', '|', '/']:
-            print('\r%s\r' % ch, end='', flush=True)
+        for ch in ["-", "\\", "|", "/"]:
+            sys.stdout.write("\r%s\r" % ch)
+            sys.stdout.flush()
             time.sleep(delay)

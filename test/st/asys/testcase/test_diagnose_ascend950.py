@@ -16,19 +16,20 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import shutil
 import sys
 
 import pytest
-import subprocess
 from pathlib import Path
 
-from .conftest import CONF_SRC_PATH, ASYS_SRC_PATH, test_case_tmp
+from .conftest import CONF_SRC_PATH, test_case_tmp
 from .conftest import AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
-sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
@@ -37,7 +38,6 @@ from common.chip_handler import g_device_map
 
 
 class AsysDiagnose0:
-
     def AmlStressDetect(self, a, b):
         return 0
 
@@ -62,7 +62,6 @@ class AsysDiagnose0:
 
 
 class AsysDiagnose1:
-
     def AmlStressDetect(self, a, b):
         return 1
 
@@ -87,14 +86,13 @@ class AsysDiagnose1:
 
 
 class AsysStlDiagnose0:
-
     def AmlAicoreStlDetect(self, a):
         return 0
 
-class TestDiagnose(AssertTest):
 
+class TestDiagnose(AssertTest):
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if not os.getenv("ASCEND_OPP_PATH"):
             os.environ["ASCEND_OPP_PATH"] = "/home"
         if os.path.exists(test_case_tmp):
@@ -105,7 +103,7 @@ class TestDiagnose(AssertTest):
         g_device_map.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.getenv("ASCEND_OPP_PATH"):
             os.environ.pop("ASCEND_OPP_PATH")
         if os.path.exists(test_case_tmp):
@@ -117,9 +115,7 @@ class TestDiagnose(AssertTest):
         mocker.patch(
             "common.device.LoadSoType.get_drvhal_env_type", return_value=AsysDiagnose0()
         )
-        mocker.patch(
-            "common.device.LoadSoType.get_env_type", return_value="EP"
-        )
+        mocker.patch("common.device.LoadSoType.get_env_type", return_value="EP")
         mocker.patch(
             "common.device.LoadSoType.get_ascend_ml", return_value=AsysDiagnose1()
         )
@@ -134,7 +130,7 @@ class TestDiagnose(AssertTest):
         self.assertTrue(asys.main())
         captured = capsys.readouterr()
         self.assertTrue(
-            "| HBM Detect             | Warn - All             | \n |                        | (0, 0)                 |"
+            "| HBM Detect             | Warn - All             |\n |                        | (0, 0)                 |"
             in captured.out
         )
 
@@ -143,9 +139,17 @@ class TestDiagnose(AssertTest):
 
         Also passes --timeout to exercise the warn-and-ignore branch for aicore_stl_detect.
         """
-        sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect", "--timeout=90"]
+        sys.argv = [
+            CONF_SRC_PATH,
+            "diagnose",
+            "-d=0",
+            "-r=aicore_stl_detect",
+            "--timeout=90",
+        ]
         mock_stl = AsysStlDiagnose0()
-        mocker.patch("common.device.LoadSoType.get_aml_aicore_stl", return_value=mock_stl)
+        mocker.patch(
+            "common.device.LoadSoType.get_aml_aicore_stl", return_value=mock_stl
+        )
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -173,7 +177,9 @@ class TestDiagnose(AssertTest):
         monkeypatch.setenv("ASCEND_HOME_PATH", fake_home)
 
         sys.argv = [CONF_SRC_PATH, "diagnose", "-d=0", "-r=aicore_stl_detect"]
-        load_dll = mocker.patch.object(LoadSoType, "load_dll", return_value=AsysStlDiagnose0())
+        load_dll = mocker.patch.object(
+            LoadSoType, "load_dll", return_value=AsysStlDiagnose0()
+        )
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -184,15 +190,20 @@ class TestDiagnose(AssertTest):
         self.assertTrue(asys.main())
         # load_dll 是六个 so 共用的 staticmethod(drvdsmi/drvhal/ascend_ml/ascendcl/
         # ascend_trace/aml_aicore_stl),故只筛 STL 那一条调用,不断言总次数。
-        stl_calls = [c for c in load_dll.call_args_list
-                     if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)]
+        stl_calls = [
+            c
+            for c in load_dll.call_args_list
+            if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)
+        ]
         self.assertTrue(len(stl_calls) == 1)
         passed = stl_calls[0][0][0]
         self.assertTrue(passed == os.path.realpath(so_file))
         self.assertTrue(os.path.isabs(passed))
         LoadSoType.clear()
 
-    def test_diagnose_aicore_stl_fails_when_so_absent(self, mocker, monkeypatch, capsys):
+    def test_diagnose_aicore_stl_fails_when_so_absent(
+        self, mocker, monkeypatch, capsys
+    ):
         """so 未安装时 diagnose 优雅失败(而非抛异常),并给出可定位的错误。"""
         from drv import LoadSoType
         from drv.env_type import AICORE_STL_SO_NAME
@@ -213,8 +224,10 @@ class TestDiagnose(AssertTest):
 
         self.assertTrue(not asys.main())
         # 同上:只关心 STL 那条调用未发生,其余 so 的加载与本用例无关。
-        stl_calls = [c for c in load_dll.call_args_list
-                     if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)]
+        stl_calls = [
+            c
+            for c in load_dll.call_args_list
+            if c[0] and str(c[0][0]).endswith(AICORE_STL_SO_NAME)
+        ]
         self.assertTrue(len(stl_calls) == 0)
         LoadSoType.clear()
-

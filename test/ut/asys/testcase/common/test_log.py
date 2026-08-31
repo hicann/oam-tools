@@ -16,13 +16,14 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import logging
-import sys
 import threading
 
 import pytest
-from testcase.conftest import ASYS_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from common.log import close_log, log_info, log_warning
 
@@ -37,15 +38,14 @@ class RecordHandler(logging.Handler):
 
 
 def setup_module():
-    print("TestLog ut test start.")
+    print("TestLog ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestLog ut test finish.")
+    print("TestLog ut test finish.")  # noqa: T201  # test diagnostic output
 
 
 class TestLog:
-
     @pytest.mark.parametrize("log_func", [log_info, log_warning])
     def test_force_log_bypasses_disable_and_restores_state(self, log_func):
         root_logger = logging.getLogger()
@@ -98,7 +98,9 @@ class TestLog:
         mocker.patch("logging.info", side_effect=blocking_info)
         mocker.patch("logging.warning", side_effect=record_warning)
         close_log()
-        first_thread = threading.Thread(target=log_info, args=("first",), kwargs={"force": True})
+        first_thread = threading.Thread(
+            target=log_info, args=("first",), kwargs={"force": True}
+        )
         second_thread = threading.Thread(target=force_warning)
         try:
             first_thread.start()

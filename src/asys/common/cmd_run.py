@@ -17,36 +17,40 @@
 # ----------------------------------------------------------------------------
 
 import os
-import platform
+import shutil
 import subprocess
 import sys
 
 from common.log import log_debug
 
-__all__ = ["run_command", "run_cmd_output", "check_command", "run_linux_cmd", "popen_run_cmd", "real_time_output",]
+__all__ = [
+    "run_command",
+    "run_cmd_output",
+    "check_command",
+    "run_linux_cmd",
+    "popen_run_cmd",
+    "real_time_output",
+]
 
-
-def get_os_type():
-    return platform.system()
+# Prefer bash where available, but keep the command channel usable on POSIX-only
+# systems where only sh is installed.
+BASH = shutil.which("bash") or shutil.which("sh") or "/bin/sh"
 
 
 def check_command(command):
-    os_type = get_os_type()
-    if os_type == "Windows":
-        cmd = f"where {command}"
-    elif os_type == "Linux":
-        cmd = f"which {command}"
-    else:
-        log_debug("Unsupported operating system.")
-        return False
-    ret = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    return ret.returncode == 0
+    return shutil.which(command) is not None
 
 
 def run_linux_cmd(cmd, cmp_str="") -> bool:
     if not isinstance(cmd, str):
         return False
-    ret = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    ret = subprocess.run(
+        [BASH, "-c", cmd],
+        shell=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
     if cmp_str:
         return ret.stdout.strip().decode() == cmp_str
     if ret.returncode == 0:
@@ -55,34 +59,71 @@ def run_linux_cmd(cmd, cmp_str="") -> bool:
 
 
 def run_command(command) -> str:
-    ret = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8',
-                         env=os.environ)
+    try:
+        ret = subprocess.run(
+            [BASH, "-c", command],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+            env=os.environ,
+            check=False,
+        )
+    except (OSError, ValueError) as error:
+        log_debug("Run command: {0} failed, {1}".format(command, error))
+        return "NONE"
     if ret.returncode == 0:
         if ret.stderr != "":
-            return 'NONE'
+            return "NONE"
         return ret.stdout.strip()
     else:
         ret_err = ret.stderr
-        log_debug('Run command: {0} failed, ret_code={1}, ret_err={2}'.format(command, ret.returncode, ret_err))
-        if 'not found' in ret_err:
-            return 'NONE'
-        return ret.stderr.strip().replace('\n', "  ")
+        log_debug(
+            "Run command: {0} failed, ret_code={1}, ret_err={2}".format(
+                command, ret.returncode, ret_err
+            )
+        )
+        if "not found" in ret_err:
+            return "NONE"
+        return ret.stderr.strip().replace("\n", "  ")
 
 
 def run_cmd_output(command) -> [bool, str]:
-    ret = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8',
-                         env=os.environ)
+    try:
+        ret = subprocess.run(
+            [BASH, "-c", command],
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding="utf-8",
+            env=os.environ,
+            check=False,
+        )
+    except (OSError, ValueError) as error:
+        log_debug("Run command: {0} failed, {1}".format(command, error))
+        return False, ""
     if ret.returncode == 0:
         return True, ret.stdout
     else:
         ret_err = ret.stderr
-        log_debug('Run command: {0} failed, ret_code={1}, ret_err={2}'.format(command, ret.returncode, ret_err))
+        log_debug(
+            "Run command: {0} failed, ret_code={1}, ret_err={2}".format(
+                command, ret.returncode, ret_err
+            )
+        )
         return False, ret.stderr
 
 
 def real_time_output(command, output=True) -> bool:
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1,
-                               universal_newlines=True, env=os.environ)
+    process = subprocess.Popen(
+        [BASH, "-c", command],
+        shell=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        bufsize=1,
+        universal_newlines=True,
+        env=os.environ,
+    )
     if output:
         for line in process.stdout:
             sys.stdout.write(line)
@@ -91,27 +132,16 @@ def real_time_output(command, output=True) -> bool:
     return process.returncode == 0
 
 
-class _IgnoreStderr:
-    def __init__(self):
-        self.null_fd = os.open(os.devnull, os.O_RDWR)
-        self.save_fd = os.dup(2)
-
-    def __enter__(self):
-        os.dup2(self.null_fd, 2)
-
-    def __exit__(self, *_):
-        os.dup2(self.save_fd, 2)
-        os.close(self.null_fd)
-
-
 def popen_run_cmd(command):
     """
-    use the os.popen to run the command
+    run the command and return stdout (stderr suppressed).
     """
-    with _IgnoreStderr():
-        cmd = os.popen(command)
-        ret = cmd.read()
-        cmd.close()
-
-    return ret
-
+    ret = subprocess.run(
+        [BASH, "-c", command],
+        shell=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding="utf-8",
+        check=False,
+    )
+    return ret.stdout

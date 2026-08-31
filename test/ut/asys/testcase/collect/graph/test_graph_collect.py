@@ -16,14 +16,14 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import pytest
-import subprocess
 import os
 
-from testcase.conftest import ASYS_SRC_PATH, ut_root_path
-sys.path.insert(0, ASYS_SRC_PATH)
-import asys
+from testcase.conftest import ut_root_path
 
 from collect.graph import collect_graph
 from params import ParamDict
@@ -31,14 +31,16 @@ from common import FileOperate
 from common import consts
 from testcase.conftest import AssertTest
 
+
 def setup_module():
-    print("TestGraphCollect ut test start.")
+    print("TestGraphCollect ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestGraphCollect ut test finsh.")
+    print("TestGraphCollect ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestGraphCollect(AssertTest):
-
     def setup_method(self):
         pass
 
@@ -47,8 +49,18 @@ class TestGraphCollect(AssertTest):
 
     def test_graph_collect_success(self, mocker):
         os.environ["DUMP_GRAPH_PATH"] = "./graph"
-        ret = [('dir', ['subdir'], ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"]),   \
-               ('dir/subdir', [], ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"])]
+        ret = [
+            (
+                "dir",
+                ["subdir"],
+                ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"],
+            ),
+            (
+                "dir/subdir",
+                [],
+                ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"],
+            ),
+        ]
         mocker.patch("os.walk", return_value=ret)
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("params.ParamDict.get_arg", return_value="./")
@@ -66,8 +78,18 @@ class TestGraphCollect(AssertTest):
 
     @pytest.mark.parametrize("task", [consts.collect_cmd, consts.launch_cmd])
     def test_collect_graph_no_exec(self, mocker, task):
-        ret = [('dir', ['subdir'], ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"]),   \
-               ('dir/subdir', [], ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"])]
+        ret = [
+            (
+                "dir",
+                ["subdir"],
+                ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"],
+            ),
+            (
+                "dir/subdir",
+                [],
+                ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"],
+            ),
+        ]
         mocker.patch("os.walk", return_value=ret)
         mocker.patch("params.ParamDict.get_command", return_value=task)
         mocker.patch("params.ParamDict.get_ini", return_value="0")
@@ -83,8 +105,18 @@ class TestGraphCollect(AssertTest):
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("params.ParamDict.get_ini", return_value="1")
         mocker.patch("params.ParamDict.get_arg", return_value=ut_root_path)
-        ret = [('dir', ['subdir'], ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"]),   \
-            ('dir/subdir', [], ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"])]
+        ret = [
+            (
+                "dir",
+                ["subdir"],
+                ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"],
+            ),
+            (
+                "dir/subdir",
+                [],
+                ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"],
+            ),
+        ]
         mocker.patch("os.walk", return_value=ret)
         mocker.patch("common.FileOperate.collect_file_to_dir", return_value=False)
         self.assertTrue(collect_graph("./output") is None)
@@ -100,8 +132,18 @@ class TestGraphCollect(AssertTest):
 
     def test_graph_collect_success_from_npu_path(self, mocker):
         os.environ["NPU_COLLECT_PATH"] = "./graph"
-        ret = [('dir', ['subdir'], ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"]),   \
-               ('dir/subdir', [], ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"])]
+        ret = [
+            (
+                "dir",
+                ["subdir"],
+                ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"],
+            ),
+            (
+                "dir/subdir",
+                [],
+                ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"],
+            ),
+        ]
         mocker.patch("os.walk", return_value=ret)
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("params.ParamDict.get_arg", return_value="./")
@@ -113,8 +155,18 @@ class TestGraphCollect(AssertTest):
 
     def test_graph_collect_success_from_work_path(self, mocker):
         os.environ["ASCEND_WORK_PATH"] = "./graph"
-        ret = [('dir', ['subdir'], ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"]),   \
-               ('dir/subdir', [], ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"])]
+        ret = [
+            (
+                "dir",
+                ["subdir"],
+                ["ge_onnx_test1.pbtxt", "ge_proto_test1.txt", "TF_GeOp_test1.pbtxt"],
+            ),
+            (
+                "dir/subdir",
+                [],
+                ["ge_onnx_test2.pbtxt", "ge_proto_test2.txt", "TF_GeOp_test2.pbtxt"],
+            ),
+        ]
         mocker.patch("os.walk", return_value=ret)
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("params.ParamDict.get_arg", return_value="./")

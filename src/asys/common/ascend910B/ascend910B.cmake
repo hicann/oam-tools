@@ -15,4 +15,4 @@
 # ----------------------------------------------------------------------------
 
 list(APPEND ASYS_CHIP_HANDLER_IMPORT "from common.ascend910B.ascend910B_handler import Ascend910BHandler")
-list(APPEND ASYS_CHIP_HANDLER_LIST "\"910B\" : {\"regex\": rf\"910B\\d\", \"handler\": Ascend910BHandler()}")
+list(APPEND ASYS_CHIP_HANDLER_LIST "\"910B\" : {\"regex\": r\"910B\\d\", \"handler\": Ascend910BHandler()}")

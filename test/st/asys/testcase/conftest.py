@@ -16,11 +16,15 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import random
 import shutil
 import struct
-import time
+import sys
 
 
 def get_root():
@@ -29,7 +33,9 @@ def get_root():
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 ASYS_SRC_PATH = os.path.join(FILE_PATH, "../../../../", "src/asys/")
+sys.path.insert(0, ASYS_SRC_PATH)
 CONF_SRC_PATH = os.path.join(FILE_PATH, "../../../../", "src/asys/")
+sys.argv.insert(0, CONF_SRC_PATH)
 ASYS_MAIN_PATH = os.path.join(ASYS_SRC_PATH, "asys.py")
 st_root_path = os.path.join(get_root(), "asys")  # root dir: st
 test_case_tmp = os.path.join(st_root_path, "test_tmp")
@@ -59,7 +65,7 @@ def find_dir(dir_path, key_word):
 
 def create_dir(dir_path, exist_ok=False):
     try:
-        os.makedirs(dir_path, mode=0o777, exist_ok=exist_ok)
+        os.makedirs(dir_path, mode=0o777, exist_ok=exist_ok)  # nosec B103  # test dir needs subprocess access
         return True
     except OSError:
         return False
@@ -69,7 +75,7 @@ def create_file(file_path):
     if os.path.exists(file_path):
         return False
     else:
-        with open(file_path, 'w') as fp:
+        with open(file_path, "w", encoding="utf-8") as fp:
             fp.close()
         return True
 
@@ -143,7 +149,11 @@ def check_output_structure(check_list):
     if "vendor_config" in check_list:
         ini_file = os.path.join(dfx_dir, "ops/vendor_config/config.ini")
         vendor_config_path = os.path.join(dfx_dir, "ops/vendor_config/")
-        if not os.path.isfile(ini_file) or not os.path.isdir(vendor_config_path) or not os.listdir(vendor_config_path):
+        if (
+            not os.path.isfile(ini_file)
+            or not os.path.isdir(vendor_config_path)
+            or not os.listdir(vendor_config_path)
+        ):
             return False
     if "custom_config" in check_list:
         custom_config_path = os.path.join(dfx_dir, "ops/custom_config/")
@@ -158,8 +168,10 @@ def check_output_structure(check_list):
         if not os.path.exists(atrace_path) or not os.listdir(atrace_path):
             return False
     if "atrace_file" in check_list:
-        atrace_file = os.path.join(dfx_dir,
-                                   "atrace/trace_17965_17965_20240302100542653636/ts_0_event_17990_20240302100546637402/ts_0_17990_20240302100546761462.txt")
+        atrace_file = os.path.join(
+            dfx_dir,
+            "atrace/trace_17965_17965_20240302100542653636/ts_0_event_17990_20240302100546637402/ts_0_17990_20240302100546761462.txt",
+        )
         if not os.path.exists(atrace_file) or not os.path.isfile(atrace_file):
             return False
     if "npu_collect_intermediates" in check_list:
@@ -167,7 +179,9 @@ def check_output_structure(check_list):
         if os.path.exists(npu_collect_path):
             return False
     if "host_driver" in check_list:
-        host_driver_path = os.path.join(asys_out_dir, "dfx/log/host/driver/host-driver_20240524062534026.log")
+        host_driver_path = os.path.join(
+            asys_out_dir, "dfx/log/host/driver/host-driver_20240524062534026.log"
+        )
         if not os.path.isfile(host_driver_path):
             return False
     return True
@@ -181,7 +195,7 @@ def check_atrace_file(file_name, asys_out_dir, mode="collect"):
     if os.path.exists(file_path):
         if file_path.endswith(".bin"):
             return True
-        with open(file_path, "r") as fr:
+        with open(file_path, "r", encoding="utf-8") as fr:
             data = fr.read()
             if "item_name0[a]" not in data:
                 return False
@@ -216,26 +230,46 @@ def get_length_byte(item_type):
 
 
 def write_ctrl_head(fw):
-    magic = 0xd928
+    magic = 0xD928
     version = random.randint(2, 3)
     type = 0
     structSize = 0
     dataSize = 0
     tzOffset = 480
     realTime = 1715252892408752464
-    data = struct.pack("@6IQ16s", magic, version, type, structSize, dataSize, tzOffset, realTime, "0".encode())
+    data = struct.pack(
+        "@6IQ16s",
+        magic,
+        version,
+        type,
+        structSize,
+        dataSize,
+        tzOffset,
+        realTime,
+        "0".encode(),
+    )
     fw.write(data)
 
 
 def write_ctrl_head_error(fw):
-    magic = 0xd927
+    magic = 0xD927
     version = random.randint(2, 3)
     type = 0
     structSize = 0
     dataSize = 0
     tzOffset = 480
     realTime = 1715252892408752464
-    data = struct.pack("@6IQ16s", magic, version, type, structSize, dataSize, tzOffset, realTime, "0".encode())
+    data = struct.pack(
+        "@6IQ16s",
+        magic,
+        version,
+        type,
+        structSize,
+        dataSize,
+        tzOffset,
+        realTime,
+        "0".encode(),
+    )
     fw.write(data)
 
 
@@ -247,7 +281,11 @@ def write_struct_segment(fw):
         struct_name = f"demo{i}"
         itemNum = 18
         structType = i
-        fw.write(struct.pack("@32sIB3s", struct_name.encode(), itemNum, structType, "0".encode()))
+        fw.write(
+            struct.pack(
+                "@32sIB3s", struct_name.encode(), itemNum, structType, "0".encode()
+            )
+        )
         item_lists = []
         for j in range(itemNum):
             item_name = f"item_name{j}"
@@ -263,8 +301,16 @@ def write_struct_segment(fw):
             item_length = 2
             if item_type < 100:
                 item_length = 1
-            fw.write(struct.pack("@32s2BH4s", item_name.encode(), item_type, item_mode,
-                                 item_length * get_length_byte(item_type), "0".encode()))
+            fw.write(
+                struct.pack(
+                    "@32s2BH4s",
+                    item_name.encode(),
+                    item_type,
+                    item_mode,
+                    item_length * get_length_byte(item_type),
+                    "0".encode(),
+                )
+            )
             item_lists.append([item_name, item_type, item_mode, item_length])
         struct_dict[structType] = {"struct_name": struct_name, "item_lists": item_lists}
     return struct_dict
@@ -274,16 +320,16 @@ def write_data(fw, item_list):
     item_name, item_type, item_mode, item_length = item_list
     for _ in range(item_length):
         if item_type in [0, 100]:
-            fw.write(struct.pack(f"@s", "a".encode()))
+            fw.write(struct.pack("@s", "a".encode()))
         else:
             if item_type in [1, 2, 101, 102]:
-                fw.write(struct.pack(f"@B", item_type))
+                fw.write(struct.pack("@B", item_type))
             elif item_type in [3, 4, 103, 104]:
-                fw.write(struct.pack(f"@H", item_type))
+                fw.write(struct.pack("@H", item_type))
             elif item_type in [5, 6, 105, 106]:
-                fw.write(struct.pack(f"@I", item_type))
+                fw.write(struct.pack("@I", item_type))
             elif item_type in [7, 8, 107, 108]:
-                fw.write(struct.pack(f"@Q", item_type))
+                fw.write(struct.pack("@Q", item_type))
 
 
 def write_data_segment(fw):
@@ -299,20 +345,22 @@ def write_data_segment(fw):
         txtSize = 93
         busy = False
         struct_type = i
-        fw.write(struct.pack("@QI?B2s", cycle, txtSize, busy, struct_type, "0".encode()))
+        fw.write(
+            struct.pack("@QI?B2s", cycle, txtSize, busy, struct_type, "0".encode())
+        )
         struct_info = struct_dict.get(struct_type)
         for item_list in struct_info.get("item_lists"):
             write_data(fw, item_list)
 
 
-def great_bin(trace_flie):
-    with open(trace_flie, "wb") as fw:
+def great_bin(trace_file):
+    with open(trace_file, "wb") as fw:
         # magic
         write_data_segment(fw)
 
 
-def great_error_bin(trace_flie):
-    with open(trace_flie, "wb") as fw:
+def great_error_bin(trace_file):
+    with open(trace_file, "wb") as fw:
         # magic
         write_ctrl_head_error(fw)
 
@@ -323,17 +371,16 @@ def check_file_contents(check_file, content):
     if not os.path.isfile(check_file):
         return False
     try:
-        with open(check_file, "r") as rd:
+        with open(check_file, "r", encoding="utf-8") as rd:
             read_res = rd.read()
         if content in read_res:
             return True
-    except Exception as e:
+    except Exception:
         return False
     return False
 
 
-class AssertTest():
-
+class AssertTest:
     def assertTrue(self, value):
         assert value
 
@@ -356,10 +403,23 @@ class DrvDsmi:
     get_soc_sensor_info = 0
 
     @staticmethod
-    def set_res(device_count=0, device_health=0, device_errorcode=0, query_errorstring=0, device_power_info=0,
-                 device_temperature=0, device_frequency=0, device_voltage=0, device_utilization_rate=0, memory_info=0,
-                 hbm_info=0, total_ecc_isolated_pages_info=0, clear_ecc_isolated_statistics_info=0, get_device_info=0,
-                 get_soc_sensor_info=0):
+    def set_res(
+        device_count=0,
+        device_health=0,
+        device_errorcode=0,
+        query_errorstring=0,
+        device_power_info=0,
+        device_temperature=0,
+        device_frequency=0,
+        device_voltage=0,
+        device_utilization_rate=0,
+        memory_info=0,
+        hbm_info=0,
+        total_ecc_isolated_pages_info=0,
+        clear_ecc_isolated_statistics_info=0,
+        get_device_info=0,
+        get_soc_sensor_info=0,
+    ):
         DrvDsmi.device_count = device_count
         DrvDsmi.device_health = device_health
         DrvDsmi.device_errorcode = device_errorcode
@@ -421,7 +481,9 @@ class DrvDsmi:
         return DrvDsmi.hbm_info
 
     @staticmethod
-    def dsmi_get_total_ecc_isolated_pages_info(device_id, dsmi_device_type_hbm, p_device_ecc_info):
+    def dsmi_get_total_ecc_isolated_pages_info(
+        device_id, dsmi_device_type_hbm, p_device_ecc_info
+    ):
         return DrvDsmi.total_ecc_isolated_pages_info
 
     @staticmethod
@@ -468,7 +530,12 @@ class DrvAml:
     DeviceGetHbmInfo = 0
 
     @staticmethod
-    def set_res(DeviceGetCpuInfo=0, DeviceGetAicoreInfo=0, DeviceGetBusInfo=0, DeviceGetHbmInfo=0):
+    def set_res(
+        DeviceGetCpuInfo=0,
+        DeviceGetAicoreInfo=0,
+        DeviceGetBusInfo=0,
+        DeviceGetHbmInfo=0,
+    ):
         DrvAml.DeviceGetCpuInfo = DeviceGetCpuInfo
         DrvAml.DeviceGetAicoreInfo = DeviceGetAicoreInfo
         DrvAml.DeviceGetBusInfo = DeviceGetBusInfo

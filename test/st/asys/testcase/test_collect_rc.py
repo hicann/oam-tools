@@ -16,16 +16,18 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import pytest
 import shutil
 
-from .conftest import ASYS_SRC_PATH, CONF_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env
+from .conftest import CONF_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env
 from .conftest import check_output_structure, AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
-sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
@@ -33,19 +35,18 @@ from common.const import RetCode
 
 
 def setup_module():
-    print("TestCollect st test start.")
+    print("TestCollect st test start.")  # noqa: T201  # test diagnostic output
     set_env()
 
 
 def teardown_module():
-    print("TestCollect st test finsh.")
+    print("TestCollect st test finish.")  # noqa: T201  # test diagnostic output
     unset_env()
 
 
 class TestCollectRC(AssertTest):
-
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
         os.mkdir(test_case_tmp)
@@ -53,7 +54,7 @@ class TestCollectRC(AssertTest):
         ParamDict.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
@@ -69,9 +70,13 @@ class TestCollectRC(AssertTest):
         sys.argv = [CONF_SRC_PATH, "collect"]
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main())
-        self.assertTrue(check_output_structure(["software", "data-dump", "graph", "ops"]))
+        self.assertTrue(
+            check_output_structure(["software", "data-dump", "graph", "ops"])
+        )
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task_dir", st_root_path + "/data/asys_test_dir")])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"], [("--task_dir", st_root_path + "/data/asys_test_dir")]
+    )
     def test_collect_dir_rc(self, capsys, arg_name, arg_val, mocker):
         """
         @描述: 使用task_dir参数, 执行collect功能
@@ -85,9 +90,14 @@ class TestCollectRC(AssertTest):
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main())
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"],
-                             [("--task_dir", st_root_path + "/data/asys_test_dir_noexist"), ("--task_dir", "' '"),
-                              ("--task_dir", "")])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [
+            ("--task_dir", st_root_path + "/data/asys_test_dir_noexist"),
+            ("--task_dir", "' '"),
+            ("--task_dir", ""),
+        ],
+    )
     def test_collect_dir_invalid_rc(self, caplog, arg_name, arg_val, mocker):
         """
         @描述: 使用无效task_dir参数, 执行collect功能
@@ -100,7 +110,10 @@ class TestCollectRC(AssertTest):
         sys.argv = [CONF_SRC_PATH, "collect", "=".join([arg_name, arg_val])]
         self.assertTrue(asys.main() != RetCode.SUCCESS)
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--output", "{}/asys_test_output_arg".format(test_case_tmp))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [("--output", "{}/asys_test_output_arg".format(test_case_tmp))],
+    )
     def test_collect_output_arg_rc(self, capsys, arg_name, arg_val, mocker):
         """
         @描述: 使用output参数, 执行collect功能
@@ -114,11 +127,16 @@ class TestCollectRC(AssertTest):
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main())
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--output", ""),
-                                                       ("--output", "    "),
-                                                       ("--output", "\\out"),
-                                                       ("--output", "^out"),
-                                                       ("--output", "$out")])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [
+            ("--output", ""),
+            ("--output", "    "),
+            ("--output", "\\out"),
+            ("--output", "^out"),
+            ("--output", "$out"),
+        ],
+    )
     def test_collect_output_arg_invalid_rc(self, caplog, arg_name, arg_val, mocker):
         """
         @描述: 使用无效output参数,，包括空字符串，空格字符串, 含有非法字符字符串, 执行collect功能
@@ -132,21 +150,34 @@ class TestCollectRC(AssertTest):
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main() != RetCode.SUCCESS)
         if arg_val.strip() != "":
-            self.assertTrue("Argument output is invalid, only characters in [a-zA-Z0-9_-.]" in caplog.text)
+            self.assertTrue(
+                "Argument output is invalid, only characters in [a-zA-Z0-9_-.]"
+                in caplog.text
+            )
 
     def test_get_log_conf_path(self):
         from common.path import get_log_conf_path
+
         get_log_conf_path("slog")
         get_log_conf_path("bbox")
 
         from drv.env_type import LoadSoType
+
         LoadSoType().get_env_type()
 
     def test_collect_rc_stackcore(self, mocker):
         from collect.log.rc_log_collect import collect_stackcore
-        mocker.patch("common.file_operate.FileOperate.list_dir", return_value=["aaa", "bbb"])
-        mocker.patch("common.file_operate.FileOperate.copy_file_to_dir", return_value=True)
-        mocker.patch("os.walk", return_value=((f"{st_root_path}/data/scripts", "", ["msnpureport"]), ))
+
+        mocker.patch(
+            "common.file_operate.FileOperate.list_dir", return_value=["aaa", "bbb"]
+        )
+        mocker.patch(
+            "common.file_operate.FileOperate.copy_file_to_dir", return_value=True
+        )
+        mocker.patch(
+            "os.walk",
+            return_value=((f"{st_root_path}/data/scripts", "", ["msnpureport"]),),
+        )
         collect_stackcore("./")
 
     @pytest.mark.skip(reason="temporarily skipped due to test failure")
@@ -155,17 +186,26 @@ class TestCollectRC(AssertTest):
         ParamDict().set_env_type("RC")
         try:
             asys.main()
-        except:
+        except Exception:
             pass
 
         captured = capsys.readouterr()
-        self.assertTrue(captured.err.count("error: argument subparser_name: invalid choice: 'health' (choose from 'collect', 'launch')") == 1)
+        self.assertTrue(
+            captured.err.count(
+                "error: argument subparser_name: invalid choice: 'health' (choose from 'collect', 'launch')"
+            )
+            == 1
+        )
 
     def test_collect_rc_software(self):
         from collect.asys_collect import AsysCollect
+
         ParamDict().set_env_type("RC")
         ParamDict().asys_output_timestamp_dir = test_case_tmp
         AsysCollect().collect_status_info()
-        self.assertTrue(os.path.isfile(os.path.join(test_case_tmp, "software_info.txt")))
-        self.assertTrue(not os.path.exists(os.path.join(test_case_tmp, "health_result.txt")))
-
+        self.assertTrue(
+            os.path.isfile(os.path.join(test_case_tmp, "software_info.txt"))
+        )
+        self.assertTrue(
+            not os.path.exists(os.path.join(test_case_tmp, "health_result.txt"))
+        )

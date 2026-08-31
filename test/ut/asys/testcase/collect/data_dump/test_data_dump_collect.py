@@ -16,25 +16,29 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 
-from testcase.conftest import ASYS_SRC_PATH, ut_root_path
-sys.path.insert(0, ASYS_SRC_PATH)
+from testcase.conftest import ut_root_path
 
 from collect.data_dump.data_dump_collect import collect_data_dump, get_source_dir
 from params import ParamDict
 from common import consts
 from testcase.conftest import AssertTest
 
+
 def setup_module():
-    print("TestDataDumpCollect ut test start.")
+    print("TestDataDumpCollect ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestDataDumpCollect ut test finsh.")
+    print("TestDataDumpCollect ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestDataDumpCollect(AssertTest):
-
     def setup_method(self):
         pass
 
@@ -48,19 +52,23 @@ class TestDataDumpCollect(AssertTest):
         mocker.patch("common.FileOperate.collect_dir", return_value=True)
         ParamDict.asys_output_timestamp_dir = ut_root_path
         collect_data_dump("./output")
-        self.assertTrue('failed' not in caplog.text)
+        self.assertTrue("failed" not in caplog.text)
 
     def test_data_dump_collect_success_collect(self, mocker, caplog):
-        mocker.patch("params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path)
+        mocker.patch(
+            "params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path
+        )
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("common.FileOperate.collect_dir", return_value=True)
         collect_data_dump("./output")
-        self.assertTrue('failed' not in caplog.text)
+        self.assertTrue("failed" not in caplog.text)
 
     def test_data_dump_get_collect_path_npu(self, mocker):
-        mocker.patch("params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path)
+        mocker.patch(
+            "params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path
+        )
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("os.path.exists", return_value=True)
@@ -72,7 +80,9 @@ class TestDataDumpCollect(AssertTest):
         os.environ.pop("NPU_COLLECT_PATH")
 
     def test_data_dump_get_collect_path_work(self, mocker, caplog):
-        mocker.patch("params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path)
+        mocker.patch(
+            "params.ParamDict.asys_output_timestamp_dir", return_value=ut_root_path
+        )
         mocker.patch("params.ParamDict.get_command", return_value=consts.collect_cmd)
         mocker.patch("common.FileOperate.check_dir", return_value=True)
         mocker.patch("os.path.exists", return_value=True)
@@ -82,5 +92,5 @@ class TestDataDumpCollect(AssertTest):
         path = get_source_dir()
         self.assertTrue(path == os.path.join(ut_root_path, "extra-info", "data-dump"))
 
-        self.assertTrue('failed' not in caplog.text)
+        self.assertTrue("failed" not in caplog.text)
         os.environ.pop("ASCEND_WORK_PATH")

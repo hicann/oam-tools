@@ -16,19 +16,18 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import logging
-import sys
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import pytest
 import os
-import ctypes
 from pathlib import Path
 
-from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH, ut_root_path
+from testcase.conftest import ut_root_path
 
-sys.path.insert(0, ASYS_SRC_PATH)
 from common.device import DeviceInfo
 from common.chip_handler import ChipHandler
-from common.const import RetCode
 from drv import LoadSoType
 from ..conftest import AssertTest
 
@@ -39,7 +38,7 @@ class TestDevice(AssertTest):
     def setup_method(self):
         testfile = Path(self.test_file_path)
         testfile.touch(exist_ok=True)
-        self.fp = open(testfile)
+        self.fp = open(testfile, encoding="utf-8")
 
     def teardown_method(self):
         if os.path.exists(self.test_file_path):

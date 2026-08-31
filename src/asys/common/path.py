@@ -28,7 +28,9 @@ __all__ = ["get_project_conf", "get_ascend_home", "get_log_conf_path"]
 
 def get_project_conf():
     project_conf_path = os.path.join(os.path.dirname(sys.argv[0]), "conf")
-    project_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    project_path = os.path.abspath(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    )
     if not os.path.exists(project_conf_path):
         project_conf_path = os.path.join(project_path, "conf")
     if not os.path.exists(project_conf_path):
@@ -38,23 +40,31 @@ def get_project_conf():
 
 def get_ascend_home():
     # TOOLCHAIN_HOME -> ${install_path}/latest/toolkit
-    toolchain_home = os.getenv('TOOLCHAIN_HOME')
+    toolchain_home = os.getenv("TOOLCHAIN_HOME")
     if toolchain_home:
         latest_path = toolchain_home.split(":")[0]
         return os.path.abspath(os.path.join(latest_path, "../.."))
     else:
-        return os.path.abspath('/usr/local/Ascend')
+        return os.path.abspath("/usr/local/Ascend")
 
 
 def get_log_conf_path(name):
     log_path = None
     if name == "slog":
-        log_conf_paths = ["/etc/slog.conf", "/var/log/npu/conf/slog.conf", "/var/log/npu/conf/slog/slog.conf"]
+        log_conf_paths = [
+            "/etc/slog.conf",
+            "/var/log/npu/conf/slog.conf",
+            "/var/log/npu/conf/slog/slog.conf",
+        ]
         search_re = "logAgentFileDir=(.+?)\n"
         log_path = "/var/log/npu/slog/"
     elif name == "bbox":
-        log_conf_paths = ["/var/bbox.conf", "/etc/bbox.conf", "/var/log/npu/conf/bbox.conf",
-                          "/var/log/npu/conf/bbox/bbox.conf"]
+        log_conf_paths = [
+            "/var/bbox.conf",
+            "/etc/bbox.conf",
+            "/var/log/npu/conf/bbox.conf",
+            "/var/log/npu/conf/bbox/bbox.conf",
+        ]
         search_re = "MNTN_PATH=(.+?)\n"
         log_path = "/var/log/npu/hisi_logs/"
     else:

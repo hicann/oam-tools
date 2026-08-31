@@ -16,29 +16,33 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import pytest
 import shutil
 
-from .conftest import ASYS_SRC_PATH, ASYS_MAIN_PATH, st_root_path, test_case_tmp
+from .conftest import ASYS_MAIN_PATH, st_root_path, test_case_tmp
 from .conftest import AssertTest
 
-sys.path.insert(0, ASYS_SRC_PATH)
 import asys
 from params import ParamDict
 
 
 def setup_module():
-    print("TestHelp st test start.")
+    print("TestHelp st test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestHelp st test finish.")
+    print("TestHelp st test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestHelp(AssertTest):
-
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
         os.mkdir(test_case_tmp)
@@ -46,7 +50,7 @@ class TestHelp(AssertTest):
         ParamDict.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
@@ -64,15 +68,41 @@ class TestHelp(AssertTest):
         usage_message = "usage:"
         self.assertTrue(captured.out.count(usage_message) == 1)
 
-
-    @pytest.mark.parametrize(["command", "args"], [("collect", ["--output"]),
-                                                   ("collect", ["--output="]),
-                                                   ("collect", ["--task_dir"]),
-                                                   ("collect", ["--task_dir="]),
-                                                   ("launch", ["--task", "--output={}/data/asys_test_dir/out".format(st_root_path)]),
-                                                   ("launch", ["--task=", "--output={}/data/asys_test_dir/out".format(st_root_path)]),
-                                                   ("launch", ["--task=\"bash {}/data/asys_test_dir/test.bash\"".format(st_root_path), "--output"]),
-                                                   ("launch", ["--task=\"bash {}/data/asys_test_dir/test.bash\"".format(st_root_path), "--output="])])
+    @pytest.mark.parametrize(
+        ["command", "args"],
+        [
+            ("collect", ["--output"]),
+            ("collect", ["--output="]),
+            ("collect", ["--task_dir"]),
+            ("collect", ["--task_dir="]),
+            (
+                "launch",
+                ["--task", "--output={}/data/asys_test_dir/out".format(st_root_path)],
+            ),
+            (
+                "launch",
+                ["--task=", "--output={}/data/asys_test_dir/out".format(st_root_path)],
+            ),
+            (
+                "launch",
+                [
+                    '--task="bash {}/data/asys_test_dir/test.bash"'.format(
+                        st_root_path
+                    ),
+                    "--output",
+                ],
+            ),
+            (
+                "launch",
+                [
+                    '--task="bash {}/data/asys_test_dir/test.bash"'.format(
+                        st_root_path
+                    ),
+                    "--output=",
+                ],
+            ),
+        ],
+    )
     def test_args_invalid_print_help(self, capsys, command, args):
         """
         @描述:执行asys, 任务为 collect, launch, 指定参数(task, task_dir, output)但未赋值
@@ -85,7 +115,7 @@ class TestHelp(AssertTest):
         sys.argv.extend(args)
         try:
             asys.main()
-        except:
+        except Exception:
             captured = capsys.readouterr()
             self.assertTrue(captured.err.count("expected one argument") == 1)
 
@@ -94,7 +124,7 @@ class TestHelp(AssertTest):
         sys.argv = [ASYS_MAIN_PATH, "-h"]
         self.assertTrue(not asys.main())
         captured = capsys.readouterr()
-        print(captured.out)
+        print(captured.out)  # noqa: T201  # test diagnostic output
         except_msg = """usage: asys [-h]
             {collect,launch,diagnose,health,info,analyze,config,profiling} ...
 
@@ -113,7 +143,7 @@ position
     diagnose            Diagnoses the hardware status of the device. It has
                         diagnostic capabilities for component, stress_detect,
                         hbm_detect, cpu_detect and aicore_stl_detect. The detect
-                        diagnostic only supports Ascend series chips: 910B, 
+                        diagnostic only supports Ascend series chips: 910B,
                         910_93, 950, 910_96.
     health              Diagnoses the health status of the device.
     info                Collects the software and hardware information of the
@@ -126,7 +156,12 @@ position
 option
   -h, --help            show this help message and exit"""
         for msg in except_msg.split("\n"):
-            self.assertTrue(msg.strip() in captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", ""))
+            self.assertTrue(
+                msg.strip()
+                in captured.out.replace("\033[33m", "")
+                .replace("\033[0m", "")
+                .replace("\033[31m", "")
+            )
 
     def test_asys_collect_print_help(self, capsys):
         sys.argv = [ASYS_MAIN_PATH, "collect", "-h"]
@@ -162,11 +197,18 @@ options:
   --quiet          <Optional> Disable the interaction function during
                    stack information export, this parameter must be used
                    together with '-r=stacktrace'.
-  --timeout        <Optional> Specifies the stacktrace collect duration, in 
-                   seconds, value range: [1, 60]. If this argument is not 
+  --timeout        <Optional> Specifies the stacktrace collect duration, in
+                   seconds, value range: [1, 60]. If this argument is not
                    specified, the default 10s is used."""
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_launch_print_help(self, capsys):
@@ -186,8 +228,15 @@ options:
               result directory into a tar.gz file. The original directory is
               not retained after compression. No compression by default.
 """
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_diagnose_print_help(self, capsys):
@@ -204,7 +253,7 @@ options:
                         mode. It can be set to 'stress_detect' (AI Core stress
                         test), 'hbm_detect' (HBM detection), 'cpu_detect' (CPU
                         detection), 'component' (Operator detection) or
-                        'aicore_stl_detect' (AICore STL self-diagnose, 
+                        'aicore_stl_detect' (AICore STL self-diagnose,
                         support Ascend950 only).
   -d                    <Optional> Specifies the ID of the device for
                         command execution.
@@ -213,10 +262,17 @@ options:
                         604800]. In CPU detection mode, value range: [1,
                         604800]. If this argument is not specified, the
                         default 600s is used.
-  --output              <Optional> Specifies the path to save the command 
+  --output              <Optional> Specifies the path to save the command
                         execution results, Default: current dir."""
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_health_print_help(self, capsys):
@@ -230,8 +286,15 @@ options:
   -d          <Optional> Specifies the ID of the device for command
               execution.
 """
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_info_print_help(self, capsys):
@@ -251,8 +314,15 @@ options:
   -d                    <Optional> Specifies the ID of the device for
                         command execution.
 """
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_analyze_print_help(self, capsys):
@@ -270,19 +340,19 @@ options:
                         <Positional> Specifies the type of data to be
                         analyzed. It can be set to 'trace' (trace binary
                         file), 'coredump' (system core file), 'coretrace'
-                        (coretrace file), 'stackcore' (stackcore file), 
-                        'aicore_error' (aicore error dump and log) or 
+                        (coretrace file), 'stackcore' (stackcore file),
+                        'aicore_error' (aicore error dump and log) or
                         'ub' (UB binary files).
   -d                    <Optional> Specifies the ID of the device for
-                        command execution. This argument is valid only 
+                        command execution. This argument is valid only
                         for 'aicore_error'.
   --file                <Positional> Specifies the single file to be
                         analyzed. This argument is valid only for 'trace',
-                        'coretrace' and 'stackcore'. Mutually exclusive with 
+                        'coretrace' and 'stackcore'. Mutually exclusive with
                         '--path'.
   --path                <Positional> Specifies the path to be
                         analyzed. This argument is valid only for 'trace',
-                        'coretrace' and 'stackcore'. Mutually exclusive with 
+                        'coretrace' and 'stackcore'. Mutually exclusive with
                         '--file'.
   --exe_file            <Positional> Specifies the executable file to
                         be debugged. This argument is valid only for
@@ -303,10 +373,17 @@ options:
                         register data for analysis. 0: not add; 1: add only
                         for threads; 2: add for all stack frames. Defaults to
                         0.
-  --output              <Optional> Specifies the path to save the command 
+  --output              <Optional> Specifies the path to save the command
                         execution results, Default: current dir."""
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)
 
     def test_asys_config_print_help(self, capsys):
@@ -326,6 +403,13 @@ options:
   --stress_detect  <Positional> Specifies the configuration options
                    to be queried or restored, indicating the configurations
                    related to the pressure test."""
-        except_msg_str = except_msg.replace("\n", "").replace(' ', '')
-        output_str = captured.out.replace("\033[33m", "").replace("\033[0m", "").replace("\033[31m", "").replace("\n", "").replace(' ', '').replace("optionalarguments", "options")
+        except_msg_str = except_msg.replace("\n", "").replace(" ", "")
+        output_str = (
+            captured.out.replace("\033[33m", "")
+            .replace("\033[0m", "")
+            .replace("\033[31m", "")
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace("optionalarguments", "options")
+        )
         self.assertTrue(except_msg_str == output_str)

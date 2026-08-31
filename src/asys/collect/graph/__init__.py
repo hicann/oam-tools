@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from collect.graph.graph_collect import collect_graph
+
+
+__all__ = ["collect_graph"]

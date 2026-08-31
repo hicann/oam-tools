@@ -16,26 +16,29 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys, os
-from testcase.conftest import ASYS_SRC_PATH, ut_root_path, AssertTest
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
 
-sys.path.insert(0, ASYS_SRC_PATH)
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
 
+import os
+from testcase.conftest import ut_root_path, AssertTest
 
 
 def setup_module():
-    print("TestCmdRun ut test start.")
+    print("TestCmdRun ut test start.")  # noqa: T201  # test diagnostic output
 
 
 def teardown_module():
-    print("TestCmdRun ut test finsh.")
+    print("TestCmdRun ut test finish.")  # noqa: T201  # test diagnostic output
 
 
 class TestComprssOutputDir(AssertTest):
-
     def test_compress_success(self, mocker):
         from common import compress_output_dir_tar
         from params import ParamDict
+
         mocker.patch("os.path.basename", return_value="")
-        ParamDict().asys_output_timestamp_dir = os.path.join(ut_root_path, "data/compress_data")
+        ParamDict().asys_output_timestamp_dir = os.path.join(
+            ut_root_path, "data/compress_data"
+        )
         self.assertTrue(not compress_output_dir_tar())

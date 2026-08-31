@@ -16,35 +16,52 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import pytest
 import shutil
 
-from .conftest import CONF_SRC_PATH, ASYS_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env, great_bin
-from .conftest import check_output_structure, create_dir, create_file, remove_dir, check_atrace_file, find_dir
+from .conftest import (
+    CONF_SRC_PATH,
+    st_root_path,
+    test_case_tmp,
+    set_env,
+    unset_env,
+    great_bin,
+)
+from .conftest import (
+    check_output_structure,
+    create_dir,
+    create_file,
+    remove_dir,
+    check_atrace_file,
+    find_dir,
+)
 from .conftest import AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
-sys.path.insert(0, ASYS_SRC_PATH)
 
 import asys
 from params import ParamDict
 from collect import AsysCollect
 
+
 def setup_module():
-    print("TestLaunch st test start.")
+    print("TestLaunch st test start.")  # noqa: T201  # test diagnostic output
     set_env()
 
+
 def teardown_module():
-    print("TestLaunch st test finsh.")
+    print("TestLaunch st test finish.")  # noqa: T201  # test diagnostic output
     unset_env()
 
 
 class TestLaunch(AssertTest):
-
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
         os.mkdir(test_case_tmp)
@@ -52,16 +69,26 @@ class TestLaunch(AssertTest):
         ParamDict.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
-
-    @pytest.mark.parametrize(["arg_name", "arg_val", "res"], [
-        ("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path), True),
-        ("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path), False),
-    ])
-    def test_launch_task(self, caplog, arg_name, arg_val,mocker, res):
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val", "res"],
+        [
+            (
+                "--task",
+                "bash {}/data/asys_test_dir/test.bash".format(st_root_path),
+                True,
+            ),
+            (
+                "--task",
+                "bash {}/data/asys_test_dir/test.bash".format(st_root_path),
+                False,
+            ),
+        ],
+    )
+    def test_launch_task(self, caplog, arg_name, arg_val, mocker, res):
         """
         @描述: 执行launch功能, task参数有效
         @类型: FUNCTION
@@ -73,16 +100,18 @@ class TestLaunch(AssertTest):
         ParamDict().set_env_type("EP")
         if res:
             self.assertTrue(asys.main())
-            self.assertTrue(check_output_structure(["software", "log", "stackcore", "bbox"]))
+            self.assertTrue(
+                check_output_structure(["software", "log", "stackcore", "bbox"])
+            )
         else:
-            mocker.patch.object(AsysCollect, 'collect', return_value=False)
+            mocker.patch.object(AsysCollect, "collect", return_value=False)
             self.assertTrue(asys.main())
-            self.assertTrue(not check_output_structure(["software", "log", "stackcore", "bbox"]))
+            self.assertTrue(
+                not check_output_structure(["software", "log", "stackcore", "bbox"])
+            )
             self.assertTrue("Collect information after task failed" in caplog.text)
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", ""),
-                                                       ("--task", " ")
-                                                       ])
+    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", ""), ("--task", " ")])
     def test_launch_task_unablerun(self, caplog, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数无效, 包括task不可执行
@@ -95,8 +124,17 @@ class TestLaunch(AssertTest):
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"],
-                            [("--task", "bash {}/data/asys_test_dir/test_launch_error_task.sh".format(st_root_path))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [
+            (
+                "--task",
+                "bash {}/data/asys_test_dir/test_launch_error_task.sh".format(
+                    st_root_path
+                ),
+            )
+        ],
+    )
     def test_launch_task_return_error(self, caplog, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数可执行, 任务返回码非0
@@ -108,10 +146,16 @@ class TestLaunch(AssertTest):
         sys.argv = [CONF_SRC_PATH, "launch", "=".join([arg_name, arg_val])]
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
-        self.assertTrue(check_output_structure(["software", "log", "stackcore", "bbox", "graph", "ops"]))
+        self.assertTrue(
+            check_output_structure(
+                ["software", "log", "stackcore", "bbox", "graph", "ops"]
+            )
+        )
 
-
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))],
+    )
     def test_launch_debug_kernel_task(self, capsys, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数有效
@@ -123,9 +167,9 @@ class TestLaunch(AssertTest):
         os.environ["ASCEND_OPP_PATH"] = st_root_path
         debug_kernel_path = os.path.join(st_root_path, "debug_kernel")
         create_dir(debug_kernel_path)
-        create_file(debug_kernel_path+"/temp.o")
-        create_file(debug_kernel_path+"/temp.json")
-        create_file(debug_kernel_path+"/temp.cce")
+        create_file(debug_kernel_path + "/temp.o")
+        create_file(debug_kernel_path + "/temp.json")
+        create_file(debug_kernel_path + "/temp.cce")
         sys.argv = [CONF_SRC_PATH, "launch", "=".join([arg_name, arg_val])]
         ParamDict().set_env_type("EP")
         self.assertTrue(asys.main())
@@ -135,6 +179,7 @@ class TestLaunch(AssertTest):
     def test_launch_create_env_dir_error(self):
         from launch.asys_launch import AsysLaunch
         from common.const import RetCode
+
         ParamDict().asys_output_timestamp_dir = "./"
 
         obj = AsysLaunch()
@@ -154,8 +199,10 @@ class TestLaunch(AssertTest):
         self.assertTrue(ret == RetCode.FAILED)
         shutil.rmtree(test_case_tmp)
 
-
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))],
+    )
     def test_launch_atrace(self, capsys, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数有效
@@ -173,9 +220,14 @@ class TestLaunch(AssertTest):
         self.assertTrue(check_output_structure(["atrace"]))
         out_dir = find_dir(test_case_tmp, "asys_output_")
         self.assertTrue(check_atrace_file(os.path.join("atrace", "test.txt"), out_dir))
-        self.assertTrue(not check_atrace_file(os.path.join("atrace", "test.bin"), out_dir))
+        self.assertTrue(
+            not check_atrace_file(os.path.join("atrace", "test.bin"), out_dir)
+        )
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))],
+    )
     def test_launch_task_status_health(self, capsys, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数有效
@@ -189,32 +241,36 @@ class TestLaunch(AssertTest):
         self.assertTrue(asys.main())
         self.assertTrue(check_output_structure(["npu_collect_intermediates"]))
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", "bash"),
-                                                       ("--task", " bash"),
-                                                       ("--task", "bash "),
-                                                       ("--task", " bash "),
-                                                       ("--task", "bash ./data/asys_test_dir/test"),
-                                                       ("--task", "bash test1sh"),
-                                                       ("--task", "bash sh"),
-                                                       ("--task", "bash bash"),
-                                                       ("--task", "~/bash "),
-                                                       ("--task", "~/bash test.py"),
-                                                       ("--task", "~/bash test test2bash"),
-                                                       ("--task", "./sh "),
-                                                       ("--task", "./sh test1.py test2sh"),
-                                                       ("--task", "./sh test1sh test2.py"),
-                                                       ("--task", "/bin/sh test1sh test2.py"),
-                                                       ("--task", "/bin/bash test1sh test2.py"),
-                                                       ("--task", "python"),
-                                                       ("--task", " python "),
-                                                       ("--task", "python3"),
-                                                       ("--task", " python3 "),
-                                                       ("--task", "python3 test.sh"),
-                                                       ("--task", "python3 test.bash"),
-                                                       ("--task", "/usr/bin/python3.7 "),
-                                                       ("--task", "/usr/bin/python3.7 test"),
-                                                       ("--task", "/usr/bin/python3.7 test.sh")
-                                                       ])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [
+            ("--task", "bash"),
+            ("--task", " bash"),
+            ("--task", "bash "),
+            ("--task", " bash "),
+            ("--task", "bash ./data/asys_test_dir/test"),
+            ("--task", "bash test1sh"),
+            ("--task", "bash sh"),
+            ("--task", "bash bash"),
+            ("--task", "~/bash "),
+            ("--task", "~/bash test.py"),
+            ("--task", "~/bash test test2bash"),
+            ("--task", "./sh "),
+            ("--task", "./sh test1.py test2sh"),
+            ("--task", "./sh test1sh test2.py"),
+            ("--task", "/bin/sh test1sh test2.py"),
+            ("--task", "/bin/bash test1sh test2.py"),
+            ("--task", "python"),
+            ("--task", " python "),
+            ("--task", "python3"),
+            ("--task", " python3 "),
+            ("--task", "python3 test.sh"),
+            ("--task", "python3 test.bash"),
+            ("--task", "/usr/bin/python3.7 "),
+            ("--task", "/usr/bin/python3.7 test"),
+            ("--task", "/usr/bin/python3.7 test.sh"),
+        ],
+    )
     def test_launch_task_without_script(self, capsys, arg_name, arg_val):
         """
         @描述: 执行launch功能, task参数无效
@@ -226,28 +282,34 @@ class TestLaunch(AssertTest):
         sys.argv = [CONF_SRC_PATH, "launch", "=".join([arg_name, arg_val])]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
-        self.assertTrue(f"root:log.py:26 argument \"task\" no executable script, argument value: \"{arg_name} {arg_val}\"")
+        self.assertTrue(
+            f'root:log.py:26 argument "task" no executable script, argument value: "{arg_name} {arg_val}"'
+        )
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", " test_sh "),
-                                                       ("--task", "test_bash"),
-                                                       ("--task", "test_python"),
-                                                       ("--task", "./sh test.sh"),
-                                                       ("--task", "/bin/sh test.sh test1"),
-                                                       ("--task", "~/sh test.bash"),
-                                                       ("--task", "../sh test.bash test1"),
-                                                       ("--task", "./bash test.sh"),
-                                                       ("--task", "/bin/bash test.sh test1"),
-                                                       ("--task", "~/bash test.bash"),
-                                                       ("--task", "../bash test.bash test1"),
-                                                       ("--task", "bash test test.sh"),
-                                                       ("--task", "./sh test1sh test2.sh"),
-                                                       ("--task", "python test.py"),
-                                                       ("--task", "./python3.7.5 test.py"),
-                                                       ("--task", "~/python3.11.0 test.py"),
-                                                       ("--task", "python3 test1py test.py"),
-                                                       ("--task", "/usr/bin/python3.7 test test.py"),
-                                                       ("--task", "/usr/local/python3.7.5/bin/python3 test.py test2")
-                                                       ])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [
+            ("--task", " test_sh "),
+            ("--task", "test_bash"),
+            ("--task", "test_python"),
+            ("--task", "./sh test.sh"),
+            ("--task", "/bin/sh test.sh test1"),
+            ("--task", "~/sh test.bash"),
+            ("--task", "../sh test.bash test1"),
+            ("--task", "./bash test.sh"),
+            ("--task", "/bin/bash test.sh test1"),
+            ("--task", "~/bash test.bash"),
+            ("--task", "../bash test.bash test1"),
+            ("--task", "bash test test.sh"),
+            ("--task", "./sh test1sh test2.sh"),
+            ("--task", "python test.py"),
+            ("--task", "./python3.7.5 test.py"),
+            ("--task", "~/python3.11.0 test.py"),
+            ("--task", "python3 test1py test.py"),
+            ("--task", "/usr/bin/python3.7 test test.py"),
+            ("--task", "/usr/local/python3.7.5/bin/python3 test.py test2"),
+        ],
+    )
     def test_launch_task_with_script(self, arg_name, arg_val, mocker):
         """
         @描述: 执行launch功能, task参数有效

@@ -17,3 +17,6 @@
 # ----------------------------------------------------------------------------
 
 from collect.stacktrace.interface import AscendTraceDll
+
+
+__all__ = ["AscendTraceDll"]

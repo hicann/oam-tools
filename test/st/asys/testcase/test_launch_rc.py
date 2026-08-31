@@ -16,16 +16,18 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os
 import sys
 import pytest
 import shutil
-import logging
 
 from .conftest import CONF_SRC_PATH, st_root_path, test_case_tmp, set_env, unset_env
 from .conftest import AssertTest
 
-sys.argv.insert(0, CONF_SRC_PATH)
 
 from params import ParamDict
 
@@ -33,19 +35,18 @@ import asys
 
 
 def setup_module():
-    print("TestLaunch st test start.")
+    print("TestLaunch st test start.")  # noqa: T201  # test diagnostic output
     set_env()
 
 
 def teardown_module():
-    print("TestLaunch st test finsh.")
+    print("TestLaunch st test finish.")  # noqa: T201  # test diagnostic output
     unset_env()
 
 
 class TestLaunchRC(AssertTest):
-
     def setup_method(self):
-        print("init test environment")
+        print("init test environment")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
         os.mkdir(test_case_tmp)
@@ -53,12 +54,14 @@ class TestLaunchRC(AssertTest):
         ParamDict.clear()
 
     def teardown_method(self):
-        print("clean test environment.")
+        print("clean test environment.")  # noqa: T201  # test diagnostic output
         if os.path.exists(test_case_tmp):
             shutil.rmtree(test_case_tmp)
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"],
-                             [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))])
+    @pytest.mark.parametrize(
+        ["arg_name", "arg_val"],
+        [("--task", "bash {}/data/asys_test_dir/test.bash".format(st_root_path))],
+    )
     def test_launch_task_rc(self, capsys, arg_name, arg_val, mocker):
         """
         @描述: 执行launch功能, task参数有效
@@ -72,9 +75,7 @@ class TestLaunchRC(AssertTest):
         ParamDict().set_env_type("RC")
         self.assertTrue(asys.main())
 
-    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", ""),
-                                                       ("--task", " ")
-                                                       ])
+    @pytest.mark.parametrize(["arg_name", "arg_val"], [("--task", ""), ("--task", " ")])
     def test_launch_task_unablerun_rc(self, caplog, arg_name, arg_val, mocker):
         """
         @描述: 执行launch功能, task参数无效, 包括task不可执行

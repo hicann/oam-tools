@@ -19,7 +19,7 @@
 import ctypes
 from common import RetCode
 from common import log_debug, log_error
-from common.const import AI_CORE_FREQUENCY, HBM_BANDWIDTH_USE, NOT_SUPPORT, UNKNOWN
+from common.const import AI_CORE_FREQUENCY, NOT_SUPPORT, UNKNOWN
 import common.interface as interface
 from drv import LoadSoType
 
@@ -75,8 +75,9 @@ DSMI_ERROR_CORE = {
     92: "bist sw err",
     93: "dup config",
     94: "power of fail",
-    65534: "not support"
+    65534: "not support",
 }
+
 
 class DsmiChipInfoStru(ctypes.Structure):
     _fields_ = [
@@ -91,7 +92,7 @@ class DsmiAicpuInfoStru(ctypes.Structure):
         ("maxFreq", ctypes.c_int),
         ("curFreq", ctypes.c_int),
         ("aicpuNum", ctypes.c_int),
-        ("utilRate", ctypes.c_int * 16)
+        ("utilRate", ctypes.c_int * 16),
     ]
 
 
@@ -99,7 +100,7 @@ class DsmiMemoryInfoStru(ctypes.Structure):
     _fields_ = [
         ("memory_size", ctypes.c_ulonglong),
         ("freq", ctypes.c_uint),
-        ("utiliza", ctypes.c_uint),
+        ("utilize", ctypes.c_uint),
     ]
 
 
@@ -122,9 +123,7 @@ class DsmiHBMInfoStru(ctypes.Structure):
 
 
 class DsmiPowerInfoStru(ctypes.Structure):
-    _fields_ = [
-        ("power", ctypes.c_short)
-    ]
+    _fields_ = [("power", ctypes.c_short)]
 
 
 class DsmiTagSensorInfo(ctypes.Union):
@@ -144,7 +143,7 @@ class AmlCpuInfo(ctypes.Structure):
         ("aicpuCount", ctypes.c_uint16),
         ("ccpuCount", ctypes.c_uint16),
         ("ccpuVoltage", ctypes.c_uint16),
-        ("ccpuFrequency", ctypes.c_uint16)
+        ("ccpuFrequency", ctypes.c_uint16),
     ]
 
 
@@ -152,7 +151,7 @@ class AmlAicoreInfo(ctypes.Structure):
     _fields_ = [
         ("aicCount", ctypes.c_uint16),
         ("aicVoltage", ctypes.c_uint16),
-        ("aicFrequency", ctypes.c_uint16)
+        ("aicFrequency", ctypes.c_uint16),
     ]
 
 
@@ -167,10 +166,7 @@ class AmlBusInfo(ctypes.Structure):
 
 
 class AmlHbmInfo(ctypes.Structure):
-    _fields_ = [
-        ("hbmVoltage", ctypes.c_uint16),
-        ("hbmFrequency", ctypes.c_uint16)
-    ]
+    _fields_ = [("hbmVoltage", ctypes.c_uint16), ("hbmFrequency", ctypes.c_uint16)]
 
 
 class DsmiEccPageStru(ctypes.Structure):
@@ -183,7 +179,6 @@ class DsmiEccPageStru(ctypes.Structure):
 
 
 class DeviceInfo:
-
     UNSUPPORTED_KEY_WORDS = [NOT_SUPPORT]  # 查询信息返回不支持的关键字数组
 
     def __init__(self):
@@ -214,7 +209,7 @@ class DeviceInfo:
         cpu_info = ctypes.pointer(AmlCpuInfo())
         try:
             ret = self.ascend_ml.AmlDeviceGetCpuInfo(device_id, cpu_info)
-        except Exception as e:
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Get device cpu info failed, error_msg: {e}")
             return [NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT]
 
@@ -234,7 +229,7 @@ class DeviceInfo:
         aic_info = ctypes.pointer(AmlAicoreInfo())
         try:
             ret = self.ascend_ml.AmlDeviceGetAicoreInfo(device_id, aic_info)
-        except Exception as e:
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Get device aic info failed, error_msg: {e}")
             return [NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT]
 
@@ -253,7 +248,7 @@ class DeviceInfo:
         bus_info = ctypes.pointer(AmlBusInfo())
         try:
             ret = self.ascend_ml.AmlDeviceGetBusInfo(device_id, bus_info)
-        except Exception as e:
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Get device bus info failed, error_msg: {e}")
             return [NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT]
 
@@ -274,7 +269,7 @@ class DeviceInfo:
         hbm_info = ctypes.pointer(AmlHbmInfo())
         try:
             ret = self.ascend_ml.AmlDeviceGetHbmInfo(device_id, hbm_info)
-        except Exception as e:
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Get device hbm volt & freq failed, error_msg: {e}")
             return [NOT_SUPPORT, NOT_SUPPORT]
 
@@ -317,7 +312,9 @@ class DeviceInfo:
         type_core_num = ctypes.c_int(INFO_TYPE_CORE_NUM)
         p_aicpu_count = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.hal_handle.halGetDeviceInfo(device_id, module_type_aicpu, type_core_num, p_aicpu_count)
+            ret = self.hal_handle.halGetDeviceInfo(
+                device_id, module_type_aicpu, type_core_num, p_aicpu_count
+            )
         except AttributeError:
             return NOT_SUPPORT
         if not self.check_status(ret, "Get aicpu count failed"):
@@ -329,7 +326,9 @@ class DeviceInfo:
         type_core_num = ctypes.c_int(INFO_TYPE_CORE_NUM)
         p_ccpu_count = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.hal_handle.halGetDeviceInfo(device_id, module_type_ccpu, type_core_num, p_ccpu_count)
+            ret = self.hal_handle.halGetDeviceInfo(
+                device_id, module_type_ccpu, type_core_num, p_ccpu_count
+            )
         except AttributeError:
             return NOT_SUPPORT
 
@@ -362,14 +361,18 @@ class DeviceInfo:
         perrorinfo = (ctypes.c_char * 255)(*pyarray)
         p_error_count = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.dsmi_handle.dsmi_get_device_errorcode(device_id, p_error_count, perrorcode)
+            ret = self.dsmi_handle.dsmi_get_device_errorcode(
+                device_id, p_error_count, perrorcode
+            )
         except AttributeError:
             return error_list
         if not self.check_status(ret, "Get error code failed"):
             return error_list
         error_code = p_error_count.contents.value
         for i in range(error_code):
-            ret = self.dsmi_handle.dsmi_query_errorstring(device_id, perrorcode[i], perrorinfo, 256)
+            ret = self.dsmi_handle.dsmi_query_errorstring(
+                device_id, perrorcode[i], perrorinfo, 256
+            )
             error_info = ""
             for info in perrorinfo:
                 error_info += str(info.decode())
@@ -384,7 +387,9 @@ class DeviceInfo:
         type_core_num = ctypes.c_int(INFO_TYPE_CORE_NUM)
         p_aicore_count = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.hal_handle.halGetDeviceInfo(device_id, module_type_aicore, type_core_num, p_aicore_count)
+            ret = self.hal_handle.halGetDeviceInfo(
+                device_id, module_type_aicore, type_core_num, p_aicore_count
+            )
         except AttributeError:
             return NOT_SUPPORT
 
@@ -398,7 +403,9 @@ class DeviceInfo:
         type_core_num = ctypes.c_int(INFO_TYPE_CORE_NUM)
         p_veccore_count = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.hal_handle.halGetDeviceInfo(device_id, type_vector_core, type_core_num, p_veccore_count)
+            ret = self.hal_handle.halGetDeviceInfo(
+                device_id, type_vector_core, type_core_num, p_veccore_count
+            )
         except AttributeError:
             return NOT_SUPPORT
 
@@ -410,7 +417,9 @@ class DeviceInfo:
     def get_npu_arch(self, device_id):
         npu_arch = ctypes.c_int64()
         try:
-            ret = self.ascend_cl.aclrtGetDeviceInfo(device_id, ACL_DEV_ATTR_NPU_ARCH, ctypes.byref(npu_arch))
+            ret = self.ascend_cl.aclrtGetDeviceInfo(
+                device_id, ACL_DEV_ATTR_NPU_ARCH, ctypes.byref(npu_arch)
+            )
         except AttributeError:
             return NOT_SUPPORT
 
@@ -431,7 +440,9 @@ class DeviceInfo:
     def get_device_temperature(self, device_id):
         p_temperature = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.dsmi_handle.dsmi_get_device_temperature(ctypes.c_int32(device_id), p_temperature)
+            ret = self.dsmi_handle.dsmi_get_device_temperature(
+                ctypes.c_int32(device_id), p_temperature
+            )
         except AttributeError:
             return NOT_SUPPORT
         if not self.check_status(ret, "Get temperature info failed"):
@@ -451,7 +462,9 @@ class DeviceInfo:
         """
         p_frequency = ctypes.pointer(ctypes.c_int())
         try:
-            ret = self.dsmi_handle.dsmi_get_device_frequency(device_id, device_type, p_frequency)
+            ret = self.dsmi_handle.dsmi_get_device_frequency(
+                device_id, device_type, p_frequency
+            )
         except AttributeError:
             return NOT_SUPPORT
         if not self.check_status(ret, "Get frequency info failed"):
@@ -486,7 +499,9 @@ class DeviceInfo:
 
         p_utilization = ctypes.pointer(ctypes.c_uint())
         try:
-            ret = self.dsmi_handle.dsmi_get_device_utilization_rate(device_id, device_type, p_utilization)
+            ret = self.dsmi_handle.dsmi_get_device_utilization_rate(
+                device_id, device_type, p_utilization
+            )
         except AttributeError:
             return NOT_SUPPORT
         if not self.check_status(ret, "Get utilization info failed"):
@@ -506,8 +521,8 @@ class DeviceInfo:
             memory_size = p_memory_info.contents.memory_size
         else:
             memory_size = p_memory_info.contents.memory_size // MEMEORY_CONVERT_RATIO
-        utiliza = p_memory_info.contents.utiliza
-        return memory_size, round(memory_size * utiliza / 100, 2)
+        utilize = p_memory_info.contents.utilize
+        return memory_size, round(memory_size * utilize / 100, 2)
 
     def get_device_hbm_info(self, device_id):
         p_memory_info = ctypes.pointer(DsmiHBMInfoStru())
@@ -528,8 +543,9 @@ class DeviceInfo:
         p_device_ecc_info = ctypes.pointer(DsmiEccPageStru())
         dsmi_device_type_hbm = ctypes.c_int(DSMI_DEVICE_TYPE_HBM)
         try:
-            ret = self.dsmi_handle.dsmi_get_total_ecc_isolated_pages_info(device_id,
-                                                                          dsmi_device_type_hbm, p_device_ecc_info)
+            ret = self.dsmi_handle.dsmi_get_total_ecc_isolated_pages_info(
+                device_id, dsmi_device_type_hbm, p_device_ecc_info
+            )
         except AttributeError:
             return "-"
         if not self.check_status(ret, "Aggregation of uncorrected ECC errors failed."):
@@ -550,7 +566,9 @@ class DeviceInfo:
     def get_phyid_from_logicid(self, device_id):
         phyid = ctypes.pointer(ctypes.c_uint32(0))
         try:
-            ret = self.hal_handle.drvDeviceGetPhyIdByIndex(ctypes.c_int32(device_id), phyid)
+            ret = self.hal_handle.drvDeviceGetPhyIdByIndex(
+                ctypes.c_int32(device_id), phyid
+            )
         except AttributeError as e:
             log_error(f"Get PhyId by device:{device_id} failed, error_msg: {e}")
             return RetCode.FAILED
@@ -568,7 +586,7 @@ class DeviceInfo:
                 ctypes.c_uint32(phyid),
                 ctypes.c_int32(MODULE_TYPE_SYSTEM),
                 ctypes.c_int32(INFO_TYPE_MASTERID),
-                master_id
+                master_id,
             )
         except AttributeError as e:
             log_error(f"Get MasterId by PhyId:{phyid} failed, error_msg: {e}")
@@ -579,10 +597,11 @@ class DeviceInfo:
             return RetCode.FAILED
 
         return master_id.contents.value
-    
+
     def get_device_aicore_frequency(self, device_id):
         """get aicore frequency"""
         return self.get_device_frequency(device_id, AI_CORE_FREQUENCY)
 
-    def run_diagnose(self, device_obj, diagnose_devices, run_mode):
+    @staticmethod
+    def run_diagnose(device_obj, diagnose_devices, run_mode):
         return interface.run_diagnose(device_obj, diagnose_devices, run_mode)

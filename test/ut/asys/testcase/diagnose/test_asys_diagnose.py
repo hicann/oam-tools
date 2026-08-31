@@ -16,15 +16,16 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
+
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
+
 import os.path
-import sys
 import subprocess
 
 import pytest
 from pathlib import Path
-from testcase.conftest import ASYS_SRC_PATH, CONF_SRC_PATH
 
-sys.path.insert(0, ASYS_SRC_PATH)
 
 from common.const import RetCode
 import diagnose.asys_diagnose as asys_diagnose
@@ -718,7 +719,7 @@ class TestAsysDiagnose(AssertTest):
             )
         else:
             self.assertTrue(AsysDiagnose().run())
-            except_msg = "| Stress Detect      | Pass                   | "
+            except_msg = "| Stress Detect      | Pass                   |"
             captured = capsys.readouterr()
             self.assertTrue(except_msg in captured.out)
 
@@ -742,7 +743,7 @@ class TestAsysDiagnose(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
@@ -768,40 +769,40 @@ class TestAsysDiagnose(AssertTest):
         AsysDiagnose().run()
         if run_mode == "stress_detect":
             except_msg = """
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Performance --------+-----------------------------+ 
- | Stress Detect          | Warn, Warn, Pass, Pass      | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Performance --------+-----------------------------+
+ | Stress Detect          | Warn, Warn, Pass, Pass      |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "cpu_detect":
             except_msg = """
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Hardware -----------+-----------------------------+ 
- | CPU Detect             | Warn, Warn, Pass, Pass      | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Hardware -----------+-----------------------------+
+ | CPU Detect             | Warn, Warn, Pass, Pass      |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "hbm_detect":
             except_msg = """
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Hardware -----------+-----------------------------+ 
- | HBM Detect             | Warn, Warn, Pass, Pass      | 
- |                        | (0, 0, 0, 0)                | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Hardware -----------+-----------------------------+
+ | HBM Detect             | Warn, Warn, Pass, Pass      |
+ |                        | (0, 0, 0, 0)                |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "component":
             except_msg = """
- +------------------------+------------------------+ 
- | Group of 4 Device      | Diagnostic Result      | 
- +========================+========================+ 
- +--- Component ----------+------------------------+ 
- | AI Vector              | Pass - All             | 
- +------------------------+------------------------+ 
+ +------------------------+------------------------+
+ | Group of 4 Device      | Diagnostic Result      |
+ +========================+========================+
+ +--- Component ----------+------------------------+
+ | AI Vector              | Pass - All             |
+ +------------------------+------------------------+
 """
 
         captured = capsys.readouterr()
@@ -818,7 +819,9 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch(
+            "drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0()
+        )
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -842,7 +845,9 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose1())
+        mocker.patch(
+            "drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose1()
+        )
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -863,7 +868,9 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = None
 
-        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch(
+            "drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0()
+        )
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 910B1 V1")
@@ -901,6 +908,7 @@ class TestAsysDiagnose(AssertTest):
         """--timeout is accepted but warned-and-ignored for aicore_stl_detect."""
         self.assertTrue(True)
         import logging
+
         caplog.set_level(logging.WARNING)
 
         class Args:
@@ -910,7 +918,9 @@ class TestAsysDiagnose(AssertTest):
             output = None
             timeout = 90
 
-        mocker.patch("drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0())
+        mocker.patch(
+            "drv.LoadSoType.get_aml_aicore_stl", return_value=AsysStlDiagnose0()
+        )
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=1)
         mocker.patch("os.getuid", return_value=0)
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value="Ascend 950 V1")
@@ -922,10 +932,7 @@ class TestAsysDiagnose(AssertTest):
         self.assertTrue(AsysDiagnose().run() is True)
         warning_msg = "The --timeout argument is not supported in aicore_stl_detect mode and will be ignored."
         self.assertTrue(warning_msg in caplog.text)
-        warning_log.assert_any_call(
-            warning_msg,
-            force=True,
-        )
+        warning_log.assert_any_call(warning_msg, force=True)
 
     def test_diagnose_aicore_stl_loads_so(self, mocker):
         """aicore_stl_detect loads libaml_aicore_stl.so and assigns it to device_obj.aml_aicore_stl."""
@@ -986,7 +993,7 @@ class TestAsysDiagnose(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
@@ -1025,7 +1032,7 @@ class TestAsysDiagnose(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=0)
@@ -1040,7 +1047,7 @@ class TestAsysDiagnose(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=2)
@@ -1069,7 +1076,7 @@ class TestAsysDiagnose(AssertTest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-        )
+        )  # nosec B602  # test mock creation
         mocker.patch("subprocess.Popen", return_value=fake_ret)
         mocker.patch("drv.LoadSoType.get_ascend_ml", return_value=AsysDiagnose0())
         mocker.patch.object(DeviceInfo, "get_device_count", return_value=4)
@@ -1095,40 +1102,40 @@ class TestAsysDiagnose(AssertTest):
         AsysDiagnose().run()
         if run_mode == "stress_detect":
             except_msg = """\r-\r\r\\\r\r|\r\r/\r
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Performance --------+-----------------------------+ 
- | Stress Detect          | Warn, Warn, Pass, Pass      | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Performance --------+-----------------------------+
+ | Stress Detect          | Warn, Warn, Pass, Pass      |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "cpu_detect":
             except_msg = """\r-\r\r\\\r\r|\r\r/\r
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Hardware -----------+-----------------------------+ 
- | CPU Detect             | Warn, Warn, Pass, Pass      | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Hardware -----------+-----------------------------+
+ | CPU Detect             | Warn, Warn, Pass, Pass      |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "hbm_detect":
             except_msg = """\r-\r\r\\\r\r|\r\r/\r
- +------------------------+-----------------------------+ 
- | Group of 4 Device      | Diagnostic Result           | 
- +========================+=============================+ 
- +--- Hardware -----------+-----------------------------+ 
- | HBM Detect             | Warn, Warn, Pass, Pass      | 
- |                        | (0, 0, -, -)                | 
- +------------------------+-----------------------------+ 
+ +------------------------+-----------------------------+
+ | Group of 4 Device      | Diagnostic Result           |
+ +========================+=============================+
+ +--- Hardware -----------+-----------------------------+
+ | HBM Detect             | Warn, Warn, Pass, Pass      |
+ |                        | (0, 0, -, -)                |
+ +------------------------+-----------------------------+
 """
         elif run_mode == "component":
             except_msg = """
- +------------------------+------------------------+ 
- | Group of 4 Device      | Diagnostic Result      | 
- +========================+========================+ 
- +--- Component ----------+------------------------+ 
- | AI Vector              | Pass - All             | 
- +------------------------+------------------------+ 
+ +------------------------+------------------------+
+ | Group of 4 Device      | Diagnostic Result      |
+ +========================+========================+
+ +--- Component ----------+------------------------+
+ | AI Vector              | Pass - All             |
+ +------------------------+------------------------+
 """
         captured = capsys.readouterr()
         self.assertTrue(except_msg in captured.out)

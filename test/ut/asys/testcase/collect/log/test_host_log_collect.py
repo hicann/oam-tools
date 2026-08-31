@@ -16,25 +16,24 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import sys
-import pytest
+# ruff: noqa: E501, S607, PLR0915, PLR6301, PLR1722  # test mock methods, partial paths, long lines
 
-from testcase.conftest import ASYS_SRC_PATH
-sys.path.insert(0, ASYS_SRC_PATH)
-import asys
+# pylint: disable=protected-access,redefined-outer-name,attribute-defined-outside-init,unused-argument,broad-exception-caught,unused-import,unused-variable,redefined-builtin,reimported,no-member,function-redefined,possibly-used-before-assignment,no-self-argument,too-many-function-args,unexpected-keyword-arg,no-value-for-parameter  # pytest fixture/mock/cleanup patterns
 
-from common import FileOperate
+
 from collect.log import collect_host_logs
 from testcase.conftest import AssertTest
 
+
 def setup_module():
-    print("TestHostLogCollect ut test start.")
+    print("TestHostLogCollect ut test start.")  # noqa: T201  # test diagnostic output
+
 
 def teardown_module():
-    print("TestHostLogCollect ut test finsh.")
+    print("TestHostLogCollect ut test finish.")  # noqa: T201  # test diagnostic output
+
 
 class TestHostLogCollect(AssertTest):
-
     def setup_method(self):
         pass
 

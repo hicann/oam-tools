@@ -17,7 +17,6 @@
 # ----------------------------------------------------------------------------
 
 import ctypes
-import os
 
 from common import log_error, log_info
 from common.const import SIGRTMIN
@@ -29,7 +28,6 @@ SIGNAL_ALL_TASK = 0xAABB0003
 
 
 class AscendTraceDll:
-
     def __init__(self):
         self.trace_dll = LoadSoType().get_ascend_trace()
 
@@ -37,6 +35,7 @@ class AscendTraceDll:
         """
         use the sigqueue to send signal
         """
+
         class SignalVal(ctypes.Structure):
             _fields_ = [("sival_int", ctypes.c_int)]
 
@@ -45,9 +44,9 @@ class AscendTraceDll:
             ret_code = self.trace_dll.sigqueue(
                 ctypes.c_int32(remote_id),
                 ctypes.c_int32(SIGRTMIN + 1),  # signal 35
-                SignalVal(val)
+                SignalVal(val),
             )
-        except Exception as e:
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Send signal failed, error msg: {e}.")
             return False
 
@@ -62,8 +61,10 @@ class AscendTraceDll:
         """
         log_info("start parse bin file")
         try:
-            ret_code = self.trace_dll.AtraceStackcoreParse(bin_file_path.encode(), ctypes.c_int32(len(bin_file_path)))
-        except Exception as e:
+            ret_code = self.trace_dll.AtraceStackcoreParse(
+                bin_file_path.encode(), ctypes.c_int32(len(bin_file_path))
+            )
+        except (OSError, AttributeError, TypeError, ctypes.ArgumentError) as e:
             log_error(f"Parse stackcore bin file failed, error msg: {e}.")
             return False
 

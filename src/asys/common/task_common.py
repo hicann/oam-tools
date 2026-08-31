@@ -16,7 +16,6 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-import concurrent.futures
 import multiprocessing
 import os
 from datetime import datetime, timezone
@@ -30,16 +29,23 @@ from common.file_operate import FileOperate as f
 from drv import EnvVarName
 
 __all__ = [
-    "create_out_timestamp_dir", "get_asys_output_path", "get_target_cnt", "out_progress_bar", "is_hexadecimal",
-    "str_to_hex", "int_to_hex", "get_cann_log_path", "timeout_decorator"
+    "create_out_timestamp_dir",
+    "get_asys_output_path",
+    "get_target_cnt",
+    "out_progress_bar",
+    "is_hexadecimal",
+    "str_to_hex",
+    "int_to_hex",
+    "get_cann_log_path",
+    "timeout_decorator",
 ]
 
 
-_asys_output_path = None
+_asys_output_path = [None]
 
 
 def get_asys_output_path():
-    return _asys_output_path
+    return _asys_output_path[0]
 
 
 def create_out_timestamp_dir():
@@ -47,24 +53,33 @@ def create_out_timestamp_dir():
         output_arg = ParamDict().get_arg("output")
         return EnvVarName().current_path if not output_arg else output_arg
 
-    if ParamDict().get_command() not in [consts.collect_cmd, consts.launch_cmd, consts.analyze_cmd]:
+    if ParamDict().get_command() not in [
+        consts.collect_cmd,
+        consts.launch_cmd,
+        consts.analyze_cmd,
+    ]:
         return RetCode.SUCCESS
 
     output_dir = init_output_dir_parent()
     if not os.access(output_dir, os.W_OK):
-        log_error("No write permission to asys output root directory: {}.".format(output_dir))
+        log_error(
+            "No write permission to asys output root directory: {}.".format(output_dir)
+        )
         return RetCode.PERMISSION_FAILED
 
-    utc_dt = datetime.now(timezone.utc) # UTC time
-    dir_name = 'asys_output_' + utc_dt.astimezone().strftime('%Y%m%d%H%M%S%f')[:-3]
+    utc_dt = datetime.now(timezone.utc)  # UTC time
+    dir_name = "asys_output_" + utc_dt.astimezone().strftime("%Y%m%d%H%M%S%f")[:-3]
 
-    global _asys_output_path
-    _asys_output_path = os.path.abspath(os.path.join(output_dir, dir_name))
-    if not f.create_dir(_asys_output_path):
+    output_path = os.path.abspath(os.path.join(output_dir, dir_name))
+    _asys_output_path[0] = output_path
+    if not f.create_dir(output_path):
         return RetCode.ARG_CREATE_DIR_FAILED
-    ParamDict().asys_output_timestamp_dir = _asys_output_path
-    if not (ParamDict().get_command() == consts.collect_cmd and ParamDict().get_arg("run_mode") == STACKTRACE): 
-        log_info("asys output directory: {0}".format(_asys_output_path))
+    ParamDict().asys_output_timestamp_dir = output_path
+    if not (
+        ParamDict().get_command() == consts.collect_cmd
+        and ParamDict().get_arg("run_mode") == STACKTRACE
+    ):
+        log_info("asys output directory: {0}".format(output_path))
     return RetCode.SUCCESS
 
 
@@ -105,7 +120,7 @@ def out_progress_bar(count, num):
     if count == 0:
         return
     sys.stdout.write("\r")
-    sys.stdout.write("Parse progress: {:.2f}%: ".format(num/count * 100))
+    sys.stdout.write("Parse progress: {:.2f}%: ".format(num / count * 100))
     sys.stdout.write("\r")
     sys.stdout.flush()
 
@@ -120,8 +135,12 @@ def get_cann_log_path(log_type):
             return env_var.process_log_path, "${ASCEND_PROCESS_LOG_PATH}"
 
     if env_var.work_path:
-        return os.path.join(env_var.work_path, log_type), f"${{ASCEND_WORK_PATH}}/{log_type}"
-    return os.path.join(env_var.home_path, "ascend", log_type), f"${{HOME}}/ascend/{log_type}"
+        return os.path.join(
+            env_var.work_path, log_type
+        ), f"${{ASCEND_WORK_PATH}}/{log_type}"
+    return os.path.join(
+        env_var.home_path, "ascend", log_type
+    ), f"${{HOME}}/ascend/{log_type}"
 
 
 def timeout_decorator(timeout):
@@ -130,7 +149,7 @@ def timeout_decorator(timeout):
         def wrapper(*args, **kwargs):
             # Use fork context explicitly: forkserver (Python 3.14+ default on Linux)
             # requires pickling bound methods, which fails when the method is decorated.
-            ctx = multiprocessing.get_context('fork')
+            ctx = multiprocessing.get_context("fork")
             p = ctx.Process(target=func, args=args, kwargs=kwargs)
             p.daemon = True
             p.start()
@@ -139,6 +158,7 @@ def timeout_decorator(timeout):
                 p.terminate()
                 p.join()
                 raise TimeoutError()
-        return wrapper
-    return decorator
 
+        return wrapper
+
+    return decorator

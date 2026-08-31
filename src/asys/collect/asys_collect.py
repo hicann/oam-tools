@@ -49,8 +49,9 @@ class AsysCollect:
         self.output_root_path = ParamDict().asys_output_timestamp_dir
         self.finish_flag = False
 
+    @staticmethod
     @timeout_decorator(GET_DEVICES_INFO_TIMEOUT)
-    def collect_status_info(self):
+    def collect_status_info():
         """
         no redundant plog temporary directory is generated when the status and health information is collected.
         """
@@ -60,8 +61,9 @@ class AsysCollect:
         else:
             AsysInfo().get_software_info(write_file=True)
 
+    @staticmethod
     @timeout_decorator(GET_DEVICES_INFO_TIMEOUT)
-    def collect_health_info(self):
+    def collect_health_info():
         if ParamDict().get_env_type() == "EP":
             # collect health check result
             AsysHealth().run()
@@ -74,7 +76,11 @@ class AsysCollect:
             export_cmd = "{0};{1}".format(export_dir_cmd, export_tool)
             cmd_res = run_cmd_output(export_cmd)
             if not cmd_res[0]:
-                log_error("Call msnpureport tool failed, sys.stderr: \"{}\"".format(cmd_res[1].strip()))
+                log_error(
+                    'Call msnpureport tool failed, sys.stderr: "{}"'.format(
+                        cmd_res[1].strip()
+                    )
+                )
                 f.remove_dir(export_dir_path)
                 return False
             return True
@@ -92,11 +98,17 @@ class AsysCollect:
 
     def collect(self):
         # check params
-        if ParamDict().get_arg("remote") is not False or ParamDict().get_arg("all") or ParamDict().get_arg("quiet"):
-            log_error("'--remote', '--all' and '--quiet' can be used only when '-r=stacktrace'.")
+        if (
+            ParamDict().get_arg("remote") is not False
+            or ParamDict().get_arg("all")
+            or ParamDict().get_arg("quiet")
+        ):
+            log_error(
+                "'--remote', '--all' and '--quiet' can be used only when '-r=stacktrace'."
+            )
             return False
 
-        log_info('Collect task start, running:')
+        log_info("Collect task start, running:")
         # When the main program exits, the system checks whether there is a sub-thread whose daemon value is False.
         # If it exists, the main program exits after the sub-thread exits. Default daemon value is False.
         t = threading.Thread(target=self.wait_view, daemon=True)
@@ -139,7 +151,7 @@ class AsysCollect:
             log_error("Timeout in retrieving device health information.")
 
         self.finish_flag = True
-        t.join()    # wait print process_display end
+        t.join()  # wait print process_display end
         return True
 
     def wait_view(self):

@@ -33,7 +33,7 @@ class CommandSupportedChipBase:
         if any(re.search(rf"{i}", chip_info) for i in self.SUPPORTED_CHIP_TYPE):
             return True, chip_info
         return False, chip_info
-    
+
 
 class AsysConfigSupportedChip(CommandSupportedChipBase):
     """AsysConfig支持的芯片类型"""

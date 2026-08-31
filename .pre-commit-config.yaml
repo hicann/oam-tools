@@ -38,7 +38,7 @@ repos:
               | msprof
               | third_party
             )/
-            | test/(?!(ut|st)/msaicerr/)
+            | test/(?!(ut|st)/(asys|msaicerr)/)
             | test/(ut|st)/msaicerr/res/
           )
 
@@ -56,8 +56,7 @@ repos:
             | experiment/
             | scripts/
             | skills/
-            | src/asys/
-            | test/(?!(ut|st)/msaicerr/)
+            | test/(?!(ut|st)/(asys|msaicerr)/)
             | test/(ut|st)/msaicerr/res/
           )
       - id: ruff-format
@@ -70,17 +69,16 @@ repos:
             | experiment/
             | scripts/
             | skills/
-            | src/asys/
-            | test/(?!(ut|st)/msaicerr/)
+            | test/(?!(ut|st)/(asys|msaicerr)/)
             | test/(ut|st)/msaicerr/res/
           )
 
   # Python 安全检查（bandit，仅 medium 及以上严重度）。
   # 用 1.8.6：bandit 1.9.x 要求 Python>=3.10，CI pre-commit 环境是 3.9，
   # 装 1.9.x 会失败。1.8.6 是兼容 Python 3.9 的最新版。
-  # 屏蔽范围与 ruff 一致：存量目录整改后再逐个摘除。
-  # msaicerr（src 与 test/{ut,st}）已整改完毕（bandit -ll 无 medium+ 告警），
-  # 不在屏蔽列表内；test/{ut,st}/msaicerr/res/ 是设备样本与桩包，不做安全扫描。
+  # 屏蔽范围与 ruff 一致：Asys 与 msaicerr 已整改完毕并纳入扫描，
+  # 其余存量目录后续再逐个摘除。test/{ut,st}/msaicerr/res/ 是设备样本与桩包，
+  # 不做安全扫描。
   - repo: https://gitcode.com/gh_mirrors/ba/bandit
     rev: 1.8.6
     hooks:
@@ -93,8 +91,7 @@ repos:
             | experiment/
             | scripts/
             | skills/
-            | src/asys/
-            | test/(?!(ut|st)/msaicerr/)
+            | test/(?!(ut|st)/(asys|msaicerr)/)
             | test/(ut|st)/msaicerr/res/
           )
 
@@ -132,12 +129,12 @@ repos:
             | scripts/
             | skills/
             | src/(
-              asys
-              | hccl_test
+              hccl_test
               | msprof
               | third_party
             )/
-            | test/(?!(ut|st)/msaicerr/)
+            | test/(?!(ut|st)/(asys|msaicerr)/)
+            | test/(ut|st)/asys/data/
             | test/(ut|st)/msaicerr/res/
           )
 
