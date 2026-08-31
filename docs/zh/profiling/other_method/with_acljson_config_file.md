@@ -113,7 +113,7 @@ Profiling性能数据落盘路径。未配置本参数时，性能数据默认�
 AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，该参数生效；task_time或task_trace配置为l0或off时，不执行该参数采集。取值包括：
 
 - ArithmeticUtilization：计算类指令耗时占比
-- PipeUtilization：计算类和搬运类指令耗时和占比
+- PipeUtilization：计算类和搬运类指令耗时和占比，统计`*_icache_miss_rate`时，需要使用该取值。
 - Memory：内存读写带宽速率
 - MemoryL0：L0读写带宽速率
 - MemoryUB：UB读写带宽速率
@@ -122,7 +122,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
   <!-- npu="310p" id3 -->
   - Atlas 推理系列产品：不支持
   <!-- end id3 -->
-- PipelineExecuteUtilization：计算类和搬运类指令耗时和占比
+- PipelineExecuteUtilization：计算类和搬运类指令耗时和占比，统计`fixpipe_exe_ratio`时，需要使用该取值。
 
   <!-- npu="310p" id4 -->
   - Atlas 推理系列产品：不支持
