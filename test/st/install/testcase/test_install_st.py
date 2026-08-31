@@ -39,6 +39,7 @@ and makes the suite environment-fragile.
 
 import os
 import platform
+import re
 import shutil
 import subprocess
 
@@ -46,7 +47,14 @@ import pytest
 
 _BASH = shutil.which("bash") or "/bin/bash"
 
-_ERROR_KW = "[ERROR]"
+_LOG_GUARD_PATTERNS = (
+    ("permission denied", re.compile(r"permission\s+d(?:enied|eined)", re.IGNORECASE)),
+    ("no such file or directory", re.compile(r"no such file or directory", re.IGNORECASE)),
+    ("error", re.compile(r"\berror\b", re.IGNORECASE)),
+    ("not found", re.compile(r"\bnot found\b", re.IGNORECASE)),
+    ("unexpected/unexcepted", re.compile(r"\bun(?:expected|excepted)\b", re.IGNORECASE)),
+    ("failed", re.compile(r"\bfailed\b", re.IGNORECASE)),
+)
 
 
 def _run(run_package, install_dir, install_type, extra_args=None):
@@ -62,8 +70,24 @@ def _output(result):
     return result.stdout + result.stderr
 
 
+def _assert_clean_log(result, operation):
+    """Fail when installer output contains a known error indicator."""
+    matches = []
+    for line in _output(result).splitlines():
+        matched = [name for name, pattern in _LOG_GUARD_PATTERNS if pattern.search(line)]
+        if matched:
+            matches.append(f"[{', '.join(matched)}] {line}")
+    assert not matches, (
+        f"{operation} output contains guarded error indicators:\n"
+        + "\n".join(matches)
+    )
+
+
 class TestInstall:
-    @pytest.mark.parametrize("install_type", ["--full", "--run", "--devel"])
+    @pytest.mark.parametrize("install_type", [
+        pytest.param("--full", marks=pytest.mark.skip(reason="temporarily skip flaky full install case")),
+        "--run", "--devel",
+    ])
     def test_install(self, run_package, install_dir, install_type):
         result = _run(run_package, install_dir, install_type)
         out = _output(result)
@@ -71,15 +95,17 @@ class TestInstall:
         assert result.returncode == 0, (
             f"'{install_type}' install exited {result.returncode}:\n{out}"
         )
-        assert _ERROR_KW not in out, (
-            f"'{install_type}' install output contains {_ERROR_KW!r}:\n{out}"
-        )
+        _assert_clean_log(result, f"'{install_type}' install")
 
 
 class TestInstallArtefacts:
     @staticmethod
     def test_install_full(run_package, install_dir):
-        _run(run_package, install_dir, "--full")
+        result = _run(run_package, install_dir, "--full")
+        assert result.returncode == 0, (
+            f"'--full' install exited {result.returncode}:\n{_output(result)}"
+        )
+        _assert_clean_log(result, "'--full' install")
 
         info_dir = os.path.join(install_dir, "cann", "share", "info", "oam_tools")
         assert os.path.isdir(info_dir), f"Missing oam_tools info dir: {info_dir}"
@@ -111,9 +137,7 @@ class TestExtract:
         assert result.returncode == 0, (
             f"--noexec --extract exited {result.returncode}:\n{out}"
         )
-        assert _ERROR_KW not in out, (
-            f"--noexec --extract output contains {_ERROR_KW!r}:\n{out}"
-        )
+        _assert_clean_log(result, "--noexec --extract")
         assert os.path.isdir(extract_dir), (
             f"Extract target directory was not created: {extract_dir}"
         )
@@ -160,11 +184,13 @@ class TestExtractInstallConsistency:
         assert extract_res.returncode == 0, (
             f"--noexec --extract failed: {_output(extract_res)}"
         )
+        _assert_clean_log(extract_res, "--noexec --extract")
 
         install_res = _run(run_package, install_root, "--full")
         assert install_res.returncode == 0, (
             f"--full install failed: {_output(install_res)}"
         )
+        _assert_clean_log(install_res, "--full install")
 
         installed_cann = os.path.join(install_root, "cann")
         assert os.path.isdir(installed_cann), (
@@ -186,14 +212,19 @@ class TestExtractInstallConsistency:
         install_root = os.path.join(install_dir, "install_root")
         os.makedirs(install_root, exist_ok=True)
 
-        subprocess.run(
+        extract_res = subprocess.run(
             [_BASH, run_package, "--noexec", f"--extract={extract_dir}"],
-            check=True, capture_output=True, text=True, timeout=180,
+            capture_output=True, text=True, timeout=180,
         )
+        assert extract_res.returncode == 0, (
+            f"--noexec --extract failed: {_output(extract_res)}"
+        )
+        _assert_clean_log(extract_res, "--noexec --extract")
         install_res = _run(run_package, install_root, "--full")
         assert install_res.returncode == 0, (
             f"--full install failed: {_output(install_res)}"
         )
+        _assert_clean_log(install_res, "--full install")
 
         rel = os.path.join("tools", "profiler", "profiler_tool")
         extract_subtree_root = os.path.join(extract_dir, rel)
@@ -222,4 +253,3 @@ class TestExtractInstallConsistency:
             f"only in extract: {sorted(extract_subtree - install_subtree)[:20]}\n"
             f"only in install: {sorted(install_subtree - extract_subtree)[:20]}"
         )
-

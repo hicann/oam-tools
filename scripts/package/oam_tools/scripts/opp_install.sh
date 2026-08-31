@@ -150,14 +150,11 @@ getinstalledinfo() {
 # keys of infos in run package
 KEY_RUNPKG_VERSION="Version"
 getrunpkginfo() {
-    _key_param="$1"
-    if [ -f "${_VERSION_INFO_FILE}" ]; then
-        . "${_VERSION_INFO_FILE}"
-        case "${_key_param}" in
-        Version)
-            echo ${Version}
-            ;;
-        esac
+    local _key_param="$1"
+    if [ "${_key_param}" = "Version" ] && [ -f "${_VERSION_INFO_FILE}" ]; then
+        local _run_pkg_version
+        get_version "_run_pkg_version" "${_VERSION_INFO_FILE}"
+        echo "${_run_pkg_version}"
     fi
 }
 
@@ -307,7 +304,7 @@ fi
 if [ "${_TARGET_INSTALL_PATH}" = "" ] || [ "${_TARGET_USERNAME}" = "" ] ||
 [ "${_TARGET_USERGROUP}" = "" ] || [ "${install_type}" = "" ] ||
 [ "${is_quiet}" = "" ]; then
-    logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty paramters is invalid for install."
+    logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty parameters is invalid for install."
     exit 1
 fi
 
@@ -466,7 +463,7 @@ fi
 # change installed folder's owner and group except aicpu
 subdirs=$(ls "${version_install_dir}/${ops_base_platform_dir}" 2> /dev/null)
 chown "${_TARGET_USERNAME}":"${_TARGET_USERGROUP}" "${version_install_dir}/${ops_base_platform_dir}" 2> /dev/null
-logwitherrorlevel "$?" "error" "[ERROR]: ERR_NO:${INSTALL_FAILED};ERR_DES:Change oam-tools onwership failed.."
+logwitherrorlevel "$?" "error" "[ERROR]: ERR_NO:${INSTALL_FAILED};ERR_DES:Change oam-tools ownership failed.."
 
 logandprint "[INFO]: upgradePercentage:100%"
 
@@ -477,4 +474,3 @@ logandprint "[INFO]: Operation log file path: (${_OPERATE_LOG_FILE})"
 
 logandprint "[INFO]: Oam-Tools package installed successfully! The new version takes effect immediately."
 exit 0
-

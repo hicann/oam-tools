@@ -152,6 +152,7 @@ get_test_cases() {
                     ;;
                 msaicerr)
                     result+=("msaicerr_ut")
+                    result+=("upgrade_st" "uninstall_st")
                     ;;
                 msprof)
                     result+=("msprof_ut")

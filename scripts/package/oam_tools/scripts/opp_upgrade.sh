@@ -143,14 +143,11 @@ getinstalledinfo() {
 # keys of infos in run package
 KEY_RUNPKG_VERSION="Version"
 getrunpkginfo() {
-    _key_param="$1"
-    if [ -f "${_VERSION_INFO_FILE}" ]; then
-        . "${_VERSION_INFO_FILE}"
-        case "${_key_param}" in
-        Version)
-            echo ${Version}
-            ;;
-        esac
+    local _key_param="$1"
+    if [ "${_key_param}" = "Version" ] && [ -f "${_VERSION_INFO_FILE}" ]; then
+        local _run_pkg_version
+        get_version "_run_pkg_version" "${_VERSION_INFO_FILE}"
+        echo "${_run_pkg_version}"
     fi
 }
 
@@ -246,7 +243,7 @@ aicpuupdateinstallinfo(){
 checkfolderexist() {
     _path_val="${1}"
     if [ ! -d "${_path_val}" ]; then
-        logandprint "[ERROR]: ERR_NO:${FILE_READ_FAILED};ERR_DES:Installation directroy \
+        logandprint "[ERROR]: ERR_NO:${FILE_READ_FAILED};ERR_DES:Installation directory \
 [${_path_val}] does not exist, upgrade failed."
         exit 1
     fi
@@ -333,7 +330,7 @@ setenv() {
     fi
 }
 
-# init input paremeters
+# init input parameters
 _TARGET_INSTALL_PATH="$1"
 _TARGET_USERNAME="$2"
 _TARGET_USERGROUP="$3"
@@ -378,13 +375,13 @@ relative_path_val=${relative_path}
 # check input parameters is valid
 if [ "${_TARGET_INSTALL_PATH}" = "" ] || [ "${_TARGET_USERNAME}" = "" ] ||
 [ "${_TARGET_USERGROUP}" = "" ] || [ "${is_quiet}" = "" ]; then
-    logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty paramters is invalid for upgrade."
+    logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty parameters is invalid for upgrade."
     exit 1
 fi
 
 # init log file path
 _UNINSTALL_SHELL_FILE="${install_version_dir}""/${ops_base_platform_dir}/script/opp_uninstall.sh"
-# adpter for old version's path
+# adapter for old version's path
 if [ ! -f "${_UNINSTALL_SHELL_FILE}" ]; then
     _UNINSTALL_SHELL_FILE="${install_version_dir}""/${ops_base_platform_dir}/scripts/opp_uninstall.sh"
 fi
@@ -408,7 +405,7 @@ fi
 _TARGET_USERNAME=$(getinstalledinfo "${KEY_INSTALLED_UNAME}")
 _TARGET_USERGROUP=$(getinstalledinfo "${KEY_INSTALLED_UGROUP}")
 
-# check install conditons by specific install path
+# check install conditions by specific install path
 install_type=$(getinstalledinfo "${KEY_INSTALLED_TYPE}")
 if [ "${install_type}" = "" ]; then
     logwitherrorlevel "1" "error" "[ERROR]: ERR_NO:${UPGRADE_FAILED};ERR_DES:Oam-Tools module\
@@ -581,4 +578,3 @@ logandprint "[INFO]: Install log file path: (${_INSTALL_LOG_FILE})"
 logandprint "[INFO]: Operation log file path: (${_OPERATE_LOG_FILE})"
 logandprint "[INFO]: Oam-Tools package upgraded successfully! The new version takes effect immediately."
 exit 0
-

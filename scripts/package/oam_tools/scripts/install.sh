@@ -266,14 +266,11 @@ getinstalledinfo() {
 # keys of infos in run package
 KEY_RUNPKG_VERSION="Version"
 getrunpkginfo() {
-    _key_param="$1"
-    if [ -f "${_VERSION_INFO_FILE}" ]; then
-        . "${_VERSION_INFO_FILE}"
-        case "${_key_param}" in
-        Version)
-            echo ${Version}
-            ;;
-        esac
+    local _key_param="$1"
+    if [ "${_key_param}" = "Version" ] && [ -f "${_VERSION_INFO_FILE}" ]; then
+        local _run_pkg_version
+        get_version "_run_pkg_version" "${_VERSION_INFO_FILE}"
+        echo "${_run_pkg_version}"
     fi
 }
 
@@ -1115,8 +1112,13 @@ do
     case "$1" in
     --version)
         if [ -e "${_VERSION_INFO_FILE}" ]; then
-            . "${_VERSION_INFO_FILE}"
-            echo ${Version}
+            if ! get_version "pkg_version" "${_VERSION_INFO_FILE}" || [ -z "${pkg_version}" ]; then
+                echo "[ERROR]: ERR_NO:${FILE_READ_FAILED};ERR_DES:The version file \
+(${_VERSION_INFO_FILE}) does not contain a valid Version entry."
+                exitlog
+                exit 1
+            fi
+            echo "${pkg_version}"
             exitlog
             exit 0
         else
@@ -1717,4 +1719,3 @@ if [ "${is_precheck}" = "y" ];then
     exit $?
 fi
 exit 0
-
