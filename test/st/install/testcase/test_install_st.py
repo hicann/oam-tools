@@ -84,10 +84,7 @@ def _assert_clean_log(result, operation):
 
 
 class TestInstall:
-    @pytest.mark.parametrize("install_type", [
-        pytest.param("--full", marks=pytest.mark.skip(reason="temporarily skip flaky full install case")),
-        "--run", "--devel",
-    ])
+    @pytest.mark.parametrize("install_type", ["--full", "--run", "--devel"])
     def test_install(self, run_package, install_dir, install_type):
         result = _run(run_package, install_dir, install_type)
         out = _output(result)

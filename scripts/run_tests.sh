@@ -541,37 +541,40 @@ run_pytest_with_coverage() {
     # different components do not overwrite one another's .coverage data file.
     export COVERAGE_FILE="${cov_dir}/.coverage"
 
-    python3 -m coverage run --source="${source_dir}" -m pytest "${test_dir}" > "${output_file}" 2>&1
-    echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+    python3 -m coverage run --source="${source_dir}" -m pytest "${test_dir}" 2>&1 | tee "${output_file}"
+    local pytest_rc=${PIPESTATUS[0]}
+    echo "${pytest_rc}" > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
 
     # 返回码要先存再判：写成 `if ! cmd; then ... $? ...` 时 $? 是 ! 取反后的值
     # （恒为 0），打出来的 rc 是错的。
     # --precision=2：默认整数百分比会四舍五入（79.75% 显示成 80%），
     # 基线判定读的就是这一行，取整会让未达标的覆盖率蒙混过关。
-    python3 -m coverage report --precision=2 >> "${output_file}" 2>&1
-    local report_rc=$?
+    python3 -m coverage report --precision=2 2>&1 | tee -a "${output_file}"
+    local report_rc=${PIPESTATUS[0]}
     if [[ ${report_rc} -ne 0 ]]; then
         # 报错要落进日志：覆盖率解析不到时 apply_cov_baseline 会判 FAIL，
         # 排障需要知道是采集/报告哪一步失败。
-        echo "WARNING: coverage report failed (rc=${report_rc})" >> "${output_file}"
+        echo "WARNING: coverage report failed (rc=${report_rc})" | tee -a "${output_file}"
     fi
 
-    python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" >> "${output_file}" 2>&1
-    local html_rc=$?
+    python3 -m coverage html -d "${BUILD_OUTPUT_DIR}/${case_name}_html" 2>&1 | tee -a "${output_file}"
+    local html_rc=${PIPESTATUS[0]}
     if [[ ${html_rc} -ne 0 ]]; then
-        echo "WARNING: coverage html failed (rc=${html_rc})" >> "${output_file}"
+        echo "WARNING: coverage html failed (rc=${html_rc})" | tee -a "${output_file}"
     fi
 
     unset COVERAGE_FILE
+    return "${pytest_rc}"
 }
 
 run_pytest_plain() {
     local case_name="$1"
     local test_dir="$2"
     local output_file="$3"
-
-    python3 -m pytest "${test_dir}" > "${output_file}" 2>&1
-    echo $? > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+    python3 -m pytest "${test_dir}" 2>&1 | tee "${output_file}"
+    local pytest_rc=${PIPESTATUS[0]}
+    echo "${pytest_rc}" > "${BUILD_OUTPUT_DIR}/${case_name}.exitcode"
+    return "${pytest_rc}"
 }
 
 # Collect C++ gcov coverage for a gtest case (e.g. msprof_ut).
@@ -723,7 +726,8 @@ run_test_case() {
                     # 那半行中间，count_gtest_targets 的行首匹配就数不到它——
                     # started 少一个，恰好与 finished 相等，真截断反而判不出 CRASH。
                     printf '\n----- running %s -----\n' "${ut_bin}" >> "${output_file}"
-                    "${ut_bin}" >> "${output_file}" 2>&1 || msprof_ut_rc=1
+                    "${ut_bin}" 2>&1 | tee -a "${output_file}"
+                    [[ ${PIPESTATUS[0]} -eq 0 ]] || msprof_ut_rc=1
                 else
                     echo "ERROR: msprof_utest binary not found at ${ut_bin}" | tee -a "${output_file}"
                     msprof_ut_rc=1

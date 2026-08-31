@@ -26,6 +26,11 @@ else
     _OPERATE_LOG_FILE="${_LOG_PATH}/operation.log"
 fi
 
+# The common logging functions can be called immediately after this file is
+# sourced, before the caller has performed its own log setup.
+mkdir -p "${_LOG_PATH}" 2>/dev/null
+touch "${_INSTALL_LOG_FILE}" "${_OPERATE_LOG_FILE}" 2>/dev/null
+
 # log functions
 getdate() {
     _cur_date=$(date +"%Y-%m-%d %H:%M:%S")
@@ -72,13 +77,13 @@ change_mode() {
         find "${_path}" -type f -exec chmod ${_mode} {} \; 2> /dev/null
     fi
 }
- 
+
 change_file_mode() {
     local _mode=$1
     local _path=$2
     change_mode ${_mode} "${_path}" "file"
 }
- 
+
 change_dir_mode() {
     local _mode=$1
     local _path=$2

@@ -151,6 +151,15 @@ stages:
           ut_type: 'msprof'
           ut_package: 'coverage_*.info'
           image_version: ${{ jobs.JOB_image.outputs.UT_Test }}
+      JOB_UT_TEST_package:
+        name: UT_TEST_package
+        select: selected_by_default
+        needs: []
+        uses: .gitcode/workflows/ut_action.yml
+        with:
+          ut_type: 'ut_package'
+          ut_package: 'build/*_output.log'
+          image_version: ${{ jobs.JOB_image.outputs.UT_Test }}
       JOB_UT_TEST_asys_9_1_0:
         name: UT_TEST_asys_9.1.0
         select: selected_by_default

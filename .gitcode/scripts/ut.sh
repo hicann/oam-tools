@@ -16,22 +16,40 @@ gcc --version
 source /home/jenkins/Ascend/cann/bin/setenv.bash
 set +e
 
+CANN_3RD_LIB_PATH="${CANN_3RD_LIB_PATH:-/home/jenkins/opensource}"
+
 if [ "$TARGET_BRANCH" = "master" ];then
     case "${ut_type}" in
         asys)
-            bash build.sh -u --component asys --cann_3rd_lib_path=/home/jenkins/opensource --cov
+            bash build.sh -u --component asys --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}" --cov
             ret=$?
             coverage_save="true"
             ;;
         msaicerr)
-            bash build.sh -u --component msaicerr --cann_3rd_lib_path=/home/jenkins/opensource --cov
+            bash build.sh -u --component msaicerr --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}" --cov
             ret=$?
             coverage_save="true"
             ;;
         msprof)
-            bash build.sh -u --component msprof --cann_3rd_lib_path=/home/jenkins/opensource --cov
+            bash build.sh -u --component msprof --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}" --cov
             ret=$?
             coverage_save="true"
+            ;;
+        ut_package)
+            bash build.sh --make_clean --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}"
+            ret=$?
+            if [ $ret -eq 0 ]; then
+                bash scripts/run_tests.sh --component install --st
+                test_ret=$?
+                [ $test_ret -eq 0 ] || ret=$test_ret
+                bash scripts/run_tests.sh --component upgrade --st
+                test_ret=$?
+                [ $test_ret -eq 0 ] || ret=$test_ret
+                bash scripts/run_tests.sh --component uninstall --st
+                test_ret=$?
+                [ $test_ret -eq 0 ] || ret=$test_ret
+            fi
+            coverage_save="false"
             ;;
         *)
             echo "Skip UT test execution for ${ut_type} on non-master branch"
@@ -39,7 +57,7 @@ if [ "$TARGET_BRANCH" = "master" ];then
             ;;
     esac
 else
-    bash build.sh --make_clean -u --cann_3rd_lib_path=/home/jenkins/opensource
+    bash build.sh --make_clean -u --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}"
     ret=$?
     coverage_save="false"
 fi

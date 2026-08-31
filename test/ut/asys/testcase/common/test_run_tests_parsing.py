@@ -463,7 +463,7 @@ def test_stale_gcda_cleared_before_binaries_run():
     clean_idx = content.find(clean_stmt)
     assert clean_idx != -1, "gtest 采集路径缺少旧 .gcda 清理，复跑会累加上一轮覆盖率"
     assert "gcno" not in clean_stmt, "删除语句只能匹配 .gcda，不可扩到 .gcno"
-    run_idx = content.find('"${ut_bin}" >> "${output_file}" 2>&1')
+    run_idx = content.find('"${ut_bin}" 2>&1 | tee -a "${output_file}"')
     assert run_idx != -1, "未找到 gtest 二进制运行语句，本用例的位置断言已失效"
     assert clean_idx < run_idx, \
         ".gcda 清理必须在二进制运行之前，否则删掉的是本轮自己的覆盖率数据"
