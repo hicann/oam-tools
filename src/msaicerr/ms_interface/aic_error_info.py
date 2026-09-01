@@ -93,6 +93,7 @@ class AicErrorInfo:
         self.necessary_addr = {}
         self.atomic_add_err = False
         self.single_op_test_result = RetCode.NOT_RUN
+        self.single_op_attempted = False
         self.single_op_mem_monitor = ""
         self.data_dump_result = True
         self.atomic_clean_check = True
@@ -135,19 +136,21 @@ class AicErrorInfo:
         addr_check_str = self._get_addr_check_str()
 
         result_msg = {
-            RetCode.SUCCESS: "Single-operator test case executed successfully.",
-            RetCode.FAILED: "Single-operator test case failed to be executed.",
-            RetCode.NOT_RUN: "Single-operator test case not executed."
-
+            # SUCCESS表示用例执行完成但没有复现出AI Core error，不代表算子没问题
+            RetCode.SUCCESS: "The single-operator test case was executed, "
+            "but the AI Core error was not reproduced.",
+            RetCode.FAILED: "The AI Core error was reproduced by the single-operator test case.",
+            RetCode.NOT_RUN: "The single-operator test case was not executed, "
+            "so it cannot be used to confirm the AI Core error.",
         }
         single_op_mem_monitor = self.single_op_mem_monitor
 
         msg = f"""{self.root_cause_conclusion}
 
 ***********************1. Basic information********************
-error time        : {self.aic_error_info.get('err_time', '')}
-device id         : {self.aic_error_info.get('dev_id', '')}
-core id           : {self.aic_error_info.get('core_id', '')}
+error time        : {self.aic_error_info.get("err_time", "")}
+device id         : {self.aic_error_info.get("dev_id", "")}
+core id           : {self.aic_error_info.get("core_id", "")}
 task id           : {self.task_id}
 stream id         : {self.stream_id}
 node name         : {self.graph_file}
@@ -160,12 +163,12 @@ rts_block_dim     : {self.rts_block_dim}
 driver_aicore_num : {self.driver_aicore_num}
 
 ***********************2. AI Core DFX Register***********************
-AIC_ERROR        : {self.error_code_all if self.error_code_all else self.aic_error_info.get('error_code', '')}
+AIC_ERROR        : {self.error_code_all if self.error_code_all else self.aic_error_info.get("error_code", "")}
 {aicerror_info}
 
 ***********************3. Operator Error Line Number************************
-start pc          : {self.aic_error_info.get('start_pc', '')}
-current pc        : {self.aic_error_info.get('current_pc', '')}
+start pc          : {self.aic_error_info.get("start_pc", "")}
+current pc        : {self.aic_error_info.get("current_pc", "")}
 {self.instr}
 
 ****************4. Operator Input/Output Memory*******************
@@ -188,47 +191,74 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         conclusion = ""
         num_default = -1
         if not self.atomic_clean_check:
-            conclusion = ("The memset or atomic_clean operator is not inserted before this operator in the graph,"
-                          " while memory cleanup is required before operator execution.\n")
+            conclusion = (
+                "The memset or atomic_clean operator is not inserted before this operator in the graph,"
+                " while memory cleanup is required before operator execution.\n"
+            )
         elif self.flag_check:
             conclusion = "The set_flag and wait_flag instructions are not used together in the operator code.\n"
-        elif (self.rts_block_dim != num_default and self.driver_aicore_num != num_default and
-              self.rts_block_dim > self.driver_aicore_num * 2):
+        elif (
+            self.rts_block_dim != num_default
+            and self.driver_aicore_num != num_default
+            and self.rts_block_dim > self.driver_aicore_num * 2
+        ):
             conclusion = "The number of AI Cores in the environment is less than that required by the operator.\n"
-        elif self.aic_error_info.get('current_pc', '') == "0x0":
+        elif self.aic_error_info.get("current_pc", "") == "0x0":
             conclusion = "The line number of the operator error instruction is 0.\n"
         elif self.atomic_add_err:
-            conclusion = ("Atomic add has a precision overflow. Check the operator precision."
-                          "Note that if tasks are concurrently executed on the NPU, a false warning may be reported.\n")
+            conclusion = (
+                "Atomic add has a precision overflow. Check the operator precision."
+                "Note that if tasks are concurrently executed on the NPU, a false warning may be reported.\n"
+            )
         elif "data invalid" in self.dump_info:
-            conclusion = ("The maintenance and test information is insufficient or the format is "
-                          "incorrect, contact technical support.\n")
+            conclusion = (
+                "The maintenance and test information is insufficient or the format is "
+                "incorrect, contact technical support.\n"
+            )
         elif self.single_op_test_result is RetCode.FAILED:
-            conclusion = "Failed to execute the single-operator test case. The operator logic may be incorrect.\n"
+            conclusion = (
+                "The AI Core error was reproduced by the single-operator test case. "
+                "The operator logic may be incorrect.\n"
+            )
         elif not self.check_args_result:
-            conclusion = ("If the arguments are inconsistent before and after operator execution, "
-                          "memory access may be out of bounds. You are advised to use the memory error detection model "
-                          "to locate the fault.\n")
+            conclusion = (
+                "If the arguments are inconsistent before and after operator execution, "
+                "memory access may be out of bounds. You are advised to use the memory error detection model "
+                "to locate the fault.\n"
+            )
         elif not self.addr_valid or not self.data_dump_result:
-            conclusion = ("The input/output memory address of the operator is abnormal "
-                          "(or the original dumped data fails). Check the framework or application.\n")
+            conclusion = (
+                "The input/output memory address of the operator is abnormal "
+                "(or the original dumped data fails). Check the framework or application.\n"
+            )
         elif not self.env_available:
             conclusion = "Failed to execute the built-in sample operator. Check the environment.\n"
-        elif self.single_op_test_result is True:
-            conclusion = ("The single-operator test case is successfully executed. In case of an unknown error mode, "
-                          "you are advised to:\n"
-                          "(1) check the operator again by using the msSanitizer tool.\n"
-                          "(2) If out-of-bounds memory access occurs on other operators, you are advised to enable "
-                          "memory error detection with op_debug_config=oom and then check the operators, "
-                          "For details: https://www.hiascend.com/zh/document.\n"
-                          "(3) For details about the framework, contact technical support.\n")
+        elif self.single_op_attempted and self.single_op_test_result is RetCode.NOT_RUN:
+            conclusion = (
+                "The single-operator test case was not executed successfully, so it cannot be used to "
+                "confirm the AI Core error. Check whether the *.o and *.json files of the operator are "
+                "complete and match each other, and check the single-operator log for the failure cause.\n"
+            )
+        elif self.single_op_test_result is RetCode.SUCCESS:
+            conclusion = (
+                "The single-operator test case was executed, but the AI Core error was not reproduced. "
+                "In case of an unknown error mode, "
+                "you are advised to:\n"
+                "(1) check the operator again by using the msSanitizer tool.\n"
+                "(2) If out-of-bounds memory access occurs on other operators, you are advised to enable "
+                "memory error detection with op_debug_config=oom and then check the operators, "
+                "For details: https://www.hiascend.com/zh/document.\n"
+                "(3) For details about the framework, contact technical support.\n"
+            )
 
         if not conclusion:
             if not utils.ExceptionRootCause().causes:
                 conclusion = "Internal error. Contact technical support.\n"
             else:
-                conclusion = ("The maintenance and test information is insufficient or the format is incorrect, "
-                              "contact technical support.\n")
+                conclusion = (
+                    "The maintenance and test information is insufficient or the format is incorrect, "
+                    "contact technical support.\n"
+                )
             conclusion += utils.ExceptionRootCause().format_causes()
         return conclusion
 
@@ -253,24 +283,27 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         binfile.close()
         result_str = f"tiling_data: {self.tiling_data}\n"
         tiling_datas = content
-        int32_size = struct.calcsize('i')
-        int64_size = struct.calcsize('q')
-        float16_size = struct.calcsize('e')
+        int32_size = struct.calcsize("i")
+        int64_size = struct.calcsize("q")
+        float16_size = struct.calcsize("e")
 
         def parse_data(data, size, fmt):
             try:
-                result = [struct.unpack(fmt, data[i:i + size])[0] for i in range(0, len(data), size)]
+                result = [
+                    struct.unpack(fmt, data[i : i + size])[0]
+                    for i in range(0, len(data), size)
+                ]
             except struct.error:
                 result = "Cannot decode in this dtype"
             return result
 
-        int32_values = parse_data(tiling_datas, int32_size, 'i')
+        int32_values = parse_data(tiling_datas, int32_size, "i")
         result_str += f"tiling data in int32: {int32_values}\n"
 
-        int64_values = parse_data(tiling_datas, int64_size, 'q')
+        int64_values = parse_data(tiling_datas, int64_size, "q")
         result_str += f"tiling data in int64: {int64_values}\n"
 
-        float16_values = parse_data(tiling_datas, float16_size, 'e')
+        float16_values = parse_data(tiling_datas, float16_size, "e")
         result_str += f"tiling data in float16: {float16_values}\n"
 
         return result_str + "\n"
@@ -321,8 +354,10 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         need_check_args = used_addrs.get("need_check_args")
         if fault_arg_indexes:
             for arg_index in fault_arg_indexes:
-                result_str += f"arg[{arg_index}][0x{need_check_args[arg_index]:X}] cannot find alloc log, " \
-                              "if it is not tiling_gm, please check \n"
+                result_str += (
+                    f"arg[{arg_index}][0x{need_check_args[arg_index]:X}] cannot find alloc log, "
+                    "if it is not tiling_gm, please check \n"
+                )
 
         workspace = used_addrs.get("workspace")
         if workspace:
@@ -331,7 +366,7 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         return result_str
 
     def _get_aicerror_info(self: any) -> str:
-        error_code = self.aic_error_info.get('error_code', '')
+        error_code = self.aic_error_info.get("error_code", "")
         if detect_chip_type(error_code) is ChipType.ASCEND_950:
             return self._get_david_error_info(error_code)
         return self._get_stars_error_info(error_code)
@@ -363,22 +398,34 @@ args after  execution: {self._get_args_str(self.args_after_list)}
             return Constant.NO_ERROR_BIT_INFO
         for i in ret:
             aicerr_info = Constant.AIC_ERROR_INFO_DICT.get(i)
-            err_type = aicerr_info.split('_')[0].lower()
+            err_type = aicerr_info.split("_")[0].lower()
             if err_type in handled_err_type:
                 continue
             handled_err_type.append(err_type)
             if err_type == "vec":
-                aicerror_info_list.append("\nVEC_ERR_INFO : " + self._analyse_vec_errinfo())
+                aicerror_info_list.append(
+                    "\nVEC_ERR_INFO : " + self._analyse_vec_errinfo()
+                )
             elif err_type == "ifu":
-                aicerror_info_list.append("\nIFU_ERR_INFO : " + self._analyse_ifu_errinfo())
+                aicerror_info_list.append(
+                    "\nIFU_ERR_INFO : " + self._analyse_ifu_errinfo()
+                )
             elif err_type == "mte":
-                aicerror_info_list.append("\nMTE_ERR_INFO : " + self._analyse_mte_errinfo(i))
+                aicerror_info_list.append(
+                    "\nMTE_ERR_INFO : " + self._analyse_mte_errinfo(i)
+                )
             elif err_type == "cube":
-                aicerror_info_list.append("\nCUBE_ERR_INFO: " + self._analyse_cube_errinfo())
+                aicerror_info_list.append(
+                    "\nCUBE_ERR_INFO: " + self._analyse_cube_errinfo()
+                )
             elif err_type == "ccu":
-                aicerror_info_list.append("\nCCU_ERR_INFO : " + self._analyse_ccu_errinfo())
+                aicerror_info_list.append(
+                    "\nCCU_ERR_INFO : " + self._analyse_ccu_errinfo()
+                )
             elif err_type == "biu":
-                aicerror_info_list.append("\nBIU_ERR_INFO : " + self._analyse_biu_errinfo())
+                aicerror_info_list.append(
+                    "\nBIU_ERR_INFO : " + self._analyse_biu_errinfo()
+                )
             aicerror_info_list.append(f"\n{aicerr_info}")
             aicerror_info_list.append("\n\n")
         aicerror_info = "".join(aicerror_info_list).strip("\n")
@@ -389,7 +436,7 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         """
         find extra pc
         """
-        error_code = self.aic_error_info.get('error_code', '')
+        error_code = self.aic_error_info.get("error_code", "")
         if detect_chip_type(error_code) is ChipType.ASCEND_950:
             # The 950 log has no *_ERR_INFO registers in extra_info, so there
             # is no [9:2] fragment to recover.
@@ -408,11 +455,11 @@ args after  execution: {self._get_args_str(self.args_after_list)}
             "cube": Constant.CUBE_KEY,
             "ccu": Constant.CCU_KEY,
             "biu": Constant.BIU_KEY,
-            "ifu": Constant.IFU_KEY
+            "ifu": Constant.IFU_KEY,
         }
         for ret_a in ret:
             error_info = Constant.AIC_ERROR_INFO_DICT.get(ret_a)
-            err_type = error_info.split('_')[0].lower()
+            err_type = error_info.split("_")[0].lower()
             if err_type == "ccu":
                 return ""
             if err_type in key_map.keys():
@@ -491,7 +538,11 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         info = "MTE Error Address [19:5]"
         # 补5位0，猜测值
         approximate = hex(int(code + "00000", 2))
-        errinfo += "\nmte_err_addr bit[22:8]={0:<15}  meaning:{1:}  approximate:{2:}".format(code, info, approximate)
+        errinfo += (
+            "\nmte_err_addr bit[22:8]={0:<15}  meaning:{1:}  approximate:{2:}".format(
+                code, info, approximate
+            )
+        )
         return errinfo
 
     def _analyse_biu_errinfo(self: any) -> str:
@@ -549,11 +600,17 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         info = "VEC Error Address [17:5]"
         # 补5位0，猜测值
         approximate = hex(int(code + "00000", 2))
-        errinfo += "\nvec_err_addr bit[28:16]={0:<13}  meaning:{1:<28}  approximate:{2}".format(code, info, approximate)
+        errinfo += "\nvec_err_addr bit[28:16]={0:<13}  meaning:{1:<28}  approximate:{2}".format(
+            code, info, approximate
+        )
 
         # vec_err_rcnt
         code = utils.get_01_from_hexstr(ret[0], 15, 8)
         info = "VEC Error repeat count [7:0]"
         repeats = str(int(code, 2))
-        errinfo += "\nvec_err_rcnt bit[15:8]={0:<13}  meaning:{1:<28}  repeats:{2}".format(code, info, repeats)
+        errinfo += (
+            "\nvec_err_rcnt bit[15:8]={0:<13}  meaning:{1:<28}  repeats:{2}".format(
+                code, info, repeats
+            )
+        )
         return errinfo

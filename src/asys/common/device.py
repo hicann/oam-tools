@@ -46,7 +46,7 @@ ACL_DEV_ATTR_NPU_ARCH = 601
 MODULE_TYPE_SYSTEM = 0
 INFO_TYPE_MASTERID = 2
 
-MEMEORY_CONVERT_RATIO = 1024
+MEMORY_CONVERT_RATIO = 1024
 
 DSMI_ERROR_CORE = {
     1: "the device does not exist.",
@@ -520,7 +520,7 @@ class DeviceInfo:
         if "310 " in self.get_chip_info(device_id):
             memory_size = p_memory_info.contents.memory_size
         else:
-            memory_size = p_memory_info.contents.memory_size // MEMEORY_CONVERT_RATIO
+            memory_size = p_memory_info.contents.memory_size // MEMORY_CONVERT_RATIO
         utilize = p_memory_info.contents.utilize
         return memory_size, round(memory_size * utilize / 100, 2)
 
@@ -533,11 +533,11 @@ class DeviceInfo:
         if not self.check_status(ret, "Get hbm memory info failed"):
             return [NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT]
 
-        memory_size = p_memory_info.contents.memory_size // MEMEORY_CONVERT_RATIO
+        memory_size = p_memory_info.contents.memory_size // MEMORY_CONVERT_RATIO
         usage = p_memory_info.contents.memory_usage
         bandwidth = p_memory_info.contents.bandwith_util_rate
         temp = p_memory_info.contents.temp
-        return [memory_size, round(usage / MEMEORY_CONVERT_RATIO, 2), temp, bandwidth]
+        return [memory_size, round(usage / MEMORY_CONVERT_RATIO, 2), temp, bandwidth]
 
     def get_ecc_isolated_page(self, device_id):
         p_device_ecc_info = ctypes.pointer(DsmiEccPageStru())

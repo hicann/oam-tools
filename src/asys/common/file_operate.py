@@ -51,7 +51,7 @@ class FileOperate:
         return os.path.exists(path)
 
     @staticmethod
-    def check_emtpy(path):
+    def check_empty(path):
         if not path:
             return True
         if os.path.exists(path) and os.path.isdir(path):

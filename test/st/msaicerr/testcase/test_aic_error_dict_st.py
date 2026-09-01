@@ -122,7 +122,7 @@ class TestStarsErrorInfo(unittest.TestCase):
         self.assertIn("biu_l2_read_oob", _make_info("0x1")._get_aicerror_info())
         self.assertIn("biu_l2_write_oob", _make_info("0x2")._get_aicerror_info())
 
-    def test_unparseable_code_is_not_bit0(self):
+    def test_unparsable_code_is_not_bit0(self):
         # get_hexstr_value reports -1 for these; without a guard the binary form
         # scans as bit 0 and would be misreported as a bus read error.
         for code in ("", "   ", "garbage"):
@@ -148,8 +148,14 @@ class TestStarsErrorInfo(unittest.TestCase):
         for bit in (BIT_BIU, BIT_CCU, BIT_CUBE, BIT_IFU, BIT_MTE, BIT_VEC):
             code |= 1 << bit
         result = _make_info(hex(code))._get_aicerror_info()
-        for key in ("VEC_ERR_INFO", "MTE_ERR_INFO", "IFU_ERR_INFO",
-                    "CUBE_ERR_INFO", "CCU_ERR_INFO", "BIU_ERR_INFO"):
+        for key in (
+            "VEC_ERR_INFO",
+            "MTE_ERR_INFO",
+            "IFU_ERR_INFO",
+            "CUBE_ERR_INFO",
+            "CCU_ERR_INFO",
+            "BIU_ERR_INFO",
+        ):
             self.assertIn(key, result)
 
     def test_repeated_module_reported_once(self):
@@ -184,14 +190,23 @@ class TestDavidErrorInfo(unittest.TestCase):
         self.assertIn("trap_or_timeout", _make_info("0")._get_aicerror_info())
 
     def test_each_offset_segment_resolves(self):
-        for offset in (Constant.DAVID_OFFSET_CUBE, Constant.DAVID_OFFSET_MTE,
-                       Constant.DAVID_OFFSET_L1, Constant.DAVID_OFFSET_L1_1,
-                       Constant.DAVID_OFFSET_SC, Constant.DAVID_OFFSET_SU,
-                       Constant.DAVID_OFFSET_VEC, Constant.DAVID_OFFSET_VEC_1):
+        for offset in (
+            Constant.DAVID_OFFSET_CUBE,
+            Constant.DAVID_OFFSET_MTE,
+            Constant.DAVID_OFFSET_L1,
+            Constant.DAVID_OFFSET_L1_1,
+            Constant.DAVID_OFFSET_SC,
+            Constant.DAVID_OFFSET_SU,
+            Constant.DAVID_OFFSET_VEC,
+            Constant.DAVID_OFFSET_VEC_1,
+        ):
             # Skip bit 0: a bare "0" is the shared no-error marker and is
             # routed to the Stars fallback, so it cannot exercise a lookup.
-            bits = [b for b in Constant.AIC_ERROR_INFO_DICT_DAVID
-                    if offset <= b < offset + 32 and b != 0]
+            bits = [
+                b
+                for b in Constant.AIC_ERROR_INFO_DICT_DAVID
+                if offset <= b < offset + 32 and b != 0
+            ]
             self.assertTrue(bits, f"segment {offset} has no entry")
             result = _make_info(str(bits[0]))._get_aicerror_info()
             expected = Constant.AIC_ERROR_INFO_DICT_DAVID[bits[0]]["name"]
@@ -235,8 +250,13 @@ class TestAnalyseRegisters(unittest.TestCase):
 
     def test_all_registers_missing(self):
         info = _make_info("0x0", extra_info="nothing here")
-        for name, key in (("ifu", "IFU"), ("biu", "BIU"), ("ccu", "CCU"),
-                          ("cube", "CUBE"), ("vec", "VEC")):
+        for name, key in (
+            ("ifu", "IFU"),
+            ("biu", "BIU"),
+            ("ccu", "CCU"),
+            ("cube", "CUBE"),
+            ("vec", "VEC"),
+        ):
             result = getattr(info, f"_analyse_{name}_errinfo")()
             self.assertEqual(result, f"No {key}_ERR_INFO found")
 
@@ -265,10 +285,13 @@ class TestAnalyseAndConclusion(unittest.TestCase):
         info = _make_info(hex(1 << BIT_VEC))
         info.necessary_addr = {}
         msg = info.analyse()
-        for section in ("Basic information", "AI Core DFX Register",
-                        "Operator Error Line Number",
-                        "Operator Input/Output Memory",
-                        "Operator Dump File Parsing"):
+        for section in (
+            "Basic information",
+            "AI Core DFX Register",
+            "Operator Error Line Number",
+            "Operator Input/Output Memory",
+            "Operator Dump File Parsing",
+        ):
             self.assertIn(section, msg)
 
     def test_analyse_prefers_error_code_all(self):
@@ -280,12 +303,14 @@ class TestAnalyseAndConclusion(unittest.TestCase):
     def test_addr_check_flags_out_of_range(self):
         info = _make_info("0x0")
         info.necessary_addr = {
-            "input_addr": [{"index": "0", "size": "16", "addr": "0x1000",
-                            "in_range": False}],
-            "output_addr": [{"index": "0", "size": "32", "addr": "8192",
-                             "in_range": True}],
+            "input_addr": [
+                {"index": "0", "size": "16", "addr": "0x1000", "in_range": False}
+            ],
+            "output_addr": [
+                {"index": "0", "size": "32", "addr": "8192", "in_range": True}
+            ],
             "fault_arg_index": [1],
-            "need_check_args": {1: 0xdead},
+            "need_check_args": {1: 0xDEAD},
             "workspace": 4096,
         }
         result = info._get_addr_check_str()
@@ -300,8 +325,9 @@ class TestAnalyseAndConclusion(unittest.TestCase):
         info = _make_info("0x0")
         info.necessary_addr = {
             "input_addr": [],
-            "output_addr": [{"index": "1", "size": "8", "addr": "0x10",
-                             "in_range": False}],
+            "output_addr": [
+                {"index": "1", "size": "8", "addr": "0x10", "in_range": False}
+            ],
         }
         result = info._get_addr_check_str()
         self.assertIn("*[ERROR]output[1] is out of range", result)
@@ -309,8 +335,7 @@ class TestAnalyseAndConclusion(unittest.TestCase):
 
     def test_args_str_formatting(self):
         self.assertEqual(AicErrorInfo._get_args_str([]), "[]")
-        self.assertEqual(AicErrorInfo._get_args_str(["0x1", "0x2"]),
-                         "[[0x1],[0x2]]")
+        self.assertEqual(AicErrorInfo._get_args_str(["0x1", "0x2"]), "[[0x1],[0x2]]")
 
     def test_conclusion_atomic_clean_missing(self):
         info = AicErrorInfo()
@@ -344,8 +369,9 @@ class TestAnalyseAndConclusion(unittest.TestCase):
         info = AicErrorInfo()
         info.aic_error_info = {"current_pc": "0x10"}
         info.addr_valid = False
-        self.assertIn("memory address of the operator is abnormal",
-                      info.get_conclusion())
+        self.assertIn(
+            "memory address of the operator is abnormal", info.get_conclusion()
+        )
 
     def test_conclusion_env_unavailable(self):
         info = AicErrorInfo()
@@ -356,9 +382,7 @@ class TestAnalyseAndConclusion(unittest.TestCase):
     def test_conclusion_single_op_success(self):
         info = AicErrorInfo()
         info.aic_error_info = {"current_pc": "0x10"}
-        # This branch compares against True rather than RetCode.SUCCESS, so
-        # drive it with the value the code actually checks for.
-        info.single_op_test_result = True
+        info.single_op_test_result = RetCode.SUCCESS
         self.assertIn("msSanitizer", info.get_conclusion())
 
     def test_root_cause_conclusion_property(self):

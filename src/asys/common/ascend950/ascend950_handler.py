@@ -23,7 +23,7 @@ from common.device import DsmiNormalMemoryInfoStru, DsmiTagSensorInfo
 from common.device import (
     DSMI_MAIN_CMD_MEMORY,
     DSMI_SUB_CMD_HBM_MEMORY,
-    MEMEORY_CONVERT_RATIO,
+    MEMORY_CONVERT_RATIO,
     SOC_TEMP_ID,
 )
 from common.const import HBM_BANDWIDTH_USE, NOT_SUPPORT
@@ -106,12 +106,12 @@ class Ascend950Handler(DeviceInfo):
         if not self.check_status(ret, "Get memory info failed!"):
             return [NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT, NOT_SUPPORT]
 
-        memory_size = p_memory_info.contents.total_size // MEMEORY_CONVERT_RATIO
+        memory_size = p_memory_info.contents.total_size // MEMORY_CONVERT_RATIO
         usage = p_memory_info.contents.used_size
         bandwidth = self.get_device_utilization_rate(device_id, HBM_BANDWIDTH_USE)
         return [
             memory_size,
-            round(usage / MEMEORY_CONVERT_RATIO, 2),
+            round(usage / MEMORY_CONVERT_RATIO, 2),
             NOT_SUPPORT,
             bandwidth,
         ]

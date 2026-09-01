@@ -262,7 +262,7 @@ class TestFileOperate(AssertTest):
     def test_check_valid_error(self):
         self.assertTrue(not f.check_file(None))
         self.assertTrue(not f.check_dir(False))
-        self.assertTrue(f.check_emtpy(""))
+        self.assertTrue(f.check_empty(""))
         self.assertTrue(not f.check_access(0))
         f.write_file(None, "test_info")
         self.assertTrue(not f.remove_file(""))

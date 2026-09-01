@@ -256,7 +256,7 @@ def check_arg_exist_or_read_permissibale(arg_name, arg_val):
         if arg_name == "file" and not f.check_file(arg_val):
             log_error(f"{arg_val} is not a file.")
             return RetCode.FAILED
-        if arg_name == "path" and f.check_emtpy(arg_val):
+        if arg_name == "path" and f.check_empty(arg_val):
             log_error(f"{arg_val} is not a directory or is empty.")
             return RetCode.FAILED
         return RetCode.SUCCESS
