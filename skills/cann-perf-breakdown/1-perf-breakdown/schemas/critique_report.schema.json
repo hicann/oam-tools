@@ -1,0 +1,304 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "critique_report.schema.json",
+  "title": "Independent critique of a candidate model breakdown",
+  "description": "Written by a critique LLM that did NOT produce the candidate. The critic files issues; it never edits analysis_config.json. Its authority is evidence: every issue must cite source, config or trace locators a deterministic script can re-check, which is what separates a critique from an opinion.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "artifacts",
+    "checks",
+    "issues"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "critique_kind": {
+      "enum": ["full_final"],
+      "description": "Optional for legacy reports. New formal reports identify themselves as the full final eleven-item critique."
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "unknown"
+      ],
+      "description": "`failed` whenever any issue has severity `error`. `unknown` means the critic could not reach a verdict (evidence absent), which never counts as passing."
+    },
+    "critiqued_at": {
+      "type": "string"
+    },
+    "critic": {
+      "type": "string",
+      "description": "Identifier for the critiquing agent/model. Recorded so a critique produced by the same context that produced the candidate is visible rather than implicit."
+    },
+    "artifacts": {
+      "type": "object",
+      "description": "SHA256 of every input the critique was formed against. Any drift invalidates this report: a critique of bytes that no longer exist proves nothing about the bytes that do.",
+      "required": [
+        "analysis_config",
+        "raw_ops",
+        "model_manifest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "analysis_config": {
+          "$ref": "#/definitions/artifact"
+        },
+        "raw_ops": {
+          "$ref": "#/definitions/artifact"
+        },
+        "model_manifest": {
+          "$ref": "#/definitions/artifact"
+        },
+        "dataflow_source": {
+          "$ref": "#/definitions/artifact",
+          "description": "Optional only because a source-less run has no dataflow truth to bind. Whenever the runner supplies one, validate_critique.py requires it here."
+        },
+        "checkpoint_config": {
+          "$ref": "#/definitions/artifact",
+          "description": "The checkpoint's own config.json. Distinct from Python defaults read out of modeling source -- binding this is what lifts evidence_cap to 100."
+        },
+        "source_index": {
+          "$ref": "#/definitions/artifact",
+          "description": "Deterministic source index bound to the source bundle used by the critic."
+        },
+        "raw_ops_compact": {
+          "$ref": "#/definitions/artifact",
+          "description": "Compact raw-op evidence actually exposed to the final critic."
+        },
+        "source_snippets": {
+          "$ref": "#/definitions/artifact",
+          "description": "Indexed source snippets actually exposed to the final critic."
+        },
+        "context_manifest": {
+          "$ref": "#/definitions/artifact",
+          "description": "The final clean-context input whitelist used by the critic."
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 11,
+      "description": "One entry per mandatory critique dimension. All eleven must appear; a dimension the critic could not judge is `unknown`, never omitted.",
+      "items": {
+        "$ref": "#/definitions/check"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "description": "Empty only when the critic found nothing. Each issue is a falsifiable claim about the candidate, not a style note.",
+      "items": {
+        "$ref": "#/definitions/issue"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "id",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "model_identity_and_variant",
+            "module_inventory_complete",
+            "learned_layer_vs_invocation",
+            "config_instantiation_params",
+            "forward_call_order",
+            "residual_parallel_skip_topology",
+            "trace_module_attribution",
+            "layer_and_fusion_boundaries",
+            "runtime_vs_model_classification",
+            "op_coverage_and_duplicate_ownership",
+            "source_ref_authenticity"
+          ]
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "unknown"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/evidence"
+          }
+        },
+        "issue_ids": {
+          "type": "array",
+          "description": "Issues filed under this check. A `failed` check must name at least one.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "explanation": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "explanation"
+      ],
+      "additionalProperties": false,
+      "description": "At least one locator (source_ref, config_path or op_indices) must accompany the explanation, so the claim can be re-checked mechanically rather than believed.",
+      "anyOf": [
+        {
+          "required": [
+            "source_ref"
+          ]
+        },
+        {
+          "required": [
+            "config_path"
+          ]
+        },
+        {
+          "required": [
+            "op_indices"
+          ]
+        }
+      ],
+      "properties": {
+        "explanation": {
+          "type": "string"
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "`file.py:LINE` or `file.py:START-END`."
+        },
+        "config_path": {
+          "type": "string",
+          "description": "JSONPath into analysis_config.json, e.g. `$.trace_instances[0]`."
+        },
+        "op_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "required": [
+        "id",
+        "severity",
+        "category",
+        "claim",
+        "expected",
+        "observed",
+        "repair"
+      ],
+      "additionalProperties": false,
+      "description": "claim/expected/observed are separate fields on purpose: an issue that cannot state what the candidate asserted, what the evidence requires, and what was actually found is not yet a finding.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,63}$",
+          "description": "Stable screaming-snake id, e.g. ARCH_INVOCATION_AS_LAYER."
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "description": "`error` blocks. `warning` and `info` do not block by themselves but are reported."
+        },
+        "category": {
+          "enum": [
+            "architecture",
+            "dataflow",
+            "boundaries",
+            "attribution",
+            "coverage",
+            "classification",
+            "evidence",
+            "identity"
+          ]
+        },
+        "claim": {
+          "type": "string",
+          "description": "What the candidate decomposition asserts."
+        },
+        "expected": {
+          "type": "string",
+          "description": "What the evidence requires instead."
+        },
+        "observed": {
+          "type": "string",
+          "description": "What was actually found in source/config/trace."
+        },
+        "source_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "`modeling.py:123` style refs that must resolve to real lines."
+        },
+        "config_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "e.g. `config.json:num_hidden_layers`."
+        },
+        "trace_evidence": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "op indices in the representative step."
+        },
+        "config_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "JSONPaths into the candidate, e.g. `$.trace_instances[0]`."
+        },
+        "repair": {
+          "type": "string",
+          "description": "Direction only. The critic states what is wrong and where to look, never a ready-made replacement config -- handing over the answer would make the next round a transcription rather than a decomposition."
+        },
+        "check_id": {
+          "type": "string",
+          "description": "Which mandatory check this issue was filed under."
+        }
+      }
+    }
+  }
+}

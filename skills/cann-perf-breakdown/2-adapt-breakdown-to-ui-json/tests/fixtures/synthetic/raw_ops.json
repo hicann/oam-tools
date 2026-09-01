@@ -1,0 +1,295 @@
+{
+  "step_id": 1,
+  "total_duration_us": 320.0,
+  "kernel_count": 32,
+  "operators": [
+    {
+      "index": 0,
+      "normalized_name": "GatherV2",
+      "duration_us": 1.0,
+      "start_time_us": 0.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 1,
+      "normalized_name": "HcomAllGather",
+      "duration_us": 1.5,
+      "start_time_us": 10.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 2,
+      "normalized_name": "HcomReduceScatter",
+      "duration_us": 2.0,
+      "start_time_us": 20.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 3,
+      "normalized_name": "MlaPrologV3",
+      "duration_us": 2.5,
+      "start_time_us": 30.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 4,
+      "normalized_name": "RmsNorm",
+      "duration_us": 3.0,
+      "start_time_us": 40.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 5,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "duration_us": 1.0,
+      "start_time_us": 50.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 6,
+      "normalized_name": "MatMul",
+      "duration_us": 1.5,
+      "start_time_us": 60.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 7,
+      "normalized_name": "AddRmsNormDynamicQuant",
+      "duration_us": 2.0,
+      "start_time_us": 70.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 8,
+      "normalized_name": "MatMul",
+      "duration_us": 2.5,
+      "start_time_us": 80.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 9,
+      "normalized_name": "InplaceAddRmsNorm",
+      "duration_us": 3.0,
+      "start_time_us": 90.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 10,
+      "normalized_name": "MlaPrologV3",
+      "duration_us": 1.0,
+      "start_time_us": 100.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 11,
+      "normalized_name": "RmsNorm",
+      "duration_us": 1.5,
+      "start_time_us": 110.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 12,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "duration_us": 2.0,
+      "start_time_us": 120.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 13,
+      "normalized_name": "MatMul",
+      "duration_us": 2.5,
+      "start_time_us": 130.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 14,
+      "normalized_name": "AddRmsNormDynamicQuant",
+      "duration_us": 3.0,
+      "start_time_us": 140.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 15,
+      "normalized_name": "MoeGatingTopKHash",
+      "duration_us": 1.0,
+      "start_time_us": 150.0,
+      "stream_id": "40",
+      "input_shapes": "4,8",
+      "output_shapes": "4,2"
+    },
+    {
+      "index": 16,
+      "normalized_name": "GroupedMatmul",
+      "duration_us": 1.5,
+      "start_time_us": 160.0,
+      "stream_id": "41",
+      "input_shapes": "2,4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 17,
+      "normalized_name": "MoeDistributeCombineV2",
+      "duration_us": 2.0,
+      "start_time_us": 170.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 18,
+      "normalized_name": "MatMul",
+      "duration_us": 2.5,
+      "start_time_us": 180.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 19,
+      "normalized_name": "HcomAllToAll",
+      "duration_us": 3.0,
+      "start_time_us": 190.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 20,
+      "normalized_name": "RmsNorm",
+      "duration_us": 1.0,
+      "start_time_us": 200.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 21,
+      "normalized_name": "MlaPrologV3",
+      "duration_us": 1.5,
+      "start_time_us": 210.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 22,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "duration_us": 2.0,
+      "start_time_us": 220.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 23,
+      "normalized_name": "MatMul",
+      "duration_us": 2.5,
+      "start_time_us": 230.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 24,
+      "normalized_name": "MatMul",
+      "duration_us": 3.0,
+      "start_time_us": 240.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 25,
+      "normalized_name": "RmsNorm",
+      "duration_us": 1.0,
+      "start_time_us": 250.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 26,
+      "normalized_name": "MlaPrologV3",
+      "duration_us": 1.5,
+      "start_time_us": 260.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 27,
+      "normalized_name": "KvQuantSparseFlashAttention",
+      "duration_us": 2.0,
+      "start_time_us": 270.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 28,
+      "normalized_name": "MatMul",
+      "duration_us": 2.5,
+      "start_time_us": 280.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 29,
+      "normalized_name": "MatMul",
+      "duration_us": 3.0,
+      "start_time_us": 290.0,
+      "stream_id": "42",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 30,
+      "normalized_name": "ArgMaxV2",
+      "duration_us": 1.0,
+      "start_time_us": 300.0,
+      "stream_id": "40",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    },
+    {
+      "index": 31,
+      "normalized_name": "UpdateModelParam_static_bin",
+      "duration_us": 1.5,
+      "start_time_us": 310.0,
+      "stream_id": "41",
+      "input_shapes": "4,128",
+      "output_shapes": "4,128"
+    }
+  ]
+}

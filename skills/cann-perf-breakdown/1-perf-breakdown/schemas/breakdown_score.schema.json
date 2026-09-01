@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "breakdown_score.schema.json",
+  "title": "Model breakdown quality score",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "score",
+    "max_score",
+    "minimum_score",
+    "validation_status",
+    "dimensions",
+    "failed_dimensions",
+    "hard_gates",
+    "required_actions",
+    "constraints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "verified",
+        "verified_unbound_scalars",
+        "structure_unverified",
+        "exploratory",
+        "needs_iteration",
+        "passed",
+        "passed_at_cap"
+      ],
+      "description": "Exit conclusion. `needs_iteration` alone means a check ran and disagreed with the source. The others mean nothing contradicted the breakdown, and report how far the evidence reached: `verified` (structure and scalars both bound to the capture), `verified_unbound_scalars` (structure verified against source, scalars resting on unbound defaults), `structure_unverified` (no source to check topology against), `exploratory` (too little evidence for the score to carry weight). `passed` is the pre-tier spelling, retained so older reports still validate. `passed_at_cap` means the breakdown met the quality bar for the evidence supplied: quality_rate at or above minimum_quality_rate, every core dimension passing, and all hard gates clear, at an evidence_cap that may be below 100. It is a full pass, not a partial one -- the cap describes the inputs, not the work."
+    },
+    "convertible": {
+      "type": "boolean",
+      "description": "Whether this conclusion may be turned into a UI report."
+    },
+    "capture_tier": {
+      "enum": [
+        "S0",
+        "S",
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    "tier_ceiling": {
+      "type": "string",
+      "description": "Strongest conclusion the evidence supports, after capability promotions."
+    },
+    "nominal_tier_ceiling": {
+      "type": "string",
+      "description": "Ceiling from the tier alone, before promotions."
+    },
+    "tier_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "runnable_max": {
+      "type": "number",
+      "description": "Total weight of checks that had evidence to run against."
+    },
+    "nominal_max": {
+      "type": "number",
+      "description": "Total weight if every input were supplied."
+    },
+    "correctness_ratio": {
+      "type": "number",
+      "description": "score / runnable_max: correctness among what could be checked."
+    },
+    "minimum_correctness_ratio": {
+      "type": "number"
+    },
+    "evidence_fraction": {
+      "type": "number",
+      "description": "runnable_max / nominal_max: how much of the nominal check set had evidence."
+    },
+    "minimum_evidence_fraction": {
+      "type": "number"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "max_score": {
+      "const": 100
+    },
+    "minimum_score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "validation_status": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "score",
+          "max_score",
+          "minimum_score",
+          "status",
+          "evidence",
+          "actions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_score": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minimum_score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "unevaluated"
+            ],
+            "description": "`unevaluated` means no component in this dimension had evidence to run against, so it proved nothing. It is not a pass: a 0/0 ratio would be a vacuous 1.0."
+          },
+          "earned": {
+            "type": "number"
+          },
+          "runnable_max": {
+            "type": "number"
+          },
+          "nominal_max": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "number",
+            "description": "earned / runnable_max."
+          },
+          "minimum_ratio": {
+            "type": "number"
+          },
+          "evidence_fraction": {
+            "type": "number"
+          },
+          "skipped_weights": {
+            "type": "array",
+            "description": "Components excluded from the denominator because their evidence was never supplied. Every entry has to be justified by a missing input; skipping a runnable check to raise the ratio is forbidden by the report's own constraints.",
+            "items": {
+              "type": "object",
+              "required": [
+                "component",
+                "weight"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "component": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "failed_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hard_gates": {
+      "type": "object",
+      "required": [
+        "passed",
+        "blocking_issues"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "blocking_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "dimension",
+              "message",
+              "evidence"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "dimension": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "required_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quality_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Correctness among currently checkable items, 0-1. This is what the pass gate reads; final_score is never gated on."
+    },
+    "evidence_cap": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Highest score the supplied inputs permit, from the fixed table in references/breakdown_scoring.md. Depends only on which of source / checkpoint config / trace are present, never on how well the breakdown scored. A Python default in modeling source is NOT a bound checkpoint config."
+    },
+    "final_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "quality_rate x evidence_cap. Descriptive only: MUST NOT be used as a pass threshold, which is why the old final_score >= 95 gate is gone."
+    },
+    "minimum_quality_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "The quality_rate bar for a formal pass (0.95)."
+    },
+    "passed_at_cap": {
+      "type": "boolean",
+      "description": "The only formal downstream gate. True only when quality_rate and every required dimension pass, deterministic hard gates are clear, and a digest-bound, deterministically validated independent critique clears the candidate."
+    },
+    "evidence_cap_detail": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Which of source / checkpoint config / trace were detected, and the resulting cap with its reason."
+    },
+    "critique_cleared": {
+      "type": "boolean",
+      "description": "A bound critique report cleared this candidate: no error issues, all eleven checks passed, digests current. Required for passed_at_cap."
+    },
+    "critique_gates": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Hard gates derived from the independent final critique."
+    }
+  }
+}

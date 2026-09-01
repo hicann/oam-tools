@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "targeted_critique_report.schema.json",
+  "type": "object",
+  "required": ["schema_version", "critique_kind", "status", "candidate_sha256", "source_bundle_hash", "scope", "checks", "issues"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": 1},
+    "critique_kind": {"const": "targeted"},
+    "status": {"enum": ["passed", "failed", "unknown"]},
+    "candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_bundle_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["config_paths", "source_refs", "op_indices"],
+      "properties": {
+        "config_paths": {"type": "array", "items": {"type": "string"}},
+        "source_refs": {"type": "array", "items": {"type": "string"}},
+        "op_indices": {"type": "array", "items": {"type": "integer", "minimum": 0}}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"enum": ["passed", "failed", "unknown"]},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["explanation"],
+              "additionalProperties": false,
+              "anyOf": [
+                {"required": ["source_ref"]},
+                {"required": ["config_path"]},
+                {"required": ["op_indices"]}
+              ],
+              "properties": {
+                "explanation": {"type": "string", "minLength": 1},
+                "source_ref": {"type": "string"},
+                "config_path": {"type": "string"},
+                "op_indices": {"type": "array", "items": {"type": "integer", "minimum": 0}}
+              }
+            }
+          },
+          "issue_ids": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "issues": {"type": "array", "items": {"type": "object"}},
+    "critic": {"type": "string"},
+    "critiqued_at": {"type": "string"}
+  }
+}

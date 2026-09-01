@@ -1,0 +1,917 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "analysis_config_v2.schema.json",
+  "title": "analysis_config schema v2",
+  "description": "Separates learned model architecture from observed runtime trace instances. schema_version=2. Legacy v1 configs migrated to v2 carry migration.status=legacy_unverified. `additionalProperties: false` here and on every nested object is load-bearing: `parallel_siblings` was read by a downstream consumer while being absent from this schema, so it could be neither required nor validated, and any misspelled field passed silently. A field that matters must be declared. `trace_instances` is NOT required -- a source-only decomposition is a complete artifact, since the architecture comes from the source and a capture only corroborates it; requiring instances forced source-only analyses to fabricate a capture record.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "model_name",
+    "architecture"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "model_name": {
+      "type": "string"
+    },
+    "representative_step": {
+      "type": [
+        "integer",
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    },
+    "migration": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "native_v2",
+            "legacy_unverified"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": [
+        "source_of_truth",
+        "num_main_layers",
+        "layer_groups",
+        "prediction_modules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_of_truth": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+          }
+        },
+        "num_main_layers": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "const": "unknown"
+            }
+          ]
+        },
+        "layer_groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "classification": {
+                "enum": [
+                  "dense",
+                  "moe",
+                  "sliding",
+                  "full",
+                  "other",
+                  "unknown"
+                ]
+              },
+              "model_layer_indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "model_layer_range": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "predicate": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The source-level condition that puts a layer in this group, e.g. `layer_idx < first_k_dense_replace (3)`. Emitted by the adapters; declared here because closing this object without it would reject every manifest-derived config."
+              },
+              "confidence": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "unknown"
+                ]
+              },
+              "source_ref": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "prediction_modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "model_layer_indices",
+              "learned_module_count"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "model_layer_indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "learned_module_count": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "const": "unknown"
+                  }
+                ],
+                "description": "Learned modules, NOT invocations. An MTP module invoked twice per step is 1 learned layer; conflating the two double-counts its parameters."
+              },
+              "count_config_key": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The config key this count was read from. Emitted by the adapters."
+              },
+              "confidence": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "unknown"
+                ]
+              },
+              "source_ref": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "trace_scope": {
+      "type": "object",
+      "description": "OPTIONAL, and describes only the capture it came from. The architecture is never derived from it, and its absence is not a defect. Retained for compatibility with existing configs; consumers must tolerate it being missing.",
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "full_model",
+            "rank_local",
+            "pipeline_stage_local",
+            "unknown"
+          ]
+        },
+        "rank": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "pipeline_stage": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "parallelism": {
+          "type": "object",
+          "description": "Detected parallel sizes; each may be an integer or \"unknown\". Deliberately open: unlike every other object here, the set of parallel dimensions is not fixed (`world_size`, `attn_tp`, `moe_ep` all appear in real runtime YAMLs), and a closed list would reject the next backend's spelling. Every value is an annotation on the capture, never architecture, so an unrecognised key cannot corrupt the decomposition.",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "const": "unknown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "properties": {
+            "tp": {},
+            "ep": {},
+            "pp": {},
+            "cp": {},
+            "dp": {}
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "trace_instances": {
+      "type": "array",
+      "description": "One record per observed runtime invocation of a repeated module (decoder layer, MTP iteration, etc.).",
+      "items": {
+        "type": "object",
+        "required": [
+          "instance_id",
+          "model_layer_index",
+          "invocation_index"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "model_layer_index": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "const": "unknown"
+              }
+            ]
+          },
+          "invocation_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "layer_group_type": {
+            "type": "string"
+          },
+          "representative_instance_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "op_range": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "op_indices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "execution_profiles": {
+      "type": "array",
+      "description": "Deployment configurations of this same source. Optional: a model with one entrypoint and no config-gated branches needs none.",
+      "items": {
+        "$ref": "#/definitions/execution_profile"
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "description": "Places where the AST cannot determine the dataflow (control flow on runtime tensor values, reflection, externally-generated graphs) and a human decided what the run actually does. Required for every blocking `unsupported` the extractor reports: check D5 fails without one, so the gap is declared rather than silently assumed away.",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_ref",
+          "reason",
+          "resolution"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "source_ref": {
+            "type": "string",
+            "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+          },
+          "construct": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "description": "Which path this deployment takes, and the evidence for it."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "model_flow": {
+      "type": "array",
+      "description": "Ordered top-level node ids forming the whole-model chain, read by build_architecture_graph.py to connect embedding -> decoder stack -> tail. A LINEAR chain only: it cannot express a fork, a join, a cache read or an MTP re-entry, so `dataflow` below supersedes it for anything that is not a single path. Kept because existing configs and the downstream consumer use it.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dataflow": {
+      "type": "object",
+      "description": "Explicit whole-model dataflow graph. OPTIONAL: `branches` already carries the intra-structure edges that the source can prove, and this is for edges that cross structure boundaries (embedding -> blocks -> head, MTP re-entry, KV cache reads) which have no other home. Supersedes `model_flow`, which can only express a linear chain. Nothing downstream may infer a top-level edge from node ordering, so an absent graph means those edges are undeclared, never that the model is a single chain.",
+      "additionalProperties": false,
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "description": "Addressable endpoints for edges. Every edge endpoint must appear here (checked by check_dataflow, since JSON Schema cannot express a cross-reference).",
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "structure": {
+                "type": "string",
+                "description": "Key in `structures`/`stages` this node stands for, when it stands for one."
+              },
+              "role": {
+                "type": "string",
+                "description": "Free-form on purpose: a closed enum would block the next model family. Unknown roles are legal."
+              },
+              "source_ref": {
+                "type": "string",
+                "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "target",
+              "kind",
+              "source_ref"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "type": "string"
+              },
+              "source_port": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "target_port": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "activation",
+                  "residual",
+                  "parameter",
+                  "cache",
+                  "index",
+                  "runtime_carry"
+                ],
+                "description": "`runtime_carry` is a value arriving from a previous invocation -- not an intra-step cycle, which is what distinguishes a legal carry from an inverted residual."
+              },
+              "invocation_offset": {
+                "type": "integer",
+                "description": "For kind=runtime_carry: how many invocations back the value came from."
+              },
+              "source_ref": {
+                "type": "string",
+                "description": "file:line where this edge is visible. Required: an edge with no source line cannot be checked against the source, which is the only thing that can prove it.",
+                "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "component_groups": {
+      "type": "array",
+      "description": "Repeated component stacks, as a general alternative to `architecture.layer_groups`. Lets a model have several stacks, or a stack that is not the single decoder chain layer_groups assumes. Optional and additive: layer_groups stays valid for the single-stack case.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "definition",
+          "source_ref"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string",
+            "description": "The structure key each repetition instantiates."
+          },
+          "repeat": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "count": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "const": "unknown"
+                  }
+                ]
+              },
+              "indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "sharing": {
+            "enum": [
+              "independent_parameters",
+              "shared_parameters",
+              "unknown"
+            ],
+            "description": "Whether repetitions share weights. `unknown` is legal; guessing is not, because it changes what a per-layer cost means."
+          },
+          "source_ref": {
+            "type": "string",
+            "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+          }
+        }
+      }
+    },
+    "structures": {
+      "type": "object",
+      "description": "Representative structure tree per layer_group type / stage. Keyed by type name.",
+      "additionalProperties": {
+        "$ref": "#/definitions/node"
+      }
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/node"
+      }
+    },
+    "runtime_auxiliary": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/node"
+      }
+    },
+    "excluded_profiler_ops": {
+      "type": "array",
+      "description": "Ops legitimately excluded from model/runtime accounting: profiler/bookkeeping only. reason_code MUST be from the finite enum and MUST carry evidence. Main-compute kernels (MatMul/Attention/Norm/MoE/comm/Gather/KVcache/sampling) may NEVER appear here.",
+      "items": {
+        "type": "object",
+        "required": [
+          "op_indices",
+          "reason_code",
+          "evidence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "op_indices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "reason_code": {
+            "enum": [
+              "profiler_marker",
+              "stream_sync_placeholder",
+              "cross_step_bookkeeping",
+              "device_param_update",
+              "empty_shape_noop"
+            ]
+          },
+          "evidence": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unmapped_ops": {
+      "type": "array",
+      "description": "Ops with UNKNOWN ownership — mapping is incomplete. Strict validation FAILS if this is non-empty. A free-text reason does NOT make an op 'covered'; only explicit model/runtime/excluded ownership does.",
+      "items": {
+        "type": "object",
+        "required": [
+          "op_indices"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "op_indices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "node": {
+      "type": "object",
+      "description": "One node of a structure tree. `children` expresses CONTAINMENT ONLY: adjacency in that list is not a dataflow edge, so residuals and parallel paths belong in `branches`.",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "semantic": {
+          "type": "string"
+        },
+        "code_ref": {
+          "type": "string"
+        },
+        "architecture_group_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "For a top-level runtime template, the learned architecture.layer_groups/prediction_modules type that owns it. A capture may have multiple runtime templates with one learned owner."
+        },
+        "runtime_pattern": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Capture-specific template identity. It is not a learned layer type and must not create an architecture group."
+        },
+        "op_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/node"
+          }
+        },
+        "kernels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/kernel"
+          }
+        },
+        "shape_semantic": {
+          "description": "OPTIONAL shape annotation. Also legal on a kernel; `validate_shapes.py` reads both. Not part of the formal contract -- its absence says nothing about whether the decomposition is right (run_validation.py --with-shapes).",
+          "type": [
+            "object",
+            "string",
+            "null"
+          ]
+        },
+        "op_data": {
+          "type": "array",
+          "description": "Raw profiler rows for this node's ops, keyed by `index`, used by validate_shapes.py to check declared shapes against measured dims. Debugging aid, not contract.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "org_index": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Row position in the unfiltered profiler export, so a row stays traceable after filtering."
+              },
+              "name": {
+                "type": "string"
+              },
+              "input_shapes": {
+                "type": "string"
+              },
+              "output_shapes": {
+                "type": "string"
+              },
+              "shape_raw": {
+                "type": "string",
+                "description": "Unparsed shape text as the profiler emitted it, kept beside the split forms so a parse failure stays inspectable."
+              },
+              "duration_us": {
+                "type": "number",
+                "minimum": 0
+              },
+              "stream_id": {
+                "type": "string",
+                "description": "String, not integer: profiler exports carry it as text."
+              },
+              "task_type": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/branch"
+          }
+        },
+        "parallel_siblings": {
+          "type": "array",
+          "description": "Groups of this node's children that consume the same producer instead of feeding each other. Declared here because `build_architecture_graph.py` reads it: while it was absent from this schema it could be neither required nor validated, which is the exact hole `additionalProperties: false` closes. `children` order alone reads as a chain, so an undeclared fan-out renders as the wrong topology. Prefer a `branches` entry with kind=parallel, which also names where the paths fork and rejoin; this field records only that the members are siblings.",
+          "items": {
+            "type": "object",
+            "required": [
+              "members"
+            ],
+            "additionalProperties": false,
+            "anyOf": [
+              {
+                "required": [
+                  "source_ref"
+                ]
+              },
+              {
+                "required": [
+                  "code_ref"
+                ]
+              }
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "members": {
+                "type": "array",
+                "minItems": 2,
+                "description": "Child names that run in parallel. Fewer than two is not a fan-out.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "semantic": {
+                "type": "string"
+              },
+              "source_ref": {
+                "type": "string",
+                "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+              },
+              "code_ref": {
+                "type": "string",
+                "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+              }
+            }
+          }
+        },
+        "stage_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "instance_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "kernel": {
+      "type": "object",
+      "description": "One profiler op attributed to this node. Was previously an unconstrained object, so a misspelled `shape_semantic` silently read as absent.",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "semantic": {
+          "type": "string"
+        },
+        "code_ref": {
+          "type": "string"
+        },
+        "shape_semantic": {
+          "description": "OPTIONAL annotation layered on the profiler's dims. Not part of the formal contract: its absence says nothing about whether the decomposition is right (see run_validation.py --with-shapes).",
+          "type": [
+            "object",
+            "string",
+            "null"
+          ]
+        },
+        "op_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "description": "A non-chain edge between two nodes of the same structure. `children` expresses containment ONLY -- adjacency in that list is not a dataflow edge -- so every residual, every parallel path and every skip must appear here or it does not exist downstream. `inputs` names where the path forks off and `output` where it rejoins; the siblings strictly between them are what it bypasses. Endpoints may be bare child names or fully-qualified node ids.",
+      "required": [
+        "name",
+        "inputs",
+        "output"
+      ],
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "source_ref"
+          ]
+        },
+        {
+          "required": [
+            "code_ref"
+          ]
+        }
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "residual",
+            "parallel",
+            "skip",
+            "gate",
+            "cross_invocation"
+          ],
+          "description": "Omitted means `residual`, matching what every consumer already assumes."
+        },
+        "inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "output": {
+          "type": "string"
+        },
+        "semantic": {
+          "type": "string"
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "file:line where this edge is visible in forward(). A branch without one cannot be checked against the source, which is the only thing that can prove it. `code_ref` is accepted as the equivalent spelling, since structure nodes use that name.",
+          "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+        },
+        "code_ref": {
+          "type": "string",
+          "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+        },
+        "invocation_offset": {
+          "type": "integer",
+          "description": "For kind=cross_invocation: how many invocations back the carried value came from. A residual entering a repeated block from its own previous invocation is NOT an intra-block cycle, and this is what distinguishes the two."
+        }
+      }
+    },
+    "execution_profile": {
+      "type": "object",
+      "description": "One deployment configuration of the same source: which forward method each component actually runs, and which config-gated arms were selected. Two profiles (prefill/decode, quantised/not) may share component definitions while activating different subgraphs.",
+      "required": [
+        "id",
+        "entrypoint"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "entrypoint": {
+          "type": "string",
+          "description": "Method actually invoked, e.g. `forward`, `forward_absorb`, `forward_w8a8int8`."
+        },
+        "selected_variants": {
+          "type": "array",
+          "description": "Which arm of each config-gated branch this profile takes. Recorded rather than inferred: the extractor can see both arms but not which one a deployment chose.",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_ref",
+              "arm"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source_ref": {
+                "type": "string",
+                "pattern": "^.+:[0-9]+(-[0-9]+)?$"
+              },
+              "condition": {
+                "type": "string"
+              },
+              "arm": {
+                "enum": [
+                  "then",
+                  "else"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "active_structures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

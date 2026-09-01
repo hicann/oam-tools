@@ -1,0 +1,386 @@
+{
+  "schema_version": 2,
+  "model_name": "Synthetic-MoE-MTP",
+  "representative_step": 1,
+  "notes": "synthetic fixture: 1 dense + 1 moe main layer, 1 learned MTP layer invoked twice",
+  "migration": {
+    "status": "native_v2"
+  },
+  "architecture": {
+    "source_of_truth": [
+      "tests/fixtures/synthetic/configuration_synthetic.py:1",
+      "tests/fixtures/synthetic/modeling_synthetic.py:1"
+    ],
+    "num_main_layers": 2,
+    "layer_groups": [
+      {
+        "type": "SynDecoderLayer_dense",
+        "classification": "dense",
+        "model_layer_indices": [
+          0
+        ],
+        "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:30"
+      },
+      {
+        "type": "SynDecoderLayer_moe",
+        "classification": "moe",
+        "model_layer_indices": [
+          1
+        ],
+        "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:30"
+      }
+    ],
+    "prediction_modules": [
+      {
+        "type": "SynDecoderLayer_mtp",
+        "learned_module_count": 1,
+        "model_layer_indices": [
+          2
+        ],
+        "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:60"
+      }
+    ]
+  },
+  "trace_scope": {
+    "kind": "unknown",
+    "rank": null,
+    "pipeline_stage": null,
+    "parallelism": {
+      "tp": 1,
+      "ep": 4,
+      "pp": "unknown",
+      "cp": 1
+    },
+    "evidence": [
+      "synthetic MoeGating input[-1]=8 / GroupedMatmul weight[0]=2 -> ep=4",
+      "synthetic: no PP evidence"
+    ],
+    "confidence": "high"
+  },
+  "trace_instances": [
+    {
+      "instance_id": "dense_0",
+      "model_layer_index": 0,
+      "invocation_index": 0,
+      "layer_group_type": "SynDecoderLayer_dense",
+      "op_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "instance_id": "moe_1",
+      "model_layer_index": 1,
+      "invocation_index": 0,
+      "layer_group_type": "SynDecoderLayer_moe",
+      "op_range": [
+        10,
+        17
+      ]
+    },
+    {
+      "instance_id": "mtp_iter_0",
+      "model_layer_index": 2,
+      "invocation_index": 0,
+      "layer_group_type": "SynDecoderLayer_mtp",
+      "representative_instance_id": "mtp_iter_0",
+      "op_range": [
+        21,
+        23
+      ]
+    },
+    {
+      "instance_id": "mtp_iter_1",
+      "model_layer_index": 2,
+      "invocation_index": 1,
+      "layer_group_type": "SynDecoderLayer_mtp",
+      "representative_instance_id": "mtp_iter_0",
+      "op_range": [
+        26,
+        28
+      ]
+    }
+  ],
+  "structures": {
+    "SynDecoderLayer_dense": {
+      "name": "SynDecoderLayer_dense",
+      "semantic": "dense layer",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:30",
+      "children": [
+        {
+          "name": "self_attn",
+          "semantic": "MLA attention",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:40",
+          "children": [
+            {
+              "name": "mla_prolog",
+              "semantic": "MLA prolog",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:41",
+              "op_indices": [
+                3
+              ]
+            },
+            {
+              "name": "input_norm",
+              "semantic": "RMSNorm",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:42",
+              "op_indices": [
+                4
+              ]
+            },
+            {
+              "name": "sparse_attention",
+              "semantic": "sparse FA",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:43",
+              "op_indices": [
+                5
+              ]
+            },
+            {
+              "name": "output_proj",
+              "semantic": "o_proj",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:44",
+              "op_indices": [
+                6
+              ]
+            }
+          ]
+        },
+        {
+          "name": "post_attention_layernorm",
+          "semantic": "norm",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:45",
+          "op_indices": [
+            7
+          ]
+        },
+        {
+          "name": "dense_mlp",
+          "semantic": "MLP",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:50",
+          "op_indices": [
+            8
+          ]
+        },
+        {
+          "name": "input_layernorm_next",
+          "semantic": "tail norm",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:46",
+          "op_indices": [
+            9
+          ]
+        }
+      ],
+      "branches": [
+        {
+          "name": "attn_residual",
+          "kind": "residual",
+          "inputs": [
+            "input_layernorm_next"
+          ],
+          "output": "post_attention_layernorm",
+          "semantic": "residual carried from the previous invocation tail norm, bypasses self_attn and rejoins at post_attention_layernorm (fused, no standalone Add)",
+          "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:45"
+        },
+        {
+          "name": "mlp_residual",
+          "kind": "residual",
+          "inputs": [
+            "post_attention_layernorm"
+          ],
+          "output": "input_layernorm_next",
+          "semantic": "residual forked at post_attention_layernorm bypasses dense_mlp and rejoins at this invocation tail norm",
+          "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:46"
+        }
+      ]
+    },
+    "SynDecoderLayer_moe": {
+      "name": "SynDecoderLayer_moe",
+      "semantic": "moe layer",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:30",
+      "children": [
+        {
+          "name": "self_attn",
+          "semantic": "MLA attention",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:40",
+          "children": [
+            {
+              "name": "mla_prolog",
+              "semantic": "MLA prolog",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:41",
+              "op_indices": [
+                10
+              ]
+            },
+            {
+              "name": "input_norm",
+              "semantic": "RMSNorm",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:42",
+              "op_indices": [
+                11
+              ]
+            },
+            {
+              "name": "sparse_attention",
+              "semantic": "sparse FA",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:43",
+              "op_indices": [
+                12
+              ]
+            },
+            {
+              "name": "output_proj",
+              "semantic": "o_proj",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:44",
+              "op_indices": [
+                13
+              ]
+            }
+          ]
+        },
+        {
+          "name": "post_attention_layernorm",
+          "semantic": "norm",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:45",
+          "op_indices": [
+            14
+          ]
+        },
+        {
+          "name": "mlp",
+          "semantic": "MoE",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:50",
+          "children": [
+            {
+              "name": "router_gating",
+              "semantic": "gate",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:51",
+              "op_indices": [
+                15
+              ]
+            },
+            {
+              "name": "routed_experts",
+              "semantic": "experts",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:52",
+              "op_indices": [
+                16
+              ]
+            },
+            {
+              "name": "combine",
+              "semantic": "combine",
+              "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:53",
+              "op_indices": [
+                17
+              ]
+            }
+          ]
+        }
+      ],
+      "branches": [
+        {
+          "name": "attn_residual",
+          "kind": "residual",
+          "inputs": [
+            "mlp"
+          ],
+          "output": "post_attention_layernorm",
+          "semantic": "no fused tail-norm node in this template, so the carry originates at the previous invocation mlp output, bypasses self_attn and rejoins at post_attention_layernorm",
+          "source_ref": "tests/fixtures/synthetic/modeling_synthetic.py:45"
+        }
+      ]
+    },
+    "SynDecoderLayer_mtp": {
+      "name": "SynDecoderLayer_mtp",
+      "semantic": "mtp body (reused each iteration)",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:60",
+      "children": [
+        {
+          "name": "mla_prolog",
+          "semantic": "MLA prolog",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:41",
+          "op_indices": [
+            21
+          ]
+        },
+        {
+          "name": "sparse_attention",
+          "semantic": "sparse FA",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:43",
+          "op_indices": [
+            22
+          ]
+        },
+        {
+          "name": "output_proj",
+          "semantic": "o_proj",
+          "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:44",
+          "op_indices": [
+            23
+          ]
+        }
+      ]
+    }
+  },
+  "stages": {
+    "embedding": {
+      "name": "embedding",
+      "semantic": "embed",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:20",
+      "op_indices": [
+        0,
+        1,
+        2
+      ]
+    },
+    "main_lm_head": {
+      "name": "main_lm_head",
+      "semantic": "lm head",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:70",
+      "op_indices": [
+        18,
+        19
+      ]
+    },
+    "mtp_scaffold": {
+      "name": "mtp_scaffold",
+      "semantic": "mtp scaffold",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:61",
+      "stage_indices": [
+        0,
+        1
+      ],
+      "op_indices": [
+        20,
+        25
+      ]
+    },
+    "mtp_output": {
+      "name": "mtp_output",
+      "semantic": "mtp output head",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:62",
+      "stage_indices": [
+        0,
+        1
+      ],
+      "op_indices": [
+        24,
+        29
+      ]
+    }
+  },
+  "runtime_auxiliary": [
+    {
+      "name": "sampling_verify",
+      "semantic": "argmax + param update",
+      "code_ref": "tests/fixtures/synthetic/modeling_synthetic.py:80",
+      "op_indices": [
+        30,
+        31
+      ]
+    }
+  ],
+  "excluded_profiler_ops": [],
+  "unmapped_ops": []
+}
