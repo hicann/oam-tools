@@ -15,6 +15,8 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+set -e
+
 # 脚本功能：安装项目必备的 skills
 # 默认技能技能列表
 DEFAULT_SKILLS=("gitcode-pr" "gitcode-issue")
@@ -62,7 +64,10 @@ fi
 echo "Installing skills..."
 for skill in "${MISSING_SKILLS[@]}"; do
     if [ -d "$TEMP_DIR/skills/skills/$skill" ]; then
-        cp -r "$TEMP_DIR/skills/skills/$skill" "$SKILLS_DIR/"
+        if ! cp -r "$TEMP_DIR/skills/skills/$skill" "$SKILLS_DIR/"; then
+            echo "Error: Failed to install skill '$skill' to $SKILLS_DIR"
+            exit 1
+        fi
         echo "Installed skill: $skill"
     else
         echo "Warning: Skill '$skill' not found in repository"
@@ -70,3 +75,4 @@ for skill in "${MISSING_SKILLS[@]}"; do
 done
 
 echo "All skills installed successfully."
+exit 0

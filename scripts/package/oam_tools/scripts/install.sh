@@ -312,7 +312,7 @@ precleanbeforeinstall() {
             fi
         done
     fi
-   
+
     if [ "${_files_existed}" = "0" ]; then
         if [ "${is_quiet}" = y ]; then
             logandprint "[WARNING]: Directory has file existed or installed oam-tools \
@@ -482,7 +482,7 @@ getfirstnotexistdir() {
     arr=$(echo ${in_tmp_dir} | tr '/' "\n")
     index=0
     id=-1
-    for i in $arr;do 
+    for i in $arr;do
 	id=$((${id:=-1}+1))
 	eval arr_$id=$i
 	index=$(expr $index + 1)
@@ -534,7 +534,7 @@ matchfullpath() {
         absolute_path=${1}
         return
     fi
-    paths="/"* 
+    paths="/"*
     for i in ${paths}; do
         if [ "${1}" = "${i}" ] && [ "${1%/*}" = "" ]; then
             absolute_path="/${1##*/}"
@@ -984,7 +984,7 @@ repairaicpu(){
         if [ "$is_for_all" = "y" ];then
             num_value_param=555
             chmod $num_value_param $1/${opp_platform_dir}/built-in/op_proto/libopsproto.so > /dev/null 2>&1
-            chmod $num_value_param $1/${opp_platform_dir}/built-in/op_impl/ai_core/tbe/op_tiling/liboptiling.so > /dev/null 2>&1 
+            chmod $num_value_param $1/${opp_platform_dir}/built-in/op_impl/ai_core/tbe/op_tiling/liboptiling.so > /dev/null 2>&1
         fi
         if [ $(id -u) -ne 0 ];then
             chmod $num_value_param $1/${opp_platform_dir}/built-in/op_proto/libopsproto.so > /dev/null 2>&1
@@ -1242,7 +1242,7 @@ if [ "$(id -u)" = "0" ] ; then
 fi
 
 # pre-check
-if [ "${iter_i}" -eq 0 ] && [ "x${is_precheck}" = "xy" ]; then 
+if [ "${iter_i}" -eq 0 ] && [ "x${is_precheck}" = "xy" ]; then
     interact_pre_check
     exitlog
     exit 0
@@ -1608,12 +1608,31 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
             else
                 chip_type_new=${chip_type_new}
             fi
+            _upgrade_ret=0
             sh "${_UPGRADE_SHELL_FILE}" "${_TARGET_INSTALL_PATH}" "${_DEFAULT_USERNAME}" "${_DEFAULT_USERGROUP}" ${in_feature} "${is_quiet}" "${is_for_all}" "${is_setenv}" "${is_docker_install}" "${docker_root}" "" "n" "${in_feature_new}" "${chip_type_new}" "$pkg_version_dir"
-            chmod -R 555 "${target_dir}/${opp_platform_dir}/script"> /dev/null 2>&1
-            chmod -R 555 "${target_dir}/${opp_platform_dir}/bin"> /dev/null 2>&1
+            if [ "$?" != 0 ]; then
+                _upgrade_ret=1
+            fi
+
+            _post_upgrade_builtin_perm=550
+            _post_upgrade_custom_perm=750
+            if [ "${is_for_all}" = "y" ]; then
+                _post_upgrade_builtin_perm=555
+                _post_upgrade_custom_perm=755
+            fi
+            if ! chmod -R "${_post_upgrade_builtin_perm}" "${target_dir}/${opp_platform_dir}/script" > /dev/null 2>&1; then
+                _upgrade_ret=1
+            fi
+            if [ -d "${target_dir}/${opp_platform_dir}/bin" ] && ! chmod -R "${_post_upgrade_custom_perm}" "${target_dir}/${opp_platform_dir}/bin" > /dev/null 2>&1; then
+                _upgrade_ret=1
+            fi
             if [ $(id -u) -eq 0 ]; then
-                chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script"> /dev/null 2>&1
-                chown "root":"root" "${target_dir}/${opp_platform_dir}"> /dev/null 2>&1
+                if ! chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" > /dev/null 2>&1; then
+                    _upgrade_ret=1
+                fi
+                if ! chown "root":"root" "${target_dir}/${opp_platform_dir}" > /dev/null 2>&1; then
+                    _upgrade_ret=1
+                fi
             fi
 #            aicpuinfofile "add"
             # repairaicpu "${target_dir}"
@@ -1621,9 +1640,12 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
             if [ -f "${target_dir}/../../tools/profiler/profiler_tool/msprof-0.0.1-py3-none-any.whl" ]; then
                 logandprint "[INFO]: msprof_install.sh"
                 bash ${target_dir}/oam_tools/script/msprof_install.sh --install-path=${target_dir}/../..
+                if [ "$?" != 0 ]; then
+                    _upgrade_ret=1
+                fi
             fi
             logandprint "[INFO]: Set precheck info."
-            logoperationretstatus "upgrade" "${install_type}" "$?" "${in_cmd_list}"
+            logoperationretstatus "upgrade" "${install_type}" "${_upgrade_ret}" "${in_cmd_list}"
         fi
     fi
     # check the compatibility of oam-tools
@@ -1670,7 +1692,7 @@ if [ "${is_upgrade}" = "y" ];then
     sh "${_UPGRADE_SHELL_FILE}" "${_TARGET_INSTALL_PATH}" "${_DEFAULT_USERNAME}" "${_DEFAULT_USERGROUP}" ${in_feature} "${is_quiet}" "${is_for_all}" "${is_setenv}" "${is_docker_install}" "${docker_root}" "${is_input_path}" "${is_upgrade}" "${in_feature_new}" "${chip_type_new}" "$pkg_version_dir"
     if [ $(id -u) -eq 0 ]; then
         chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-        chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null    
+        chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null
         chmod -R 555 "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
         chmod 444 "${target_dir}/${opp_platform_dir}/script/filelist.csv" 2> /dev/null
     else
