@@ -42,7 +42,8 @@ from ms_interface.constant import (
     NOT_RUN_EXEC_FAILED,
     NOT_RUN_LAUNCH_FAILED,
 )
-from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.aic_error_info import AicErrorInfo, detect_chip_type_by_dump_info
+from ms_interface import pc_corrector
 from ms_interface.dump_data_parser import DumpDataParser
 from ms_interface.single_op_test_frame.utils import shape_utils
 from ms_interface.dsmi_interface import DSMIInterface
@@ -488,7 +489,11 @@ class AicoreErrorParser:
                     info.error_code_all = error_code_ret
                     break
         # extra_info 包括各寄存器信息ifu、ccu、biu、cube、mte、vec的寄存器错误码
-        info.extra_info = self._get_extra_info(aic_err_ret.pop("extra_info"))
+        ori_extra_info = aic_err_ret.pop("extra_info")
+        # 判型要在 _get_extra_info 之前：它只抽 910B 那 6 个字段，950 独有的
+        # sc/su/l1 error info 会被丢掉，之后就判不出芯片了。
+        chip_type = detect_chip_type_by_dump_info(ori_extra_info)
+        info.extra_info = self._get_extra_info(ori_extra_info)
         info.aic_error_info = aic_err_ret
 
         info.data_name = data_name
@@ -527,11 +532,15 @@ class AicoreErrorParser:
             f"rts_block_dim: {info.rts_block_dim}, driver_aicore_num: {info.driver_aicore_num}."
         )
 
-        if (
-            info.aic_error_info.get("error_code", "") == "0"
-            or info.aic_error_info.get("error_code", "") == "0x0"
-        ):
+        if info.aic_error_info.get("error_code", "") in ("0", "0x0"):
             info.aic_error_info["error_code"] = self._get_v300_error_code()
+
+        # error_code 兜底之后再做 PC 修正：修正命中的模块由 error_code 决定。
+        # chip_type 由上面的 dump info 字段判出，不受兜底改写 error_code 影响。
+        info.corrected_pc = pc_corrector.get_corrected_pc(plog_path, info, chip_type)
+        # 与 corrected_pc 同处填充：_get_info_for_decompile 只在 L1 反编译路径上
+        # 执行，放那里会让其余路径拿到 corrected_pc 却没有错误行号。
+        self._set_corrected_instr(info)
 
         return info
 
@@ -986,6 +995,49 @@ class AicoreErrorParser:
             utils.print_debug_log(f"Estimated error address offset is {err_pc}.")
 
         return diff_str, err_pc
+
+    @classmethod
+    def _get_symbolize_o_file(cls, info: any) -> str:
+        """Pick the *.o to symbolize: the kernel *.o, host.o only as a fallback.
+
+        仅当 kernel 的 *.o 不存在时才退到 <kernel_name>*_host.o，两者都拿不到则
+        返回空串，交由 symbolize 打告警。
+        """
+        if info.bin_file and os.path.exists(info.bin_file):
+            return info.bin_file
+        if not info.kernel_path or not info.kernel_name:
+            return info.bin_file
+        # host.o 按去后缀名命名（与 _get_kernel_and_json_file 取 .o 时一致），
+        # mix 算子直接拿 Foo_mix_aic 去 glob 恒不命中。
+        host_o = cls._find_sk_host_o(
+            info.kernel_path, cls._strip_kernel_name_suffix(info.kernel_name)
+        )
+        if not host_o:
+            return info.bin_file
+        utils.print_info_log(
+            f"The *.o file {info.bin_file} does not exist, fall back to {host_o}."
+        )
+        return host_o
+
+    @classmethod
+    def _set_corrected_instr(cls, info: any) -> None:
+        """Fill in the corrected error line, symbolized via llvm-symbolizer.
+
+        修正后的 PC 由 adump 日志或本地掩码表得出，与 llvm-symbolizer 无关，
+        故 symbolize 失败（未安装、执行失败、.o 无调试信息）时照常输出修正 PC，
+        仅把行号一行换成提示，说明行号无法计算。
+        """
+        if not info.corrected_pc:
+            return
+        offset = info.corrected_pc.get("offset", 0)
+        location = pc_corrector.symbolize(cls._get_symbolize_o_file(info), offset)
+        if not location:
+            info.corrected_instr = "Unable to calculate the corrected line number, check the logs for more details.\n"
+            return
+        info.corrected_instr = (
+            f"Error occurred most likely at line: {hex(offset)[2:]}\n"
+        )
+        info.corrected_instr += f"{location}\n"
 
     @staticmethod
     def _get_decompile_status(o_file: str, decompile_file: str) -> int:
@@ -2117,13 +2169,18 @@ exit()"""
             if kernel_file.startswith(self.collect_path)
         ]
 
-    def _get_kernel_and_json_file(self: any, kernel_name: str, tiling_key: str):
-        kernel_path = os.path.join(self.collect_path, "collection", "compile")
-        kernel_name = (
+    @staticmethod
+    def _strip_kernel_name_suffix(kernel_name: str) -> str:
+        """Drop the suffixes that never appear in the compiled file names."""
+        return (
             kernel_name.replace("__kernel0", "")
             .replace("_mix_aic", "")
             .replace("_mix_aiv", "")
         )
+
+    def _get_kernel_and_json_file(self: any, kernel_name: str, tiling_key: str):
+        kernel_path = os.path.join(self.collect_path, "collection", "compile")
+        kernel_name = self._strip_kernel_name_suffix(kernel_name)
         if self.is_sk:
             return self._get_sk_kernel_file(kernel_path, kernel_name)
 

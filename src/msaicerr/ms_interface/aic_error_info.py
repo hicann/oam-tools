@@ -40,6 +40,24 @@ def detect_chip_type(error_code: str) -> ChipType:
     return ChipType.ASCEND_910B
 
 
+def detect_chip_type_by_dump_info(dump_info: str) -> ChipType:
+    """Tell the two chips apart by which registers the `dump info:` line carries.
+
+    比 error_code 可靠：error_code 为裸 "0" 时两种芯片同形，detect_chip_type 只能
+    落到 910B。但两者打印的寄存器集不同 —— 950（device_error_proc_c.cc）打
+    sc/su/l1 error info，910B（device_error_core_proc.cc）打 ifu/ccu/biu error
+    info，互不重叠。都判不出时返回 None，由调用方决定回退口径。
+    """
+    if not dump_info:
+        return None
+    lowered = dump_info.lower()
+    if any(key in lowered for key in Constant.DAVID_ONLY_DUMP_KEYS):
+        return ChipType.ASCEND_950
+    if any(key in lowered for key in Constant.STARS_ONLY_DUMP_KEYS):
+        return ChipType.ASCEND_910B
+    return None
+
+
 def parse_stars_error_bits(error_code: str) -> list:
     """Bit-scan a 910B error code into bit numbers.
 
@@ -125,6 +143,9 @@ class AicErrorInfo:
         self.workspace = 0
         self.hash_id = 0
         self.single_op_log_path = ""
+        # PC 修正结果，见 pc_corrector.get_corrected_pc；拿不到时为空 dict。
+        self.corrected_pc = {}
+        self.corrected_instr = ""
 
     def analyse(self: any) -> str:
         """
@@ -167,9 +188,7 @@ AIC_ERROR        : {self.error_code_all if self.error_code_all else self.aic_err
 {aicerror_info}
 
 ***********************3. Operator Error Line Number************************
-start pc          : {self.aic_error_info.get("start_pc", "")}
-current pc        : {self.aic_error_info.get("current_pc", "")}
-{self.instr}
+{self._get_pc_str()}
 
 ****************4. Operator Input/Output Memory*******************
 {addr_check_str}
@@ -265,6 +284,32 @@ args after  execution: {self._get_args_str(self.args_after_list)}
     @property
     def root_cause_conclusion(self):
         return self.get_conclusion()
+
+    def _get_pc_str(self: any) -> str:
+        """Report the original PC, and the corrected PC when it is available."""
+        result = (
+            "Original Info:\n"
+            f"start pc          : {self.aic_error_info.get('start_pc', '')}\n"
+            f"current pc        : {self.aic_error_info.get('current_pc', '')}\n"
+        )
+        instr = (self.instr or "").strip()
+        if instr:
+            result += f"{instr}\n"
+        if not self.corrected_pc:
+            return result
+        result += (
+            "\nCorrected Info:\n"
+            f"start pc          : {self.corrected_pc.get('start_pc', '')}\n"
+            f"current pc        : {self.corrected_pc.get('current_pc', '')}\n"
+        )
+        corrected_instr = (self.corrected_instr or "").strip()
+        if corrected_instr:
+            result += f"{corrected_instr}\n"
+        result += (
+            "\nThe corrected PC is fixed by the AI Core error registers and is more "
+            "credible than the original PC. Locate the fault by the corrected info first.\n"
+        )
+        return result
 
     @staticmethod
     def _get_args_str(input_list: list) -> str:

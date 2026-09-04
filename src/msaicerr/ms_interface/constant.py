@@ -129,6 +129,7 @@ class Constant:
     # aicore_error_parser
     OBJ_DUMP_FILE = "cce-objdump"
     NEW_DUMP_FILE = "llvm-objdump"
+    SYMBOLIZER_FILE = "llvm-symbolizer"
     GRAPH_FILE = 0
 
     # collection
@@ -1163,6 +1164,11 @@ class Constant:
     MTE_KEY = "MTE_ERR_INFO"
     VEC_KEY = "VEC_ERR_INFO"
 
+    # 判型用：两种芯片 dump info 行上互不重叠的寄存器名，见
+    # device_error_proc_c.cc（950）与 device_error_core_proc.cc（910B）。
+    DAVID_ONLY_DUMP_KEYS = ("sc error info:", "su error info:", "l1 error info:")
+    STARS_ONLY_DUMP_KEYS = ("ifu error info:", "ccu error info:", "biu error info:")
+
     # dump tiling type
     TILING_TYPE = 7
 
@@ -1201,4 +1207,21 @@ class RegexPattern:
         r"(?P<error_code>0x[0-9a-fA-F]+|\d+(?:,\s*\d+)*),.*?"
         r"current:\s(?P<current_pc>\S+),\s(?P<extra_info>.*?)"
         r",\sfirst pc start:\s(?P<start_pc>\S+),.*?second pc start:\s(?P<s_start_pc>\S+),.*?"
+    )
+
+    # adump 已修正好的 PC，见 runtime kernel_symbol_locator.cpp PrintErrorForCore。
+    ADUMP_FIXED_PC = (
+        r"Error PC information\.\scoreId=(?P<core_id>\d+),\scoreType=(?P<core_type>\d+),\s"
+        r"originalStartPC=(?P<start_pc>[^,]+),\sfixedStartPC=(?P<fixed_start_pc>[^,]+),\s"
+        r"originalCurrentPC=(?P<current_pc>[^,]+),\sfixedCurrentPC=(?P<fixed_current_pc>[^,]+),\s"
+        r"fixedPCOffset=(?P<fixed_pc_offset>[^,.\s]+)"
+    )
+
+    # FIXP 寄存器在 runtime 的 extend info 行上，非 AICORE_ERR_OCCUR 那行。
+    PLOG_FIXP_ERR = r"fixp_error0 info:\s(\S+?),\sfixp_error1 info:\s(\S+?)[,\s]"
+
+    # adump 的逐寄存器 dump，见 PrintErrorRegisters，单核可能分多条打印。
+    ADUMP_ERR_REGS = (
+        r"Error register information\.\scoreId=(?P<core_id>\d+),\scoreType=(?P<core_type>\d+),\s"
+        r"(?P<regs>[A-Z0-9_]+=0x[0-9a-fA-F]+(?:\s+[A-Z0-9_]+=0x[0-9a-fA-F]+)*)"
     )
