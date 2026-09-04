@@ -440,6 +440,19 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpu)
     remove("/tmp/prof_host_cpu_freq_valid_stat");
 }
 
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWhenCanonicalizePathFails)
+{
+    GlobalMockObject::verify();
+    MOCKER(analysis::dvvp::common::utils::Utils::CanonicalizePath).stubs().will(returnValue(std::string()));
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+
+    int32_t cpuId = -1;
+    EXPECT_FALSE(hostCpuFreqHandler.GetThreadCpu("/tmp/not_exist_stat_file", cpuId));
+}
+
 TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, GetThreadCpuWithoutCommandTerminator)
 {
     GlobalMockObject::verify();
@@ -539,6 +552,38 @@ TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCpuFreqUnsupported)
     std::ifstream ifs;
     hostCpuFreqHandler.ParseProcFile(ifs, data);
     EXPECT_TRUE(data.empty());
+}
+
+TEST_F(PROF_HOST_CPU_FREQ_HANDLER_TEST, ParseProcFileWhenCanonicalizePathFails)
+{
+    GlobalMockObject::verify();
+    MOCKER_CPP(&analysis::dvvp::common::memory::Chunk::Init).stubs().will(returnValue(true));
+
+    std::shared_ptr<TimerAttr> attr(new TimerAttr{PROF_HOST_CPU_FREQ, 0, bufSize, sampleIntervalMs});
+    attr->retFileName = retFileName;
+    ProcHostCpuFreqHandler hostCpuFreqHandler(attr, param, jobCtx, upLoader);
+    EXPECT_EQ(PROFILING_SUCCESS, hostCpuFreqHandler.Init());
+    hostCpuFreqHandler.cpuFreqAvailable_ = true;
+    hostCpuFreqHandler.taskSrc_ = "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST_CANONICAL/task";
+    hostCpuFreqHandler.sysCpuRoot_ = "/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST_CANONICAL/sys/devices/system/cpu";
+    analysis::dvvp::common::utils::Utils::CreateDir(hostCpuFreqHandler.taskSrc_ + "/100");
+    std::ofstream statOfs(hostCpuFreqHandler.taskSrc_ + "/100/stat");
+    statOfs << "100 (worker) R";
+    for (int i = 0; i < 35; ++i) {
+        statOfs << " " << i;
+    }
+    statOfs << " 7\n";
+    statOfs.close();
+    MOCKER(analysis::dvvp::common::utils::Utils::CanonicalizePath)
+        .stubs()
+        .will(returnValue(hostCpuFreqHandler.taskSrc_ + "/100/stat"))
+        .then(returnValue(std::string()));
+
+    std::string data;
+    std::ifstream ifs;
+    hostCpuFreqHandler.ParseProcFile(ifs, data);
+    EXPECT_TRUE(data.find("7 ") == std::string::npos);
+    analysis::dvvp::common::utils::Utils::RemoveDir("/tmp/PROF_HOST_CPU_FREQ_HANDLER_TEST_CANONICAL/");
 }
 ///////////////////////////////////////////////////////////////////////////////////
 class PROF_HOST_MEM_HANDLER_TEST : public testing::Test {

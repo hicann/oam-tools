@@ -358,11 +358,16 @@ ProcHostCpuFreqHandler::~ProcHostCpuFreqHandler() {}
 
 bool ProcHostCpuFreqHandler::GetThreadCpu(const std::string& statFile, int32_t& cpuId) const
 {
-    if (!CheckFileSize(statFile)) {
+    const std::string canonicalizedPath = Utils::CanonicalizePath(statFile);
+    if (canonicalizedPath.empty()) {
+        MSPROF_LOGW("The stat file does not exist or permission denied: %s", statFile.c_str());
+        return false;
+    }
+    if (!CheckFileSize(canonicalizedPath)) {
         MSPROF_LOGW("The stat file is invalid or empty: %s", statFile.c_str());
         return false;
     }
-    std::ifstream fin(statFile, std::ifstream::in);
+    std::ifstream fin(canonicalizedPath, std::ifstream::in);
     if (!fin.is_open()) {
         MSPROF_LOGW("Failed to open stat file: %s", statFile.c_str());
         return false;
@@ -381,7 +386,7 @@ bool ProcHostCpuFreqHandler::GetThreadCpu(const std::string& statFile, int32_t& 
 
     std::istringstream stream(line.substr(commandEnd + 1));
     std::string field;
-    for (uint32_t index = 0; index <= 36; ++index) {
+    for (uint32_t index = 0; index <= PROC_PID_STAT_PROCESSOR_FIELD_OFFSET; ++index) {
         if (!(stream >> field)) {
             MSPROF_LOGW("Invalid stat format with incomplete processor field, file: %s", statFile.c_str());
             return false;
@@ -421,10 +426,15 @@ void ProcHostCpuFreqHandler::ParseProcFile(std::ifstream& ifs, std::string& data
     for (const int32_t cpuId : cpuIds) {
         const std::string freqFile =
             sysCpuRoot_ + MSVP_SLASH + "cpu" + std::to_string(cpuId) + "/cpufreq/scaling_cur_freq";
-        if (!CheckFileSize(freqFile)) {
+        const std::string canonicalizedPath = Utils::CanonicalizePath(freqFile);
+        if (canonicalizedPath.empty()) {
+            MSPROF_LOGW("The frequency file does not exist or permission denied: %s", freqFile.c_str());
             continue;
         }
-        std::ifstream fin(freqFile, std::ifstream::in);
+        if (!CheckFileSize(canonicalizedPath)) {
+            continue;
+        }
+        std::ifstream fin(canonicalizedPath, std::ifstream::in);
         std::string frequency;
         if (fin.is_open() && std::getline(fin, frequency)) {
             data += std::to_string(cpuId) + " " + frequency + "\n";

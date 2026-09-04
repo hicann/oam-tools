@@ -38,6 +38,7 @@ const char* const PROF_NET_STAT = "/proc/net/dev";
 const char* const PROF_PROC_UPTIME = "/proc/uptime";
 constexpr uint32_t PROC_STAT_USELESS_DATA_SIZE = 512;
 constexpr uint32_t PROC_PID_STAT_DATA_SIZE = 512;
+constexpr uint32_t PROC_PID_STAT_PROCESSOR_FIELD_OFFSET = 36;
 constexpr uint32_t PROC_MEM_USELESS_DATA_SIZE = 1536;
 constexpr uint32_t PROC_PID_MEM_DATA_SIZE = 32;
 constexpr uint32_t PROC_PID_NUM = 128;

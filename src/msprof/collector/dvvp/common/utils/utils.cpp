@@ -232,9 +232,9 @@ int32_t Utils::RelativePath(const std::string& path, const std::string& dir, std
 std::string Utils::DirName(const std::string& path)
 {
     std::string result;
-    char* pathCopy = MSVP_STRDUP(path.c_str());
+    CHAR_PTR pathCopy = MSVP_STRDUP(path.c_str());
     if (pathCopy != nullptr) {
-        char* dirc = OsalDirName(pathCopy);
+        CHAR_PTR dirc = OsalDirName(pathCopy);
         if (dirc != nullptr) {
             result = dirc;
         }
@@ -260,9 +260,9 @@ std::string Utils::DirName(const std::string& path)
 std::string Utils::BaseName(const std::string& path)
 {
     std::string result;
-    char* pathCopy = MSVP_STRDUP(path.c_str());
+    CHAR_PTR pathCopy = MSVP_STRDUP(path.c_str());
     if (pathCopy != nullptr) {
-        char* basec = OsalBaseName(pathCopy);
+        CHAR_PTR basec = OsalBaseName(pathCopy);
         if (basec != nullptr) {
             result = basec;
         }
