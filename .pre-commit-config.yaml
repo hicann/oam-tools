@@ -42,8 +42,7 @@ repos:
             build/
             | experiment/
             | src/(
-              hccl_test
-              | third_party
+              third_party
             )/
             | src/msprof/inc/(external|toolchain)/
             | test/(ut|st)/msaicerr/res/
@@ -138,8 +137,7 @@ repos:
             | scripts/
             | skills/
             | src/(
-              hccl_test
-              | msprof
+              msprof
               | third_party
             )/
             | test/(?!(ut|st)/(asys|msaicerr)/)
