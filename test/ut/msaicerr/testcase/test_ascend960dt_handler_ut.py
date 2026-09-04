@@ -19,34 +19,35 @@
 import sys
 
 from conftest import MSAICERR_PATH, CommonAssert
+
 sys.path.append(MSAICERR_PATH)
 
-from ms_interface.ascend910_96.ascend91096_handler import Ascend91096Handler
+from ms_interface.ascend960dt.ascend960dt_handler import Ascend960dtHandler
 from ms_interface.ascend_handler import AscendHandlerBase
 
 
-class TestAscend91096HandlerMethods(CommonAssert):
+class TestAscend960dtHandlerMethods(CommonAssert):
     def test_class_is_subclass_of_ascend_handler_base(self):
-        assert issubclass(Ascend91096Handler, AscendHandlerBase)
+        assert issubclass(Ascend960dtHandler, AscendHandlerBase)
 
     def test_handle_chip_pre_value(self):
-        self.assertEqual(Ascend91096Handler.handle_chip_pre, "Ascend910_96")
+        self.assertEqual(Ascend960dtHandler.handle_chip_pre, "Ascend960DT")
 
     def test_is_chip_handler_match(self):
-        handler = Ascend91096Handler()
-        result = handler.is_chip_handler("Ascend910_96")
+        handler = Ascend960dtHandler()
+        result = handler.is_chip_handler("Ascend960DT")
         assert result
 
     def test_is_chip_handler_no_match(self):
-        handler = Ascend91096Handler()
+        handler = Ascend960dtHandler()
         result = handler.is_chip_handler("Ascend910B1")
         assert not result
 
     def test_is_chip_handler_partial_match(self):
-        handler = Ascend91096Handler()
-        result = handler.is_chip_handler("Ascend910_96B1")
+        handler = Ascend960dtHandler()
+        result = handler.is_chip_handler("Ascend960DTB1")
         assert result
 
     def test_instance_of_ascend_handler_base(self):
-        handler = Ascend91096Handler()
+        handler = Ascend960dtHandler()
         assert isinstance(handler, AscendHandlerBase)

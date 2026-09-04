@@ -18,6 +18,5 @@
 from ms_interface.ascend_handler import AscendHandlerBase
 
 
-class Ascend91096Handler(AscendHandlerBase):
-
-    handle_chip_pre = "Ascend910_96"
+class Ascend960dtHandler(AscendHandlerBase):
+    handle_chip_pre = "Ascend960DT"

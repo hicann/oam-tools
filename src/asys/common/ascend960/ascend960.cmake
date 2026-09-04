@@ -14,5 +14,5 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-list(APPEND ASYS_CHIP_HANDLER_IMPORT "from common.ascend910_96.ascend91096_handler import Ascend91096Handler")
-list(APPEND ASYS_CHIP_HANDLER_LIST "\"910_96\" : {\"regex\": \"910_96\", \"handler\": Ascend91096Handler()}")
+list(APPEND ASYS_CHIP_HANDLER_IMPORT "from common.ascend960.ascend960_handler import Ascend960Handler")
+list(APPEND ASYS_CHIP_HANDLER_LIST "\"960\" : {\"regex\": \"960\", \"handler\": Ascend960Handler()}")

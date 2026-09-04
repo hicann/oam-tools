@@ -227,10 +227,10 @@ class TestProfiling(AssertTest):
 
     def test_asys_profiling_dvpp_unsupported_91096(self, mocker, caplog):
         """
-        异常用例：Ascend910_96 无 dvpp 硬件，-r=dvpp 应被拦截并明确报错
+        异常用例：Ascend960 无 dvpp 硬件，-r=dvpp 应被拦截并明确报错
         """
         fake_run = mocker.patch("profiling.asys_profiling.subprocess.run")
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910_96")
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="960")
         sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=dvpp"]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())
@@ -239,10 +239,10 @@ class TestProfiling(AssertTest):
 
     def test_asys_profiling_dvpp_unsupported_91096_mixed(self, mocker, caplog):
         """
-        异常用例：Ascend910_96 混合 run_mode 含 dvpp 同样被拦截
+        异常用例：Ascend960 混合 run_mode 含 dvpp 同样被拦截
         """
         fake_run = mocker.patch("profiling.asys_profiling.subprocess.run")
-        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="910_96")
+        mocker.patch.object(DeviceInfo, "get_chip_info", return_value="960")
         sys.argv = [CONF_SRC_PATH, "profiling", "-d=0", "-p=1", "-r=aicore,dvpp"]
         ParamDict().set_env_type("EP")
         self.assertTrue(not asys.main())

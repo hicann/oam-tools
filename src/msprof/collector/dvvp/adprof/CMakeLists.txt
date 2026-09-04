@@ -89,13 +89,13 @@ target_link_libraries(adprof PRIVATE
     $<$<STREQUAL:${PRODUCT},ascend910_95>:urma_common>
     $<$<STREQUAL:${PRODUCT},ascend910_95esl>:urma>
     $<$<STREQUAL:${PRODUCT},ascend910_95esl>:urma_common>
-    $<$<STREQUAL:${PRODUCT},ascend910_96>:urma>
-    $<$<STREQUAL:${PRODUCT},ascend910_96>:urma_common>
-    $<$<STREQUAL:${PRODUCT},ascend910_96esl>:urma>
-    $<$<STREQUAL:${PRODUCT},ascend910_96esl>:urma_common>
+    $<$<STREQUAL:${PRODUCT},ascend960>:urma>
+    $<$<STREQUAL:${PRODUCT},ascend960>:urma_common>
+    $<$<STREQUAL:${PRODUCT},ascend960esl>:urma>
+    $<$<STREQUAL:${PRODUCT},ascend960esl>:urma_common>
 )
 
-if ((PRODUCT IN_LIST ASCEND910_95_PRODUCT_LIST) OR (PRODUCT IN_LIST ASCEND910_96_PRODUCT_LIST))
+if ((PRODUCT IN_LIST ASCEND910_95_PRODUCT_LIST) OR (PRODUCT IN_LIST ASCEND960_PRODUCT_LIST))
     target_link_directories(adprof PRIVATE
         ${CMAKE_INSTALL_PREFIX}/lib
     )

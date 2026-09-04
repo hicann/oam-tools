@@ -174,8 +174,8 @@ target_compile_definitions(ascend_devprof PRIVATE
     $<$<STREQUAL:${PRODUCT},ascend910B>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},ascend910_95>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},ascend910_95esl>:EP_MODE>
-    $<$<STREQUAL:${PRODUCT},ascend910_96>:EP_MODE>
-    $<$<STREQUAL:${PRODUCT},ascend910_96esl>:EP_MODE>
+    $<$<STREQUAL:${PRODUCT},ascend960>:EP_MODE>
+    $<$<STREQUAL:${PRODUCT},ascend960esl>:EP_MODE>
 )
 
 target_link_options(ascend_devprof PRIVATE

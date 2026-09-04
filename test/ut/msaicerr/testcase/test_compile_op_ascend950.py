@@ -23,6 +23,7 @@ from pathlib import Path
 import pytest
 
 from conftest import MSAICERR_PATH
+
 sys.path.append(MSAICERR_PATH)
 from ms_interface.constant import ModeCustom
 from ms_interface.dsmi_interface import DSMIInterface, DsmiChipInfoStru
@@ -31,15 +32,17 @@ from ms_interface.ascend950.compile_op import CompileOP
 cur_abspath = os.path.dirname(__file__)
 
 op_name = "AddCustom"
-inputs = [{"name": "x", "param_type": "required", "format": ["ND"], "type": ["float16"]},
-          {"name": "y", "param_type": "required", "format": ["ND"], "type": ["float16"]}]
-outputs = [{"name": "z", "param_type": "required",
-            "format": ["ND"], "type": ["float16"]}]
-compile_op = CompileOP(op_name, inputs, outputs, 'Ascend950')
+inputs = [
+    {"name": "x", "param_type": "required", "format": ["ND"], "type": ["float16"]},
+    {"name": "y", "param_type": "required", "format": ["ND"], "type": ["float16"]},
+]
+outputs = [
+    {"name": "z", "param_type": "required", "format": ["ND"], "type": ["float16"]}
+]
+compile_op = CompileOP(op_name, inputs, outputs, "Ascend950")
 
 
-class TestCompileOp():
-
+class TestCompileOp:
     @staticmethod
     def test_get_ub_size_not_tbe(monkeypatch):
         # 必须显式让 "from tbe.common import platform" 失败，不能依赖环境里
@@ -57,6 +60,7 @@ class TestCompileOp():
     @staticmethod
     def test_get_ub_size_import_error(mocker):
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -71,6 +75,7 @@ class TestCompileOp():
     @staticmethod
     def test_get_ub_size_attribute_error(mocker):
         import builtins
+
         real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -85,7 +90,10 @@ class TestCompileOp():
     def test_get_soc_version_failed(self, monkeypatch, mocker):
         custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
         monkeypatch.setattr(sys, "path", custom_paths)
-        mocker.patch("ms_interface.ascend950.compile_op.DSMIInterface", side_effect=OSError("mocked dsmi"))
+        mocker.patch(
+            "ms_interface.ascend950.compile_op.DSMIInterface",
+            side_effect=OSError("mocked dsmi"),
+        )
         ub_size = compile_op.get_ub_size()
         assert ub_size == 0
 
@@ -94,8 +102,9 @@ class TestCompileOp():
         custom_paths = [MSAICERR_PATH, f"{cur_abspath}/../res/package"]
         monkeypatch.setattr(sys, "path", custom_paths)
         mocker.patch("ctypes.CDLL")
-        mocker.patch.object(DSMIInterface, "get_chip_info",
-                            return_value=DsmiChipInfoStru())
+        mocker.patch.object(
+            DSMIInterface, "get_chip_info", return_value=DsmiChipInfoStru()
+        )
         ub_size = compile_op.get_ub_size()
         assert ub_size == 1024
 
@@ -110,8 +119,10 @@ class TestCompileOp():
         # 写入与当前芯片一致的标记文件，命中复用分支
         marker_dir = temp_dir / op_name
         marker_dir.mkdir(parents=True, exist_ok=True)
-        (marker_dir / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
-        mocker.patch.object(Path, "rglob", return_value=['test.o'])
+        (marker_dir / CompileOP.COMPILE_CHIP_MARKER).write_text(
+            "Ascend950", encoding="utf-8"
+        )
+        mocker.patch.object(Path, "rglob", return_value=["test.o"])
         build_res = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
         assert len(build_res) == 2
@@ -123,11 +134,13 @@ class TestCompileOp():
         marker_dir.mkdir(parents=True, exist_ok=True)
         (marker_dir / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950")
         # 旧芯片残留的编译产物
-        old_build = marker_dir / 'build_out' / 'op_kernel'
+        old_build = marker_dir / "build_out" / "op_kernel"
         old_build.mkdir(parents=True, exist_ok=True)
-        old_build.joinpath(f'{op_name}_add_custom.o').write_text("old", encoding='utf-8')
+        old_build.joinpath(f"{op_name}_add_custom.o").write_text(
+            "old", encoding="utf-8"
+        )
         mocker.patch("shutil.which", return_value=False)
-        other_chip_op = CompileOP(op_name, inputs, outputs, 'Ascend910_96', 'Ascend910_96')
+        other_chip_op = CompileOP(op_name, inputs, outputs, "Ascend960", "Ascend960")
         build_res = other_chip_op.get_compile_file(temp_dir)
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
@@ -147,23 +160,28 @@ class TestCompileOp():
 
     @staticmethod
     def test_get_compile_file_temp_dir_not_exist(mocker):
-        temp_dir = Path(cur_abspath) / \
-            "test_get_compile_file_temp_dir_not_exist"
+        temp_dir = Path(cur_abspath) / "test_get_compile_file_temp_dir_not_exist"
         mocker.patch("shutil.which", return_value=True)
         mocker.patch.object(Path, "exists", return_value=False)
-        res = subprocess.run([sys.executable, '-c', ''], check=False)
+        res = subprocess.run([sys.executable, "-c", ""], check=False)
         mocker.patch("subprocess.run", return_value=res)
-        op_kernel_path = temp_dir.joinpath(
-            ModeCustom.ADD_CUSTOM.value, 'op_kernel')
+        op_kernel_path = temp_dir.joinpath(ModeCustom.ADD_CUSTOM.value, "op_kernel")
         op_kernel_path.mkdir(parents=True, exist_ok=True)
-        op_kernel_path.joinpath('add_custom.cpp').write_text("test", encoding='utf-8')
+        op_kernel_path.joinpath("add_custom.cpp").write_text("test", encoding="utf-8")
         compile_file_path = temp_dir.joinpath(
-            ModeCustom.ADD_CUSTOM.value, 'build_out', 'op_kernel')
+            ModeCustom.ADD_CUSTOM.value, "build_out", "op_kernel"
+        )
         compile_file_path.mkdir(parents=True, exist_ok=True)
         compile_file_path.joinpath(
-            f'{ModeCustom.ADD_CUSTOM.value}_add_custom.o').write_text("test", encoding='utf-8')
-        shutil.copy(Path(cur_abspath).joinpath("../res/ori_data/collect_milan/collection",
-                                               "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json"), compile_file_path)
+            f"{ModeCustom.ADD_CUSTOM.value}_add_custom.o"
+        ).write_text("test", encoding="utf-8")
+        shutil.copy(
+            Path(cur_abspath).joinpath(
+                "../res/ori_data/collect_milan/collection",
+                "AddCustom_ab1b6750d7f510985325b603cb06dc8b.json",
+            ),
+            compile_file_path,
+        )
 
         build_res = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
@@ -171,9 +189,9 @@ class TestCompileOp():
 
     def test_get_compile_file_compile_failed(self, mocker):
         temp_dir = Path(cur_abspath) / "test_get_compile_file_compile_failed"
-        mocker.patch.object(Path, "rglob", return_value=['test.o'])
+        mocker.patch.object(Path, "rglob", return_value=["test.o"])
         mocker.patch("shutil.which", return_value=True)
-        res = subprocess.run([sys.executable, '-c', 'raise SystemExit(1)'], check=False)
+        res = subprocess.run([sys.executable, "-c", "raise SystemExit(1)"], check=False)
         mocker.patch("subprocess.run", return_value=res)
         build_res = compile_op.get_compile_file(temp_dir)
         shutil.rmtree(temp_dir)
@@ -190,14 +208,16 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_write_chip_marker_success"
         getattr(compile_op, "_write_chip_marker")(temp_dir)
         marker_file = temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER
-        assert marker_file.read_text(encoding='utf-8') == "Ascend950"
+        assert marker_file.read_text(encoding="utf-8") == "Ascend950"
         shutil.rmtree(temp_dir)
 
     def test_write_chip_marker_oserror(self, mocker):
         # 写入失败时仅告警，不应抛异常
         temp_dir = Path(cur_abspath) / "test_write_chip_marker_oserror"
         mocker.patch.object(Path, "write_text", side_effect=OSError("mock"))
-        warn_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_warn_log")
+        warn_log = mocker.patch(
+            "ms_interface.ascend950.compile_op.utils.print_warn_log"
+        )
         getattr(compile_op, "_write_chip_marker")(temp_dir)
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
@@ -208,7 +228,9 @@ class TestCompileOp():
         # 标记文件存在且与当前芯片一致时返回 True
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_true"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text(
+            "Ascend950", encoding="utf-8"
+        )
         assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is True
         shutil.rmtree(temp_dir)
 
@@ -223,7 +245,9 @@ class TestCompileOp():
         # 标记文件记录的芯片与当前芯片不一致时返回 False
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_mismatch"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend910_96", encoding='utf-8')
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text(
+            "Ascend960", encoding="utf-8"
+        )
         assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is False
         shutil.rmtree(temp_dir)
 
@@ -231,9 +255,13 @@ class TestCompileOp():
         # 读取标记文件失败时返回 False 并告警
         temp_dir = Path(cur_abspath) / "test_is_cache_chip_matched_read_oserror"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
-        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text("Ascend950", encoding='utf-8')
+        (temp_dir / op_name / CompileOP.COMPILE_CHIP_MARKER).write_text(
+            "Ascend950", encoding="utf-8"
+        )
         mocker.patch.object(Path, "read_text", side_effect=OSError("mock"))
-        warn_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_warn_log")
+        warn_log = mocker.patch(
+            "ms_interface.ascend950.compile_op.utils.print_warn_log"
+        )
         assert getattr(compile_op, "_is_cache_chip_matched")(temp_dir) is False
         shutil.rmtree(temp_dir)
         assert warn_log.called
@@ -244,7 +272,7 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_clean_op_build_dir_exist"
         op_dir = temp_dir / op_name
         op_dir.mkdir(parents=True, exist_ok=True)
-        op_dir.joinpath("old.o").write_text("old", encoding='utf-8')
+        op_dir.joinpath("old.o").write_text("old", encoding="utf-8")
         assert getattr(compile_op, "_clean_op_build_dir")(temp_dir) is True
         assert not op_dir.exists()
         shutil.rmtree(temp_dir)
@@ -260,7 +288,9 @@ class TestCompileOp():
         temp_dir = Path(cur_abspath) / "test_clean_op_build_dir_oserror"
         (temp_dir / op_name).mkdir(parents=True, exist_ok=True)
         mocker.patch("shutil.rmtree", side_effect=OSError("mock"))
-        error_log = mocker.patch("ms_interface.ascend950.compile_op.utils.print_error_log")
+        error_log = mocker.patch(
+            "ms_interface.ascend950.compile_op.utils.print_error_log"
+        )
         assert getattr(compile_op, "_clean_op_build_dir")(temp_dir) is False
         mocker.stopall()
         shutil.rmtree(temp_dir)

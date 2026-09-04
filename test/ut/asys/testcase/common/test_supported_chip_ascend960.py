@@ -46,7 +46,7 @@ class TestSupportedChip(AssertTest):
             os.remove(self.test_file_path)
 
     @pytest.mark.parametrize(
-        ["chip_type", "expect"], [("Ascend 910_96", True), ("Unknown", False)]
+        ["chip_type", "expect"], [("Ascend 960", True), ("Unknown", False)]
     )
     def test_asys_config_supported_chip(self, mocker, chip_type, expect):
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_type)
@@ -55,7 +55,7 @@ class TestSupportedChip(AssertTest):
         )
 
     @pytest.mark.parametrize(
-        ["chip_type", "expect"], [("Ascend 910_96", True), ("Unknown", False)]
+        ["chip_type", "expect"], [("Ascend 960", True), ("Unknown", False)]
     )
     def test_asys_diagnose_supported_chip(self, mocker, chip_type, expect):
         mocker.patch.object(DeviceInfo, "get_chip_info", return_value=chip_type)
