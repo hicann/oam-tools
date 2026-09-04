@@ -1,5 +1,7 @@
 # Usage Examples
 
+English | [简体中文](./README.md)
+
 This directory provides ready-to-run examples for each OAM-Tools component. After completing the [build](../README_en.md#running-the-build) and [installation](../README_en.md#installation), follow this document to run the examples in a real environment and quickly verify tool functionality.
 
 ## Table of Contents

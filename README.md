@@ -2,6 +2,8 @@
 
 # OAM-Tools
 
+简体中文 | [English](./README_en.md)
+
 **华为 CANN 运维工具集（Operations, Administration, and Maintenance）**
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
@@ -171,7 +173,7 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 # 执行所有组件测试
 bash build.sh -u
 
-# 指定单独组件测试（可选：asys / msaicerr / msprof / install / upgrade / uninstall / all） 
+# 指定单独组件测试（可选：asys / msaicerr / msprof / install / upgrade / uninstall / all）
 bash build.sh -u --component msprof
 ```
 
