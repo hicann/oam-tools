@@ -136,7 +136,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
 
     - python >= 3.10.0
     - gcc >= 7.3.0
-    - cmake >= 3.16.0
+    - cmake >= 3.18.0
     - ccache
     - CANN toolkit package: `Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`
     - CANN ops package: `Ascend-cann-${chip_type}-ops_${cann_version}_linux-${arch}.run`
@@ -145,6 +145,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - json >= 3.11.3
     - patch >= 2.7.6
     - dpkg >= 1.19.0.5 (only required when building the deb package)
+    - rpmbuild >= 4.14.0 (only required when building the rpm package; provided by the rpm-build/rpm package)
     - coverage (only required when running UT, recommended version 7.13.2)
     - googletest (only required when running UT, recommended version 1.14.0)
     - mockcpp (only required when running UT, recommended version 2.7)
@@ -152,7 +153,7 @@ For developers with Ascend devices, if you want to manually set up an Ascend env
     - pytest-mock (only required when running UT, recommended version 3.15.1)
 
     Python runtime dependencies (required by tools such as asys / msaicerr at runtime, installed via `pip install -r requirements.txt`) are listed in `requirements.txt` at the repository root. Note that `protobuf>=6.33.4` there refers to the Python package `protobuf` on PyPI, which uses a versioning scheme independent from the C++ protobuf 25.1 above; the two version numbers do not conflict.
-    
+
 	Where:
     - $\{chip\_type\}: Indicates the Ascend AI processor model (equivalent to `${soc_name}` below), used to compose the CANN ops package name. Run `npu-smi info` and read the `Name` column to identify the chip on this machine, then pick the matching ops package from the table below.
     - $\{cann\_version\}: Indicates the CANN package version number. Must match the Toolkit package version number.
@@ -329,7 +330,7 @@ After installing CANN packages, verify whether the environment and driver are no
     # Check coverage version
     coverage --version
     ```
-    
+
     > If the command execution fails, execute `pip3 install -r requirements.txt` to install dependencies.
 
 ## Environment Variable Configuration

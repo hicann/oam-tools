@@ -33,7 +33,7 @@ OAM-Tools 包含四大核心组件，协同覆盖昇腾 AI 处理器的运维全
 
 ## 🏗️ 项目架构
 
-OAM-Tools 采用模块化设计，四大组件相互独立又协同工作：asys 与 msaicerr 聚焦故障诊断，msprof 聚焦性能分析，hccl_test 聚焦通信测试。所有组件共享 CANN 运行时环境，通过统一的构建系统（CMake + build.sh）编译打包为 `.run` 安装包，安装后释放到 CANN 安装目录的 `tools/` 子目录下。
+OAM-Tools 采用模块化设计，四大组件相互独立又协同工作：asys 与 msaicerr 聚焦故障诊断，msprof 聚焦性能分析，hccl_test 聚焦通信测试。所有组件共享 CANN 运行时环境，通过统一的构建系统（CMake + build.sh）编译打包为 `.run`（默认）/`.rpm`/`.deb` 安装包，安装后释放到 CANN 安装目录的 `tools/` 子目录下。
 
 **目录结构**：
 
@@ -137,6 +137,12 @@ bash build.sh
 bash build.sh --cann_3rd_lib_path=${third_party_path}
 ```
 
+如需构建 rpm/deb 格式的安装包，可通过 `--pkg-type` 参数指定：
+
+- `--pkg-type=<TYPE>`：指定安装包格式，取值 `run`/`rpm`/`deb`/`deb,rpm`/`all`（`deb,rpm` 与 `all` 为一次构建多种包格式），默认 `run`（`--pkg` 为 `--pkg-type=run` 的别名）。
+- 编译产物：run 包为 `cann-oam-tools_<cann_version>_linux-<arch>.run`，rpm/deb 包为 `cann-oam-tools_<cann_version>_linux-<arch>.rpm/.deb`。
+- 构建 rpm/deb 包还需 rpmbuild >= 4.14.0 / dpkg（>= 1.19.0.5），仅构建期需要；rpm/deb 包的安装与卸载详见[安装包格式说明](./docs/zh/package_install.md)。
+
 ### 编译参数与依赖说明
 
 - `--cann_3rd_lib_path`：第三方库存储目录，默认值为 `./third_party`。若本地不存在第三方库，编译脚本将自动从 gitcode 开源仓库下载各第三方库源码。
@@ -152,6 +158,18 @@ bash build.sh --cann_3rd_lib_path=${third_party_path}
 ## 📦 安装与验证
 
 ### 安装
+
+oam-tools 安装包支持 `.run`（默认）、`.rpm`、`.deb` 三种格式，概览如下：
+
+| 包格式 | 适用系统 | 安装命令 | 安装路径 | 路径自定义 |
+| --- | --- | --- | --- | --- |
+| `.run` | 通用 | `./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}` | `${install_path}` | 支持（`--install-path`） |
+| `.rpm` | RHEL/CentOS/openEuler 等 rpm 系 | `sudo rpm -ivh --nodeps <rpm>`（详见[安装包格式说明](./docs/zh/package_install.md)） | `/usr/local/Ascend/cann-<cann_version>` | 不支持 |
+| `.deb` | Ubuntu/Debian 等 dpkg 系 | `sudo dpkg -i --force-depends <deb>`（详见[安装包格式说明](./docs/zh/package_install.md)） | `/usr/local/Ascend/cann-<cann_version>` | 不支持 |
+
+rpm 包不支持在 Ubuntu/Debian 上安装，此类系统请使用 deb 或 run 包（背景见[安装包格式说明](./docs/zh/package_install.md)）。
+
+> **注意**：在 CANN 未以 deb/rpm 包方式安装的主机上，通过 deb 包安装本工具后执行 `apt upgrade` 等升级操作会因依赖不满足报错（`apt --fix-broken install` 会移除本包），执行 apt 升级前请先卸载本包，详见[安装包格式说明](./docs/zh/package_install.md)。
 
 可执行如下命令安装编译生成的 oam-tools 软件包：
 
@@ -205,6 +223,7 @@ pre-commit 是一个用于管理和维护 Git 预提交钩子（hooks）的框�
 ## ℹ️ 相关信息
 
 - [快速安装指南](./docs/zh/quick_install.md)：CANN 软件包与编译依赖的安装
+- [安装包格式说明](./docs/zh/package_install.md)：rpm/deb 包的安装与卸载
 - [环境变量参考](https://hiascend.com/document/redirect/CannCommunityEnvRef)
 - [贡献指南](CONTRIBUTING.md)：社区贡献流程与规范
 - [安全声明](SECURITY.md)

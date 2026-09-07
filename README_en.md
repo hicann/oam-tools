@@ -35,7 +35,7 @@ OAM-Tools includes four core components that collaboratively cover the full O&M 
 
 ## 🏗️ Project Architecture
 
-OAM-Tools adopts a modular design where the four components are independent yet collaborative: asys and msaicerr focus on fault diagnosis, msprof on performance analysis, and hccl_test on communication testing. All components share the CANN runtime environment and are compiled and packaged into a `.run` installation package via a unified build system (CMake + build.sh). After installation, they are extracted to the `tools/` subdirectory of the CANN installation directory.
+OAM-Tools adopts a modular design where the four components are independent yet collaborative: asys and msaicerr focus on fault diagnosis, msprof on performance analysis, and hccl_test on communication testing. All components share the CANN runtime environment and are compiled and packaged into `.run` (default)/`.rpm`/`.deb` installation packages via a unified build system (CMake + build.sh). After installation, they are extracted to the `tools/` subdirectory of the CANN installation directory.
 
 **Directory structure**:
 
@@ -139,6 +139,12 @@ To specify a third-party library path, use the `--cann_3rd_lib_path` parameter:
 bash build.sh --cann_3rd_lib_path=${third_party_path}
 ```
 
+To build rpm/deb format packages, specify the package format via the `--pkg-type` parameter:
+
+- `--pkg-type=<TYPE>`: Specifies the package format. Valid values are `run`/`rpm`/`deb`/`deb,rpm`/`all` (`deb,rpm` and `all` build multiple package formats in one go); the default is `run` (`--pkg` is an alias for `--pkg-type=run`).
+- Build artifacts: the run package is `cann-oam-tools_<cann_version>_linux-<arch>.run`, and the rpm/deb packages are `cann-oam-tools_<cann_version>_linux-<arch>.rpm/.deb`.
+- Building rpm/deb packages additionally requires rpmbuild >= 4.14.0 / dpkg (>= 1.19.0.5), needed at build time only; for installing and uninstalling rpm/deb packages, see the [Package Installation Guide](./docs/en/package_install.md).
+
 ### Build Parameters and Dependencies
 
 Parameters:
@@ -155,6 +161,18 @@ After the build completes, the `build_out` directory generates a `cann-oam-tools
 ## 📦 Installation and Verification
 
 ### Installation
+
+The oam-tools package is available in three formats — `.run` (default), `.rpm`, and `.deb` — summarized below:
+
+| Package Format | Target OS | Install Command | Install Path | Path Customization |
+| --- | --- | --- | --- | --- |
+| `.run` | Universal | `./build_out/cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}` | `${install_path}` | Supported (`--install-path`) |
+| `.rpm` | RHEL/CentOS/openEuler and other rpm-based systems | `sudo rpm -ivh --nodeps <rpm>` (see the [Package Installation Guide](./docs/en/package_install.md)) | `/usr/local/Ascend/cann-<cann_version>` | Not supported |
+| `.deb` | Ubuntu/Debian and other dpkg-based systems | `sudo dpkg -i --force-depends <deb>` (see the [Package Installation Guide](./docs/en/package_install.md)) | `/usr/local/Ascend/cann-<cann_version>` | Not supported |
+
+rpm packages cannot be installed on Ubuntu/Debian — use the deb or run package on such systems (see the [Package Installation Guide](./docs/en/package_install.md) for background).
+
+> **Note**: On hosts where CANN is not installed from deb/rpm packages, after installing this tool via the deb package, running `apt upgrade` or similar upgrade operations fails due to unmet dependencies (`apt --fix-broken install` removes this package); uninstall this package before performing apt upgrade operations. See the [Package Installation Guide](./docs/en/package_install.md) for details.
 
 Run the following command to install the compiled oam-tools software package:
 
@@ -209,6 +227,7 @@ This repository has configured pre-commit. Users can refer to [Chapter 3 of the 
 ## ℹ️ Related Information
 
 - [Quick Installation Guide](./docs/en/quick_install.md): Installation of CANN software packages and build dependencies
+- [Package Installation Guide](./docs/en/package_install.md): Installing and uninstalling rpm/deb packages
 - [Environment Variable Reference](https://hiascend.com/document/redirect/CannCommunityEnvRef)
 - [Contributing Guide](CONTRIBUTING_en.md): Community contribution process and standards
 - [Security Statement](SECURITY_en.md)
