@@ -19,7 +19,7 @@
 #include <cstring>
 
 extern "C" {
-int32_t ParseDumpProtoToJson(const char *data, size_t dataLength, const char *path);
+int32_t ParseDumpProtoToJson(const char* data, size_t dataLength, const char* path);
 }
 
 class TestDumpProtoToJson : public ::testing::Test {
@@ -28,27 +28,57 @@ protected:
     void TearDown() override {}
 };
 
-TEST_F(TestDumpProtoToJson, NullDataReturnsMinusOne) {
+TEST_F(TestDumpProtoToJson, NullDataReturnsMinusOne)
+{
     int32_t result = ParseDumpProtoToJson(nullptr, 10, "/tmp/out.json");
     EXPECT_EQ(result, -1);
 }
 
-TEST_F(TestDumpProtoToJson, NullPathReturnsMinusOne) {
+TEST_F(TestDumpProtoToJson, NullPathReturnsMinusOne)
+{
     const char data[] = "test data";
     int32_t result = ParseDumpProtoToJson(data, sizeof(data), nullptr);
     EXPECT_EQ(result, -1);
 }
 
-TEST_F(TestDumpProtoToJson, DataLengthLessThanUint64ReturnsMinusOne) {
+TEST_F(TestDumpProtoToJson, DataLengthLessThanUint64ReturnsMinusOne)
+{
     const char data[] = "abc";
     int32_t result = ParseDumpProtoToJson(data, 1, "/tmp/out.json");
     EXPECT_EQ(result, -1);
 }
 
-TEST_F(TestDumpProtoToJson, DataLengthLessThanHeadLengthPlusUint64ReturnsMinusOne) {
+TEST_F(TestDumpProtoToJson, DataLengthLessThanHeadLengthPlusUint64ReturnsMinusOne)
+{
     uint64_t headLength = 100;
     char data[sizeof(uint64_t) + 1];
     (void)memcpy_s(data, sizeof(data), &headLength, sizeof(uint64_t));
     int32_t result = ParseDumpProtoToJson(data, sizeof(uint64_t) + 1, "/tmp/out.json");
+    EXPECT_EQ(result, -1);
+}
+
+TEST_F(TestDumpProtoToJson, HeadLengthUint64MaxReturnsMinusOne)
+{
+    char data[sizeof(uint64_t) + 8];
+    (void)memset(data, 0xFF, sizeof(data));
+    int32_t result = ParseDumpProtoToJson(data, sizeof(data), "/tmp/out.json");
+    EXPECT_EQ(result, -1);
+}
+
+TEST_F(TestDumpProtoToJson, NullPathWithBinaryDataReturnsMinusOne)
+{
+    char data[64];
+    (void)memset(data, 0xAB, sizeof(data));
+    int32_t result = ParseDumpProtoToJson(data, sizeof(data), nullptr);
+    EXPECT_EQ(result, -1);
+}
+
+TEST_F(TestDumpProtoToJson, UnalignedDataReturnsMinusOne)
+{
+    uint64_t headLength = 100;
+    char data[sizeof(uint64_t) + 2];
+    (void)memset(data, 0, sizeof(data));
+    (void)memcpy_s(data + 1, sizeof(data) - 1, &headLength, sizeof(uint64_t));
+    int32_t result = ParseDumpProtoToJson(data + 1, sizeof(data) - 1, "/tmp/out.json");
     EXPECT_EQ(result, -1);
 }
