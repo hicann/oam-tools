@@ -102,3 +102,26 @@ def test_pkg_type_accepts_all_cann_cmake_values():
     assert "run|rpm|deb|deb,rpm|all)" in build_content, (
         "--pkg-type 应接受 run/rpm/deb/deb,rpm/all 全部取值"
     )
+
+
+def test_extra_cmake_args_are_appended_and_validated():
+    build_content = get_build_script_content()
+    assert "extra-cmake-args:" in build_content
+    assert (
+        'EXTRA_CMAKE_ARGS="${EXTRA_CMAKE_ARGS:+${EXTRA_CMAKE_ARGS} }-D$2"'
+        in build_content
+    )
+    assert "^[A-Za-z0-9_]+=[A-Za-z0-9._/-]*$" in build_content
+    assert "without spaces or shell metacharacters" in build_content
+
+
+def test_extra_cmake_args_help_declares_scope_and_format():
+    build_content = get_build_script_content()
+    assert (
+        "May be specified multiple times; applies to the main OAM tools build."
+        in build_content
+    )
+    assert (
+        "NAME=VALUE may contain only letters, digits, '_', '.', '/', and '-'."
+        in build_content
+    )

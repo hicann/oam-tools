@@ -281,6 +281,13 @@ add_dependencies(msprofbin msprofbin_proto)
 file(GLOB msprof_whl
     "${CMAKE_CURRENT_SOURCE_DIR}/msprof-*-py3-none-any.whl"
 )
+if(DEFINED PROFILING_ANALYSIS)
+    string(TOUPPER "${PROFILING_ANALYSIS}" _profiling_analysis_upper)
+endif()
+if(DEFINED PROFILING_ANALYSIS AND _profiling_analysis_upper STREQUAL "OFF")
+    set(msprof_whl "")
+    message(STATUS "msprofbin: PROFILING_ANALYSIS=OFF, skip msprof whl installation")
+endif()
 list(LENGTH msprof_whl _msprof_whl_count)
 if(_msprof_whl_count GREATER 1)
     message(FATAL_ERROR "multiple msprof whl found, expected exactly one: ${msprof_whl}")

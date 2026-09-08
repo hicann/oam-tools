@@ -47,6 +47,10 @@ usage() {
     echo "    --bundle_branch=<NAME>"
     echo "                   Set the branch whose closed-source bundle to download (e.g. master, 9.1.0)."
     echo "                   Default: auto-detected from git; falls back to master."
+    echo "    --extra-cmake-args=<ARGS>"
+    echo "                   Optional CMake variable in NAME=VALUE format, e.g. PROFILING_ANALYSIS=OFF."
+    echo "                   May be specified multiple times; applies to the main OAM tools build."
+    echo "                   NAME=VALUE may contain only letters, digits, '_', '.', '/', and '-'."
     echo "Test Options:"
     echo $dotted_line
     echo "    -u             Build and run all unit tests"
@@ -77,6 +81,7 @@ checkopts() {
     # 必须显式清空：否则环境里同名变量会被当成"用户显式指定"透传给 CMake，
     # 既盖掉配置期的 git 探测，又绕过下方 --bundle_branch 解析处的字符校验。
     BUNDLE_BRANCH=""
+    EXTRA_CMAKE_ARGS=""
 
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
@@ -89,7 +94,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,extra-cmake-args:,component:,ut,st -- "$@") || {
     usage
     exit 1
     }
@@ -162,6 +167,14 @@ checkopts() {
             echo "ERROR: invalid --bundle_branch '${BUNDLE_BRANCH}': only [A-Za-z0-9._/-] allowed."
             exit 1
         fi
+        shift 2
+        ;;
+        --extra-cmake-args)
+        if [[ ! "$2" =~ ^[A-Za-z0-9_]+=[A-Za-z0-9._/-]*$ ]]; then
+            echo "ERROR: invalid --extra-cmake-args '$2': expected NAME=VALUE without spaces or shell metacharacters."
+            exit 1
+        fi
+        EXTRA_CMAKE_ARGS="${EXTRA_CMAKE_ARGS:+${EXTRA_CMAKE_ARGS} }-D$2"
         shift 2
         ;;
         --asan)
@@ -304,6 +317,9 @@ build_oam_tools() {
     if [ -n "${BUNDLE_BRANCH}" ]; then
         CMAKE_ARGS="${CMAKE_ARGS} -DOAM_BUNDLE_BRANCH=${BUNDLE_BRANCH}"
     fi
+    if [ -n "${EXTRA_CMAKE_ARGS}" ]; then
+        CMAKE_ARGS="${CMAKE_ARGS} ${EXTRA_CMAKE_ARGS}"
+    fi
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
     # make package 前清理历史产物，避免旧 cann*.run/rpm/deb 被误当本次产物搬走。
@@ -384,7 +400,7 @@ main() {
             echo "WARNING: ${ASCEND_HOME_PATH}/bin/setenv.bash not found, skipping source"
         fi
         export LD_LIBRARY_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"/:$LD_LIBRARY_PATH
-        
+
         local run_tests_args=()
         if [[ "$TEST_COMPONENT" != "all" ]]; then
             run_tests_args+=("--component" "$TEST_COMPONENT")
