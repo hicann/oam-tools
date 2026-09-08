@@ -3,15 +3,14 @@
 当用户需要定位应用程序或上层框架程序的性能瓶颈时，可通过特定接口，记录应用程序执行期间特定事件发生的时间跨度，写入性能数据文件。
 
 <!-- npu="950,A3,910b,910,310p,310b" id1 -->
-可使用mstx API或msproftx API进行性能数据采集，两者二选一，推荐使用mstx API。
-
-TorchNPU Profiler API暂不支持通过msprof命令行工具设置--msproftx=on的方式进行采集，请直接使用TorchNPU Profiler mstx接口。
+- 通用场景：推荐使用[mstx API](https://gitcode.com/Ascend/mstx/blob/master/docs/zh/install_guide/mstx_install_guide.md)（也可选[msproftx API](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/API/runtimeapi/aclcppdevg_03_1264.html)）。
+- PyTorch场景：使用[TorchNPU Profiler API](https://gitcode.com/Ascend/pytorch/blob/master/docs/zh/developer_notes/ascend_pytorch_profiler_user_guide.md#%E9%87%87%E9%9B%86%E5%B9%B6%E8%A7%A3%E6%9E%90mstx%E6%95%B0%E6%8D%AE)。
 <!-- end id1 -->
 
 ## 前提条件
 
 <!-- npu="950,A3,910b,910,310p,310b" id2 -->
-在用户程序代码内调用mstx API或msproftx API，记录应用程序执行期间特定事件发生的时间跨度。
+在用户程序代码内调用mstx API、msproftx API或TorchNPU Profiler API，记录应用程序执行期间特定事件发生的时间跨度。
 <!-- end id2 -->
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/msproftx_data_res.md#id00001 -->
 
@@ -21,14 +20,12 @@ TorchNPU Profiler API暂不支持通过msprof命令行工具设置--msproftx=on�
 
 ```sh
 msprof [options] <app>
-或msprof [options] --application=<app> 
+或msprof [options] --application=<app>
 ```
 
 采集mstx数据必须传入用户程序。
 
-<!-- npu="950,A3,910b,910,310p,310b,IPV350" id3 -->
 app参数说明请参见[app参数说明](general_collect_commands.md#app参数说明)，options参数说明请参见[参数说明](#参数说明)。
-<!-- end id3 -->
 
 ## 参数说明
 
