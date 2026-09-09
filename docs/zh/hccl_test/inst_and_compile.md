@@ -155,12 +155,14 @@ HCCL Test工具依赖MPI启动多个进程，所以需要先安装MPI软件，�
 3. 配置编译选项。
 
     ```bash
-    ./configure --disable-fortran --enable-ipv6 --prefix=/usr/local/openmpi
+    ./configure --disable-fortran --enable-ipv6 --prefix=/usr/local/openmpi \
+        --with-zlib=/usr
     ```
 
     - --disable-fortran：禁用Fortran语言支持。
     - --enable-ipv6：启用IPv6支持。
     - --prefix：配置的Open MPI的安装路径，用户可自定义。
+    - --with-zlib：指定zlib压缩库的头文件和库文件搜索路径。
 
 4. 编译并安装Open MPI。
 
