@@ -24,7 +24,7 @@
 此处仅给出MPICH工具常见参数说明，更多参数介绍可参见[MPICH官方文档](https://www.mpich.org/)。
 
 - **-f \<hostfile\>**：可选，Hostfile节点列表文件。
-  
+
   单机场景下无需配置此文件；多机场景下，需要配置此文件。可配置为Hostfile文件的绝对路径，或相对于当前执行命令的相对路径。
 - **-n \<number\>**：必选，需要启动的NPU总数，即节点数量 * 每个节点上参与训练的NPU个数。
 
@@ -33,16 +33,16 @@
 此处仅给出Open MPI工具常见参数说明，更多参数介绍可参见[open-mpi官方文档](https://www.open-mpi.org/doc/v4.1/man1/mpirun.1.php)。
 
 - **--prefix \<mpi_install_path\>**：可选，配置Open MPI的安装路径。
-  
+
   一般单机场景下无需配置此参数，多机场景下需要配置，否则可能会出现无法获取MPI库文件的问题。
 - **-hostfile \<hostfile\>**：可选，指定Hostfile节点列表文件。
-  
+
   单机场景下无需配置此文件；多机场景下，需要配置此文件。可配置为Hostfile文件的绝对路径，或相对于当前执行命令的相对路径。
 - **-n \<number\>**：必选，设置需要启动的NPU总数，即节点数量 * 每个节点上参与训练的NPU个数。
 - **-x \<env\>**：必选，指定需要传递给远程节点的环境变量名称。
 - **--allow-run-as-root**：可选，允许mpirun使用root用户执行。
 - **--mca \<key value\>**：可选，设置mca参数，Open MPI的设计以组件架构（MPI Component Architecture, MCA）为中心，可通过运行时在mpirun命令中设置mca参数来加载openmpi的各类组件模块，实现特定功能。
-  
+
   常用的命令有：
   - --mca btl_tcp_if_include *<nic_name>*
 
@@ -59,18 +59,18 @@
 ## HCCL Test工具相关参数
 
 - **./bin/\<executable_file\>**：必选，集合通信性能测试工具的执行命令。
-  
+
   其中\<executable_file\>为集合通信性能测试工具的可执行文件，即支持的测试命令。
-  
+
   HCCL Test工具支持的测试命令包括：broadcast_test，all_gather_test，all_gatherv_test，reduce_test，all_reduce_test，scatter_test，reduce_scatter_test，reduce_scatterv_test，alltoall_test，alltoallv_test，alltoallvc_test。
-  
+
   > [!NOTE]说明
-  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-p \<npus\>或--npus \<npus\>**：可选，单个计算节点上参与训练的NPU个数。
-  
+
   默认为当前节点的NPU总数。若单个计算节点上参与训练的NPU个数小于当前节点的NPU总数，此参数为必填项。
-  
+
   集合通信测试工具会按照用户配置的参与训练的NPU个数启动相应的Device，此参数的配置约束可参见[规格约束](./restrictions.md)。
 
 - **-b \<minbytes\>或--minbytes \<minbytes\>**：可选，测试数据大小的起始值，即最小值。默认值：64M，单位：K、M、G。
@@ -101,7 +101,7 @@
   Reduce相关的执行命令有：all_reduce_test、reduce_scatter_test、reduce_scatterv_test、reduce_test。
 
   > [!NOTE]说明
-  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上的支持情况，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0/docs/zh/api_ref/comm_op_interface/README.md)。
 
 - **-r \<root\>或--root \<root\>**：可选，执行命令为broadcast_test、reduce_test、scatter_test时，需要通过此参数指定根节点的Device ID。
 
@@ -110,9 +110,9 @@
 - **-d \<datatype\>或--datatype \<datatype\>**：可选，HCCL Test支持的数据类型，默认值为fp32。
 
   HCCL Test支持配置的数据类型包括：int8、uint8、int16、uint16、int32、uint32、int64、uint64、fp16、fp32、fp64、bfp16、fp8e5m2、fp8e4m3、fp8e8m0、hif8。
-  
+
   > [!NOTE]说明
-  > 各测试命令在不同产品上支持的数据类型，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/master/docs/zh/api_ref/comm_op_interface/README.md)。
+  > 各测试命令在不同产品上支持的数据类型，以对应通信算子接口的实际支持能力为准，详细可参见[通信算子接口](https://gitcode.com/cann/hccl/blob/9.2.0/docs/zh/api_ref/comm_op_interface/README.md)。
 
   <!-- npu="A3" id1 -->
 - **-z \<0/1\>或--zero_copy \<0/1\>**：可选，是否开启零拷贝功能。
@@ -127,7 +127,7 @@
   - 1：开启零拷贝功能。
 
   **零拷贝功能生效有如下约束条件：**
-  
+
   - 仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品。
   - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test，broadcast_test命令。
   - 仅支持通信算法的编排展开位置在AI CPU的场景。
@@ -141,7 +141,7 @@
   此参数支持如下取值：
   - 0（默认值）：不开启对称内存功能。
   - 1：开启对称内存功能。
-  
+
   **对称内存功能生效有如下约束条件：**
   - 仅支持Ascend 950PR/Ascend 950DT、Atlas A3 训练系列产品/Atlas A3 推理系列产品。
   - 仅支持通信算子展开模式为AI CPU的场景。
