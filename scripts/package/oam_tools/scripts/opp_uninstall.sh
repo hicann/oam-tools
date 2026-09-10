@@ -44,7 +44,7 @@ logwitherrorlevel() {
 checkdirectoryexist() {
     _path="${1}"
     if [ ! -d "${_path}" ]; then
-        logandprint "[ERROR]: ERR_NO:${FILE_READ_FAILED};ERR_DES:Installation directroy [${_path}] does not exist, uninstall failed."
+        logandprint "[ERROR]: ERR_NO:${FILE_READ_FAILED};ERR_DES:Installation directory [${_path}] does not exist, uninstall failed."
         return 1
     else
         return 0
@@ -130,7 +130,7 @@ if [ "${paramter_num}" != 0 ]; then
     if [ "${installed_path}" = "" ] ||
     [ "${uninstall_mode}" = "" ] ||
     [ "${is_quiet}" = "" ] ; then
-        logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty paramters is invalid\
+        logandprint "[ERROR]: ERR_NO:${PARAM_INVALID};ERR_DES:Empty parameters is invalid\
 for call uninstall functions."
         exit 1
     fi
@@ -147,7 +147,7 @@ _TARGET_INSTALL_PATH="${_CURR_PATH}""/../.."
 _INSTALL_INFO_SUFFIX="${ops_base_platform_dir}/ascend_install.info"
 _VERSION_INFO_SUFFIX="${ops_base_platform_dir}/version.info"
 
-# avoid relative path casued errors by delete floders
+# avoid relative path caused errors by delete floders
 _ABS_INSTALL_PATH=$(cd ${_TARGET_INSTALL_PATH}; pwd)
 getinstallpath
 relative_path_info=${relative_path}
@@ -156,7 +156,7 @@ _INSTALL_INFO_FILE="${_ABS_INSTALL_PATH}/${_INSTALL_INFO_SUFFIX}"
 if [ ! -f "${_INSTALL_INFO_FILE}" ]; then
     _INSTALL_INFO_FILE="/etc/ascend_install.info"
 fi
-# this is oam-tools verion info file
+# this is oam-tools version info file
 _VERSION_INFO_FILE="${_ABS_INSTALL_PATH}/${_VERSION_INFO_SUFFIX}"
 
 # keys of infos in ascend_install.info
@@ -225,15 +225,6 @@ if [ "$(id -u)" != 0 ] && [ ! -w "${_TARGET_INSTALL_PATH}" ]; then
     is_change_dir_mode="true"
 fi
 
-# change installed folder's permission except aicpu
-subdirs=$(ls "${_TARGET_INSTALL_PATH}/${ops_base_platform_dir}" 2> /dev/null)
-for dir in ${subdirs}; do
-    if [ "${dir}" != "Ascend310" ] && [ "${dir}" != "Ascend310RC" ] && [ "${dir}" != "Ascend910" ] && [ "${dir}" != "Ascend310P" ] && [ "${dir}" != "Ascend" ] && [ "${dir}" != "aicpu" ]; then
-        chmod -R "${_CUSTOM_PERM}" "${_TARGET_INSTALL_PATH}/${ops_base_platform_dir}/${dir}" 2> /dev/null
-    fi
-done
-chmod "${_CUSTOM_PERM}" "${_TARGET_INSTALL_PATH}/${ops_base_platform_dir}" 2> /dev/null
-
 get_version "pkg_version" "$_VERSION_INFO_FILE"
 
 # delete oam-tools source files
@@ -287,25 +278,17 @@ if [ "${res_val}" = "" ]; then
     rm -rf -d "${ops_base_sub_dir}" >> /dev/null 2>&1
 fi
 
-# change installed folder's permission except aicpu
-subdirs_param=$(ls "${_ABS_INSTALL_PATH}/${ops_base_platform_dir}" 2> /dev/null)
-for dir in ${subdirs_param}; do
-    if [ "${dir}" != "Ascend310" ] && [ "${dir}" != "Ascend310RC" ] && [ "${dir}" != "Ascend910" ] && [ "${dir}" != "Ascend310P" ] && [ "${dir}" != "Ascend" ] && [ "${dir}" != "aicpu" ]; then
-        chmod "${_BUILTIN_PERM}" "${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/${dir}" 2> /dev/null
-    fi
-done
-
 if [ "${is_change_dir_mode}" = "true" ]; then
     chmod u-w "${_ABS_INSTALL_PATH}" 2> /dev/null
 fi
 
-# delete scene.info 
+# delete scene.info
 scene_dir="${_ABS_INSTALL_PATH}/${ops_base_platform_dir}/scene.info"
 if [ -f ${scene_dir} ]; then
     rm -f ${scene_dir}
 fi
 
-# remote atvoss relete softlink
+# remote atvoss relate softlink
 atvoss_dst_dir=${FINAL_INSTALL_PATH}/latest/opp/built-in/op_impl/ai_core/tbe/impl/ascendc/common
 chmod u+w "${atvoss_dst_dir}" 2> /dev/null
 atvoss_soft_link="${atvoss_dst_dir}""/atvoss"
@@ -435,4 +418,3 @@ fi
 
 logandprint "[INFO]: Oam-Tools package uninstalled successfully! Uninstallation takes effect immediately."
 exit 0
-

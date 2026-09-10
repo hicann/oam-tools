@@ -1614,18 +1614,6 @@ user group (${_DEFAULT_USERGROUP}) for devel mode? [y/n]"
                 _upgrade_ret=1
             fi
 
-            _post_upgrade_builtin_perm=550
-            _post_upgrade_custom_perm=750
-            if [ "${is_for_all}" = "y" ]; then
-                _post_upgrade_builtin_perm=555
-                _post_upgrade_custom_perm=755
-            fi
-            if ! chmod -R "${_post_upgrade_builtin_perm}" "${target_dir}/${opp_platform_dir}/script" > /dev/null 2>&1; then
-                _upgrade_ret=1
-            fi
-            if [ -d "${target_dir}/${opp_platform_dir}/bin" ] && ! chmod -R "${_post_upgrade_custom_perm}" "${target_dir}/${opp_platform_dir}/bin" > /dev/null 2>&1; then
-                _upgrade_ret=1
-            fi
             if [ $(id -u) -eq 0 ]; then
                 if ! chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" > /dev/null 2>&1; then
                     _upgrade_ret=1
@@ -1693,11 +1681,6 @@ if [ "${is_upgrade}" = "y" ];then
     if [ $(id -u) -eq 0 ]; then
         chown -R "root":"root" "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
         chown "root":"root" "${target_dir}/${opp_platform_dir}" 2> /dev/null
-        chmod -R 555 "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-        chmod 444 "${target_dir}/${opp_platform_dir}/script/filelist.csv" 2> /dev/null
-    else
-        chmod -R 550 "${target_dir}/${opp_platform_dir}/script" 2> /dev/null
-        chmod 440 "${target_dir}/${opp_platform_dir}/script/filelist.csv" 2> /dev/null
     fi
     # uprate precheck info to ${target_dir}/bin/prereq_check.bash
     if [ -f "${target_dir}/../../tools/profiler/profiler_tool/msprof-0.0.1-py3-none-any.whl" ]; then
