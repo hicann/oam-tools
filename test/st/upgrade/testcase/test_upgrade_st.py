@@ -75,7 +75,7 @@ class TestUpgrade:
         )
         script_dir = Path(install_dir) / "cann/share/info/oam_tools/script"
         optional_bin = script_dir.parent / "bin"
-        expected_mode = 0o555 if os.geteuid() == 0 else 0o550
+        expected_mode = 0o755 if os.geteuid() == 0 else 0o750
         initial_mode = stat.S_IMODE(script_dir.stat().st_mode)
         owner_before = (script_dir.stat().st_uid, script_dir.stat().st_gid)
         assert not optional_bin.exists()
@@ -120,7 +120,13 @@ class TestUpgrade:
         )
         assert _ERROR_KW not in out
 
+        # bin 和 subdir 目录期望 755/750
         expected_bin_mode = 0o755 if os.geteuid() == 0 else 0o750
-        for path in (bin_dir, tool.parent, tool):
+        for path in (bin_dir, tool.parent):
             assert stat.S_IMODE(path.stat().st_mode) == expected_bin_mode
             assert (path.stat().st_uid, path.stat().st_gid) == owner_before[path]
+
+        # tool 文件权限保持不变
+        expected_file_mode = 0o600
+        assert stat.S_IMODE(tool.stat().st_mode) == expected_file_mode
+        assert (tool.stat().st_uid, tool.stat().st_gid) == owner_before[tool]
