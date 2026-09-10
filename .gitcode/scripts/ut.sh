@@ -23,8 +23,9 @@ source /home/jenkins/Ascend/cann/bin/setenv.bash
 set +e
 
 CANN_3RD_LIB_PATH="${CANN_3RD_LIB_PATH:-/home/jenkins/opensource}"
+UT_ALLOWED_BRANCHES="master 9.2.0"
 
-if [ "$TARGET_BRANCH" = "master" ];then
+if [ -n "${TARGET_BRANCH}" ] && echo " ${UT_ALLOWED_BRANCHES} " | grep -q " ${TARGET_BRANCH} "; then
     case "${ut_type}" in
         asys)
             bash build.sh -u --component asys --cann_3rd_lib_path="${CANN_3RD_LIB_PATH}" --cov
@@ -58,7 +59,7 @@ if [ "$TARGET_BRANCH" = "master" ];then
             coverage_save="false"
             ;;
         *)
-            echo "Skip UT test execution for ${ut_type} on non-master branch"
+            echo "Skip UT test execution for ${ut_type} on ${TARGET_BRANCH} branch"
             exit 0
             ;;
     esac
