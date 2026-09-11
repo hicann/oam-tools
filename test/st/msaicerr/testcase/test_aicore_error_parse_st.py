@@ -165,8 +165,8 @@ class TestUtilsMethods(CommonAssert):
         info = AicErrorInfo()
         info.aic_error_info["current_pc"] = "x1435"
         info.aic_error_info["start_pc"] = "x0123"
-        diff_str, err_pc = getattr(parser, "_get_info_for_decompile")(info)
-        self.assertEqual((diff_str, err_pc), ("1312", ""))
+        err_pc = getattr(parser, "_get_info_for_decompile")(info)
+        self.assertEqual(err_pc, "")
 
     def test_get_kernel_and_json_file(self):
         parser = AicoreErrorParser(
@@ -237,9 +237,6 @@ class TestUtilsMethods(CommonAssert):
         self.common_mock(mocker)
         mocker.patch.object(AicoreErrorParser, "_get_decompile_status", return_value=0)
         mocker.patch.object(AicoreErrorParser, "_read_decompile_file", return_value=23)
-        mocker.patch.object(
-            AicoreErrorParser, "_get_occur_before_mark", return_value=True
-        )
         info = AicErrorInfo()
         info.kernel_name = "te_assign_d623a1e1b515a45cdc8c9658e58e2860034dbfbd9ab35f92e1415a0fda9d35c1_1"
         kernel_meta_path = os.path.join(
@@ -551,17 +548,6 @@ class TestUtilsMethods(CommonAssert):
         self.temp.joinpath("test.log").write_text(log_content, encoding="utf-8")
         parser = AicoreErrorParser(self.temp)
         self.assertEqual(parser.search_aicerr_log(kernel_name, self.temp), result)
-
-    def test_get_occur_before_mark(self):
-        decompile_file = ori_data_path.joinpath(
-            "decompile_with_o/GatherV2_daad10a93d32be95786cd6e84e734751_high_precision.o.txt"
-        )
-        assert (
-            getattr(AicoreErrorParser, "_get_occur_before_mark")(
-                decompile_file, "430", AicErrorInfo()
-            )
-            is True
-        )
 
     def test_get_tiling_l0_ffts(self, mocker):
         log = "[ERROR] RUNTIME(1592077,python3):2024-09-12-16:40:07.362.023 [device_error_proc.cc:1402]1592077 ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial number is 87, there is an fftsplus aivector error exception, core id is 0, error code = 0, dump info: pc start: 0x12c042d73754, current: 0x12c042d75b18, vec error info: 0x99000000a2, mte error info: 0x5003000031, ifu error info: 0x200000007ffc0, ccu error info: 0x280d00000084, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12c040569000."

@@ -980,8 +980,9 @@ class AicoreErrorParser:
         start_pc5 = "0" + info.aic_error_info.get("start_pc", "")[-5:]
         current_pc5_value = utils.get_hexstr_value(current_pc5)
         start_pc5_value = utils.get_hexstr_value(start_pc5)
-        diff_str = hex(current_pc5_value - start_pc5_value)[2:]
-        utils.print_debug_log(f"The address offset is {diff_str}.")
+        utils.print_debug_log(
+            f"The address offset is {hex(current_pc5_value - start_pc5_value)[2:]}."
+        )
 
         # 估算err pc
         err_pc = ""
@@ -994,7 +995,7 @@ class AicoreErrorParser:
         else:
             utils.print_debug_log(f"Estimated error address offset is {err_pc}.")
 
-        return diff_str, err_pc
+        return err_pc
 
     @classmethod
     def _get_symbolize_o_file(cls, info: any) -> str:
@@ -1021,23 +1022,31 @@ class AicoreErrorParser:
 
     @classmethod
     def _set_corrected_instr(cls, info: any) -> None:
-        """Fill in the corrected error line, symbolized via llvm-symbolizer.
+        """Fill in the corrected error line and its source locations.
 
-        修正后的 PC 由 adump 日志或本地掩码表得出，与 llvm-symbolizer 无关，
-        故 symbolize 失败（未安装、执行失败、.o 无调试信息）时照常输出修正 PC，
-        仅把行号一行换成提示，说明行号无法计算。
+        源码位置两路取值，优先级同 PC 修正：先取 adump 汇总日志的
+        outerSrc/innerSrc（BuildGroupSummaryText），没有再本地 llvm-symbolizer
+        解析。修正后的 PC 与两者都无关，故位置解析失败（未安装、执行失败、
+        .o 无调试信息）时照常输出修正 PC，仅把位置部分换成提示。
         """
         if not info.corrected_pc:
             return
         offset = info.corrected_pc.get("offset", 0)
-        location = pc_corrector.symbolize(cls._get_symbolize_o_file(info), offset)
-        if not location:
-            info.corrected_instr = "Unable to calculate the corrected line number, check the logs for more details.\n"
-            return
+        plog_path = info.corrected_pc.get("plog_path", "")
+        core_id = info.aic_error_info.get("core_id", "")
+        src = pc_corrector.get_corrected_src(
+            plog_path, core_id, cls._get_symbolize_o_file(info), offset
+        )
         info.corrected_instr = (
             f"Error occurred most likely at line: {hex(offset)[2:]}\n"
         )
-        info.corrected_instr += f"{location}\n"
+        if not src:
+            info.corrected_instr += "Unable to calculate the corrected source location, check the logs for more details.\n"
+            return
+        info.corrected_instr += f"outerSrc: {src.get('outermost', '')}\n"
+        innermost = src.get("innermost", "")
+        if innermost:
+            info.corrected_instr += f"innerSrc: {innermost}\n"
 
     @staticmethod
     def _get_decompile_status(o_file: str, decompile_file: str) -> int:
@@ -1102,7 +1111,7 @@ class AicoreErrorParser:
             return True
         utils.copy_src_to_dest([cce_file, o_file, json_file], dir_path)
         loc_json_file = os.path.join(kernel_meta_path, kernel_name + "_loc.json")
-        diff_str, err_pc = self._get_info_for_decompile(info)
+        err_pc = self._get_info_for_decompile(info)
         if self.parse_level == 1:
             err_pc = self._update_err_pc(
                 err_pc, decompile_file, f"{kernel_name}_{tiling_key}"
@@ -1110,9 +1119,8 @@ class AicoreErrorParser:
             cce_tbe_result = self._get_cce_tbe_code_number(
                 decompile_file, loc_json_file, err_pc, info
             )
-            occur_result = self._get_occur_before_mark(decompile_file, diff_str, info)
 
-            return cce_tbe_result and occur_result
+            return cce_tbe_result
         else:
             return True
 
@@ -1319,39 +1327,6 @@ exit()"""
         utils.print_debug_log(split_line)
 
     @staticmethod
-    def _get_occur_before_mark(decompile_file: str, diff_str: str, info: any) -> bool:
-        #      504:    04c20000    ST.b64         X1, [X0], #0
-        with open(decompile_file, "r", encoding="utf-8") as fo_file:
-            text = fo_file.read()
-
-        regexp = r"(^\s+(\S+):\s+\S+\s+\S.+$)"
-        ret = re.findall(regexp, text, re.M)
-        find_i = -1
-        for i, (_, line_diff) in enumerate(ret):
-            if line_diff == diff_str:
-                find_i = i
-                break
-
-        if find_i == -1:
-            utils.print_warn_log(
-                f"Get fault instruction failed, file({decompile_file}) diff({diff_str})."
-            )
-            return False
-
-        begin_i = 0 if find_i < 9 else find_i - 9
-        instr_str_list = []
-        for i in range(begin_i, find_i + 1):
-            instr_str_list.append(ret[i][0] + "\n")
-        instr_str = "".join(instr_str_list).strip("\n")
-
-        info.instr += "\nrelated instructions (error occurred before the mark *):\n\n"
-        info.instr += instr_str[: instr_str.rfind("\n") + 1] + "*"
-        info.instr += instr_str[instr_str.rfind("\n") + 2 :]
-        info.instr += "\n\nFor complete instructions, please view %s" % decompile_file
-
-        return True
-
-    @staticmethod
     def _write_errorinfo_file(err_i_folder: str, analyse_result: str) -> None:
         info_file = os.path.join(err_i_folder, "info.txt")
         utils.write_file(info_file, analyse_result)
@@ -1528,6 +1503,7 @@ exit()"""
             "there is an exception of aivec error",
             "there is an exception of aicore error",
             "aicore exception",
+            "An error occurs on the device",
         ]
         for s in error_strings:
             if s in content and kernel_name in content:

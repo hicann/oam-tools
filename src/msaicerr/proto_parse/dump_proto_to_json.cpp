@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <google/protobuf/util/json_util.h>
+#include "securec.h"
 #include "proto/proto_parse/dump_data.pb.h"
 
 static int32_t SaveToFile(std::string& jsonData, std::string path)
@@ -57,7 +58,11 @@ int32_t ParseDumpProtoToJson(const char* data, size_t dataLength, const char* pa
         return -1;
     }
     uint64_t headLength = 0;
-    (void)memcpy(&headLength, data, sizeof(headLength));
+    errno_t copyRet = memcpy_s(&headLength, sizeof(headLength), data, sizeof(headLength));
+    if (copyRet != EOK) {
+        std::cerr << "Failed to copy head length, error:" << copyRet << std::endl;
+        return -1;
+    }
     if (headLength > dataLength - sizeof(uint64_t)) {
         std::cerr << "Input param check failed, dataLength needs to be greater than headLength(" << headLength << ") + "
                   << sizeof(uint64_t) << ", get dataLength: " << dataLength << std::endl;
