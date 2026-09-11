@@ -133,7 +133,7 @@
   - 仅支持通信算法的编排展开位置在AI CPU的场景。
   <!-- end id1 -->
 
-  <!-- npu="A3" id2 -->
+  <!-- npu="950,A3" id2 -->
 - **-m \<0/1>或--symmetric_memory \<0/1>**：可选，是否开启对称内存功能。
 
   单算子模式下由于输入输出buffer动态变化，所以HCCL会使用中间buffer进行中转完成集合通信，但会引入额外的内存拷贝开销。对称内存功能可以降低内存拷贝开销，直接对业务传入的内存进行操作，从而提升性能。
@@ -146,7 +146,9 @@
   - 仅支持Ascend 950PR/Ascend 950DT、Atlas A3 训练系列产品/Atlas A3 推理系列产品。
   - 仅支持通信算子展开模式为AI CPU的场景。
   - 针对Ascend 950PR/Ascend 950DT：
-    - 仅支持执行all_gather_test命令。
+    - 仅支持超节点内通信。
+    - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test、alltoall_test、alltoallvc_test、broadcast_test命令。
+      关于通信算子展开模式的详细说明可参见HCCL_OP_EXPANSION_MODE环境变量。
     - 仅支持URMA通信场景。
   - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品：
     - 仅支持超节点内通信。
