@@ -14,7 +14,12 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.15)
+# 最低版本依据：cmake/install_bundle.cmake 解压闭源包使用 file(ARCHIVE_EXTRACT)，
+# 该子命令自 CMake 3.18 引入；低于 3.18 的 cmake 二进制在首次构建或 --make_clean 后
+# （bundle 未就绪、配置期须拉包解压）会报 "file sub-command ARCHIVE_EXTRACT is not
+# recognized" 并中断。声明 3.18 可在配置最开始即给出明确的版本要求提示
+# （与 docs/zh|en/quick_install.md 前置依赖口径一致）。
+cmake_minimum_required(VERSION 3.18)
 include(cmake/fetch_cann_cmake.cmake)
 set(PKG_NAME oam)
 project(Oam-Tools)
