@@ -25,6 +25,10 @@ Two sources, in priority order:
    CloudV2/V4/V5 三张掩码表移植过来，按错误寄存器位段回填 PC，再用
    llvm-symbolizer 把修正后的偏移解析成源码位置。
 
+源码位置（outerSrc/innerSrc）同样两路取值：优先取 adump 汇总日志
+（BuildGroupSummaryText），没有再本地 llvm-symbolizer 解析
+（ParseSingleResult 的移植）。
+
 startPC 的修正在 runtime 侧来自 kernelDeviceStartPC_（device 侧加载地址），
 离线拿不到，此时 runtime 自己也是 fixedStartPC = startPC（GetCorrectedStartPC
 返回 false 的分支），故回退路径沿用原始 startPC。
@@ -246,32 +250,127 @@ def fix_pc_by_error_regs(current_pc: int, regs: dict, chip_type: ChipType) -> in
     return fixed
 
 
-def symbolize(o_file: str, offset: int) -> str:
-    """Resolve a corrected PC offset to `function at file:line` via llvm-symbolizer."""
+def _is_location_line(line: str) -> bool:
+    """Port of IsLocationLine: 形如 file:line:col，末两个冒号分隔字段均为数字。
+
+    用于把位置行与函数名行区分开——demangle 后的函数名可能含 "::"
+    （如 ns::foo(int)），仅凭含冒号无法区分。
+    """
+    parts = line.rsplit(":", 2)
+    return len(parts) == 3 and parts[1].isdigit() and parts[2].isdigit()
+
+
+def symbolize(o_file: str, offset: int) -> dict:
+    """Resolve a corrected PC offset to source locations via llvm-symbolizer.
+
+    Port of KernelSourceSymbolizer::ParseSingleResult：llvm-symbolizer 默认
+    内联帧序为 innermost-first，首条位置行填 innermost、每条位置行覆盖
+    outermost（末条胜出=最外层帧）；只认位置行，不依赖函数名行与空行。
+    Returns {"innermost": ..., "outermost": ...}（file:line:col），最外层帧
+    不可解析时返回 {}——与 runtime 的 outermost.ok 判定一致。
+    """
     tool = shutil.which(Constant.SYMBOLIZER_FILE)
     if not tool:
         utils.print_warn_log("llvm-symbolizer is not installed.")
-        return ""
+        return {}
     if not o_file or not os.path.exists(o_file):
         utils.print_warn_log(f"The *.o file {o_file} does not exist, skip symbolize.")
-        return ""
-    cmd = [tool, f"-obj={o_file}", hex(offset)]
+        return {}
+    # 用长参数 --obj=（"-obj=" 短参数不被识别），与 stdin 喂文件形式等价。
+    cmd = [tool, f"--obj={o_file}", hex(offset)]
     status, data = utils.execute_command(cmd)
     if status != 0:
         utils.print_warn_log(f"Failed to symbolize {hex(offset)} in {o_file}.")
-        return ""
-    lines = [line.strip() for line in data.splitlines() if line.strip()]
-    if not lines:
-        return ""
-    # 默认输出为 "函数名\n源文件:行:列"，未知位置标记为 "??" / "??:0:0"。与 runtime
-    # 的 res.ok 判定一致（srcFile 为 "??" 或空即失败），此时视为没解析出位置。
-    if any(line.startswith(UNKNOWN_MARK) for line in lines):
+        return {}
+    innermost = ""
+    outermost = ""
+    has_inner = False
+    for line in data.splitlines():
+        line = line.strip()
+        if not _is_location_line(line):
+            continue
+        src_file = line.rsplit(":", 2)[0]
+        location = "" if src_file in (UNKNOWN_MARK, "") else line
+        if not has_inner:
+            innermost = location
+            has_inner = True
+        outermost = location
+    if not outermost:
         utils.print_warn_log(
             f"llvm-symbolizer cannot resolve {hex(offset)} in {o_file}, "
             "the *.o may have no debug info."
         )
-        return ""
-    return " at ".join(lines[:2]) if len(lines) > 1 else lines[0]
+        return {}
+    return {"innermost": innermost, "outermost": outermost}
+
+
+def parse_symbolize_src_from_log(plog_path: str, core_id: str) -> dict:
+    """Read adump's already-symbolized source locations out of plog.
+
+    kernel_symbol_locator.cpp BuildGroupSummaryText 打印
+    "Group[N] outerSrc=file:line:col innerSrc=file:line:col"，同组的
+    "Group[N] cores=[{id=..,type=..},...]" 行列出该组覆盖的核（12 个/行
+    分块续打）。按 group 下标关联两行、再按 core id 匹配本核。
+    """
+    cmd = ["grep", "outerSrc=", "-inrE", plog_path]
+    src_rets = utils.get_inquire_result(
+        cmd, RegexPattern.ADUMP_SYMBOLIZE_SRC, match_dict=True
+    )
+    if not src_rets:
+        return {}
+    src_by_group = {ret.get("group_idx"): ret for ret in src_rets}
+    # "[" 在 ERE 里开字符类，grep 模式需转义。
+    cores_cmd = ["grep", "cores=\\[", "-inrE", plog_path]
+    cores_rets = utils.get_inquire_result(
+        cores_cmd, RegexPattern.ADUMP_SUMMARY_CORES, match_dict=True
+    )
+    if not cores_rets:
+        return {}
+    matched = None
+    for ret in cores_rets:
+        group = src_by_group.get(ret.get("group_idx"))
+        # 汇总按 (oFilePath, fixedPCOffset) 聚类，同组可能覆盖多个核，
+        # 不按 core id 过滤会把别的核的源码位置当本核报出。
+        if group is not None and core_id and f"id={core_id}," in ret.get("cores", ""):
+            matched = group
+            break
+    if matched is None:
+        utils.print_warn_log(
+            f"No adump symbolize source for core id {core_id}, "
+            "try to symbolize locally."
+        )
+        return {}
+    outermost = matched.get("outer_src", "")
+    innermost = matched.get("inner_src", "")
+    if outermost in ("", "unknown"):
+        # FormatSourceLocation 对 !ok 的帧打印 unknown，与 runtime 的
+        # outermost.ok 判定一致，视为未解析出。
+        return {}
+    return {
+        "innermost": "" if innermost == "unknown" else innermost,
+        "outermost": outermost,
+    }
+
+
+def get_corrected_src(plog_path: str, core_id: str, o_file: str, offset: int) -> dict:
+    """Symbolized source locations for the corrected PC, dump log first.
+
+    1. adump 汇总日志已 symbolize 好（BuildGroupSummaryText 的
+       outerSrc/innerSrc），直接取，与 dump 结果完全一致。
+    2. plog 里没有该日志时，本地用 llvm-symbolizer 解析修正后的偏移
+       （ParseSingleResult 的移植）。
+    """
+    corrected = parse_symbolize_src_from_log(plog_path, core_id)
+    if corrected:
+        utils.print_debug_log(
+            f"Get symbolize source from dump log: outermost={corrected.get('outermost')}, "
+            f"innermost={corrected.get('innermost')}."
+        )
+        return corrected
+    utils.print_info_log(
+        "No adump symbolize source in plog, symbolize by llvm-symbolizer locally."
+    )
+    return symbolize(o_file, offset)
 
 
 def parse_corrected_pc_from_log(plog_path: str, core_id: str) -> dict:
@@ -301,6 +400,8 @@ def parse_corrected_pc_from_log(plog_path: str, core_id: str) -> dict:
         "current_pc": matched.get("fixed_current_pc"),
         "offset": utils.get_hexstr_value(matched.get("fixed_pc_offset")),
         "from_dump": True,
+        # 源码位置解析要在同一 plog 里找 adump 汇总，带上路径供调用方使用。
+        "plog_path": plog_path,
     }
 
 
@@ -373,4 +474,6 @@ def get_corrected_pc(plog_path: str, info: any, chip_type: ChipType = None) -> d
         "current_pc": hex(fixed_current_pc),
         "offset": fixed_current_pc - start_pc,
         "from_dump": False,
+        # 源码位置解析要在同一 plog 里找 adump 汇总，带上路径供调用方使用。
+        "plog_path": plog_path,
     }

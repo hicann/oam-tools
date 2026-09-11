@@ -1225,3 +1225,8 @@ class RegexPattern:
         r"Error register information\.\scoreId=(?P<core_id>\d+),\scoreType=(?P<core_type>\d+),\s"
         r"(?P<regs>[A-Z0-9_]+=0x[0-9a-fA-F]+(?:\s+[A-Z0-9_]+=0x[0-9a-fA-F]+)*)"
     )
+
+    # adump 的源码位置汇总，见 BuildGroupSummaryText；cores 行与 outerSrc 行按
+    # group_idx 关联，用于判断该组是否包含本核。
+    ADUMP_SYMBOLIZE_SRC = r"Group\[(?P<group_idx>\d+)\]\souterSrc=(?P<outer_src>\S+)\sinnerSrc=(?P<inner_src>\S+)"
+    ADUMP_SUMMARY_CORES = r"Group\[(?P<group_idx>\d+)\]\scores=\[(?P<cores>[^\]]*)\]"

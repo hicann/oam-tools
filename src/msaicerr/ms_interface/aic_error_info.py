@@ -254,9 +254,10 @@ args after  execution: {self._get_args_str(self.args_after_list)}
             conclusion = "Failed to execute the built-in sample operator. Check the environment.\n"
         elif self.single_op_attempted and self.single_op_test_result is RetCode.NOT_RUN:
             conclusion = (
-                "The single-operator test case was not executed successfully, so it cannot be used to "
-                "confirm the AI Core error. Check whether the *.o and *.json files of the operator are "
-                "complete and match each other, and check the single-operator log for the failure cause.\n"
+                f"The single-operator test case was not executed successfully, so it cannot be used to "
+                f"confirm the AI Core error. Check whether the *.o and *.json files of the operator are "
+                f"complete and match each other, and check the single-operator log in "
+                f"{self.single_op_log_path} for the failure cause.\n"
             )
         elif self.single_op_test_result is RetCode.SUCCESS:
             conclusion = (

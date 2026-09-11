@@ -317,6 +317,15 @@ def _make_o_info(tmp_path, bin_name, kernel_name="MyKernel"):
     return info
 
 
+ADUMP_SUMMARY_LOG = (
+    "[ERROR] ADUMP(1,python3):2025-01-01-00:00:00.000.000 [kernel_symbol_locator.cpp:520]1 "
+    "PrintSummaryGroup:[Dump][Exception][Symbolize] Group[0] summary (cores=1):\n"
+    "[Dump][Exception][Symbolize] Group[0] oFile=/path/to/a.o fixedPCOffset=0x12cc symbol=foo+0x8\n"
+    "[Dump][Exception][Symbolize] Group[0] outerSrc=/path/to/kernel.cce:88:3 innerSrc=/path/to/kernel.h:40:10\n"
+    "[Dump][Exception][Symbolize] Group[0] cores=[{id=12,type=0}]"
+)
+
+
 def test_symbolize_o_file_falls_back_to_host_o(tmp_path):
     host_o = tmp_path / "MyKernel_1234_host.o"
     host_o.touch()
@@ -367,66 +376,106 @@ def test_corrected_instr_uses_host_o_fallback(tmp_path, monkeypatch):
     host_o.touch()
     used = []
     monkeypatch.setattr(
-        pc_corrector, "symbolize", lambda o, _: used.append(o) or "fn at a.cce:1:1"
+        pc_corrector, "get_corrected_src", lambda *args: used.append(args[2]) or {}
     )
     info = _make_o_info(tmp_path, "MyKernel.o")
     info.corrected_pc = {"start_pc": "0x1000", "current_pc": "0x2000", "offset": 0x1000}
     AicoreErrorParser._set_corrected_instr(info)
     assert used == [str(host_o)]
-    assert "fn at a.cce:1:1" in info.corrected_instr
+
+
+def _stub_symbolizer_cmd(monkeypatch, stdout):
+    monkeypatch.setattr(
+        pc_corrector.shutil, "which", lambda _: "/usr/bin/llvm-symbolizer"
+    )
+    cmds = []
+    monkeypatch.setattr(
+        pc_corrector.utils,
+        "execute_command",
+        lambda cmd: cmds.append(cmd) or (0, stdout),
+    )
+    return cmds
 
 
 def test_symbolize_treats_unknown_mark_as_failure(tmp_path, monkeypatch):
     o_file = tmp_path / "a.o"
     o_file.write_bytes(b"\x7fELF")
-    monkeypatch.setattr(
-        pc_corrector.shutil, "which", lambda _: "/usr/bin/llvm-symbolizer"
-    )
-    monkeypatch.setattr(
-        pc_corrector.utils, "execute_command", lambda _: (0, "??\n??:0:0\n")
-    )
-    assert pc_corrector.symbolize(str(o_file), 0x100) == ""
+    _stub_symbolizer_cmd(monkeypatch, "??\n??:0:0\n")
+    assert pc_corrector.symbolize(str(o_file), 0x100) == {}
 
 
-def test_symbolize_returns_location(tmp_path, monkeypatch):
+def test_symbolize_uses_long_obj_flag(tmp_path, monkeypatch):
     o_file = tmp_path / "a.o"
     o_file.write_bytes(b"\x7fELF")
-    monkeypatch.setattr(
-        pc_corrector.shutil, "which", lambda _: "/usr/bin/llvm-symbolizer"
+    cmds = _stub_symbolizer_cmd(monkeypatch, "/a.cce:88:3\n")
+    pc_corrector.symbolize(str(o_file), 0x100)
+    # "-obj=" 短参数不被识别，必须用长参数 "--obj="
+    assert cmds == [["/usr/bin/llvm-symbolizer", f"--obj={o_file}", "0x100"]]
+
+
+def test_symbolize_returns_inner_and_outer_frames(tmp_path, monkeypatch):
+    o_file = tmp_path / "a.o"
+    o_file.write_bytes(b"\x7fELF")
+    # 内联展开：首条位置行为最内层帧，末条为最外层帧；函数名行与空行不参与解析
+    _stub_symbolizer_cmd(
+        monkeypatch, "my_kernel\n/inner.cce:88:3\n\n/outer.cce:40:10\n"
     )
-    monkeypatch.setattr(
-        pc_corrector.utils,
-        "execute_command",
-        lambda _: (0, "my_kernel\n/path/to/kernel.cce:88:3\n"),
-    )
-    assert pc_corrector.symbolize(str(o_file), 0x100) == (
-        "my_kernel at /path/to/kernel.cce:88:3"
-    )
+    assert pc_corrector.symbolize(str(o_file), 0x100) == {
+        "innermost": "/inner.cce:88:3",
+        "outermost": "/outer.cce:40:10",
+    }
+
+
+def test_symbolize_ignores_function_name_with_colons(tmp_path, monkeypatch):
+    o_file = tmp_path / "a.o"
+    o_file.write_bytes(b"\x7fELF")
+    # demangle 后的函数名可能含 "::"，不是位置行，不得当作源码位置
+    _stub_symbolizer_cmd(monkeypatch, "ns::foo(int)\n/path/to/kernel.cce:88:3\n")
+    assert pc_corrector.symbolize(str(o_file), 0x100) == {
+        "innermost": "/path/to/kernel.cce:88:3",
+        "outermost": "/path/to/kernel.cce:88:3",
+    }
 
 
 def test_corrected_pc_kept_with_hint_when_symbolize_fails(monkeypatch):
-    monkeypatch.setattr(pc_corrector, "symbolize", lambda *_: "")
+    monkeypatch.setattr(pc_corrector, "get_corrected_src", lambda *_: {})
     info = _make_info()
-    info.corrected_pc = {"start_pc": "0x1000", "current_pc": "0x2000", "offset": 0x1000}
+    info.corrected_pc = {
+        "start_pc": "0x1000",
+        "current_pc": "0x2000",
+        "offset": 0x1000,
+        "plog_path": "fake/plog",
+    }
     AicoreErrorParser._set_corrected_instr(info)
-    # 修正 PC 与 symbolizer 无关，照常输出；行号一行换成提示
+    # 修正 PC 与位置解析无关，照常输出；位置部分换成提示
     result = info._get_pc_str()
     assert "Corrected Info:" in result
     assert "current pc        : 0x2000" in result
-    assert "Unable to calculate the corrected line number" in result
-    assert "Error occurred most likely at line: 1000" not in result
+    assert "Unable to calculate the corrected source location" in result
+    assert "outerSrc" not in result
 
 
 def test_corrected_instr_has_line_when_symbolize_ok(monkeypatch):
     monkeypatch.setattr(
-        pc_corrector, "symbolize", lambda *_: "my_kernel at /path/kernel.cce:88:3"
+        pc_corrector,
+        "get_corrected_src",
+        lambda *_: {
+            "innermost": "/path/kernel.h:40:10",
+            "outermost": "/path/kernel.cce:88:3",
+        },
     )
     info = _make_info()
-    info.corrected_pc = {"start_pc": "0x1000", "current_pc": "0x2000", "offset": 0x1000}
+    info.corrected_pc = {
+        "start_pc": "0x1000",
+        "current_pc": "0x2000",
+        "offset": 0x1000,
+        "plog_path": "fake/plog",
+    }
     AicoreErrorParser._set_corrected_instr(info)
     result = info._get_pc_str()
     assert "Error occurred most likely at line: 1000" in result
-    assert "my_kernel at /path/kernel.cce:88:3" in result
+    assert "outerSrc: /path/kernel.cce:88:3" in result
+    assert "innerSrc: /path/kernel.h:40:10" in result
     assert "llvm-symbolizer is not installed" not in result
 
 
@@ -434,8 +483,71 @@ def test_symbolize_warns_when_tool_missing(tmp_path, monkeypatch):
     warns = []
     monkeypatch.setattr(pc_corrector.utils, "print_warn_log", warns.append)
     monkeypatch.setattr(pc_corrector.shutil, "which", lambda _: None)
-    assert pc_corrector.symbolize(str(tmp_path / "a.o"), 0x100) == ""
+    assert pc_corrector.symbolize(str(tmp_path / "a.o"), 0x100) == {}
     assert warns == ["llvm-symbolizer is not installed."]
+
+
+def test_parse_symbolize_src_from_log_matches_by_core(tmp_path):
+    plog_path = _write_plog(tmp_path, ADUMP_SUMMARY_LOG)
+    ret = pc_corrector.parse_symbolize_src_from_log(plog_path, "12")
+    assert ret == {
+        "innermost": "/path/to/kernel.h:40:10",
+        "outermost": "/path/to/kernel.cce:88:3",
+    }
+
+
+def test_parse_symbolize_src_skips_on_core_mismatch(tmp_path):
+    plog_path = _write_plog(tmp_path, ADUMP_SUMMARY_LOG)
+    assert pc_corrector.parse_symbolize_src_from_log(plog_path, "3") == {}
+
+
+def test_parse_symbolize_src_handles_multiline_cores(tmp_path):
+    # cores 超过 12 个时按 12 个/行分块续打，id 出现在任意分块上都应命中
+    cores_lines = [
+        "[Dump][Exception][Symbolize] Group[0] cores=["
+        + ",".join(f"{{id={i},type=0}}" for i in range(12))
+        + "]",
+        "[Dump][Exception][Symbolize] Group[0] cores=[{id=12,type=0}]",
+    ]
+    plog_path = _write_plog(
+        tmp_path,
+        ADUMP_SUMMARY_LOG.replace(
+            "Group[0] cores=[{id=12,type=0}]", "\n".join(cores_lines)
+        ),
+    )
+    ret = pc_corrector.parse_symbolize_src_from_log(plog_path, "12")
+    assert ret.get("outermost") == "/path/to/kernel.cce:88:3"
+
+
+def test_parse_symbolize_src_treats_unknown_outer_as_failure(tmp_path):
+    log = ADUMP_SUMMARY_LOG.replace(
+        "outerSrc=/path/to/kernel.cce:88:3", "outerSrc=unknown"
+    )
+    plog_path = _write_plog(tmp_path, log)
+    assert pc_corrector.parse_symbolize_src_from_log(plog_path, "12") == {}
+
+
+def test_get_corrected_src_prefers_dump_log(tmp_path, monkeypatch):
+    plog_path = _write_plog(tmp_path, ADUMP_SUMMARY_LOG)
+    called = []
+    monkeypatch.setattr(
+        pc_corrector, "symbolize", lambda *args: called.append(args) or {}
+    )
+    ret = pc_corrector.get_corrected_src(plog_path, "12", "fake/a.o", 0x12CC)
+    assert ret.get("outermost") == "/path/to/kernel.cce:88:3"
+    # dump 命中时不再本地 symbolize
+    assert called == []
+
+
+def test_get_corrected_src_falls_back_to_local_symbolize(tmp_path, monkeypatch):
+    plog_path = _write_plog(tmp_path, "nothing to match here")
+    monkeypatch.setattr(
+        pc_corrector,
+        "symbolize",
+        lambda *_: {"innermost": "/a.cce:1:1", "outermost": "/a.cce:1:1"},
+    )
+    ret = pc_corrector.get_corrected_src(plog_path, "12", "fake/a.o", 0x100)
+    assert ret == {"innermost": "/a.cce:1:1", "outermost": "/a.cce:1:1"}
 
 
 def test_pc_str_only_original_without_correction():
