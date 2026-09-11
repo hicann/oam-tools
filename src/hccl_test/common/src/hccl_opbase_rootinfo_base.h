@@ -55,7 +55,7 @@ public:
     virtual void is_initdata_overflow();
     virtual void print_execution_time(double average_time_us, double algorithm_bandwith_GBytes_s); // 打印耗时
 
-    virtual int destory_alloc_buf() override;
+    virtual int destroy_alloc_buf() override;
 
 public:
     void* host_buf;
