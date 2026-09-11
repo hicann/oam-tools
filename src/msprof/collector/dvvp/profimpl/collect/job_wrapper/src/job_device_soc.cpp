@@ -547,6 +547,7 @@ int32_t JobDeviceSoc::CreateSysCollectionJobArray()
     // for host system
     MSVP_MAKE_SHARED0(
         collectionJobV_[HOST_SYSCALLS_COLLECTION_JOB].collectionJob, ProfHostSysCallsJob, return PROFILING_FAILED);
+    MSVP_MAKE_SHARED0(collectionJobV_[HOST_CCA_MS_JOB].collectionJob, ProfHostCcaMsJob, return PROFILING_FAILED);
     MSVP_MAKE_SHARED0(
         collectionJobV_[HOST_PTHREAD_COLLECTION_JOB].collectionJob, ProfHostPthreadJob, return PROFILING_FAILED);
     MSVP_MAKE_SHARED0(

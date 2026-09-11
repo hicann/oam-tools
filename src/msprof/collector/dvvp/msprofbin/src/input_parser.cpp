@@ -1250,7 +1250,7 @@ int32_t InputParser::CheckHostSysValid(const struct MsprofCmdInfo& cmdInfo)
     std::string hostSys = std::string(cmdInfo.args[ARGS_HOST_SYS]);
     if (hostSys.empty()) {
         CmdLog::CmdErrorLog("Argument --host-sys is empty. Please input in the range of "
-                            "'cpu|mem|disk|network|osrt|numa'");
+                            "'cpu|mem|disk|network|osrt|numa|threads-sync|cache'");
         return MSPROF_DAEMON_ERROR;
     }
     std::vector<std::string> hostSysArray = Utils::Split(cmdInfo.args[ARGS_HOST_SYS], false, "", ",");
@@ -1258,7 +1258,7 @@ int32_t InputParser::CheckHostSysValid(const struct MsprofCmdInfo& cmdInfo)
         if (!(ParamValidation::instance()->CheckHostSysOptionsIsValid(hostSysArray[i]))) {
             CmdLog::CmdErrorLog(
                 "Argument --host-sys: invalid value:%s. Please input in the range of "
-                "'cpu|mem|disk|network|osrt|numa'",
+                "'cpu|mem|disk|network|osrt|numa|threads-sync|cache'",
                 hostSysArray[i].c_str());
             return MSPROF_DAEMON_ERROR;
         }
@@ -1312,6 +1312,10 @@ void InputParser::SetHostSysParam(const std::string hostSysParam)
         params_->host_osrt_profiling = ON;
     } else if (hostSysParam.compare(HOST_SYS_NUMA) == 0) {
         params_->host_numa_profiling = ON;
+    } else if (hostSysParam.compare(HOST_SYS_THREADS_SYNC) == 0) {
+        params_->host_threads_sync_profiling = ON;
+    } else if (hostSysParam.compare(HOST_SYS_CACHE) == 0) {
+        params_->host_cache_profiling = ON;
     }
 }
 
@@ -2628,7 +2632,9 @@ void ArgsManager::AddHostArgs()
 #if (defined(_WIN32) || defined(_WIN64) || defined(_MSC_VER))
     return;
 #endif
-    Args hostSys = {"host-sys", "The host-sys data type, include cpu, mem, disk, network, osrt, numa", HOST_SYS_CPU};
+    Args hostSys = {
+        "host-sys", "The host-sys data type, include cpu, mem, disk, network, osrt, numa, threads-sync, cache",
+        HOST_SYS_CPU};
     Args hostSysPid = {
         "host-sys-pid", "Set the PID of the app process for "
                         "which you want to collect performance data."};
