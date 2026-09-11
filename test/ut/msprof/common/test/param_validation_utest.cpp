@@ -852,6 +852,17 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetPlatformTypeModena)
     EXPECT_EQ(false, configManager->IsDriverSupportLlc());
 }
 
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetPlatformTypeDavidLite)
+{
+    auto configManager = ConfigManager::instance();
+    configManager->configMap_["type"] = "19";
+    EXPECT_EQ(PlatformType::CHIP_CLOUD_V3_LITE, configManager->GetPlatformType());
+    configManager->InitFrequency();
+    EXPECT_EQ("1000", configManager->GetFrequency());
+    EXPECT_EQ("800", configManager->GetAicDefFrequency());
+    EXPECT_EQ(true, configManager->IsDriverSupportLlc());
+}
+
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckFreqIsValid)
 {
     MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const std::string) const)

@@ -130,7 +130,8 @@ std::string InfoJson::GetHwtsFreq(std::string freq) const
 {
     double errorFrqValue = std::fabs(std::stod(freq) - DAVID_BASE_HWTS_FREQ);
     std::string hwtsFrequency;
-    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 &&
+    if ((ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 ||
+         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3_LITE) &&
         errorFrqValue > ERROR_THRESHOLD) {
         MSPROF_LOGW("The original hwtsFrequency is %s", freq.c_str());
         hwtsFrequency = std::to_string(static_cast<int>(DAVID_BASE_HWTS_FREQ));

@@ -62,6 +62,21 @@ void RefreshArgsManagerForTest()
     ArgsManager::instance()->AddArgs();
 }
 
+std::string CaptureHelpForPlatform(PlatformType platformType)
+{
+    SetPlatformTypeForTest(platformType);
+    Platform::instance()->Uninit();
+    (void)Platform::instance()->Init();
+
+    ArgsManager argsManager;
+    std::ostringstream helpOutput;
+    auto* oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
+    argsManager.PrintHelp();
+    std::cout.rdbuf(oldBuffer);
+    Platform::instance()->Uninit();
+    return helpOutput.str();
+}
+
 class INPUT_PARSER_UTEST : public testing::Test {
 protected:
     void SetUp() override {}
@@ -1177,11 +1192,6 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V4))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
 
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "all"));
@@ -1191,6 +1201,34 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidDavidLite)
+{
+    InputParser parser = InputParser();
+
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3_LITE));
+
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
+}
+
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidMdcLiteV2)
+{
+    InputParser parser = InputParser();
+
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_LITE_V2));
+
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
 }
 
 TEST_F(INPUT_PARSER_UTEST, MsprofFreqCheckValid)
@@ -1533,6 +1571,20 @@ TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidAndDavid121BlackSwitches)
         ARGS_AIV,      ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING,
         ARGS_DVPP_FREQ};
     EXPECT_EQ(david121Expected, switchList);
+}
+
+TEST_F(INPUT_PARSER_UTEST, DavidLiteHelpAndPlatformSwitchesMatchDavid)
+{
+    const std::string davidHelp = CaptureHelpForPlatform(PlatformType::CHIP_CLOUD_V3);
+    const std::string davidLiteHelp = CaptureHelpForPlatform(PlatformType::CHIP_CLOUD_V3_LITE);
+    EXPECT_EQ(davidHelp, davidLiteHelp);
+
+    InputParser parser;
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
+    const auto davidSwitchList = parser.GeneratePlatSwithList();
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3_LITE);
+    const auto davidLiteSwitchList = parser.GeneratePlatSwithList();
+    EXPECT_EQ(davidSwitchList, davidLiteSwitchList);
 }
 
 TEST_F(INPUT_PARSER_UTEST, AddInstrArgs)

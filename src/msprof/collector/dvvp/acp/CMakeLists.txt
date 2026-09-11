@@ -80,8 +80,9 @@ set(acpBinCpp
     ../profimpl/adapter/src/json_parser.cpp
     ../profimpl/platform/platform_interface.cpp
     ../profimpl/platform/cloud_v2_platform.cpp
-    ../profimpl/platform/david_platform.cpp
-    ../profimpl/platform/david_v121_platform.cpp
+        ../profimpl/platform/david_platform.cpp
+        ../profimpl/platform/david_lite_platform.cpp
+        ../profimpl/platform/david_v121_platform.cpp
     ../profimpl/platform/base_analyzer.cpp
     ../profimpl/collect/job_wrapper/src/collection_job.cpp
     ../profimpl/collect/job_wrapper/src/collection_register.cpp
@@ -182,8 +183,9 @@ set(profinjCpp
     ../transport/prof_channel.cpp
     ../profimpl/platform/platform_interface.cpp
     ../profimpl/platform/cloud_v2_platform.cpp
-    ../profimpl/platform/david_platform.cpp
-    ../profimpl/platform/david_v121_platform.cpp
+        ../profimpl/platform/david_platform.cpp
+        ../profimpl/platform/david_lite_platform.cpp
+        ../profimpl/platform/david_v121_platform.cpp
     ../profimpl/platform/base_analyzer.cpp
     ../profimpl/adapter/src/json_parser.cpp
     ../profimpl/collect/job_wrapper/src/collection_job.cpp

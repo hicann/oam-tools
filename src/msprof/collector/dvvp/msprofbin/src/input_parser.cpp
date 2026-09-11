@@ -435,6 +435,7 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         {PlatformType::CHIP_TINY_V1, mdcMiniV3BlackSwith},
         {PlatformType::CHIP_MDC_LITE, mdcLiteBlackSwith},
         {PlatformType::CHIP_CLOUD_V3, davidBlackSwith},
+        {PlatformType::CHIP_CLOUD_V3_LITE, davidBlackSwith},
         {PlatformType::CHIP_CLOUD_V4, david121BlackSwith}};
     std::map<Analysis::Dvvp::Common::Config::PlatformType, std::vector<MsprofArgsType>> chipV2Map =
         GenerateChipV2PlatSwithMap();
@@ -2115,9 +2116,9 @@ int32_t InputParser::CheckTaskBlockValid(const std::string& switchName, const st
 
     if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 && config.compare(MSVP_PROF_ALL) != 0) {
         std::string taskBlockRanges;
-        if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
-            Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
+        const auto platformType = Platform::instance()->GetPlatformType();
+        if (platformType == CHIP_CLOUD_V3 || platformType == CHIP_CLOUD_V3_LITE || platformType == CHIP_CLOUD_V4 ||
+            platformType == CHIP_MDC_V2 || platformType == CHIP_MDC_LITE_V2) {
             taskBlockRanges = "'all', 'on', 'off'.";
         } else {
             taskBlockRanges = "'all', 'off'.";
@@ -2130,9 +2131,12 @@ int32_t InputParser::CheckTaskBlockValid(const std::string& switchName, const st
             taskBlockRanges.c_str());
         return MSPROF_DAEMON_ERROR;
     }
-    if (config.compare(MSVP_PROF_ON) == 0 && Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
-        Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
+    if (config.compare(MSVP_PROF_ON) == 0) {
+        const auto platformType = Platform::instance()->GetPlatformType();
+        if (platformType == CHIP_CLOUD_V3 || platformType == CHIP_CLOUD_V3_LITE || platformType == CHIP_CLOUD_V4 ||
+            platformType == CHIP_MDC_V2 || platformType == CHIP_MDC_LITE_V2) {
+            return MSPROF_DAEMON_OK;
+        }
         CmdLog::CmdErrorLog(
             "The 'on' option is not supported on this platform, please use 'all' to collect block data.");
         MSPROF_LOGE("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
@@ -2804,6 +2808,7 @@ void ArgsManager::AddStarsArgs()
     }
     std::string task_block_ranges;
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3_LITE ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V4 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2) {
@@ -2941,7 +2946,8 @@ void ArgsManager::AddIoArgs()
         ioFreqArgs.SetDetail("NIC, ROCE acquisition frequency, range 1 ~ 100, "
                              "the default value is 100, unit Hz.");
     }
-    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3) {
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3_LITE) {
         ioArgs.SetDetail("UB acquisition switch, the default value is off.");
         ioFreqArgs.SetDetail("UB acquisition frequency, range 1 ~ 100, "
                              "the default value is 100, unit Hz.");
@@ -2980,7 +2986,8 @@ void ArgsManager::AddInterArgs()
         interFreq.SetDetail("SIO and PA acquisition frequency, range 1 ~ 50, "
                             "the default value is 50, unit Hz.");
     }
-    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3) {
+    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 ||
+        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3_LITE) {
         interArgs.SetDetail("PCIE, CCU, SIO and UB acquisition switch, the default value is off.");
         interFreq.SetDetail("PCIE, CCU, SIO and UB acquisition frequency, range 1 ~ 50, "
                             "the default value is 50, unit Hz.");
