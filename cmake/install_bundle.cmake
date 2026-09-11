@@ -19,6 +19,15 @@
 set(OAM_BUNDLE_BASE_URL
     "https://cann-3rd.obs.cn-north-4.myhuaweicloud.com/cann/oam-tools-diag")
 
+# master 分支每日集成包（weekly）优先来源：ascend-cann bucket 按最近周三日期命名的
+# {YYYYMMDD}_newest/ 目录。该 bucket 不开放列举（AccessDenied），无法自动发现，
+# 故按"当天或已过周三用本周三，否则用上周三"推算日期拼地址。
+set(OAM_BUNDLE_WEEKLY_BASE_URL
+    "https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN")
+# weekly 包取不到时的固定回退版本目录（cann-3rd bucket 同样不开放列举，
+# 无法自动发现最新 weekly.NN，发布新版本时须人工同步此值）。
+set(OAM_BUNDLE_WEEKLY_FALLBACK_VER "weekly.20260909.01")
+
 # OBS 上实际存在包的分支白名单。新增 release 线时须在此同步，
 # 并先确认 OBS bucket 下已上传对应的 <branch>/cann-oam-tools-release-<arch>.tar.gz。
 # （已核实：截至当前仅 master、9.1.0 两条路径可下载，其余返回 403。）
@@ -127,6 +136,64 @@ function(oam_resolve_bundle_branch RESULT_VAR)
     set(${RESULT_VAR} "master" PARENT_SCOPE)
 endfunction()
 
+# 推算最近的周三日期（YYYYMMDD）：当天是周三或已过周三用本周三，否则用上周三。
+# 结果写入 RESULT_VAR（PARENT_SCOPE）。注意 CMake 的 string(TIMESTAMP) 不提供星期，
+# 旧版（如 3.18）也不支持带自定义时间戳参数的四参 TIMESTAMP，故借当前 UNIX
+# 时间戳对 1970-01-01（周四）取模换算：days%7 == 0 周四、1 周五、2 周六、
+# 3 周日、4 周一、5 周二、6 周三。再以"天数差"直接在 YYYYMMDD 上做日期加减
+# （days 是 UTC 天数，换算自洽；非 UTC 时区午夜前后数小时可能与本地"今天"
+# 差一天，对选包无影响）。
+function(oam_recent_wednesday RESULT_VAR)
+    string(TIMESTAMP _today "%Y%m%d")
+    string(TIMESTAMP _epoch "%s")
+    math(EXPR _days "${_epoch} / 86400")
+    math(EXPR _weekday "${_days} % 7")
+    if(_weekday EQUAL 6)
+        # 周三：本周三即今天。
+        set(_back 0)
+    else()
+        # 周四~周二：最近一个已到来的周三在 w+1 天前（周四回 1 天，周二回 6 天）。
+        # 周三当天已过（周四起）落在"本周三"，尚未到（周一/二）落在"上周三"。
+        math(EXPR _back "${_weekday} + 1")
+    endif()
+    if(_back EQUAL 0)
+        set(${RESULT_VAR} "${_today}" PARENT_SCOPE)
+        return()
+    endif()
+    # 把 YYYYMMDD 拆成 y/m/d 数值，换算成儒略日做天级回退后再转回日期，
+    # 避免手写跨月/跨年日历。儒略日公式取自 Fliegel & Van Flandern 算法。
+    # 注意 math(EXPR) 不识别裸变量名（产生 dev 警告并按 0 参与运算），全部展开。
+    string(SUBSTRING "${_today}" 0 4 _y)
+    string(SUBSTRING "${_today}" 4 2 _m)
+    string(SUBSTRING "${_today}" 6 2 _d)
+    math(EXPR _jd "${_d} - 32075 + 1461 * (${_y} + 4800 + (${_m} - 14) / 12) / 4
+        + 367 * (${_m} - 2 - (${_m} - 14) / 12 * 12) / 12
+        - 3 * ((${_y} + 4900 + (${_m} - 14) / 12) / 100) / 4")
+    math(EXPR _jd "${_jd} - ${_back}")
+    # 儒略日转回公历日期（Fliegel & Van Flandern 逆变换）。
+    math(EXPR _l "${_jd} + 68569")
+    math(EXPR _n "4 * ${_l} / 146097")
+    math(EXPR _l "${_l} - (146097 * ${_n} + 3) / 4")
+    math(EXPR _i "4000 * (${_l} + 1) / 1461001")
+    math(EXPR _l "${_l} - 1461 * ${_i} / 4 + 31")
+    math(EXPR _j "80 * ${_l} / 2447")
+    set(_d "${_l} - 2447 * ${_j} / 80")
+    math(EXPR _d "${_d}")
+    math(EXPR _l "${_j} / 11")
+    math(EXPR _m "${_j} + 2 - 12 * ${_l}")
+    math(EXPR _y "100 * (${_n} - 49) + ${_i} + ${_l}")
+    # 补零拼回 YYYYMMDD。
+    string(LENGTH "${_m}" _m_len)
+    if(_m_len LESS 2)
+        set(_m "0${_m}")
+    endif()
+    string(LENGTH "${_d}" _d_len)
+    if(_d_len LESS 2)
+        set(_d "0${_d}")
+    endif()
+    set(${RESULT_VAR} "${_y}${_m}${_d}" PARENT_SCOPE)
+endfunction()
+
 function(oam_install_bundle)
     set(_bundle_dir "${OAM_TOOLS_DIR}/bundle")
     set(_bundle_meta "${_bundle_dir}/${OAM_BUNDLE_META_NAME}")
@@ -173,9 +240,12 @@ function(oam_install_bundle)
         message(FATAL_ERROR "unsupported arch for bundle download: ${CMAKE_SYSTEM_PROCESSOR}")
     endif()
 
-    # 编译类型决定本地包名：release/debug（CMAKE_BUILD_TYPE 小写，空则默认 release），
+    # 编译类型决定本地包名：release/debug（CMAKE_BUILD_TYPE 小写，空或未定义则默认 release），
     # 与原 install_bundle.sh 的 OUTPUT_FILE=${BASE_NAME}-${BUILD_TYPE}-${ARCH} 一致。
-    if(CMAKE_BUILD_TYPE STREQUAL "")
+    # 注意 CMAKE_BUILD_TYPE 未定义时 `if(CMAKE_BUILD_TYPE STREQUAL "")` 判 false
+    # （未定义变量在非引号比较里按 undefined 处理），须用 NOT DEFINED 一并兜底，
+    # 否则 _build_type 为空、本地包名拼成 cann-oam-tools--<arch>.tar.gz（双横线）。
+    if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
         set(_build_type "release")
     else()
         string(TOLOWER "${CMAKE_BUILD_TYPE}" _build_type)
@@ -248,19 +318,51 @@ function(oam_install_bundle)
         endif()
         set(_url "${OAM_BUNDLE_BASE_URL}/${_bundle_branch}/${_release_tar_name}")
 
+        # master 分支优先取 ascend-cann bucket 按最近周三日期命名的集成包，
+        # 取不到再回退 cann-3rd 的固定 weekly 版本目录；发布线分支仍走原地址。
+        set(_urls "")
+        if(_bundle_branch STREQUAL "master")
+            oam_recent_wednesday(_wed)
+            list(APPEND _urls
+                "${OAM_BUNDLE_WEEKLY_BASE_URL}/${_wed}_newest/${_release_tar_name}|weekly ${_wed}"
+                "${OAM_BUNDLE_BASE_URL}/master/${OAM_BUNDLE_WEEKLY_FALLBACK_VER}/${_release_tar_name}|fallback ${OAM_BUNDLE_WEEKLY_FALLBACK_VER}")
+        else()
+            list(APPEND _urls "${_url}|branch ${_bundle_branch}")
+        endif()
+
         # 下载路径只提供 release 包；debug 构建若未预置本地 debug 包，将回退到 release bundle。
         set(_tar_path "${_bundle_dir}/${_release_tar_name}")
-        message(STATUS "bundle download (release only): ${_url}")
-        file(DOWNLOAD "${_url}" "${_tar_path}"
-            TLS_VERIFY OFF
-            STATUS _dl_status
-            LOG _dl_log)
-        list(GET _dl_status 0 _dl_code)
-        if(NOT _dl_code EQUAL 0)
+        set(_dl_ok FALSE)
+        set(_last_url "")
+        set(_first TRUE)
+        foreach(_pair IN LISTS _urls)
+            string(REGEX REPLACE "\\|.*$" "" _try_url "${_pair}")
+            string(REGEX REPLACE "^.*\\|" "" _try_desc "${_pair}")
+            if(NOT _first)
+                # 首选源失败，正式切到备用源前告知用户：WARNING 级别 + 即将下载的完整地址。
+                message(WARNING
+                    "bundle download failed at ${_last_url} (${_dl_code}: ${_dl_msg}); "
+                    "falling back to ${_try_url}")
+            endif()
+            set(_first FALSE)
+            set(_last_url "${_try_url}")
+            message(STATUS "bundle download (release only): ${_try_url} (${_try_desc})")
+            file(DOWNLOAD "${_try_url}" "${_tar_path}"
+                TLS_VERIFY OFF
+                STATUS _dl_status
+                LOG _dl_log)
+            list(GET _dl_status 0 _dl_code)
             list(GET _dl_status 1 _dl_msg)
+            if(_dl_code EQUAL 0)
+                set(_dl_ok TRUE)
+                break()
+            endif()
+            # 该源取不到（403/404/网络异常等）时清理残留。
             file(REMOVE "${_tar_path}")
-            message(FATAL_ERROR "bundle download failed (${_dl_code}: ${_dl_msg})\n"
-                "url: ${_url}\n${_dl_log}")
+        endforeach()
+        if(NOT _dl_ok)
+            message(FATAL_ERROR "bundle download failed from all sources\n"
+                "last url: ${_last_url} (${_dl_code}: ${_dl_msg})\n${_dl_log}")
         endif()
     endif()
 
