@@ -7,8 +7,8 @@ OAM-Tools 支持构建 `.run`（默认）、`.rpm`、`.deb` 三种格式的安�
 | 包格式 | 适用操作系统 | 安装命令 | 安装路径 | 路径可否自定义 |
 | --- | --- | --- | --- | --- |
 | `.run`（默认） | 不依赖系统包管理器，全部操作系统（需本机已装配套 CANN 环境） | `./cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}` | 随本机已安装的 CANN 套件目录 | 支持，通过 `--install-path=<路径>` 指定 |
-| `.rpm` | RHEL/CentOS/openEuler 等 rpm 系操作系统 | CANN 依赖由 rpm 软件源满足：<br>`sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm`<br>CANN 经 `.run` 包安装：<br>`sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm` | `/usr/local/Ascend/cann-<cann_version>` | 固定，不可自定义 |
-| `.deb` | Ubuntu/Debian 等 deb 系操作系统 | CANN 依赖由 deb 软件源满足：<br>`sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb`<br>CANN 经 `.run` 包安装：<br>`sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb` | `/usr/local/Ascend/cann-<cann_version>` | 固定，不可自定义 |
+| `.rpm` | RHEL/CentOS/openEuler 等 rpm 系操作系统 | CANN 依赖已登记本机 rpm 数据库：<br>`sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm`<br>CANN 经 `.run` 包安装：<br>`sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm` | `/usr/local/Ascend/cann-<cann_version>` | 固定，不可自定义 |
+| `.deb` | Ubuntu/Debian 等 deb 系操作系统 | CANN 依赖已登记本机 dpkg 数据库：<br>`sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb`<br>CANN 经 `.run` 包安装：<br>`sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb` | `/usr/local/Ascend/cann-<cann_version>` | 固定，不可自定义 |
 
 ## 操作系统匹配背景
 
@@ -54,14 +54,14 @@ bash build.sh --pkg-type=deb
 
 ## 安装
 
-rpm/deb 包通过包管理器的依赖字段声明了 16 项 CANN 依赖（完整清单见下方），安装命令因本机 CANN 套件的安装方式而异：CANN 以 deb/rpm 包方式安装（依赖由软件源满足）的主机可直接安装；CANN 经 `.run` 包安装（开源自建自装的常见形态，CANN 组件未注册到系统包管理器数据库）的主机，须使用 `--force-depends`/`--nodeps` 跳过依赖检查后安装。
+rpm/deb 包通过包管理器的依赖字段声明了 16 项 CANN 依赖（完整清单见下方），安装命令因本机 CANN 套件的安装方式而异：CANN 依赖已通过 deb/rpm 包安装并登记在本机包管理器数据库的主机（依赖检查可通过）可直接安装；CANN 经 `.run` 包安装（开源自建自装的常见形态，CANN 组件未注册到系统包管理器数据库）的主机，须使用 `--force-depends`/`--nodeps` 跳过依赖检查后安装。
 
 依赖子包清单（deb 的 `Depends` 字段与 rpm 的 `Requires` 字段一致，最低版本均为 9.0）：`npu-runtime`、`bisheng-compiler`、`ops-cv`、`ops-math`、`ops-legacy`、`metadef`、`hcomm`、`hccl`、`ge-executor`、`ge-compiler`、`tbe-tik`、`asc-devkit`、`graph-autofusion`、`opbase`、`ops-nn`、`ops-transformer`。
 
 ### 安装 deb 包
 
 ```bash
-# 场景一：CANN 依赖由 deb 软件源满足（CANN 以 deb 包方式安装）
+# 场景一：CANN 依赖已通过 deb 包安装并登记在本机 dpkg 数据库
 sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb
 
 # 场景二：CANN 经 .run 包安装（未注册到 dpkg 数据库）
@@ -73,7 +73,7 @@ sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb
 ### 安装 rpm 包
 
 ```bash
-# 场景一：CANN 依赖由 rpm 软件源满足（CANN 以 rpm 包方式安装）
+# 场景一：CANN 依赖已通过 rpm 包安装并登记在本机 rpm 数据库
 sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 # 场景二：CANN 经 .run 包安装（未注册到 rpm 数据库）
@@ -82,7 +82,9 @@ sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 场景二的失败形态（实测）：在 rpm 数据库无 CANN 依赖记录的主机上直接执行 `sudo rpm -ivh`（不带 `--nodeps`），会以 "Failed dependencies" 报错失败（实测 17 条：16 项 CANN 依赖与 `/bin/sh`），且不会解包任何文件。
 
-> **注意**：场景一（CANN 依赖由 rpm 软件源满足、无需 `--nodeps`）的安装场景待实装验证；场景二已在实测环境验证。
+> **注意**：场景一（CANN 依赖已登记本机 rpm 数据库、无需 `--nodeps`）的安装场景待实装验证；场景二已在实测环境验证。
+
+> **说明**：`dpkg -i` / `rpm -ivh` 仅校验本机包数据库、不会从软件源自动补齐缺失依赖；若希望由软件源解析并安装依赖，可改用 `apt install ./<deb>`（deb 系）或 `dnf|yum|zypper install ./<rpm>`（按发行版选择），该方式要求软件源中已提供对应 CANN 依赖包。
 
 ### 安装路径
 
@@ -99,8 +101,8 @@ rpm/deb 包的安装路径固定为 `/usr/local/Ascend/cann-<cann_version>`，**
 
 rpm/deb 包内不包含 `set_env.sh` 环境脚本，安装后也不会自动配置环境变量，可通过以下两种方式运行工具：
 
-- **绝对路径调用（推荐）**：直接使用工具的完整路径调用，无需配置环境变量。
-- **加载本机已有 CANN 环境**：若本机已通过其他方式安装 CANN，可先加载本机已有 CANN 环境变量，再调用工具。
+- **绝对路径调用（适用于安装验证）**：直接使用工具完整路径调用即可完成帮助信息、模块导入等安装验证，无需配置环境变量。
+- **执行完整功能前加载 CANN 环境**：采集、解析、profiling 等完整功能依赖本机 CANN 的库路径与环境变量，执行前请先加载本机已安装 CANN 的环境变量（如 `source <CANN安装路径>/set_env.sh`，与 `.run` 包使用方式一致）。
 
 安装完成后，执行以下命令验证（asys 与 msprof 能正常打印帮助信息、msaicerr 模块可正常导入即表示安装成功，三条命令均实测通过）：
 
@@ -131,14 +133,15 @@ sudo rpm -e oam-tools
 
 卸载行为（实测）：
 
-- 卸载会完全清理安装内容：安装时创建的 `bin`/`include`/`lib64`/`conf`/`pkg_inc` 符号链接与安装根目录 `/usr/local/Ascend/cann-<cann_version>` 一并移除，无残留。
+- 卸载清理本包自身文件与安装时创建的 `bin`/`include`/`lib64`/`conf`/`pkg_inc` 符号链接；共享路径仅在无其它 CANN 包占用时删除空目录（卸载脚本通过 `var/ascend_package_db.info` 的组件注册信息判断，`rmdir` 仅删除空目录）。
+- 安装根目录 `/usr/local/Ascend/cann-<cann_version>` 仅在本工具单独安装（前缀未被其它 CANN 包共用）时才会一并移除（该场景实测零残留）；场景一共用前缀时根目录会保留，且不会影响同前缀下其它 CANN 包的内容。
 - `rpm -e` 卸载时会打印 2 条无害的警告（如 `file lib64/include: remove failed`），这是卸载脚本先行删除符号链接所致，不影响清理结果。
 - rpm 安装时额外创建的 `/usr/lib/.build-id/` 符号链接，卸载时也会一并清理。
 
 重新安装 deb 包时无需先卸载，直接再次执行与安装场景对应的命令即可（场景二实测通过，安装后脚本可幂等重复执行）：
 
 ```bash
-# 场景一：CANN 依赖由 deb 软件源满足（CANN 以 deb 包方式安装）
+# 场景一：CANN 依赖已通过 deb 包安装并登记在本机 dpkg 数据库
 sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb
 
 # 场景二：CANN 经 .run 包安装（未注册到 dpkg 数据库）
@@ -148,7 +151,7 @@ sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb
 重装同版本 rpm 包须加 `--replacepkgs`：对已安装的同版本包，直接重复 `rpm -ivh` 或 `rpm -Uvh` 均会报 `package oam-tools-... is already installed` 而拒绝安装（实测）；加 `--replacepkgs` 可覆盖重装（场景二实测通过，安装后脚本可幂等重复执行）；升级到新版本的 rpm 包则使用 `rpm -Uvh <新版本包>`：
 
 ```bash
-# 场景一：CANN 依赖由 rpm 软件源满足（CANN 以 rpm 包方式安装）
+# 场景一：CANN 依赖已通过 rpm 包安装并登记在本机 rpm 数据库
 sudo rpm -ivh --replacepkgs cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 # 场景二：CANN 经 .run 包安装（未注册到 rpm 数据库）
@@ -160,4 +163,4 @@ sudo rpm -ivh --nodeps --replacepkgs cann-oam-tools_<cann_version>_linux-<arch>.
 - **CANN 版本兼容性需自行保障**：`.run` 包安装时会基于包内 `version.info` 校验与本机 CANN 的版本兼容性；rpm/deb 包不做该版本兼容性校验，而是以包管理器依赖字段声明 16 项 CANN 依赖（完整清单见[安装](#安装)章节）。使用 rpm/deb 包时，请自行确保本机已安装版本配套的 CANN toolkit 与 ops 套件（依赖字段声明的最低版本为 9.0）。该 9.0 下限来自 `version.cmake` 中 `set_cann_run_dependencies` 的依赖声明（构建/运行依赖均声明 >= 9.0），与 `.run` 包安装期基于 `version.info` 的兼容性校验相互独立。
 - **执行 apt 升级操作前请先卸载本包**：在 CANN 未以 deb 包方式安装的主机上，本包安装后（无论处于半配置还是已配置状态），`apt --fix-broken install` 会移除 oam-tools，`apt upgrade` 会因依赖不满足而报错，`apt-mark hold` 无法缓解。执行 apt 升级类操作前，请先执行 `sudo dpkg -r oam-tools` 卸载本包。
 - **同一环境仅使用一种包格式**：建议同一环境只用一种包格式（`.run`/`.rpm`/`.deb` 之一）安装本工具，避免混装。
-- **openEuler 实机安装待实装验证**：本文所述 rpm 包 `--nodeps` 安装、卸载行为已在实测环境验证；openEuler 等 rpm 系操作系统上、CANN 依赖由 rpm 软件源满足（无需 `--nodeps`）的安装场景尚未实机验证。
+- **openEuler 实机安装待实装验证**：本文所述 rpm 包 `--nodeps` 安装、卸载行为已在实测环境验证；openEuler 等 rpm 系操作系统上、CANN 依赖已登记本机 rpm 数据库（无需 `--nodeps`）的安装场景尚未实机验证。
