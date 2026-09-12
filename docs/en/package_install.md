@@ -7,8 +7,8 @@ OAM-Tools supports building installation packages in three formats: `.run` (defa
 | Package Format | Applicable OS | Installation Command | Installation Path | Path Customizable |
 | --- | --- | --- | --- | --- |
 | `.run` (default) | Independent of the system package manager; all operating systems (requires a matching CANN environment already installed) | `./cann-oam-tools_<cann_version>_linux-<arch>.run --full --install-path=${install_path}` | Follows the locally installed CANN suite directory | Yes, specified via `--install-path=<path>` |
-| `.rpm` | rpm-based operating systems such as RHEL/CentOS/openEuler | CANN dependencies satisfied by an rpm repository:<br>`sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm`<br>CANN installed via the `.run` package:<br>`sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm` | `/usr/local/Ascend/cann-<cann_version>` | Fixed, not customizable |
-| `.deb` | deb-based operating systems such as Ubuntu/Debian | CANN dependencies satisfied by a deb repository:<br>`sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb`<br>CANN installed via the `.run` package:<br>`sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb` | `/usr/local/Ascend/cann-<cann_version>` | Fixed, not customizable |
+| `.rpm` | rpm-based operating systems such as RHEL/CentOS/openEuler | CANN dependencies registered in the local rpm database:<br>`sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm`<br>CANN installed via the `.run` package:<br>`sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm` | `/usr/local/Ascend/cann-<cann_version>` | Fixed, not customizable |
+| `.deb` | deb-based operating systems such as Ubuntu/Debian | CANN dependencies registered in the local dpkg database:<br>`sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb`<br>CANN installed via the `.run` package:<br>`sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb` | `/usr/local/Ascend/cann-<cann_version>` | Fixed, not customizable |
 
 ## OS Ecosystem Background
 
@@ -54,14 +54,14 @@ Example artifact name from an actual build: `cann-oam-tools_9.1.0_linux-aarch64.
 
 ## Installation
 
-The rpm/deb packages declare 16 CANN dependencies (see the complete list below) in their package manager dependency fields. The installation command varies with how the CANN suite is installed on your machine: on hosts where CANN is installed from deb/rpm packages (dependencies satisfied by software repositories), the package can be installed directly; on hosts where CANN is installed via the `.run` package (the common form for open-source users who build and install CANN themselves, where the CANN components are not registered in the system package manager database), you must skip the dependency check with `--force-depends`/`--nodeps` during installation.
+The rpm/deb packages declare 16 CANN dependencies (see the complete list below) in their package manager dependency fields. The installation command varies with how the CANN suite is installed on your machine: on hosts where the CANN dependencies have been installed from deb/rpm packages and registered in the local package manager database (the dependency check passes), the package can be installed directly; on hosts where CANN is installed via the `.run` package (the common form for open-source users who build and install CANN themselves, where the CANN components are not registered in the system package manager database), you must skip the dependency check with `--force-depends`/`--nodeps` during installation.
 
 Dependency sub-package list (the deb `Depends` field and the rpm `Requires` field are identical, with a minimum version of 9.0 for all): `npu-runtime`, `bisheng-compiler`, `ops-cv`, `ops-math`, `ops-legacy`, `metadef`, `hcomm`, `hccl`, `ge-executor`, `ge-compiler`, `tbe-tik`, `asc-devkit`, `graph-autofusion`, `opbase`, `ops-nn`, `ops-transformer`.
 
 ### Installing the deb Package
 
 ```bash
-# Scenario 1: CANN dependencies satisfied by a deb repository (CANN installed from deb packages)
+# Scenario 1: CANN dependencies installed from deb packages and registered in the local dpkg database
 sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb
 
 # Scenario 2: CANN installed via the .run package (not registered in the dpkg database)
@@ -73,7 +73,7 @@ Failure mode of Scenario 2 (verified): on a host where CANN was installed via th
 ### Installing the rpm Package
 
 ```bash
-# Scenario 1: CANN dependencies satisfied by an rpm repository (CANN installed from rpm packages)
+# Scenario 1: CANN dependencies installed from rpm packages and registered in the local rpm database
 sudo rpm -ivh cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 # Scenario 2: CANN installed via the .run package (not registered in the rpm database)
@@ -82,7 +82,9 @@ sudo rpm -ivh --nodeps cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 Failure mode of Scenario 2 (verified): on a host whose rpm database has no record of the CANN dependencies, running `sudo rpm -ivh` directly (without `--nodeps`) fails with a "Failed dependencies" error (17 entries observed in actual testing: the 16 CANN dependencies plus `/bin/sh`), and no files are unpacked.
 
-> **Note**: The Scenario 1 installation (CANN dependencies satisfied by an rpm repository, no `--nodeps` required) has not yet been verified on real rpm-based systems; Scenario 2 has been verified in an actual test environment.
+> **Note**: The Scenario 1 installation (CANN dependencies registered in the local rpm database, no `--nodeps` required) has not yet been verified on real rpm-based systems; Scenario 2 has been verified in an actual test environment.
+
+> **Note**: `dpkg -i` / `rpm -ivh` only verify the local package database and never automatically resolve or download missing dependencies from software repositories; to have the dependencies resolved and installed from repositories instead, use `apt install ./<deb>` (deb-based) or `dnf|yum|zypper install ./<rpm>` (choose by distribution), which requires the corresponding CANN dependency packages to be already available in the repositories.
 
 ### Installation Path
 
@@ -99,8 +101,8 @@ This fixed prefix is generated at build time by the packaging configuration (CPA
 
 The rpm/deb packages do not contain the `set_env.sh` environment script, and environment variables are not configured automatically after installation. You can run the tools in either of the following ways:
 
-- **Invocation via absolute path (recommended)**: Call the tools directly with their full paths, without configuring environment variables.
-- **Load the existing CANN environment**: If CANN is already installed on your machine by other means, load the existing CANN environment variables first, then invoke the tools.
+- **Invocation via absolute path (for installation verification)**: Calling the tools directly with their full paths is sufficient for installation verification such as printing help information and importing modules, without configuring environment variables.
+- **Load the CANN environment before running full functionality**: Full functionality such as collection, parsing, and profiling depends on the library paths and environment variables of the locally installed CANN; before running it, load the environment variables of the locally installed CANN first (for example, `source <CANN installation path>/set_env.sh`, consistent with how the `.run` package is used).
 
 After installation, run the following commands to verify (the installation succeeded if asys and msprof print their help information normally and the msaicerr module imports normally; all three commands passed verification in actual testing):
 
@@ -131,14 +133,15 @@ sudo rpm -e oam-tools
 
 Uninstallation behavior (verified):
 
-- Uninstallation completely cleans up the installed content: the `bin`/`include`/`lib64`/`conf`/`pkg_inc` symbolic links created during installation and the installation root directory `/usr/local/Ascend/cann-<cann_version>` are removed together, leaving no residue.
+- Uninstallation cleans up this package's own files and the `bin`/`include`/`lib64`/`conf`/`pkg_inc` symbolic links created during installation; shared paths are removed as empty directories only when no other CANN package occupies them (the uninstallation script determines this via the component registration information in `var/ascend_package_db.info`, and `rmdir` removes empty directories only).
+- The installation root directory `/usr/local/Ascend/cann-<cann_version>` is removed together only when this tool is installed standalone (the prefix is not shared with other CANN packages) — this scenario was verified in actual testing with zero residue; in Scenario 1, where the prefix is shared, the root directory is retained, and the content of other CANN packages under the same prefix is not affected.
 - `rpm -e` prints 2 harmless warnings during uninstallation (such as `file lib64/include: remove failed`); this is caused by the uninstallation script deleting the symbolic links first and does not affect the cleanup result.
 - The `/usr/lib/.build-id/` symbolic links additionally created during rpm installation are also cleaned up during uninstallation.
 
 To reinstall the deb package, there is no need to uninstall first; simply run the command matching your installation scenario again (Scenario 2 verified in actual testing; the post-installation script is idempotent and can be re-run):
 
 ```bash
-# Scenario 1: CANN dependencies satisfied by a deb repository (CANN installed from deb packages)
+# Scenario 1: CANN dependencies installed from deb packages and registered in the local dpkg database
 sudo dpkg -i cann-oam-tools_<cann_version>_linux-<arch>.deb
 
 # Scenario 2: CANN installed via the .run package (not registered in the dpkg database)
@@ -148,7 +151,7 @@ sudo dpkg -i --force-depends cann-oam-tools_<cann_version>_linux-<arch>.deb
 Reinstalling the same version of the rpm package requires `--replacepkgs`: for an already-installed package of the same version, simply re-running `rpm -ivh` or `rpm -Uvh` fails with `package oam-tools-... is already installed` (verified in actual testing); adding `--replacepkgs` performs an overwriting reinstall (Scenario 2 verified in actual testing; the post-installation script is idempotent and can be re-run); to upgrade to a newer version of the rpm package, use `rpm -Uvh <newer-package>`:
 
 ```bash
-# Scenario 1: CANN dependencies satisfied by an rpm repository (CANN installed from rpm packages)
+# Scenario 1: CANN dependencies installed from rpm packages and registered in the local rpm database
 sudo rpm -ivh --replacepkgs cann-oam-tools_<cann_version>_linux-<arch>.rpm
 
 # Scenario 2: CANN installed via the .run package (not registered in the rpm database)
@@ -160,4 +163,4 @@ sudo rpm -ivh --nodeps --replacepkgs cann-oam-tools_<cann_version>_linux-<arch>.
 - **CANN version compatibility must be ensured by the user**: When the `.run` package is installed, version compatibility with the local CANN is checked based on the `version.info` file inside the package; the rpm/deb packages do not perform this version compatibility check, but instead declare 16 CANN dependencies in their package manager dependency fields (see the [Installation](#installation) section for the complete list). When using rpm/deb packages, make sure a version-matched CANN toolkit and ops suite is installed on your machine (the minimum version declared in the dependency fields is 9.0). The 9.0 lower bound comes from the dependency declarations of `set_cann_run_dependencies` in `version.cmake` (both build and runtime dependencies are declared as >= 9.0) and is independent of the `version.info`-based compatibility check performed when the `.run` package is installed.
 - **Uninstall this package before performing apt upgrade operations**: On hosts where CANN is not installed from deb packages, once this package is installed (whether in the half-configured or fully configured state), `apt --fix-broken install` removes oam-tools, `apt upgrade` fails due to unmet dependencies, and `apt-mark hold` does not mitigate the issue. Before performing apt upgrade operations, run `sudo dpkg -r oam-tools` to uninstall this package first.
 - **Use only one package format per environment**: It is recommended to install this tool with only one package format (one of `.run`/`.rpm`/`.deb`) in the same environment to avoid mixed installations.
-- **Installation on openEuler real machines is not yet verified**: The rpm package `--nodeps` installation and uninstallation behavior described in this document has been verified in an actual test environment; the installation scenario on rpm-based operating systems such as openEuler, where CANN dependencies are satisfied by an rpm repository (no `--nodeps` required), has not yet been verified on real machines.
+- **Installation on openEuler real machines is not yet verified**: The rpm package `--nodeps` installation and uninstallation behavior described in this document has been verified in an actual test environment; the installation scenario on rpm-based operating systems such as openEuler, where CANN dependencies are registered in the local rpm database (no `--nodeps` required), has not yet been verified on real machines.
