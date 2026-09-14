@@ -51,6 +51,8 @@ usage() {
     echo "                   Optional CMake variable in NAME=VALUE format, e.g. PROFILING_ANALYSIS=OFF."
     echo "                   May be specified multiple times; applies to the main OAM tools build."
     echo "                   NAME=VALUE may contain only letters, digits, '_', '.', '/', and '-'."
+    echo "    --module_extension=<VALUE>"
+    echo "                   Set module extension value, default empty"
     echo "Test Options:"
     echo $dotted_line
     echo "    -u             Build and run all unit tests"
@@ -82,6 +84,7 @@ checkopts() {
     # 既盖掉配置期的 git 探测，又绕过下方 --bundle_branch 解析处的字符校验。
     BUNDLE_BRANCH=""
     EXTRA_CMAKE_ARGS=""
+    MODULE_EXT=""
 
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
@@ -94,7 +97,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,extra-cmake-args:,component:,ut,st -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,extra-cmake-args:,component:,ut,st,module_extension: -- "$@") || {
     usage
     exit 1
     }
@@ -175,6 +178,17 @@ checkopts() {
             exit 1
         fi
         EXTRA_CMAKE_ARGS="${EXTRA_CMAKE_ARGS:+${EXTRA_CMAKE_ARGS} }-D$2"
+        shift 2
+        ;;
+        --module_extension)
+        MODULE_EXT="$2"
+        # 只允许构建取值常见字符：CMAKE_ARGS 在 cmake_generate_make 里是 cmake ${cmake_args} .. 非引号展开，
+        # 取值若含空格/引号/shell 元字符会被二次解析，导致 CMake 收到错误参数甚至引发注入风险，
+        # 与 --bundle_branch、--extra-cmake-args 的校验策略保持一致。
+        if [[ ! "${MODULE_EXT}" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "ERROR: invalid --module_extension '${MODULE_EXT}': only [A-Za-z0-9._/-] allowed."
+            exit 1
+        fi
         shift 2
         ;;
         --asan)
@@ -319,6 +333,11 @@ build_oam_tools() {
     fi
     if [ -n "${EXTRA_CMAKE_ARGS}" ]; then
         CMAKE_ARGS="${CMAKE_ARGS} ${EXTRA_CMAKE_ARGS}"
+    fi
+    # --module_extension 透传 MODULE_EXT 给 CMake：需要差异化模块扩展的形态由工程侧构建时使能；
+    # 默认空值，不传该参数时行为不变。
+    if [ -n "${MODULE_EXT}" ]; then
+        CMAKE_ARGS="${CMAKE_ARGS} -DMODULE_EXT=${MODULE_EXT}"
     fi
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
