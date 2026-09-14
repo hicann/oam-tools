@@ -23,6 +23,7 @@
 #include "hccl_opbase_rootinfo_base.h"
 #include "hccl_allgather_rootinfo_test.h"
 #include "hccl_test_common.h"
+#include "hcomm/hcomm_res.h"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <thread>
@@ -1163,14 +1164,10 @@ int HcclTest::hccl_mem_alloc(size_t size, void** ptr, aclrtDrvMemHandle* handle)
     allocSize = (allocSize + granularity - 1) / granularity * granularity;
 
     if (IsSupport910_95()) {
-        aclError allocRet = aclrtMalloc(ptr, allocSize, ACL_MEM_MALLOC_HUGE_ONLY);
-        if (allocRet != ACL_SUCCESS) {
-            printf("[%s][%d] aclrtMalloc failed.\n", __FUNCTION__, __LINE__);
-            if (*ptr != nullptr) {
-                aclrtFree(*ptr);
-                *ptr = nullptr;
-            }
-            return HCCL_E_RUNTIME;
+        HcclResult allocRet = static_cast<HcclResult>(HcommMemAlloc(ptr, allocSize));
+        if (allocRet != HCCL_SUCCESS) {
+            printf("[%s][%d] HcommMemAlloc failed, ret[%d].\n", __FUNCTION__, __LINE__, allocRet);
+            return allocRet;
         }
         return HCCL_SUCCESS;
     }
@@ -1205,7 +1202,11 @@ int HcclTest::hccl_mem_free(void* ptr, aclrtDrvMemHandle& handle)
     }
 
     if (IsSupport910_95()) {
-        ACLCHECK(aclrtFree(ptr));
+        HcclResult freeRet = static_cast<HcclResult>(HcommMemFree(ptr));
+        if (freeRet != HCCL_SUCCESS) {
+            printf("[%s][%d] HcommMemFree failed, ret[%d].\n", __FUNCTION__, __LINE__, freeRet);
+            return freeRet;
+        }
         return HCCL_SUCCESS;
     }
 
