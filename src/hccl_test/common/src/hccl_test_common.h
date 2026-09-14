@@ -136,13 +136,13 @@ public:
 
     virtual int hccl_op_base_test();
     virtual void init_data_count() {}
-    virtual int destory_alloc_buf(); // 销毁集合通信内存资源
+    virtual int destroy_alloc_buf(); // 销毁集合通信内存资源
     virtual int init_hcclComm();
     virtual int init_hcclComm_without_nslb();
 
     int opbase_test_by_data_size();
 
-    virtual int destory_hcclComm();
+    virtual int destroy_hcclComm();
 
     int get_env_resource();
     int set_env_resource();

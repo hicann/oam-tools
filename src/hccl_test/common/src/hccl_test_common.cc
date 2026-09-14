@@ -304,10 +304,9 @@ void HcclTest::print_help()
     printf("[-f,--stepfactor <increment factor>] \n\t");
     printf("[-n,--iters <iteration count>] \n\t");
     printf("[-o,--op <sum/prod/min/max>] \n\t");
-    printf(
-        "[-d,--datatype "
-        "<int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/int128/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] "
-        "\n\t");
+    printf("[-d,--datatype "
+           "<int8/int16/int32/fp16/fp32/int64/uint64/uint8/uint16/uint32/fp64/bfp16/hif8/fp8e4m3/fp8e5m2/fp8e8m0>] "
+           "\n\t");
     printf("[-r,--root <root>] \n\t");
     printf("[-w,--warmup_iters <warmup iteration count>] \n\t");
     printf("[-c,--check <result verification> 0:disabled 1:quiet 2:verbose (default 1)] \n\t");
@@ -317,9 +316,8 @@ void HcclTest::print_help()
         printf("[-z,--zero_copy  0:disabled 1:enabled.] \n\t");
         printf("[-s,--nslb  0:disabled 1:enabled.] \n\t");
     }
-    printf(
-        "[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not "
-        "support aicpu_ts.] \n\t");
+    printf("[-t, --onlydevicetime 0:disabled 1:enabled. When -t is 1,-n and -w must be less than or equal to 100, not "
+           "support aicpu_ts.] \n\t");
     printf("[-h,--help]\n");
     return;
 }
@@ -750,7 +748,7 @@ int HcclTest::get_mpi_proc()
 
 int HcclTest::hccl_op_base_test() { return 0; }
 
-int HcclTest::destory_alloc_buf() { return 0; }
+int HcclTest::destroy_alloc_buf() { return 0; }
 
 bool HcclTest::IsSupport910_95()
 {
@@ -782,7 +780,7 @@ int HcclTest::set_device_sat_mode()
     return 0;
 }
 
-size_t get_reseved_size(size_t send_bytes, size_t recv_bytes, size_t physicalGranularity)
+size_t get_reserved_size(size_t send_bytes, size_t recv_bytes, size_t physicalGranularity)
 {
     return (((send_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity)
            + (((recv_bytes + physicalGranularity - 1) / physicalGranularity) * physicalGranularity);
@@ -819,7 +817,7 @@ int HcclTest::start_test()
             physicalGranularity = 2 * 1024 * 1024;
         }
         get_buff_size(send_bytes, recv_bytes);
-        reserve_mem = get_reseved_size(send_bytes, recv_bytes, physicalGranularity);
+        reserve_mem = get_reserved_size(send_bytes, recv_bytes, physicalGranularity);
         HCCLCHECK(static_cast<HcclResult>(check_alloc_memory_size(reserve_mem)));
         status = aclrtReserveMemAddress(&vir_ptr, reserve_mem, 0, NULL, 1);
         if (status != ACL_SUCCESS) {
@@ -850,14 +848,14 @@ error_reserve_lpcMemory:
     if (enable_zero_copy) {
         ret = HcclCommUnsetMemoryRange(hccl_comm, vir_ptr);
     }
-error_destory_comm:
+error_destroy_comm:
     ret = HcclCommDestroy(hccl_comm);
 error_reserve_memAddress:
     if (enable_zero_copy) {
         ret = aclrtReleaseMemAddress(vir_ptr);
     }
 error_device_init:
-    ret = destory_hcclComm();
+    ret = destroy_hcclComm();
     return ret;
 }
 
@@ -1000,7 +998,7 @@ int HcclTest::opbase_test_by_data_size()
     return ret;
 }
 
-int HcclTest::destory_hcclComm()
+int HcclTest::destroy_hcclComm()
 {
     // 销毁任务流
     if (only_device_exec_time) {
@@ -1049,7 +1047,7 @@ int HcclTest::prepare_zero_copy(const size_t& send_bytes, const size_t& recv_byt
         return HCCL_SUCCESS;
     }
     static size_t current_alloc_phy_mem_byte = 0;
-    auto malloc_mem = get_reseved_size(send_bytes, recv_bytes, physicalGranularity);
+    auto malloc_mem = get_reserved_size(send_bytes, recv_bytes, physicalGranularity);
     if (current_alloc_phy_mem_byte >= malloc_mem) {
         return HCCL_SUCCESS;
     }
@@ -1074,9 +1072,8 @@ int HcclTest::prepare_zero_copy(const size_t& send_bytes, const size_t& recv_byt
         printf("[%s][%d] HcclCommValidMemory failed.\n", __FUNCTION__, __LINE__);
         goto enableerr0;
     }
-    phy_alloc_mem_handle.push_back(
-        std::make_pair(
-            reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte), mem_handle));
+    phy_alloc_mem_handle.push_back(std::make_pair(
+        reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(vir_ptr) + current_alloc_phy_mem_byte), mem_handle));
     current_alloc_phy_mem_byte = malloc_mem;
     return 0;
 
@@ -1126,7 +1123,7 @@ int HcclTest::free_send_recv_buff_and_disable_local_buffer()
         }
     }
 
-    int ret = destory_alloc_buf();
+    int ret = destroy_alloc_buf();
     if (ret != 0) {
         printf("hccl_op_base destroy_alloc_buf failed, ret[%d]", ret);
         return HCCL_E_MEMORY;

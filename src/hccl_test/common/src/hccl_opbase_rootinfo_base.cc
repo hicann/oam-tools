@@ -32,7 +32,7 @@ HcclOpBaseTest::HcclOpBaseTest()
     check_buf = nullptr;
 }
 
-HcclOpBaseTest::~HcclOpBaseTest() { destory_alloc_buf(); }
+HcclOpBaseTest::~HcclOpBaseTest() { destroy_alloc_buf(); }
 
 int HcclOpBaseTest::hccl_op_base_test() { return 0; }
 
@@ -190,7 +190,7 @@ void HcclOpBaseTest::print_execution_time(double average_time_us, double algorit
     return;
 }
 
-int HcclOpBaseTest::destory_alloc_buf()
+int HcclOpBaseTest::destroy_alloc_buf()
 {
     if (host_buf != nullptr) {
         ACLCHECK(aclrtFreeHost(host_buf));
