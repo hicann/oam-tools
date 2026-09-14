@@ -21,7 +21,7 @@ TorchNPU Profiler API暂不支持通过msprof命令行工具设置--msproftx=on�
 
 ```sh
 msprof [options] <app>
-或msprof [options] --application=<app> 
+或msprof [options] --application=<app>
 ```
 
 采集mstx数据必须传入用户程序。
@@ -56,7 +56,7 @@ app参数说明请参见[app参数说明](general_collect_commands.md#app参数�
 msprof --msproftx=on /home/projects/MyApp/out/main
 ```
 
-在--output指定的目录下生成PROF_XXX目录，存放自动解析后的性能数据，相关结果文件请参见[性能数据参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md)。
+在--output指定的目录下生成PROF_XXX目录，存放自动解析后的性能数据，相关结果文件请参见[性能数据参考](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/profile_data_file_references.md)。
 <!-- end id5 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/msproftx_data_res.md#id00002 -->
