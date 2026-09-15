@@ -39,7 +39,7 @@ LIST = all_gather_test all_gatherv_test all_reduce_test alltoallv_test alltoall_
 #
 #library flags
 #--------------------------------------------------------------------------------------------------------------------------------------------------
-LIBS = -L$(HCCL_LIB_DIR) -lhccl\
+LIBS = -L$(HCCL_LIB_DIR) -lhccl -lhcomm\
 		-L$(ACL_LIB_DIR) -lacl_rt\
 		-L$(MPI_LIB_DIR) -lmpi\
         -L$(PROF_LIB_DIR) -lmsprofiler
