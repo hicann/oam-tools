@@ -274,6 +274,9 @@ private:
     int32_t PreCheckApp(const std::string& appDir, const std::string& appName) const;
     int32_t CheckUserCmdValid(const std::string& usrCmdPath);
     int32_t CheckAppParamValid(std::string& appParam) const;
+    // 解释器(bash/sh/python/pmupload)场景下，从 --application 的脚本参数推导脚本所在目录；
+    // 无法确定(无脚本/无目录部分/目录不存在)时返回空，由调用方回退到 app_dir
+    std::string ResolveScriptDir() const;
     int32_t ParamsCheck() const;
     int32_t HostAndDevParamsCheck();
     int32_t ProcessOptions(int32_t opt, struct MsprofCmdInfo& cmdInfo);

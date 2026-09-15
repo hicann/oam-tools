@@ -1091,6 +1091,36 @@ int32_t InputParser::CheckNtsCustomMetricsValid(const std::string& ntsMetrics)
     return MSPROF_DAEMON_OK;
 }
 
+std::string InputParser::ResolveScriptDir() const
+{
+    if (params_ == nullptr || params_->app.empty() || params_->app_parameters.empty()) {
+        return "";
+    }
+    // 仅解释器场景(如 bash/python/sh/pmupload)；直接可执行文件(./main)由 app_dir 自身决定，不做改动
+    if (Utils::IsAppName(params_->app)) {
+        return "";
+    }
+    // 跳过前置 flag(如 -x/-m/-c)，取第一个非 flag 参数作为脚本候选
+    std::vector<std::string> args = Utils::Split(params_->app_parameters, false, "", " ");
+    std::string script;
+    for (const auto& arg : args) {
+        if (!arg.empty() && arg[0] != '-') {
+            script = arg;
+            break;
+        }
+    }
+    // 无脚本或脚本无目录部分(如 "bash run.sh")时沿用当前目录
+    if (script.empty() || script.find('/') == std::string::npos) {
+        return "";
+    }
+    std::string dir = Utils::DirName(Utils::RelativePathToAbsolutePath(script));
+    if (dir.empty()) {
+        return "";
+    }
+    // 目录不存在/不可访问时 CanonicalizePath 返回空，调用方回退到 app_dir
+    return Utils::CanonicalizePath(dir);
+}
+
 int32_t InputParser::ParamsCheck() const
 {
     if (params_ == nullptr) {
@@ -1134,7 +1164,10 @@ int32_t InputParser::ParamsCheck() const
             return MSPROF_DAEMON_OK;
         }
         if (!params_->app_dir.empty()) {
-            params_->result_dir = params_->app_dir;
+            // 解释器场景(如 bash train/run.sh)优先用脚本所在目录，避免数据落到调用目录；
+            // 其余场景(直接可执行文件/脚本无目录部分)仍用 app_dir，保持原行为
+            std::string scriptDir = ResolveScriptDir();
+            params_->result_dir = scriptDir.empty() ? params_->app_dir : scriptDir;
         } else {
             params_->result_dir = Utils::CanonicalizePath("./");
         }

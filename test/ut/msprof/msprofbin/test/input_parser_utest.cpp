@@ -387,6 +387,59 @@ TEST_F(INPUT_PARSER_UTEST, ParamsCheck)
     Utils::RemoveDir(workPath);
 }
 
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckUseScriptDirWhenInterpreterWithScriptPath)
+{
+    GlobalMockObject::verify();
+    const std::string scriptDirName = "msprof_ut_script_dir";
+    if (Utils::CanonicalizePath(Utils::RelativePathToAbsolutePath(scriptDirName)).empty()) {
+        ASSERT_EQ(PROFILING_SUCCESS, Utils::CreateDir(scriptDirName));
+    }
+    InputParser parser = InputParser();
+    parser.params_->app = "bash";
+    parser.params_->app_parameters = scriptDirName + "/run.sh";
+    parser.params_->app_dir = Utils::GetCwdString();
+    parser.params_->result_dir = "";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
+    EXPECT_EQ(Utils::CanonicalizePath(Utils::RelativePathToAbsolutePath(scriptDirName)), parser.params_->result_dir);
+    Utils::RemoveDir(scriptDirName);
+}
+
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckFallbackToAppDirWhenInterpreterWithoutScriptDir)
+{
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+    parser.params_->app = "bash";
+    parser.params_->app_parameters = "run.sh"; // 脚本无目录部分
+    parser.params_->app_dir = "./test";
+    parser.params_->result_dir = "";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
+    EXPECT_EQ(parser.params_->app_dir, parser.params_->result_dir);
+}
+
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckKeepsAppDirForDirectBinary)
+{
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+    parser.params_->app = "main"; // 直接可执行文件，非解释器
+    parser.params_->app_parameters = "train/run.sh";
+    parser.params_->app_dir = "./appdir";
+    parser.params_->result_dir = "";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
+    EXPECT_EQ(parser.params_->app_dir, parser.params_->result_dir);
+}
+
+TEST_F(INPUT_PARSER_UTEST, ParamsCheckKeepsAppDirForPythonModule)
+{
+    GlobalMockObject::verify();
+    InputParser parser = InputParser();
+    parser.params_->app = "python3";
+    parser.params_->app_parameters = "-m ais-bench xxxx"; // 模块名不含目录，应保持 app_dir
+    parser.params_->app_dir = "./test";
+    parser.params_->result_dir = "";
+    EXPECT_EQ(PROFILING_SUCCESS, parser.ParamsCheck());
+    EXPECT_EQ(parser.params_->app_dir, parser.params_->result_dir);
+}
+
 TEST_F(INPUT_PARSER_UTEST, WorkPathEnv)
 {
     std::string resultDir("/tmp/test/profiling");
