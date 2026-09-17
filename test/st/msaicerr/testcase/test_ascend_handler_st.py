@@ -24,7 +24,8 @@ from unittest.mock import Mock
 from conftest import MSAICERR_PATH
 
 sys.path.append(MSAICERR_PATH)
-from ms_interface import ascend_handler
+from ms_interface import ascend_handler, utils
+from ms_interface.ascend350.ascend350_handler import Ascend350Handler
 from ms_interface.ascend950.ascend950_handler import Ascend950Handler
 from ms_interface.ascend960dt.ascend960dt_handler import Ascend960dtHandler
 
@@ -55,6 +56,33 @@ def test_ascend960dt_matches_own_prefix():
 
 def test_ascend960dt_rejects_other_chip():
     assert Ascend960dtHandler().is_chip_handler("Ascend950B") is False
+
+
+def test_ascend350_matches_own_prefix():
+    assert Ascend350Handler().is_chip_handler("Ascend350B4") is True
+
+
+def test_ascend350_rejects_other_chip():
+    assert Ascend350Handler().is_chip_handler("Ascend950B") is False
+
+
+def test_other_handlers_reject_ascend350():
+    assert Ascend950Handler().is_chip_handler("Ascend350") is False
+    assert Ascend960dtHandler().is_chip_handler("Ascend350") is False
+
+
+def test_registry_auto_discovers_ascend350_handler():
+    # 注册表靠运行时目录扫描自动发现（无硬编码列表），新增 ascend350 目录即自动生效
+    handlers = utils.load_ascend_handlers()
+    names = [type(h).__name__ for h in handlers]
+    assert "Ascend350Handler" in names
+
+
+def test_registry_dispatches_ascend350_to_single_handler():
+    # Ascend350 平台 soc_version 应唯一命中 Ascend350Handler，不落到其它 handler 或 TIK 兜底
+    handlers = utils.load_ascend_handlers()
+    matched = [h for h in handlers if h.is_chip_handler("Ascend350B4")]
+    assert [type(h).__name__ for h in matched] == ["Ascend350Handler"]
 
 
 def test_run_dirty_ub_get_ub_size_zero_skips(mocker):
