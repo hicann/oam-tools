@@ -266,7 +266,7 @@ HcclTest::~HcclTest()
     data = nullptr;
 }
 
-std::vector<struct option> build_longopts(bool is910_95)
+std::vector<struct option> build_longopts(bool isNewGenSoc)
 {
     std::vector<struct option> opts;
     opts.push_back({"op", required_argument, 0, 'o'});
@@ -283,7 +283,7 @@ std::vector<struct option> build_longopts(bool is910_95)
     opts.push_back({"help", no_argument, 0, 'h'});
     opts.push_back({"onlydevicetime", required_argument, 0, 't'});
     opts.push_back({"symmetric_memory", required_argument, 0, 'm'});
-    if (is910_95) {
+    if (isNewGenSoc) {
         opts.push_back({"accelerator", required_argument, 0, 'a'});
     } else {
         opts.push_back({"zero_copy", required_argument, 0, 'z'});
@@ -296,7 +296,7 @@ std::vector<struct option> build_longopts(bool is910_95)
 void HcclTest::print_help()
 {
     printf("USAGE: ./test \n\t");
-    if (IsSupport910_95()) {
+    if (IsNewGenSoc()) {
         printf("[-a --accelerator <default/aicpu_ts/aiv/aiv_only/ccu_ms/ccu_sched>] \n\t");
     }
     printf("[-b,--minbytes <min size in bytes>] \n\t");
@@ -313,7 +313,7 @@ void HcclTest::print_help()
     printf("[-c,--check <result verification> 0:disabled 1:quiet 2:verbose (default 1)] \n\t");
     printf("[-p,--npus <npus used for one node>] \n\t");
     printf("[-m,--symmetric_memory  0:disabled 1:enabled.] \n\t");
-    if (!IsSupport910_95()) {
+    if (!IsNewGenSoc()) {
         printf("[-z,--zero_copy  0:disabled 1:enabled.] \n\t");
         printf("[-s,--nslb  0:disabled 1:enabled.] \n\t");
     }
@@ -663,13 +663,13 @@ int HcclTest::parse_cmd_line(int argc, char* argv[])
     int longindex = 0;
     int ret = 0;
     long parsed;
-    bool is910_95 = IsSupport910_95();
-    std::string shortopts = is910_95 ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
-    std::vector<struct option> longopts = build_longopts(is910_95);
+    bool isNewGenSoc = IsNewGenSoc();
+    std::string shortopts = isNewGenSoc ? "o:d:b:e:i:f:r:n:w:c:p:a:t:m:h" : "o:d:b:e:i:f:r:n:w:c:p:z:s:t:m:h";
+    std::vector<struct option> longopts = build_longopts(isNewGenSoc);
 
     const char* opModeEnv = getenv("HCCL_OP_EXPANSION_MODE");
-    if (is910_95 && opModeEnv == nullptr) { // 需要确保环境变量未配置
-        accelerator_config = 6;             // 910_95场景，修改默认加速器模式为CCU_SCHED
+    if (isNewGenSoc && opModeEnv == nullptr) { // 需要确保环境变量未配置
+        accelerator_config = 6;                // 修改默认加速器模式为CCU_SCHED
     }
     while (-1 != (opt = getopt_long(argc, argv, shortopts.c_str(), longopts.data(), &longindex))) {
         ret = parse_opt(opt);
@@ -751,7 +751,7 @@ int HcclTest::hccl_op_base_test() { return 0; }
 
 int HcclTest::destroy_alloc_buf() { return 0; }
 
-bool HcclTest::IsSupport910_95()
+bool HcclTest::IsNewGenSoc()
 {
     const char* socName = aclrtGetSocName();
     if (socName == nullptr) {
@@ -759,7 +759,7 @@ bool HcclTest::IsSupport910_95()
         return false;
     }
     std::string socVersion(socName);
-    if (socVersion.find("Ascend950") != std::string::npos) {
+    if (socVersion.find("Ascend950") != std::string::npos || socVersion.find("Ascend960") != std::string::npos) {
         return true;
     }
     return false;
@@ -1163,7 +1163,7 @@ int HcclTest::hccl_mem_alloc(size_t size, void** ptr, aclrtDrvMemHandle* handle)
     }
     allocSize = (allocSize + granularity - 1) / granularity * granularity;
 
-    if (IsSupport910_95()) {
+    if (IsNewGenSoc()) {
         HcclResult allocRet = static_cast<HcclResult>(HcommMemAlloc(ptr, allocSize));
         if (allocRet != HCCL_SUCCESS) {
             printf("[%s][%d] HcommMemAlloc failed, ret[%d].\n", __FUNCTION__, __LINE__, allocRet);
@@ -1201,7 +1201,7 @@ int HcclTest::hccl_mem_free(void* ptr, aclrtDrvMemHandle& handle)
         return HCCL_SUCCESS;
     }
 
-    if (IsSupport910_95()) {
+    if (IsNewGenSoc()) {
         HcclResult freeRet = static_cast<HcclResult>(HcommMemFree(ptr));
         if (freeRet != HCCL_SUCCESS) {
             printf("[%s][%d] HcommMemFree failed, ret[%d].\n", __FUNCTION__, __LINE__, freeRet);
@@ -1257,7 +1257,7 @@ int HcclTest::deregister_symmetric_memory(HcclCommSymWindow& sym_win)
 // -t参数对于ccu alltoallvc 算子数据量大于等于 128MB的场景 -t不生效
 aclError HcclTest::start_profile_device_time_if_needed(size_t data_size)
 {
-    bool isCcuSched = accelerator_config == 6 && IsSupport910_95();
+    bool isCcuSched = accelerator_config == 6 && IsNewGenSoc();
     if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
         ACLCHECK(aclrtStreamWaitEvent(stream, sync_event));
         ACLCHECK(aclrtResetEvent(sync_event, stream));
@@ -1267,7 +1267,7 @@ aclError HcclTest::start_profile_device_time_if_needed(size_t data_size)
 
 aclError HcclTest::end_profile_device_time_if_needed(size_t data_size)
 {
-    bool isCcuSched = accelerator_config == 6 && IsSupport910_95();
+    bool isCcuSched = accelerator_config == 6 && IsNewGenSoc();
     if (only_device_exec_time && !(isCcuSched && data->data_size >= data_size)) {
         int sleepTime = 50 + warmup_iters * 2 + iters * 2;
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));

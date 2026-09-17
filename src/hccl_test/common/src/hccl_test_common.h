@@ -175,7 +175,7 @@ protected:
 
 private:
     int set_device_sat_mode();
-    bool IsSupport910_95();
+    bool IsNewGenSoc();
 
 public:
     DataSize* data{nullptr};

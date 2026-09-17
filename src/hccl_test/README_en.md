@@ -309,7 +309,7 @@ Each operator test class overrides `is_data_overflow()` to define operator-speci
 
 ## Accelerator Configuration
 
-Ascend 950PR/Ascend 950DT supports specifying accelerator configuration through the `-a` parameter:
+Ascend 950/960 supports specifying accelerator configuration through the `-a` parameter:
 
 | Parameter Value | Configuration Mode |
 |-------|---------|
