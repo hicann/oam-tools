@@ -1,4 +1,4 @@
-# asys工具使用指导\_开源仓
+# asys工具使用指导
 
 - [asys工具功能及约束](asys_functions_and_restrictions.md)
 - [环境准备](asys_environment_preparation.md)
