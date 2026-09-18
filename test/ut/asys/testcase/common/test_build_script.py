@@ -125,3 +125,20 @@ def test_extra_cmake_args_help_declares_scope_and_format():
         "NAME=VALUE may contain only letters, digits, '_', '.', '/', and '-'."
         in build_content
     )
+
+
+def test_profiling_target_option_and_packaging_precedence_are_defined():
+    build_content = get_build_script_content()
+    assert "--target=<TARGET>" in build_content
+    assert 'BUILD_TARGET=""' in build_content
+    assert 'PACKAGE_OPTION_SPECIFIED="off"' in build_content
+    assert 'EFFECTIVE_BUILD_TARGET=""' in build_content
+    assert "msprofbin|acp" in build_content
+    assert "WARNING: --target is ignored when packaging is enabled" in build_content
+    assert "WARNING: --ut/--cov are ignored in target build mode" in build_content
+
+
+def test_profiling_target_builds_expected_cmake_targets():
+    build_content = get_build_script_content()
+    assert "-DOAM_BUILD_TARGET=${EFFECTIVE_BUILD_TARGET}" in build_content
+    assert 'cmake --build "${BUILD_PATH}" --target ${BUILD_TARGETS}' in build_content

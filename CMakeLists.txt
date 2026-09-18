@@ -20,9 +20,21 @@
 # recognized" 并中断。声明 3.18 可在配置最开始即给出明确的版本要求提示
 # （与 docs/zh|en/quick_install.md 前置依赖口径一致）。
 cmake_minimum_required(VERSION 3.18)
+set(OAM_BUILD_TARGET "" CACHE STRING "Build one profiling target")
+set_property(CACHE OAM_BUILD_TARGET PROPERTY STRINGS "" msprofbin acp)
+if(NOT OAM_BUILD_TARGET STREQUAL "" AND
+   NOT OAM_BUILD_TARGET STREQUAL "msprofbin" AND
+   NOT OAM_BUILD_TARGET STREQUAL "acp")
+    message(FATAL_ERROR "Invalid OAM_BUILD_TARGET='${OAM_BUILD_TARGET}'. Expected empty, msprofbin, or acp.")
+endif()
 include(cmake/fetch_cann_cmake.cmake)
 set(PKG_NAME oam)
 project(Oam-Tools)
+if(OAM_BUILD_TARGET STREQUAL "")
+    message(STATUS "OAM build mode: full")
+else()
+    message(STATUS "OAM build mode: target=${OAM_BUILD_TARGET}")
+endif()
 
 init_cann_project(PREPEND_MODULE_PATH)
 add_cann_target_options()
@@ -100,12 +112,6 @@ else()
 endif()
 set(OAM_TOOLS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-# 在superbuild模式下，由CMake负责构建msprof wheel 和同步 msaccucmp/compare
-include(cmake/build_submodules.cmake)
-
-# 拉取并解压闭源包 bundle（原 install_bundle.sh）；须在下方 bundle/ 的 install() 之前。
-include(cmake/install_bundle.cmake)
-
 # protobuf — 通过 cann-cmake 的 add_cann_third_party 引入
 add_cann_third_party(protobuf)
 
@@ -118,20 +124,32 @@ include(cmake/dependencies.cmake)
 # 外部依赖库及编译选项
 include(cmake/third_party/third_party_header_libs.cmake)
 
-add_subdirectory(src/asys)
-add_subdirectory(src/msaicerr)
-add_subdirectory(src/hccl_test)
-add_subdirectory(src/operator_cmp)
-
 set(TOP_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Project top directory")
 set(HI_PYTHON "python" CACHE PATH "Python Path")
 set(INSTALL_CONFIG_DIR cmake)
 set(MSPROF_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/msprof)
 set(PROF_BASIC_DIR "${MSPROF_DIR}/collector/basic")
 set(TARGET_SYSTEM_NAME "Linux")
-add_subdirectory(src/msprof/collector/dvvp/msprofbin)
-add_subdirectory(src/msprof/collector/dvvp/acp)
+if(OAM_BUILD_TARGET STREQUAL "msprofbin")
+    add_subdirectory(src/msprof/collector/dvvp/msprofbin)
+elseif(OAM_BUILD_TARGET STREQUAL "acp")
+    add_subdirectory(src/msprof/collector/dvvp/acp)
+else()
+    # 在superbuild模式下，由CMake负责构建msprof wheel 和同步 msaccucmp/compare
+    include(cmake/build_submodules.cmake)
 
+    # 拉取并解压闭源包 bundle（原 install_bundle.sh）；须在下方 bundle/ 的 install() 之前。
+    include(cmake/install_bundle.cmake)
+
+    add_subdirectory(src/asys)
+    add_subdirectory(src/msaicerr)
+    add_subdirectory(src/hccl_test)
+    add_subdirectory(src/operator_cmp)
+    add_subdirectory(src/msprof/collector/dvvp/msprofbin)
+    add_subdirectory(src/msprof/collector/dvvp/acp)
+endif()
+
+if (OAM_BUILD_TARGET STREQUAL "")
 if (ENABLE_COV OR ENABLE_UT)
     set(OAM_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
     include(CMakePrintHelpers)
@@ -322,3 +340,4 @@ file(MAKE_DIRECTORY ${OAM_STAGING_DIR}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc)
 # 打run包
 include(cmake/package.cmake)
 pack_built_in()
+endif()

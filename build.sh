@@ -53,6 +53,9 @@ usage() {
     echo "                   NAME=VALUE may contain only letters, digits, '_', '.', '/', and '-'."
     echo "    --module_extension=<VALUE>"
     echo "                   Set module extension value, default empty"
+    echo "    --target=<TARGET>"
+    echo "                   Build only the specified profiling target (msprofbin/acp)."
+    echo "                   Ignored with a WARNING when --pkg or --pkg-type is specified."
     echo "Test Options:"
     echo $dotted_line
     echo "    -u             Build and run all unit tests"
@@ -85,6 +88,9 @@ checkopts() {
     BUNDLE_BRANCH=""
     EXTRA_CMAKE_ARGS=""
     MODULE_EXT=""
+    BUILD_TARGET=""
+    PACKAGE_OPTION_SPECIFIED="off"
+    EFFECTIVE_BUILD_TARGET=""
 
     if [[ -n "${ASCEND_HOME_PATH}" ]]; then
         echo "env exists ASCEND_HOME_PATH : ${ASCEND_HOME_PATH}"
@@ -97,7 +103,7 @@ checkopts() {
     CANN_3RD_LIB_PATH="$BASEPATH/third_party"
 
     # Process the options
-    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,extra-cmake-args:,component:,ut,st,module_extension: -- "$@") || {
+    parsed_args=$(getopt -a -o j:hvuO: -l help,verbose,cov,make_clean,build-type:,pkg-type:,noexec,ascend_install_path:,pkg,asan,cann_3rd_lib_path:,bundle_branch:,extra-cmake-args:,target:,component:,ut,st,module_extension: -- "$@") || {
     usage
     exit 1
     }
@@ -140,6 +146,7 @@ checkopts() {
         shift 2
         ;;
         --pkg-type)
+        PACKAGE_OPTION_SPECIFIED="on"
         # 取值集合与 cann-cmake function/prepare.cmake 的 CPACK_GENERATOR 分支保持一致：
         # run(External) / rpm / deb / deb,rpm(DEB;RPM) / all(DEB;RPM;External)
         case "$2" in
@@ -191,6 +198,13 @@ checkopts() {
         fi
         shift 2
         ;;
+        --target)
+        case "$2" in
+          msprofbin|acp) BUILD_TARGET="$2" ;;
+          *) usage && echo "Error: Invalid value '$2' for option '--target'" && exit 1 ;;
+        esac
+        shift 2
+        ;;
         --asan)
         ENABLE_ASAN="on"
         shift
@@ -208,6 +222,7 @@ checkopts() {
         shift
         ;;
         --pkg)
+        PACKAGE_OPTION_SPECIFIED="on"
         shift
         ;;
         --)
@@ -307,8 +322,23 @@ build_oam_tools() {
     echo "create build directory and build oam_tools"
     cd "${BASEPATH}"
     ENABLE_BINARY=TRUE
+    if [[ "${BUILD_TARGET}" != "" && "${PACKAGE_OPTION_SPECIFIED}" == "off" ]]; then
+        EFFECTIVE_BUILD_TARGET="${BUILD_TARGET}"
+    else
+        EFFECTIVE_BUILD_TARGET=""
+    fi
+    if [[ "${BUILD_TARGET}" != "" && "${PACKAGE_OPTION_SPECIFIED}" == "on" ]]; then
+        echo "WARNING: --target is ignored when packaging is enabled; the full packaging build will be executed."
+    fi
+    if [[ -n "${EFFECTIVE_BUILD_TARGET}" && ( "${ENABLE_UT}" == "on" || "${ENABLE_COVERAGE}" == "on" ) ]]; then
+        echo "WARNING: --ut/--cov are ignored in target build mode; UT/COV configuration and test execution are skipped."
+    fi
     BUILD_PATH="${BASEPATH}/${BUILD_RELATIVE_PATH}"
     BUILD_OUT_PATH="${BASEPATH}/${BUILD_OUT}"
+    ENABLE_PACKAGE="TRUE"
+    if [[ -n "${EFFECTIVE_BUILD_TARGET}" ]]; then
+        ENABLE_PACKAGE="FALSE"
+    fi
     CMAKE_ARGS="\
     -DCMAKE_INSTALL_PREFIX=${BUILD_PATH} \
     -DENABLE_UT=${ENABLE_UT} \
@@ -322,8 +352,11 @@ build_oam_tools() {
     -DENABLE_UT=${ENABLE_UT} \
     -DENABLE_SIGN=${ENABLE_SIGN} \
     -DBUILD_OPEN_PROJECT=ON\
-    -DENABLE_PACKAGE=TRUE \
+    -DENABLE_PACKAGE=${ENABLE_PACKAGE} \
     -DPACKAGE_TYPE=${PACKAGE_TYPE}"
+    if [[ -n "${EFFECTIVE_BUILD_TARGET}" ]]; then
+        CMAKE_ARGS="${CMAKE_ARGS} -DOAM_BUILD_TARGET=${EFFECTIVE_BUILD_TARGET}"
+    fi
     # 仅在用户显式指定 --bundle_branch 时透传；不传则由 cmake 配置期 git 探测决定。
     # 不给取值加引号：CMAKE_ARGS 在 cmake_generate_make 里是 cmake ${cmake_args} .. 非引号展开，
     # 引号会作为字面量进入 CMake（OAM_BUNDLE_BRANCH 变成 "9.1.0" 而非 9.1.0），白名单校验必然失配。
@@ -341,6 +374,14 @@ build_oam_tools() {
     fi
     cmake_generate_make "${BUILD_PATH}" "${CMAKE_ARGS}"
 
+    if [[ -n "${EFFECTIVE_BUILD_TARGET}" ]]; then
+        case "${EFFECTIVE_BUILD_TARGET}" in
+            msprofbin) BUILD_TARGETS="msprofbin" ;;
+            acp) BUILD_TARGETS="acp profinj" ;;
+        esac
+        cmake --build "${BUILD_PATH}" --target ${BUILD_TARGETS} --parallel "${THREAD_NUM}"
+        return $?
+    fi
     # make package 前清理历史产物，避免旧 cann*.run/rpm/deb 被误当本次产物搬走。
     rm -f cann*.run cann*.rpm cann*.deb
     make ${VERBOSE} -j${THREAD_NUM} && clean_cpack_staging "${BUILD_PATH}" && make package
