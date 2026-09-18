@@ -128,7 +128,7 @@
 
   **零拷贝功能生效有如下约束条件：**
 
-  - 仅支持Atlas A3 训练系列产品/Atlas A3 推理系列产品。
+  - 仅支持Atlas A3系列产品。
   - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test，broadcast_test命令。
   - 仅支持通信算法的编排展开位置在AI CPU的场景。
   <!-- end id1 -->
@@ -143,14 +143,14 @@
   - 1：开启对称内存功能。
 
   **对称内存功能生效有如下约束条件：**
-  - 仅支持Ascend 950PR/Ascend 950DT、Atlas A3 训练系列产品/Atlas A3 推理系列产品。
+  - 仅支持Ascend 950PR&950DT系列产品、Atlas A3系列产品。
   - 仅支持通信算子展开模式为AI CPU的场景。
-  - 针对Ascend 950PR/Ascend 950DT：
+  - 针对Ascend 950PR&950DT系列产品：
     - 仅支持超节点内通信。
     - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test、alltoall_test、alltoallvc_test、broadcast_test命令。
       关于通信算子展开模式的详细说明可参见HCCL_OP_EXPANSION_MODE环境变量。
     - 仅支持URMA通信场景。
-  - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品：
+  - 针对Atlas A3系列产品：
     - 仅支持超节点内通信。
     - 仅支持执行reduce_scatter_test、all_gather_test、all_reduce_test、alltoall_test命令。
       关于通信算子展开模式的详细说明可参见HCCL_OP_EXPANSION_MODE环境变量。
@@ -161,7 +161,7 @@
   <!-- end id2 -->
 
   <!-- npu="950" id3 -->
-- **-a \<HcclAccelerator\>或--accelerator \<HcclAccelerator\>**：可选，该参数仅支持Ascend 950PR/Ascend 950DT，用于设置加速模式。
+- **-a \<HcclAccelerator\>或--accelerator \<HcclAccelerator\>**：可选，该参数仅支持Ascend 950PR&950DT系列产品，用于设置加速模式。
   - default：使用默认自适应加速模式，会根据组网、数据量等情况自动选择合适的模式。
   - aicpu_ts：使用Device侧的AI CPU计算单元加速。
   - aiv：使用Device侧的Vector Core计算单元加速，大数据量情况下可能会回退到其他加速模式。

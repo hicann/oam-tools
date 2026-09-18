@@ -8,7 +8,7 @@
     大规模集群组网场景下，建议开发者根据集群数量在Master节点适当调整“somaxconn”与“tcp_max_syn_backlog”参数的值，例如：
 
     ```bash
-    sysctl -w net.core.somaxconn=65535 
+    sysctl -w net.core.somaxconn=65535
     sysctl -w net.ipv4.tcp_max_syn_backlog=65535
     ```
 
@@ -52,12 +52,12 @@
         ```bash
         # 配置HCCL初始化时通信网卡使用的IP协议版本，AF_INET：IPv4；AF_INET6：IPv6
         export HCCL_SOCKET_FAMILY=AF_INET
-        
+
         # 支持以下格式的网卡名配置（4种规格自行选择1种即可，环境变量中可配置多个网卡，多个网卡间使用英文逗号分隔，取最先匹配到的网卡作为通信网卡）
         # 精确匹配网卡
         export HCCL_SOCKET_IFNAME==eth0,enp0   # 使用指定的eth0或enp0网卡
         export HCCL_SOCKET_IFNAME=^=eth0,enp0     # 不使用eth0与enp0网卡
-        
+
         # 模糊匹配网卡
         export HCCL_SOCKET_IFNAME=eth,enp       # 使用所有以eth或enp为前缀的网卡
         export HCCL_SOCKET_IFNAME=^eth,enp      # 不使用任何以eth或enp为前缀的网卡
@@ -148,7 +148,7 @@
 
    注意：
      <!-- npu="A3" id1 -->
-   - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，Hostfile文件中，请将属于同一超节点的AI Server信息配置在一起。假设有两个超节点，标识分别为“0”和“1”，请在Hostfile中先配置“0”中的AI Server信息，再配置“1”中的AI Server信息，不支持“0”中的AI Server信息与“1”中的AI Server信息交叉配置。
+   - 针对Atlas A3系列产品，Hostfile文件中，请将属于同一超节点的AI Server信息配置在一起。假设有两个超节点，标识分别为“0”和“1”，请在Hostfile中先配置“0”中的AI Server信息，再配置“1”中的AI Server信息，不支持“0”中的AI Server信息与“1”中的AI Server信息交叉配置。
      <!-- end id1 -->
    - 针对单机场景，Hostfile文件可不配置。
 
