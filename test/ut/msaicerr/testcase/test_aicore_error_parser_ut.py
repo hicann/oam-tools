@@ -806,6 +806,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(aic_err_map["dev_id"], "chipId:0, dieId:0")
         self.assertEqual(aic_err_map["thread_id"], "201695")
         self.assertEqual(aic_err_map["core_id"], "36")
+        self.assertEqual(aic_err_map["core_err_type"], "aivec")
         self.assertEqual(aic_err_map["error_code"], "0")
         self.assertEqual(aic_err_map["start_pc"], "0x12400001638c")
         self.assertEqual(aic_err_map["current_pc"], "0x1240000167bc")
@@ -813,6 +814,67 @@ class TestUtilsMethods(CommonAssert):
             aic_err_map["extra_info"],
             "vec error info: 0x6106ff4758, mte error info: 0x302aa40, ifu error info: 0x2000017df8400, ccu error info: 0x482a21100000000, cube error info: 0, biu error info: 0, aic error mask: 0x6500020bd00028c, para base: 0x12d0c0000800.",
         )
+
+    @pytest.mark.parametrize(
+        "log, expected_type",
+        [
+            (
+                "RUNTIME(8953,None):2020-12-24-01:10:54.176.179 [../../../../../../runtime/feature/src/"
+                "device_error_proc.cc:371]8958 ProcessCoreErrorInfo:The error from device(0), serial number "
+                "is 1, there is a aicore error, core id is 0, error code = 0x10, error string = Illegal "
+                "instruction. dump info: pc start: 0x108080056000, current: 0x1080800560a4, vec error "
+                "info: 0x3e27677, mte error info: 0x21, ifu error info: 0x13b023938000, ccu error info: "
+                "0x3227004600001721, cube error info: 0x3e, biu error info: 0x0, aic error mask: "
+                "0x6de01200d0122c8, para base: 0x10808001a000.",
+                "aicore",
+            ),
+            (
+                "RUNTIME(1592077,python3):2024-09-12-16:40:07.362.023 [device_error_proc.cc:1402]1592077 "
+                "ProcessStarsCoreErrorInfo:[INIT][DEFAULT]The error from device(chipId:0, dieId:0), serial "
+                "number is 87, there is an fftsplus aivector error exception, core id is 0, error code = 0, "
+                "dump info: pc start: 0x12c042d73754, current: 0x12c042d75b18, vec error info: "
+                "0x99000000a2, mte error info: 0x5003000031, ifu error info: 0x200000007ffc0, ccu error "
+                "info: 0x280d00000084, cube error info: 0, biu error info: 0, aic error mask: "
+                "0x6500020bd00028c, para base: 0x12c040569000.",
+                "aivector",
+            ),
+            (
+                "RUNTIME(588579,execute_add_op):2025-04-02-07:19:26.376.560 [device_error_proc.cc:1434]"
+                "588579 ProcessStarsCoreErrorInfo:The error from device(chipId:0, dieId:0), serial number "
+                "is 48, there is an aivec error exception, core id is 16, error code = 0x200000000, dump "
+                "info: pc start: 0x12c0c002e000, current: 0x12c0c002e5e8, vec error info: 0x51000070f7, "
+                "mte error info: 0xb90000006a, ifu error info: 0x29883d2080000, ccu error info: "
+                "0xc791c207288000f7, cube error info: 0, biu error info: 0, aic error mask: "
+                "0x6500020bd00028c, para base: 0x12c100010000.",
+                "aivec",
+            ),
+            (
+                "RUNTIME(200280,python3):2025-07-07-10:12:17.088.944 [device_error_proc_c.cc:659]201695 "
+                "ProcessDavidStarsCoreErrorInfo:[EXEC][EXEC]An error occurs on the device(chipId:0, "
+                "dieId:0), the serial number is 31, the error is aicore error, core id is 36, error code "
+                "= 64, 78, dump info: pc start: 0x12400001638c, current: 0x1240000167bc, sc error info: "
+                "0x0, su error info: 0x0,0x0, mte error info: 0x1, vec error info: 0x0, cube error info: "
+                "0x0, l1 error info: 0x0, aic error mask: 0x0, para base: 0x12d0c0000800, mte error: "
+                "0x1, aic cond: 0x0.",
+                "aicore",
+            ),
+            (
+                "RUNTIME(8953,None):2020-12-24-01:10:54.176.179 [../../../../../../runtime/feature/src/"
+                "device_error_proc.cc:371]8958 ProcessCoreErrorInfo:The error from device(0), serial "
+                "number is 1, there is an exception, core id is 0, error code = 0x10, error string = "
+                "Illegal instruction. dump info: pc start: 0x108080056000, current: 0x1080800560a4, vec "
+                "error info: 0x3e27677, mte error info: 0x21, ifu error info: 0x13b023938000, ccu error "
+                "info: 0x3227004600001721, cube error info: 0x3e, biu error info: 0x0, aic error mask: "
+                "0x6de01200d0122c8, para base: 0x10808001a000.",
+                None,
+            ),
+        ],
+    )
+    def test_aicerr_regexp_core_err_type(self, log, expected_type):
+        aic_err_ret = utils.regexp_match_dict(RegexPattern.AICORE_ERR_OCCUR, log)
+        assert aic_err_ret != []
+        self.assertEqual(aic_err_ret[0]["core_err_type"], expected_type)
+        assert aic_err_ret[0]["core_id"] is not None
 
     def test_get_ffts_addrs_num(self):
         parser = AicoreErrorParser(

@@ -172,6 +172,69 @@ def test_get_corrected_pc_skips_on_core_id_mismatch(tmp_path):
     assert pc_corrector.get_corrected_pc(plog_path, info) == {}
 
 
+ADUMP_AIV_PC_LOG = (
+    "[ERROR] ADUMP(1,python3):2025-01-01-00:00:00.000.000 [kernel_symbol_locator.cpp:721]1 "
+    "PrintErrorForCore:[Dump][Exception] Error PC information. coreId=12, coreType=1, "
+    "originalStartPC=0x12c042d73754, fixedStartPC=0x12c042d73754, "
+    "originalCurrentPC=0x12c042d75b18, fixedCurrentPC=0x12c042d75c10, fixedPCOffset=0xf8."
+)
+ADUMP_AIC_PC_LOG = (
+    "[ERROR] ADUMP(1,python3):2025-01-01-00:00:00.000.000 [kernel_symbol_locator.cpp:721]1 "
+    "PrintErrorForCore:[Dump][Exception] Error PC information. coreId=12, coreType=0, "
+    "originalStartPC=0x12c042d73754, fixedStartPC=0x12c042d73754, "
+    "originalCurrentPC=0x12c042d75b18, fixedCurrentPC=0x12c042d74a20, fixedPCOffset=0x12cc."
+)
+ADUMP_AIV_REG_LOG = (
+    "[ERROR] ADUMP(1,python3):2025-01-01-00:00:00.000.000 [kernel_symbol_locator.cpp:686]1 "
+    "PrintErrorRegisters:[Dump][Exception] Error register information. coreId=12, coreType=1, "
+    "SU_ERROR_T0_0=0x10 SU_ERR_INFO_T0_0=0xbeef VEC_ERROR_T0_0=0x0 "
+)
+ADUMP_AIC_REG_LOG = (
+    "[ERROR] ADUMP(1,python3):2025-01-01-00:00:00.000.000 [kernel_symbol_locator.cpp:686]1 "
+    "PrintErrorRegisters:[Dump][Exception] Error register information. coreId=12, coreType=0, "
+    "SU_ERROR_T0_0=0x8 SU_ERR_INFO_T0_0=0xbeef VEC_ERROR_T0_0=0x0 "
+)
+
+
+def _make_info_with_core_type(core_err_type):
+    info = _make_info()
+    info.aic_error_info["core_err_type"] = core_err_type
+    return info
+
+
+def test_get_corrected_pc_picks_aiv_core_type(tmp_path):
+    # 同一 coreId 同时有 AIV（coreType=1）和 AIC（coreType=0）两条记录；
+    # core_err_type="aivec" → core_type=1，必须选 AIV 那条。
+    plog_path = _write_plog(tmp_path, ADUMP_AIC_PC_LOG, ADUMP_AIV_PC_LOG)
+    info = _make_info_with_core_type("aivec error")
+    ret = pc_corrector.get_corrected_pc(plog_path, info)
+    assert ret.get("from_dump") is True
+    assert ret.get("current_pc") == "0x12c042d75c10"
+    assert ret.get("offset") == 0xF8
+
+
+def test_get_corrected_pc_picks_aic_core_type(tmp_path):
+    # 同上，缺省 core_err_type 时按 aic（coreType=0）处理，必须选 AIC 那条。
+    plog_path = _write_plog(tmp_path, ADUMP_AIC_PC_LOG, ADUMP_AIV_PC_LOG)
+    info = _make_info()  # 无 core_err_type → aic
+    ret = pc_corrector.get_corrected_pc(plog_path, info)
+    assert ret.get("from_dump") is True
+    assert ret.get("current_pc") == "0x12c042d74a20"
+    assert ret.get("offset") == 0x12CC
+
+
+def test_parse_error_regs_skips_core_type_mismatch(tmp_path):
+    plog_path = _write_plog(tmp_path, ADUMP_AIV_REG_LOG, ADUMP_AIC_REG_LOG)
+    # coreId=12、coreType=1（AIV）应只取 AIV 那条，SU_ERROR_T0_0=0x10
+    regs = pc_corrector.parse_error_regs_from_log(plog_path, "12", core_type="1")
+    assert regs.get("SU_ERROR_T0_0") == 0x10
+    assert regs.get("SU_ERR_INFO_T0_0") == 0xBEEF
+    # coreType=0（AIC）应只取 AIC 那条，SU_ERROR_T0_0=0x8
+    regs_aic = pc_corrector.parse_error_regs_from_log(plog_path, "12", core_type="0")
+    assert regs_aic.get("SU_ERROR_T0_0") == 0x8
+    assert regs_aic.get("SU_ERR_INFO_T0_0") == 0xBEEF
+
+
 def test_get_corrected_pc_skips_when_nothing_fixed(tmp_path):
     plog_path = _write_plog(tmp_path, "nothing to match here")
     # 950 十进制 error_code 建不出 AIC_ERR_*，无模块命中，修正空转
@@ -499,6 +562,57 @@ def test_parse_symbolize_src_from_log_matches_by_core(tmp_path):
 def test_parse_symbolize_src_skips_on_core_mismatch(tmp_path):
     plog_path = _write_plog(tmp_path, ADUMP_SUMMARY_LOG)
     assert pc_corrector.parse_symbolize_src_from_log(plog_path, "3") == {}
+
+
+def test_parse_symbolize_src_matches_by_core_type(tmp_path):
+    # 同号异型：id=12 的 AIV（type=1）才命中该组源码，AIC（type=0）不命中
+    aiv_log = ADUMP_SUMMARY_LOG.replace("{id=12,type=0}", "{id=12,type=1}")
+    plog_path = _write_plog(tmp_path, aiv_log)
+    assert (
+        pc_corrector.parse_symbolize_src_from_log(plog_path, "12", core_type="1") != {}
+    )
+    assert (
+        pc_corrector.parse_symbolize_src_from_log(plog_path, "12", core_type="0") == {}
+    )
+
+
+def test_parse_symbolize_src_picks_own_type_when_mixed(tmp_path):
+    # 同一组同时覆盖 id=12 的 AIC 与 AIV，各自按 id+type 取到同一份源码
+    log = ADUMP_SUMMARY_LOG.replace("{id=12,type=0}", "{id=12,type=0},{id=12,type=1}")
+    plog_path = _write_plog(tmp_path, log)
+    ret_aic = pc_corrector.parse_symbolize_src_from_log(plog_path, "12", core_type="0")
+    ret_aiv = pc_corrector.parse_symbolize_src_from_log(plog_path, "12", core_type="1")
+    assert ret_aic.get("outermost") == "/path/to/kernel.cce:88:3"
+    assert ret_aiv.get("outermost") == "/path/to/kernel.cce:88:3"
+
+
+def test_derive_core_type():
+    assert pc_corrector.derive_core_type({"core_err_type": "aicore"}) == "0"
+    assert pc_corrector.derive_core_type({"core_err_type": "aic"}) == "0"
+    assert pc_corrector.derive_core_type({"core_err_type": "aivec"}) == "1"
+    assert pc_corrector.derive_core_type({"core_err_type": "aivector"}) == "1"
+    assert pc_corrector.derive_core_type({}) == "0"
+    assert pc_corrector.derive_core_type({"core_err_type": "unknown"}) == "0"
+
+
+def test_corrected_instr_forwards_core_type_to_src(monkeypatch):
+    used = []
+    monkeypatch.setattr(
+        pc_corrector,
+        "get_corrected_src",
+        lambda *args: used.append(list(args)) or {},
+    )
+    info = _make_info()
+    info.aic_error_info["core_err_type"] = "aivec error"
+    info.corrected_pc = {
+        "start_pc": "0x1000",
+        "current_pc": "0x2000",
+        "offset": 0x1000,
+        "plog_path": "fake/plog",
+    }
+    AicoreErrorParser._set_corrected_instr(info)
+    # (plog_path, core_id, o_file, offset, core_type)：AIV 推导为 coreType=1
+    assert used[-1][4] == "1"
 
 
 def test_parse_symbolize_src_handles_multiline_cores(tmp_path):

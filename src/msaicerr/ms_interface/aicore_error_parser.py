@@ -42,7 +42,11 @@ from ms_interface.constant import (
     NOT_RUN_EXEC_FAILED,
     NOT_RUN_LAUNCH_FAILED,
 )
-from ms_interface.aic_error_info import AicErrorInfo, detect_chip_type_by_dump_info
+from ms_interface.aic_error_info import (
+    AicErrorInfo,
+    detect_chip_type_by_dump_info,
+    detect_core_err_type,
+)
 from ms_interface import pc_corrector
 from ms_interface.dump_data_parser import DumpDataParser
 from ms_interface.single_op_test_frame.utils import shape_utils
@@ -477,24 +481,46 @@ class AicoreErrorParser:
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
             return dump_data_ret[:2]
 
-    def set_info(self, aic_err_ret, plog_path, data_name, rts_block_dim):
+    def set_info(self, aic_err_ret, plog_path, data_name, rts_block_dim, records=None):
         info = AicErrorInfo()
+        if records is None:
+            records = [aic_err_ret]
 
-        error_code_all = ["grep", "The extend info: errcode:", "-inrE", plog_path]
-        error_code_regexp = r"The extend info: errcode:(\(.*?\))"
-        error_code_rets = utils.get_inquire_result(error_code_all, error_code_regexp)
-        if error_code_rets:
-            for error_code_ret in error_code_rets:
-                if aic_err_ret["error_code"] in error_code_ret:
-                    info.error_code_all = error_code_ret
-                    break
-        # extra_info 包括各寄存器信息ifu、ccu、biu、cube、mte、vec的寄存器错误码
-        ori_extra_info = aic_err_ret.pop("extra_info")
-        # 判型要在 _get_extra_info 之前：它只抽 910B 那 6 个字段，950 独有的
-        # sc/su/l1 error info 会被丢掉，之后就判不出芯片了。
-        chip_type = detect_chip_type_by_dump_info(ori_extra_info)
-        info.extra_info = self._get_extra_info(ori_extra_info)
+        # extra_info 包括各寄存器信息ifu、ccu、biu、cube、mte、vec的寄存器错误码。
+        # 逐条抽取 raw extra_info 并预转为报告格式，分组渲染与逐组 PC 修正各用各的；
+        # 主记录的 raw 额外用于芯片判型（950 独有 sc/su/l1 error info 只在 raw 里）。
+        for rec in records:
+            raw_extra_info = rec.pop("extra_info", "")
+            if rec is aic_err_ret:
+                chip_type = detect_chip_type_by_dump_info(raw_extra_info)
+            rec["extra_info"] = self._get_extra_info(raw_extra_info)
+        info.extra_info = aic_err_ret["extra_info"]
         info.aic_error_info = aic_err_ret
+
+        # v300 的 error_code 是壳 "0"/"0x0"，真实位在 extend info。兜底要在分组之前
+        # 统一改写并缓存结果，否则组键残留壳值，报告头会打出 AIC_ERROR : 0。
+        v300_code = None
+        for rec in records:
+            if rec.get("error_code", "") in ("0", "0x0"):
+                if v300_code is None:
+                    v300_code = self._get_v300_error_code()
+                rec["error_code"] = v300_code
+
+        # Preserve all same-thread register errors and group by error code.
+        # AIC 与 AIV 共用同一份数字 core id，按核型分桶去重避免重复统计。
+        groups = {}
+        for rec in records:
+            code = rec.get("error_code", "") or "unknown/0"
+            group = groups.setdefault(
+                code, {"records": [], "cores_aic": [], "cores_aiv": []}
+            )
+            group["records"].append(rec)
+            kind = detect_core_err_type(rec.get("core_err_type", ""))
+            cores_key = "cores_aiv" if kind == "aiv" else "cores_aic"
+            core = rec.get("core_id", "")
+            if core not in group[cores_key]:
+                group[cores_key].append(core)
+        info.aic_error_groups = list(groups.items())
 
         info.data_name = data_name
 
@@ -532,15 +558,42 @@ class AicoreErrorParser:
             f"rts_block_dim: {info.rts_block_dim}, driver_aicore_num: {info.driver_aicore_num}."
         )
 
-        if info.aic_error_info.get("error_code", "") in ("0", "0x0"):
-            info.aic_error_info["error_code"] = self._get_v300_error_code()
-
-        # error_code 兜底之后再做 PC 修正：修正命中的模块由 error_code 决定。
-        # chip_type 由上面的 dump info 字段判出，不受兜底改写 error_code 影响。
+        # error_code 兜底已提前到分组之前，这里直接做 PC 修正：修正命中的
+        # 模块由 error_code 决定。chip_type 由上面的 dump info 字段判出，
+        # 不受兜底改写 error_code 影响。
         info.corrected_pc = pc_corrector.get_corrected_pc(plog_path, info, chip_type)
         # 与 corrected_pc 同处填充：_get_info_for_decompile 只在 L1 反编译路径上
         # 执行，放那里会让其余路径拿到 corrected_pc 却没有错误行号。
         self._set_corrected_instr(info)
+        # 每个 AIC_ERROR 类别按自身首条记录独立做 PC 修正。多核同报时各组
+        # start/current pc 不同，若沿用主记录那份 Corrected Info，后续组会
+        # 错配第一组的 current pc。结果存入 group 供 _get_group_pc 使用。
+        main_aic_info = info.aic_error_info
+        main_corrected_pc = info.corrected_pc
+        main_corrected_instr = info.corrected_instr
+        try:
+            for group in groups.values():
+                rec = group["records"][0]
+                if rec is main_aic_info:
+                    # 主记录所在组复用主记录已算好的结果，避免重复 grep + 符号化。
+                    group["corrected_pc"] = main_corrected_pc
+                    group["corrected_instr"] = main_corrected_instr
+                    continue
+                info.aic_error_info = rec
+                info.extra_info = rec.get("extra_info", "")
+                group["corrected_pc"] = pc_corrector.get_corrected_pc(
+                    plog_path, info, chip_type
+                )
+                group["corrected_instr"] = ""
+                if group["corrected_pc"]:
+                    info.corrected_pc = group["corrected_pc"]
+                    self._set_corrected_instr(info)
+                    group["corrected_instr"] = info.corrected_instr or ""
+        finally:
+            info.aic_error_info = main_aic_info
+            info.extra_info = aic_err_ret.get("extra_info", "")
+            info.corrected_pc = main_corrected_pc
+            info.corrected_instr = main_corrected_instr
 
         return info
 
@@ -609,7 +662,16 @@ class AicoreErrorParser:
             if block_dim <= int(block_dim_num):
                 block_dim = int(block_dim_num)
         rts_block_dim = block_dim
-        return self.set_info(aic_err_ret, plog_path, data_name, rts_block_dim)
+        # 只保留与主记录同线程的寄存器错误：跨线程的 err_time/dev_id 混入会
+        # 并成一组错误，报告头写的是主记录时间却列出别的线程的错误码。
+        same_thread = [
+            err_info
+            for err_info in aic_err_rets
+            if err_info.get("thread_id") == aic_err_ret.get("thread_id")
+        ]
+        return self.set_info(
+            aic_err_ret, plog_path, data_name, rts_block_dim, same_thread
+        )
 
     @staticmethod
     def _get_args(plog_path) -> list:
@@ -1034,8 +1096,11 @@ class AicoreErrorParser:
         offset = info.corrected_pc.get("offset", 0)
         plog_path = info.corrected_pc.get("plog_path", "")
         core_id = info.aic_error_info.get("core_id", "")
+        # 每个组的首报错核独立定位源码：id+coreType 一起匹配 adump 汇总，
+        # .o 编译文件跨核复用。AIC 与 AIV 共用数字 core id，type 必须校验。
+        core_type = pc_corrector.derive_core_type(info.aic_error_info)
         src = pc_corrector.get_corrected_src(
-            plog_path, core_id, cls._get_symbolize_o_file(info), offset
+            plog_path, core_id, cls._get_symbolize_o_file(info), offset, core_type
         )
         info.corrected_instr = (
             f"Error occurred most likely at line: {hex(offset)[2:]}\n"
