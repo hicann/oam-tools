@@ -1192,10 +1192,22 @@ class RegexPattern:
     regex pattern
     """
 
+    # core_err_type 捕获 "the error is aicore error" / "there is an aivec error" 中的
+    # 类型词（PrintDavidCoreInfo / GetStarsRingBufferHeadMsg）。AIC 与 AIV 共用数字
+    # core id，必须按类型词区分，否则同一 core id 会被重复统计进同一列表。
+    # 类型词前有 " error" 时尽可能捕获（保护性分支），无类型词的旧日志也能匹配，
+    # 由 detect_core_err_type 缺省按 aic 处理，保证整条日志不因缺类型词而漏匹配。
+    _CORE_ERR_TYPE = r"aivector|aivec|aicore|aiv|aic"
+
     AICORE_ERR_OCCUR = (
         r"(?P<err_time>\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).+?\.(?:cc|cpp)\:\d+\](?P<thread_id>\d+)"
         r".+?device\((?P<dev_id>[a-zA-Z0-9\s,:]{1,})\),\s"
-        r"[a-zA-Z0-9\s,]{1,},\score id is (?P<core_id>\d+),\s+error code = "
+        r"[a-zA-Z0-9\s,]*?(?:(?P<core_err_type>"
+        + _CORE_ERR_TYPE
+        + r")\s+error[^,]*?|(?![a-zA-Z0-9\s,]*?(?:"
+        + _CORE_ERR_TYPE
+        + r")\s+error)[a-zA-Z0-9\s,]+?),\s+"
+        r"core id is (?P<core_id>\d+),\s+error code = "
         r"(?P<error_code>0x[0-9a-fA-F]+|\d+(?:,\s*\d+)*),.*?"
         r"pc start:\s(?P<start_pc>\S+),\scurrent:\s(?P<current_pc>\S+),\s(?P<extra_info>.*?\.)"
     )
@@ -1203,7 +1215,12 @@ class RegexPattern:
     AICORE_ERR_OCCUR_OST = (
         r"(?P<err_time>\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).+?\.(?:cc|cpp)\:\d+\](?P<thread_id>\d+)"
         r".+?device\((?P<dev_id>[a-zA-Z0-9\s,:]{1,})\),\s"
-        r"[a-zA-Z0-9\s,]{1,},\score id is (?P<core_id>\d+),\s+error code = "
+        r"[a-zA-Z0-9\s,]*?(?:(?P<core_err_type>"
+        + _CORE_ERR_TYPE
+        + r")\s+error[^,]*?|(?![a-zA-Z0-9\s,]*?(?:"
+        + _CORE_ERR_TYPE
+        + r")\s+error)[a-zA-Z0-9\s,]+?),\s+"
+        r"core id is (?P<core_id>\d+),\s+error code = "
         r"(?P<error_code>0x[0-9a-fA-F]+|\d+(?:,\s*\d+)*),.*?"
         r"current:\s(?P<current_pc>\S+),\s(?P<extra_info>.*?)"
         r",\sfirst pc start:\s(?P<start_pc>\S+),.*?second pc start:\s(?P<s_start_pc>\S+),.*?"

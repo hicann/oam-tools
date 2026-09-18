@@ -440,7 +440,7 @@ class TestUtilsMethods(CommonAssert):
         self.assertIn(
             msg, "kernel name       : AddCustom_ab1b6750d7f510985325b603cb06dc8b_0"
         )
-        self.assertIn(msg, "AIC_ERROR        : (0x200000000, 0, 0)")
+        self.assertIn(msg, "AIC_ERROR         : 0x200000000")
         self.assertIn(msg, "The single-operator test case was not executed")
         self.assertIn(msg, "2. AI Core DFX Register")
         self.assertIn(msg, "3. Operator Error Line Number")

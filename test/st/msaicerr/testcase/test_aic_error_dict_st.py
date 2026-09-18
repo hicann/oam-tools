@@ -294,11 +294,23 @@ class TestAnalyseAndConclusion(unittest.TestCase):
         ):
             self.assertIn(section, msg)
 
-    def test_analyse_prefers_error_code_all(self):
+    def test_analyse_shows_group_error_code(self):
+        # 报告按错误码分类展示，分类行的错误码取该组的 error_code
         info = _make_info("0x4")
         info.necessary_addr = {}
-        info.error_code_all = "(0x4, 0x0, 0x0)"
-        self.assertIn("(0x4, 0x0, 0x0)", info.analyse())
+        info.aic_error_groups = [
+            (
+                "0x4",
+                {
+                    "records": [
+                        {"error_code": "0x4", "core_err_type": "aic", "core_id": "0"}
+                    ],
+                    "cores_aic": ["0"],
+                    "cores_aiv": [],
+                },
+            )
+        ]
+        self.assertIn("AIC_ERROR         : 0x4", info.analyse())
 
     def test_addr_check_flags_out_of_range(self):
         info = _make_info("0x0")

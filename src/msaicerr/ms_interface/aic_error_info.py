@@ -22,6 +22,12 @@ from ms_interface import utils
 from ms_interface.constant import ChipType, Constant, RetCode
 
 
+CORRECTED_PC_NOTICE = (
+    "The corrected PC is fixed by the AI Core error registers and is more "
+    "credible than the original PC. Locate the fault by the corrected info first."
+)
+
+
 def detect_chip_type(error_code: str) -> ChipType:
     """Tell the two `error code = ...` dialects apart.
 
@@ -84,6 +90,18 @@ def parse_david_error_codes(error_code: str) -> list:
     return codes
 
 
+def detect_core_err_type(core_err_type: str) -> str:
+    """Bucket the '<type> error' word captured by AICORE_ERR_OCCUR(_OST).
+
+    AIC 与 AIV 共用同一份数字 core id，日志用 "the error is aicore error" /
+    "the error is aivec error" 区分核型（见 runtime PrintDavidCoreInfo 和
+    GetStarsRingBufferHeadMsg）。此处把 aicore 归为 aic、aivec/aivector 归为
+    aiv；取不到类型时按 aic 处理，保持历史行为。
+    """
+    raw = (core_err_type or "").lower()
+    return "aiv" if "aiv" in raw else "aic"
+
+
 class AicErrorInfo:
     """
     AI core Error info
@@ -91,7 +109,7 @@ class AicErrorInfo:
 
     def __init__(self: any) -> None:
         self.aic_error_info = {}
-        self.error_code_all = ""
+        self.aic_error_groups = []
         self.task_id = ""
         self.stream_id = ""
         self.node_name = ""
@@ -171,7 +189,6 @@ class AicErrorInfo:
 ***********************1. Basic information********************
 error time        : {self.aic_error_info.get("err_time", "")}
 device id         : {self.aic_error_info.get("dev_id", "")}
-core id           : {self.aic_error_info.get("core_id", "")}
 task id           : {self.task_id}
 stream id         : {self.stream_id}
 node name         : {self.graph_file}
@@ -184,11 +201,10 @@ rts_block_dim     : {self.rts_block_dim}
 driver_aicore_num : {self.driver_aicore_num}
 
 ***********************2. AI Core DFX Register***********************
-AIC_ERROR        : {self.error_code_all if self.error_code_all else self.aic_error_info.get("error_code", "")}
-{aicerror_info}
+{self._get_group_dfx(aicerror_info)}
 
 ***********************3. Operator Error Line Number************************
-{self._get_pc_str()}
+{self._get_group_pc()}
 
 ****************4. Operator Input/Output Memory*******************
 {addr_check_str}
@@ -286,7 +302,7 @@ args after  execution: {self._get_args_str(self.args_after_list)}
     def root_cause_conclusion(self):
         return self.get_conclusion()
 
-    def _get_pc_str(self: any) -> str:
+    def _get_pc_str(self: any, include_notice=True) -> str:
         """Report the original PC, and the corrected PC when it is available."""
         result = (
             "Original Info:\n"
@@ -306,10 +322,86 @@ args after  execution: {self._get_args_str(self.args_after_list)}
         corrected_instr = (self.corrected_instr or "").strip()
         if corrected_instr:
             result += f"{corrected_instr}\n"
-        result += (
-            "\nThe corrected PC is fixed by the AI Core error registers and is more "
-            "credible than the original PC. Locate the fault by the corrected info first.\n"
-        )
+        if include_notice:
+            result += f"\n{CORRECTED_PC_NOTICE}\n"
+        return result
+
+    @staticmethod
+    def _group_core_id_lines(group) -> str:
+        """core-id lists of one AIC_ERROR category, bucketed by aic/aiv.
+
+        AIC 与 AIV 共用同一份数字 core id，若混在一起会重复展示，因此按核型
+        （aic/aiv）分行列出并保持冒号对齐。
+        """
+        out = []
+        for kind, key in (("aic", "cores_aic"), ("aiv", "cores_aiv")):
+            cores = group.get(key) or []
+            if not cores:
+                continue
+            # 与 Basic information / start pc 对齐，标签统一按 18 位填充。
+            label = f"core id({kind})".ljust(18)
+            out.append(f"{label}: [{', '.join(cores)}]")
+        return "\n".join(out)
+
+    def _get_group_dfx(self, default):
+        if not self.aic_error_groups:
+            return default
+        lines = []
+        for code, group in self.aic_error_groups:
+            old_info = self.aic_error_info
+            old_extra = self.extra_info
+            try:
+                self.aic_error_info = group["records"][0]
+                self.extra_info = self.aic_error_info.get("extra_info", "")
+                desc = self._get_aicerror_info()
+            finally:
+                self.aic_error_info = old_info
+                self.extra_info = old_extra
+            # 错误描述内部可能包含历史格式产生的多余空行，分类展示时统一压缩。
+            desc = re.sub(r"\n{2,}", "\n", desc.strip())
+            # AIC_ERROR 标签 18 位填充，与 Basic information / start pc 冒号列对齐。
+            lines.append(
+                f"AIC_ERROR         : {code}\n{desc}\n{self._group_core_id_lines(group)}"
+            )
+        return "\n\n".join(lines)
+
+    def _get_group_pc(self):
+        if not self.aic_error_groups:
+            return self._get_pc_str()
+        out = []
+        has_corrected = False
+        for code, group in self.aic_error_groups:
+            rec = group["records"][0]
+            old_info = self.aic_error_info
+            old_pc = self.corrected_pc
+            old_instr = self.corrected_instr
+            old_extra = self.extra_info
+            try:
+                self.aic_error_info = rec
+                self.extra_info = rec.get("extra_info", "")
+                # 每组带独立的 Corrected Info（set_info 已按组首条记录修正），
+                # 换成组内那份，避免第二组起沿用第一组的 current pc。
+                self.corrected_pc = group.get("corrected_pc") or {}
+                self.corrected_instr = group.get("corrected_instr") or ""
+                if self.corrected_pc:
+                    has_corrected = True
+                kind = detect_core_err_type(rec.get("core_err_type", ""))
+                # 与 _get_group_dfx / Basic information 一致，AIC_ERROR / core id
+                # 标签按 18 位填充，使本段冒号列和 start/current pc 对齐。
+                err_label = "AIC_ERROR".ljust(18)
+                core_label = f"core id({kind})".ljust(18)
+                out.append(
+                    f"{err_label}: {code}\n{core_label}: {rec.get('core_id', '')}\n"
+                    + self._get_pc_str(include_notice=False)
+                )
+            finally:
+                self.aic_error_info = old_info
+                self.corrected_pc = old_pc
+                self.corrected_instr = old_instr
+                self.extra_info = old_extra
+        result = "\n".join(out)
+        if has_corrected:
+            result += f"\n\n{CORRECTED_PC_NOTICE}"
         return result
 
     @staticmethod

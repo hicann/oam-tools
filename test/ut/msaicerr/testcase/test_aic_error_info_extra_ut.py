@@ -16,10 +16,15 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------
 
+import pytest
 import sys
 
 from conftest import MSAICERR_PATH
-from ms_interface.aic_error_info import AicErrorInfo
+from ms_interface.aic_error_info import (
+    AicErrorInfo,
+    CORRECTED_PC_NOTICE,
+    detect_core_err_type,
+)
 from ms_interface.constant import RetCode
 
 sys.path.append(MSAICERR_PATH)
@@ -83,8 +88,12 @@ def test_get_addr_check_str_in_range():
 def test_get_addr_check_str_out_of_range():
     info = AicErrorInfo()
     info.necessary_addr = {
-        "input_addr": [{"index": "0", "in_range": False, "size": "16", "addr": "0x100"}],
-        "output_addr": [{"index": "1", "in_range": False, "size": "16", "addr": "0x200"}],
+        "input_addr": [
+            {"index": "0", "in_range": False, "size": "16", "addr": "0x100"}
+        ],
+        "output_addr": [
+            {"index": "1", "in_range": False, "size": "16", "addr": "0x200"}
+        ],
     }
     result = getattr(info, GET_ADDR_CHECK_STR)()
     assert "out of range" in result
@@ -184,3 +193,212 @@ def test_conclusion_single_op_success():
     info.dump_info = ""
     info.single_op_test_result = RetCode.FAILED
     assert "single-operator test case" in info.get_conclusion().lower()
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ("aicore", "aic"),
+        ("aic", "aic"),
+        ("aivec", "aiv"),
+        ("aivector", "aiv"),
+        ("AIV", "aiv"),
+        ("aivECTOR", "aiv"),
+        ("", "aic"),
+        (None, "aic"),
+        ("unknown", "aic"),
+    ],
+)
+def test_detect_core_err_type(raw, expected):
+    assert detect_core_err_type(raw) == expected
+
+
+def test_group_core_id_lines_aiv_in_cores_aiv():
+    info = AicErrorInfo()
+    group = {
+        "records": [{"core_err_type": "aiv"}],
+        "cores_aic": [],
+        "cores_aiv": ["1", "2"],
+    }
+    result = getattr(info, "_group_core_id_lines")(group)
+    assert "core id(aiv)      : [1, 2]" in result
+    assert "core id(aic)" not in result
+
+
+def test_group_core_id_lines_mixed():
+    info = AicErrorInfo()
+    group = {
+        "records": [{"core_err_type": "aic"}],
+        "cores_aic": ["0", "1", "2"],
+        "cores_aiv": ["1", "2"],
+    }
+    result = getattr(info, "_group_core_id_lines")(group)
+    assert "core id(aic)      : [0, 1, 2]" in result
+    assert "core id(aiv)      : [1, 2]" in result
+    # 两行的冒号需对齐（标签等宽填充）。
+    assert "core id(aiv)      :" in result.replace("core id(aic)      :", "")
+
+
+def test_get_group_dfx_lists_aic_and_aiv_cores():
+    from ms_interface.constant import Constant
+
+    info = AicErrorInfo()
+    info.aic_error_groups = [
+        (
+            "0x10",
+            {
+                "records": [{"error_code": "0x10", "core_err_type": "aic"}],
+                "cores_aic": ["0", "1"],
+                "cores_aiv": ["1"],
+            },
+        )
+    ]
+    # 只关心表头结构，desc 的位号名取决于 AIC_ERROR_INFO_DICT 内容。
+    result = getattr(info, "_get_group_dfx")("default")
+    assert "AIC_ERROR         : 0x10" in result
+    assert "core id(aic)      : [0, 1]" in result
+    assert "core id(aiv)      : [1]" in result
+    assert Constant.AIC_ERROR_INFO_DICT is not None
+
+
+def test_get_group_pc_marks_core_type():
+    info = AicErrorInfo()
+    info.aic_error_groups = [
+        (
+            "0x10",
+            {
+                "records": [
+                    {"error_code": "0x10", "core_err_type": "aiv", "core_id": "3"}
+                ],
+                "cores_aic": [],
+                "cores_aiv": ["3"],
+            },
+        )
+    ]
+    info.corrected_pc = {}
+    result = getattr(info, "_get_group_pc")()
+    assert "AIC_ERROR         : 0x10" in result
+    assert "core id(aiv)      : 3" in result
+
+
+def test_get_group_pc_labels_aligned():
+    info = AicErrorInfo()
+    info.aic_error_groups = [
+        (
+            "0x10",
+            {
+                "records": [
+                    {
+                        "error_code": "0x10",
+                        "core_err_type": "aic",
+                        "core_id": "0",
+                        "start_pc": "0x100",
+                        "current_pc": "0x110",
+                    }
+                ],
+                "cores_aic": ["0"],
+                "cores_aiv": [],
+                "corrected_pc": {"start_pc": "0x100", "current_pc": "0x120"},
+            },
+        ),
+        (
+            "0x20",
+            {
+                "records": [
+                    {
+                        "error_code": "0x20",
+                        "core_err_type": "aiv",
+                        "core_id": "1",
+                        "start_pc": "0x200",
+                        "current_pc": "0x210",
+                    }
+                ],
+                "cores_aic": [],
+                "cores_aiv": ["1"],
+                "corrected_pc": {"start_pc": "0x200", "current_pc": "0x240"},
+            },
+        ),
+    ]
+    result = getattr(info, "_get_group_pc")()
+    # AIC_ERROR、core id(aic/aiv) 的冒号列一致（标签 18 位填充），与
+    # Basic information / start pc 冒号列对齐
+    lines = [
+        line
+        for line in result.splitlines()
+        if line.startswith("AIC_ERROR")
+        or line.startswith("core id(")
+        or line.startswith("current pc")
+        or line.startswith("start pc")
+    ]
+    colon_cols = {line.index(":") for line in lines}
+    assert colon_cols == {18}
+    assert "AIC_ERROR         : 0x10" in result
+    assert "core id(aic)      : 0" in result
+    assert "AIC_ERROR         : 0x20" in result
+    assert "core id(aiv)      : 1" in result
+
+
+def test_get_group_pc_uses_per_group_corrected_pc():
+    info = AicErrorInfo()
+    info.aic_error_groups = [
+        (
+            "0x10",
+            {
+                "records": [
+                    {
+                        "error_code": "0x10",
+                        "core_err_type": "aic",
+                        "core_id": "0",
+                        "start_pc": "0x100",
+                        "current_pc": "0x110",
+                    }
+                ],
+                "cores_aic": ["0"],
+                "cores_aiv": [],
+                "corrected_pc": {"start_pc": "0x100", "current_pc": "0x120"},
+            },
+        ),
+        (
+            "0x20",
+            {
+                "records": [
+                    {
+                        "error_code": "0x20",
+                        "core_err_type": "aiv",
+                        "core_id": "1",
+                        "start_pc": "0x200",
+                        "current_pc": "0x210",
+                    }
+                ],
+                "cores_aic": [],
+                "cores_aiv": ["1"],
+                "corrected_pc": {"start_pc": "0x200", "current_pc": "0x240"},
+            },
+        ),
+    ]
+    result = getattr(info, "_get_group_pc")()
+    # 第一组原值 0x110 修正为 0x120，第二组原值 0x210 修正为 0x240；
+    # 第二组不能沿用第一组的修正 current pc。
+    assert "current pc        : 0x110" in result
+    assert "current pc        : 0x120" in result
+    assert "current pc        : 0x210" in result
+    assert "current pc        : 0x240" in result
+    assert CORRECTED_PC_NOTICE in result
+
+
+def test_get_group_pc_no_notice_without_correction():
+    info = AicErrorInfo()
+    info.aic_error_groups = [
+        (
+            "0x10",
+            {
+                "records": [
+                    {"error_code": "0x10", "core_err_type": "aic", "core_id": "0"}
+                ],
+                "cores_aic": ["0"],
+                "cores_aiv": [],
+            },
+        )
+    ]
+    result = getattr(info, "_get_group_pc")()
+    assert CORRECTED_PC_NOTICE not in result

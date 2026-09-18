@@ -39,7 +39,7 @@ import re
 import shutil
 
 from ms_interface import utils
-from ms_interface.aic_error_info import detect_chip_type
+from ms_interface.aic_error_info import detect_chip_type, detect_core_err_type
 from ms_interface.constant import ChipType, Constant, RegexPattern
 
 # (源寄存器名, 源位段[high, low], 目标 PC 位段[high, low])，与 MakePcFixEntry 一一对应。
@@ -304,13 +304,24 @@ def symbolize(o_file: str, offset: int) -> dict:
     return {"innermost": innermost, "outermost": outermost}
 
 
-def parse_symbolize_src_from_log(plog_path: str, core_id: str) -> dict:
+def derive_core_type(rec: dict) -> str:
+    """adump coreType for the first-error core: 0=AIC, 1=AIV.
+
+    由 plog 捕获的 '<type> error' 类型词推导（core_err_type 缺失时按 aic）。
+    AIC 与 AIV 共用同一份数字 core id，type 必须一起参与匹配。
+    """
+    return "0" if detect_core_err_type(rec.get("core_err_type", "")) == "aic" else "1"
+
+
+def parse_symbolize_src_from_log(
+    plog_path: str, core_id: str, core_type: str = "0"
+) -> dict:
     """Read adump's already-symbolized source locations out of plog.
 
     kernel_symbol_locator.cpp BuildGroupSummaryText 打印
     "Group[N] outerSrc=file:line:col innerSrc=file:line:col"，同组的
     "Group[N] cores=[{id=..,type=..},...]" 行列出该组覆盖的核（12 个/行
-    分块续打）。按 group 下标关联两行、再按 core id 匹配本核。
+    分块续打）。按 group 下标关联两行、再按 core id + coreType 匹配本核。
     """
     cmd = ["grep", "outerSrc=", "-inrE", plog_path]
     src_rets = utils.get_inquire_result(
@@ -327,11 +338,13 @@ def parse_symbolize_src_from_log(plog_path: str, core_id: str) -> dict:
     if not cores_rets:
         return {}
     matched = None
+    core_mark = f"id={core_id},type={core_type}"
     for ret in cores_rets:
         group = src_by_group.get(ret.get("group_idx"))
         # 汇总按 (oFilePath, fixedPCOffset) 聚类，同组可能覆盖多个核，
-        # 不按 core id 过滤会把别的核的源码位置当本核报出。
-        if group is not None and core_id and f"id={core_id}," in ret.get("cores", ""):
+        # 不按 core id 过滤会把别的核的源码位置当本核报出。AIC 与 AIV
+        # 共用数字 core id，还必须校验 coreType，避免错配到同号异型核。
+        if group is not None and core_id and core_mark in ret.get("cores", ""):
             matched = group
             break
     if matched is None:
@@ -352,15 +365,18 @@ def parse_symbolize_src_from_log(plog_path: str, core_id: str) -> dict:
     }
 
 
-def get_corrected_src(plog_path: str, core_id: str, o_file: str, offset: int) -> dict:
+def get_corrected_src(
+    plog_path: str, core_id: str, o_file: str, offset: int, core_type: str = "0"
+) -> dict:
     """Symbolized source locations for the corrected PC, dump log first.
 
     1. adump 汇总日志已 symbolize 好（BuildGroupSummaryText 的
-       outerSrc/innerSrc），直接取，与 dump 结果完全一致。
+       outerSrc/innerSrc），直接取，与 dump 结果完全一致。按首个报错核的
+       id+coreType 匹配，.o 编译文件本身可跨核复用。
     2. plog 里没有该日志时，本地用 llvm-symbolizer 解析修正后的偏移
-       （ParseSingleResult 的移植）。
+       （ParseSingleResult 的移植），偏移即本核修正后的 offset。
     """
-    corrected = parse_symbolize_src_from_log(plog_path, core_id)
+    corrected = parse_symbolize_src_from_log(plog_path, core_id, core_type)
     if corrected:
         utils.print_debug_log(
             f"Get symbolize source from dump log: outermost={corrected.get('outermost')}, "
@@ -373,11 +389,17 @@ def get_corrected_src(plog_path: str, core_id: str, o_file: str, offset: int) ->
     return symbolize(o_file, offset)
 
 
-def parse_corrected_pc_from_log(plog_path: str, core_id: str) -> dict:
+def parse_corrected_pc_from_log(
+    plog_path: str, core_id: str, core_type: str = "0"
+) -> dict:
     """Read adump's already-corrected PC out of plog.
 
     kernel_symbol_locator.cpp PrintErrorForCore 打印
     "[Dump][Exception] Error PC information. coreId=..., fixedStartPC=..., fixedCurrentPC=..."。
+
+    coreType 0 表示 AIC 核、1 表示 AIV 核。同一份数字 core id 上 AIC 与 AIV
+    可能同时报错，匹配时要求 coreId 与 coreType 都一致，避免把别的核（哪怕是
+    同号异型的核）的修正 PC 错配到本核。
     """
     cmd = ["grep", "Error PC information", "-inrE", plog_path]
     rets = utils.get_inquire_result(cmd, RegexPattern.ADUMP_FIXED_PC, match_dict=True)
@@ -385,14 +407,19 @@ def parse_corrected_pc_from_log(plog_path: str, core_id: str) -> dict:
         return {}
     matched = None
     for ret in rets:
-        if core_id and ret.get("core_id") == core_id:
+        if (
+            core_id
+            and ret.get("core_id") == core_id
+            and str(ret.get("core_type", "")) == str(core_type)
+        ):
             matched = ret
             break
     if matched is None:
         # grep 覆盖整个 plog 目录，也不按 err_time 关联，取第一条会把别的核
         # （或历次故障）的修正 PC 当本核报出，而正文声称它更可信，反而误导。
         utils.print_warn_log(
-            f"No adump Error PC information for core id {core_id}, skip pc correction."
+            f"No adump Error PC information for core id {core_id} type {core_type}, "
+            "skip pc correction."
         )
         return {}
     return {
@@ -405,7 +432,9 @@ def parse_corrected_pc_from_log(plog_path: str, core_id: str) -> dict:
     }
 
 
-def parse_error_regs_from_log(plog_path: str, core_id: str) -> dict:
+def parse_error_regs_from_log(
+    plog_path: str, core_id: str, core_type: str = "0"
+) -> dict:
     """Collect adump's per-register dump for one core, if present."""
     cmd = ["grep", "Error register information", "-inrE", plog_path]
     rets = utils.get_inquire_result(cmd, RegexPattern.ADUMP_ERR_REGS, match_dict=True)
@@ -413,8 +442,12 @@ def parse_error_regs_from_log(plog_path: str, core_id: str) -> dict:
         return {}
     regs = {}
     for ret in rets:
-        # 单核寄存器分多条打印，需按 coreId 归并。
-        if core_id and ret.get("core_id") != core_id:
+        # 单核寄存器分多条打印，需按 coreId 归并；AIC 与 AIV 共用同一份数字
+        # core id，还需按 coreType 区分，避免并入异型核的寄存器。
+        if core_id and (
+            ret.get("core_id") != core_id
+            or str(ret.get("core_type", "")) != str(core_type)
+        ):
             continue
         regs.update(parse_reg_items(ret.get("regs", "")))
     return regs
@@ -431,7 +464,10 @@ def get_corrected_pc(plog_path: str, info: any, chip_type: ChipType = None) -> d
     两种芯片，只能落到 910B。
     """
     core_id = info.aic_error_info.get("core_id", "")
-    corrected = parse_corrected_pc_from_log(plog_path, core_id)
+    # AIC 与 AIV 共用同一份数字 core id，按日志类型词定位核型后传给 adump
+    # 匹配；core_err_type 缺失时按 aic（coreType=0）处理。
+    core_type = derive_core_type(info.aic_error_info)
+    corrected = parse_corrected_pc_from_log(plog_path, core_id, core_type)
     if corrected:
         utils.print_debug_log(
             f"Get corrected pc from dump log: start_pc={corrected.get('start_pc')}, "
@@ -451,7 +487,7 @@ def get_corrected_pc(plog_path: str, info: any, chip_type: ChipType = None) -> d
     if chip_type is None:
         # detect_chip_type 直接 .strip()，非 str 会抛；这里统一收敛成 str。
         chip_type = detect_chip_type(str(error_code))
-    regs = parse_error_regs_from_log(plog_path, core_id)
+    regs = parse_error_regs_from_log(plog_path, core_id, core_type)
     if not regs:
         regs = build_v100_regs(error_code, info.extra_info, parse_fixp_regs(plog_path))
     fixed_current_pc = fix_pc_by_error_regs(current_pc, regs, chip_type)
