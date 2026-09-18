@@ -43,10 +43,10 @@ constexpr int32_t CPU_SAMPLING_INTERVAL_FOR_FREQ_TEN = 100;
 constexpr int32_t INVALID_FREQ_OPTION = 100;
 constexpr int32_t DYNAMIC_OUTPUT_ARG_INDEX = 2;
 constexpr int32_t DYNAMIC_APP_ARG_INDEX = 3;
-constexpr int32_t DVPP_FREQ_ARG_INDEX = 62;
+constexpr int32_t DVPP_FREQ_ARG_INDEX = 59;
+constexpr int32_t CPU_SAMPLING_FREQ_ARG_INDEX = 60;
 constexpr int32_t INVALID_ARG_INDEX = 63;
-constexpr int32_t CPU_SAMPLING_FREQ_ARG_INDEX = 64;
-constexpr int32_t INTERCONNECTION_FREQ_ARG_INDEX = 65;
+constexpr int32_t INTERCONNECTION_FREQ_ARG_INDEX = 61;
 constexpr int32_t APP_PARAM_EXCEED_MAX_LEN = analysis::dvvp::common::config::MAX_APP_LEN + 1;
 constexpr int32_t OP_TYPE_EXCEED_MAX_LEN = 300;
 constexpr PlatformType TARGET_CHIP_TYPE = PlatformType::CHIP_MDC_V2;
@@ -850,20 +850,6 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo)
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIC_METRICS));
     EXPECT_EQ(PROFILING_FAILED, parser.CheckAiCoreMetricsValid(cmdInfo, ARGS_AIV_METRICS));
 
-    // 平台支持 SOC PMU(L2_CACHE_REG): CheckNpuEventsValid 校验事件格式
-    GlobalMockObject::verify();
-    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
-        .stubs()
-        .with(eq(PLATFORM_TASK_L2_CACHE_REG))
-        .will(returnValue(true));
-    MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
-        .defaults()
-        .will(returnValue(false));
-    cmdInfo.args[ARGS_NPU_EVENTS] = "0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9";
-    EXPECT_EQ(PROFILING_FAILED, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
-    cmdInfo.args[ARGS_NPU_EVENTS] = "0x1,0x2,0x3";
-    EXPECT_EQ(PROFILING_SUCCESS, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
-
     // 平台支持 optype(PLATFORM_TASK_SCALE): CheckCmdOpTypeIsValid 校验取值格式
     GlobalMockObject::verify();
     MOCKER_CPP(static_cast<bool (Platform::*)(const PlatformFeature) const>(&Platform::CheckIfSupport))
@@ -1008,7 +994,6 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo)
     cmdInfo.args[ARGS_IO_PROFILING] = "1";
     cmdInfo.args[ARGS_MODEL_EXECUTION] = "1";
     cmdInfo.args[ARGS_RUNTIME_API] = "1";
-    cmdInfo.args[ARGS_TASK_TSFW] = "1";
     cmdInfo.args[ARGS_AI_CORE] = "1";
     cmdInfo.args[ARGS_AIV] = "1";
     cmdInfo.args[ARGS_CPU_PROFILING] = "1";
@@ -1038,7 +1023,6 @@ TEST_F(INPUT_PARSER_UTEST, CheckBaseInfo)
     parser.ParamsSwitchValid(cmdInfo, ARGS_IO_PROFILING);
     parser.ParamsSwitchValid(cmdInfo, ARGS_MODEL_EXECUTION);
     parser.ParamsSwitchValid(cmdInfo, ARGS_RUNTIME_API);
-    parser.ParamsSwitchValid(cmdInfo, ARGS_TASK_TSFW);
     parser.ParamsSwitchValid(cmdInfo, ARGS_AI_CORE);
     parser.ParamsSwitchValid(cmdInfo, ARGS_AIV);
     parser.ParamsSwitchValid(cmdInfo, ARGS_CPU_PROFILING);
@@ -1107,7 +1091,6 @@ TEST_F(INPUT_PARSER_UTEST, MsprofCmdCheckValid)
     cmdInfo.args[ARGS_DYNAMIC_PROF_PID] = "123";
     cmdInfo.args[ARGS_DELAY_PROF] = "1";
     cmdInfo.args[ARGS_DURATION_PROF] = "1";
-    cmdInfo.args[ARGS_NPU_EVENTS] = "";
     MOCKER(mmGetOptInd).stubs().will(returnValue(1));
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIV_MODE);
     parser.MsprofCmdCheckValid(cmdInfo, ARGS_AIC_METRICS);
@@ -1128,9 +1111,6 @@ TEST_F(INPUT_PARSER_UTEST, RejectMissingOptionalArgumentWithoutCoreDump)
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofDynamicCheckValid(cmdInfo, ARGS_DYNAMIC_PROF_PID));
     EXPECT_TRUE(parser.params_->pid.empty());
 
-    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckNpuEventsValid(cmdInfo, ARGS_NPU_EVENTS));
-    EXPECT_TRUE(parser.params_->npuEvents.empty());
-
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckArgOnOff(cmdInfo, ARGS_AI_CORE));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckSysDevicesValid(cmdInfo));
 }
@@ -1148,19 +1128,7 @@ TEST_F(INPUT_PARSER_UTEST, MsprofSwitchCheckValid)
     cmdInfo.args[ARGS_TASK_BLOCK] = "off";
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
     cmdInfo.args[ARGS_TASK_BLOCK] = "all";
-    EXPECT_EQ(MSPROF_DAEMON_OK, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
-}
-
-TEST_F(INPUT_PARSER_UTEST, ParamsCheckTaskBlockOpTypeCrossValidation)
-{
-    InputParser parser = InputParser();
-    parser.params_->taskBlock = "on";
-    parser.params_->taskBlockShink = "off";
-    parser.params_->opType = "";
-    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.ParamsCheck());
-
-    parser.params_->opType = "MatMul";
-    EXPECT_EQ(MSPROF_DAEMON_OK, parser.ParamsCheck());
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.MsprofSwitchCheckValid(cmdInfo, ARGS_TASK_BLOCK));
 }
 
 TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
@@ -1184,12 +1152,12 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
 
-    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "all"));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "all"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
-    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "on"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
 }
 
@@ -1322,12 +1290,10 @@ TEST_F(INPUT_PARSER_UTEST, PreCheckParamOffset)
 {
     EXPECT_EQ(DVPP_FREQ_ARG_INDEX, ARGS_DVPP_FREQ);
     EXPECT_EQ(CPU_SAMPLING_FREQ_ARG_INDEX, ARGS_CPU_SAMPLING_FREQ);
-    EXPECT_EQ(INVALID_ARG_INDEX, ARGS_INVALID);
     EXPECT_EQ(INTERCONNECTION_FREQ_ARG_INDEX, ARGS_INTERCONNECTION_FREQ);
-    EXPECT_EQ("dvpp-freq", LONG_OPTIONS[ARGS_DVPP_FREQ].name);                           // 62
-    EXPECT_EQ("invalid", LONG_OPTIONS[ARGS_INVALID].name);                               // 63
-    EXPECT_EQ("sys-cpu-freq", LONG_OPTIONS[ARGS_CPU_SAMPLING_FREQ].name);                // 64
-    EXPECT_EQ("sys-interconnection-freq", LONG_OPTIONS[ARGS_INTERCONNECTION_FREQ].name); // 65
+    EXPECT_EQ("dvpp-freq", LONG_OPTIONS[ARGS_DVPP_FREQ].name);                           // 59
+    EXPECT_EQ("sys-cpu-freq", LONG_OPTIONS[ARGS_CPU_SAMPLING_FREQ].name);                // 60
+    EXPECT_EQ("sys-interconnection-freq", LONG_OPTIONS[ARGS_INTERCONNECTION_FREQ].name); // 61
     EXPECT_EQ("nts-metrics", LONG_OPTIONS[ARGS_NTS_METRICS].name);
     EXPECT_EQ("aicore-shape", LONG_OPTIONS[ARGS_AICORE_SHAPE].name);
 }

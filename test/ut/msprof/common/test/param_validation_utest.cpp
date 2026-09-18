@@ -43,20 +43,6 @@ protected:
     virtual void TearDown() { GlobalMockObject::verify(); }
 };
 
-static int _drv_get_dev_ids(int num_devices, std::vector<int>& dev_ids)
-{
-    static int phase = 0;
-    if (phase == 0) {
-        phase++;
-        return -1;
-    }
-
-    if (phase >= 1) {
-        dev_ids.push_back(0);
-        return 0;
-    }
-}
-
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckProfilingParams)
 {
     std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
@@ -173,14 +159,6 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckSystemTraceSwitchProfiling)
     EXPECT_EQ(false, entry->CheckSystemTraceSwitchProfiling(params));
     params->roceProfiling = "on";
     EXPECT_EQ(true, entry->CheckSystemTraceSwitchProfiling(params));
-}
-
-TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckControlSwitchProfiling)
-{
-    std::shared_ptr<analysis::dvvp::message::ProfileParams> params(new analysis::dvvp::message::ProfileParams());
-    auto entry = analysis::dvvp::common::validation::ParamValidation::instance();
-    params->taskTsfw = "asd";
-    EXPECT_EQ(true, entry->CheckControlSwitchProfiling(params));
 }
 
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckTsSwitchProfiling)
@@ -813,20 +791,11 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckTaskBlockValidMdcLiteV2)
     MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE_V2));
 
     EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "on"));
-    EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "all"));
     EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "off"));
+    EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "all"));
     EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "invalid"));
-
-    GlobalMockObject::verify();
-    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE));
-
-    EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "on"));
 }
 
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckTaskBlockValidModena)

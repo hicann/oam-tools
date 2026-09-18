@@ -51,14 +51,12 @@ enum MsprofArgsType {
     ARGS_AIC_METRICS,
     ARGS_AIV_MODE,
     ARGS_AIV_METRICS,
-    ARGS_NPU_EVENTS,
     ARGS_SYS_DEVICES,
     ARGS_LLC_PROFILING,
     ARGS_PYTHON_PATH,
     ARGS_SUMMARY_FORMAT,
     ARGS_EXPORT_TYPE,
     ARGS_REPORTS,
-    ARGS_MEM_SERVICEFLOW,
     ARGS_OP_TYPE,
     ARGS_RULE,
     // switch
@@ -67,7 +65,6 @@ enum MsprofArgsType {
     ARGS_AIV,
     ARGS_MODEL_EXECUTION,
     ARGS_RUNTIME_API,
-    ARGS_TASK_TSFW,
     ARGS_TASK_TIME,
     ARGS_AICORE_SHAPE,
     ARGS_GE_API,
@@ -103,10 +100,10 @@ enum MsprofArgsType {
     ARGS_HARDWARE_MEM_SAMPLING_FREQ, // 50 1-10000 hz
     ARGS_IO_SAMPLING_FREQ,           // 100 1-100 hz
     ARGS_DVPP_FREQ,                  // 50 1-100 hz
-    ARGS_INVALID = 63,               // OsalGetOptLong will return opt = 63 for invalid argument
     ARGS_CPU_SAMPLING_FREQ,          // 50 1-50 hz
     ARGS_INTERCONNECTION_FREQ,       // 50 1-50 hz
     ARGS_HOST_SYS_USAGE_FREQ,        // 50 1-50 hz
+    ARGS_INVALID = 63,               // OsalGetOptLong will return opt = 63 for invalid argument
     ARGS_SYS_LOW_POWER_FREQ,         // 10000 1-10000hz
     ARGS_EXPORT_ITERATION_ID,
     ARGS_EXPORT_MODEL_ID,
@@ -138,14 +135,12 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"aic-metrics", OSAL_OPTIONAL_ARG, nullptr, ARGS_AIC_METRICS},
     {"aiv-mode", OSAL_OPTIONAL_ARG, nullptr, ARGS_AIV_MODE},
     {"aiv-metrics", OSAL_OPTIONAL_ARG, nullptr, ARGS_AIV_METRICS},
-    {"npu-events", OSAL_OPTIONAL_ARG, nullptr, ARGS_NPU_EVENTS},
     {"sys-devices", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_DEVICES},
     {"llc-profiling", OSAL_OPTIONAL_ARG, nullptr, ARGS_LLC_PROFILING},
     {"python-path", OSAL_OPTIONAL_ARG, nullptr, ARGS_PYTHON_PATH},
     {"summary-format", OSAL_OPTIONAL_ARG, nullptr, ARGS_SUMMARY_FORMAT},
     {"type", OSAL_OPTIONAL_ARG, nullptr, ARGS_EXPORT_TYPE},
     {"reports", OSAL_OPTIONAL_ARG, nullptr, ARGS_REPORTS},
-    {"sys-mem-serviceflow", OSAL_OPTIONAL_ARG, nullptr, ARGS_MEM_SERVICEFLOW},
     {"optype", OSAL_OPTIONAL_ARG, nullptr, ARGS_OP_TYPE},
     {"rule", OSAL_OPTIONAL_ARG, nullptr, ARGS_RULE},
     // switch
@@ -154,7 +149,6 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"ai-vector-core", OSAL_OPTIONAL_ARG, nullptr, ARGS_AIV},
     {"model-execution", OSAL_OPTIONAL_ARG, nullptr, ARGS_MODEL_EXECUTION}, // the default value is off
     {"runtime-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_RUNTIME_API},         // the default value is off
-    {"task-tsfw", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TSFW},             // the default value is off
     {"task-time", OSAL_OPTIONAL_ARG, nullptr, ARGS_TASK_TIME},             // the default value is on
     {"aicore-shape", OSAL_REQUIRED_ARG, nullptr, ARGS_AICORE_SHAPE},
     {"ge-api", OSAL_OPTIONAL_ARG, nullptr, ARGS_GE_API},
@@ -190,10 +184,10 @@ const OsalStructOption LONG_OPTIONS[] = {
     {"sys-hardware-mem-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HARDWARE_MEM_SAMPLING_FREQ},
     {"sys-io-sampling-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_IO_SAMPLING_FREQ},
     {"dvpp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_DVPP_FREQ},
-    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"sys-cpu-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_CPU_SAMPLING_FREQ},
     {"sys-interconnection-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_INTERCONNECTION_FREQ},
     {"host-sys-usage-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_HOST_SYS_USAGE_FREQ},
+    {"invalid", OSAL_OPTIONAL_ARG, nullptr, ARGS_INVALID},
     {"sys-lp-freq", OSAL_OPTIONAL_ARG, nullptr, ARGS_SYS_LOW_POWER_FREQ},
     {"iteration-id", OSAL_OPTIONAL_ARG, nullptr, ARGS_EXPORT_ITERATION_ID},
     {"model-id", OSAL_OPTIONAL_ARG, nullptr, ARGS_EXPORT_MODEL_ID},
@@ -232,7 +226,6 @@ private:
     int32_t CheckSampleModeValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
     int32_t CheckArgOnOff(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
     int32_t CheckArgRange(const struct MsprofCmdInfo& cmdInfo, int32_t opt, uint32_t min, uint32_t max) const;
-    int32_t CheckNpuEventsValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const;
     int32_t CheckNtsMetricsValid(const struct MsprofCmdInfo& cmdInfo);
     int32_t CheckNtsCustomMetricsValid(const std::string& ntsMetrics);
     int32_t CheckCmdOpTypeIsValid(const struct MsprofCmdInfo& cmdInfo) const;
@@ -242,7 +235,6 @@ private:
     int32_t CheckExportSummaryFormat(const struct MsprofCmdInfo& cmdInfo) const;
     int32_t CheckExportType(const struct MsprofCmdInfo& cmdInfo) const;
     int32_t CheckReports(const struct MsprofCmdInfo& cmdInfo) const;
-    int32_t CheckMemServiceflow(const struct MsprofCmdInfo& cmdInfo) const;
     int32_t CheckAnalyzeRuleSwitch(const struct MsprofCmdInfo& cmdInfo) const;
     int32_t CheckLlcProfilingValid(const struct MsprofCmdInfo& cmdInfo);
     int32_t CheckSysPeriodValid(const struct MsprofCmdInfo& cmdInfo) const;

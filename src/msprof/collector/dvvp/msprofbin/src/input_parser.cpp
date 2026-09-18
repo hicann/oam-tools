@@ -205,21 +205,21 @@ bool InputParser::HasHelpParamOnly() const
 
 int32_t InputParser::PreCheckPlatform(int32_t opt, CONST_CHAR_PTR argv[])
 {
-    std::vector<MsprofArgsType> socBlackSwith = {ARGS_HOST_SYS,
-                                                 ARGS_HOST_SYS_PID,
-                                                 ARGS_HOST_SYS_USAGE,
-                                                 ARGS_HOST_SYS_USAGE_FREQ,
-                                                 ARGS_PARSE,
-                                                 ARGS_QUERY,
-                                                 ARGS_EXPORT,
-                                                 ARGS_EXPORT_ITERATION_ID,
-                                                 ARGS_EXPORT_MODEL_ID,
-                                                 ARGS_SUMMARY_FORMAT,
-                                                 ARGS_PYTHON_PATH,
-                                                 ARGS_ANALYZE,
-                                                 ARGS_RULE,
-                                                 ARGS_MEM_SERVICEFLOW,
-                                                 ARGS_OP_TYPE};
+    std::vector<MsprofArgsType> socBlackSwith = {
+        ARGS_HOST_SYS,
+        ARGS_HOST_SYS_PID,
+        ARGS_HOST_SYS_USAGE,
+        ARGS_HOST_SYS_USAGE_FREQ,
+        ARGS_PARSE,
+        ARGS_QUERY,
+        ARGS_EXPORT,
+        ARGS_EXPORT_ITERATION_ID,
+        ARGS_EXPORT_MODEL_ID,
+        ARGS_SUMMARY_FORMAT,
+        ARGS_PYTHON_PATH,
+        ARGS_ANALYZE,
+        ARGS_RULE,
+        ARGS_OP_TYPE};
     Analysis::Dvvp::Common::Config::PlatformType platformType = ConfigManager::instance()->GetPlatformType();
     if (platformType < PlatformType::MINI_TYPE || platformType >= PlatformType::END_TYPE) {
         return PROFILING_FAILED;
@@ -294,24 +294,14 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_INSTR_PROFILING_FREQ,
         ARGS_DYNAMIC_PROF,
         ARGS_DYNAMIC_PROF_PID,
-        ARGS_NPU_EVENTS,
         ARGS_DELAY_PROF,
         ARGS_DURATION_PROF,
         ARGS_SYS_LOW_POWER,
         ARGS_SYS_LOW_POWER_FREQ,
-        ARGS_MEM_SERVICEFLOW,
         ARGS_OP_TYPE};
-    std::vector<MsprofArgsType> cloudBlackSwith = {ARGS_AIV,
-                                                   ARGS_AIV_FREQ,
-                                                   ARGS_AIV_MODE,
-                                                   ARGS_AIV_METRICS,
-                                                   ARGS_TASK_BLOCK,
-                                                   ARGS_SYS_LOW_POWER,
-                                                   ARGS_SYS_LOW_POWER_FREQ,
-                                                   ARGS_INSTR_PROFILING,
-                                                   ARGS_INSTR_PROFILING_FREQ,
-                                                   ARGS_MEM_SERVICEFLOW,
-                                                   ARGS_OP_TYPE};
+    std::vector<MsprofArgsType> cloudBlackSwith = {
+        ARGS_AIV,           ARGS_AIV_FREQ,           ARGS_AIV_MODE,        ARGS_AIV_METRICS,          ARGS_TASK_BLOCK,
+        ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_INSTR_PROFILING, ARGS_INSTR_PROFILING_FREQ, ARGS_OP_TYPE};
     std::vector<MsprofArgsType> mdcBlackSwith = {
         ARGS_IO_PROFILING,
         ARGS_IO_SAMPLING_FREQ,
@@ -336,13 +326,11 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_DURATION_PROF,
         ARGS_SYS_LOW_POWER,
         ARGS_SYS_LOW_POWER_FREQ,
-        ARGS_MEM_SERVICEFLOW,
         ARGS_OP_TYPE};
     std::vector<MsprofArgsType> dcBlackSwith = {ARGS_AIV,           ARGS_AIV_FREQ,           ARGS_AIV_MODE,
                                                 ARGS_AIV_METRICS,   ARGS_IO_PROFILING,       ARGS_IO_SAMPLING_FREQ,
                                                 ARGS_TASK_BLOCK,    ARGS_INSTR_PROFILING,    ARGS_INSTR_PROFILING_FREQ,
-                                                ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_MEM_SERVICEFLOW,
-                                                ARGS_OP_TYPE};
+                                                ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ, ARGS_OP_TYPE};
     std::vector<MsprofArgsType> cloudBlackSwithV2 = {ARGS_AIV,         ARGS_AIV_FREQ,      ARGS_AIV_MODE,
                                                      ARGS_AIV_METRICS, ARGS_SYS_LOW_POWER, ARGS_SYS_LOW_POWER_FREQ};
     std::vector<MsprofArgsType> miniV3BlackSwith = {
@@ -356,7 +344,7 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_INSTR_PROFILING_FREQ,
         ARGS_SYS_LOW_POWER,
         ARGS_SYS_LOW_POWER_FREQ,
-        ARGS_MEM_SERVICEFLOW};
+    };
     std::vector<MsprofArgsType> mdcMiniV3BlackSwith = {
         ARGS_AICPU,
         ARGS_AIV,
@@ -382,7 +370,6 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_IO_PROFILING,
         ARGS_IO_SAMPLING_FREQ,
         ARGS_TASK_BLOCK,
-        ARGS_MEM_SERVICEFLOW,
         ARGS_ANALYZE,
         ARGS_RULE,
         ARGS_DELAY_PROF,
@@ -417,7 +404,6 @@ std::vector<MsprofArgsType> InputParser::GeneratePlatSwithList() const
         ARGS_DURATION_PROF,
         ARGS_SYS_LOW_POWER,
         ARGS_SYS_LOW_POWER_FREQ,
-        ARGS_MEM_SERVICEFLOW,
         ARGS_OP_TYPE};
     std::vector<MsprofArgsType> davidBlackSwith = {
         ARGS_AIV, ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ};
@@ -628,63 +614,10 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo& cmdInfo, int32_t
     }
 
     switch (opt) {
-        case ARGS_TASK_TSFW:
-            params_->taskTsfw = cmdInfo.args[opt];
-            break;
         default:
             ParamsSwitchValid2(cmdInfo, opt);
             break;
     }
-}
-
-int32_t InputParser::CheckNpuEventsValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt) const
-{
-    if (CheckOptionValueNotNull(cmdInfo, opt) != MSPROF_DAEMON_OK) {
-        return MSPROF_DAEMON_ERROR;
-    }
-    params_->npuEvents = cmdInfo.args[opt];
-    if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_REG) &&
-        !Platform::instance()->CheckIfSupport(PLATFORM_TASK_SOC_PMU)) {
-        MSPROF_LOGE("Soc pmu not support on this platform.");
-        return MSPROF_DAEMON_ERROR;
-    }
-    static std::string singleEventsHead = "0x";
-    if (params_->npuEvents.compare(0, singleEventsHead.length(), singleEventsHead) == 0 &&
-        params_->npuEvents.find(";") != std::string::npos) {
-        MSPROF_LOGE("Failed to check soc pmu events, if you want to collect multiple soc pmu type, "
-                    "please input prefix like [HA:] before events.");
-        CmdLog::CmdErrorLog("Failed to check soc pmu events, if you want to collect multiple soc pmu type, "
-                            "please input prefix like [HA:] before events.");
-        return MSPROF_DAEMON_ERROR;
-    }
-    if (!ParamValidation::instance()->CheckDuplicateSocPmu(params_->npuEvents)) {
-        MSPROF_LOGE("Failed to check soc pmu events, please check if input duplicate soc pmu type.");
-        CmdLog::CmdErrorLog("Failed to check soc pmu events, please check if input duplicate soc pmu type.");
-        return MSPROF_DAEMON_ERROR;
-    }
-    std::vector<std::string> registerList = Utils::Split(params_->npuEvents, false, "", ";");
-    for (size_t i = 0; i < registerList.size(); ++i) {
-        std::string eventStr = "";
-        ProfSocPmuType eventType = ParamValidation::instance()->GetSocPmuInfo(registerList[i], eventStr);
-        if (eventStr.empty()) {
-            MSPROF_LOGE("Failed to check empty soc pmu events, type: %u.", static_cast<uint32_t>(eventType));
-            CmdLog::CmdErrorLog("Empty npu-events detected, please input valid npu-events.");
-            return MSPROF_DAEMON_ERROR;
-        }
-        std::vector<std::string> eventsList = Utils::Split(eventStr, false, "", ",");
-        if (!ParamValidation::instance()->CheckSocPmuEventsValid(eventType, eventsList)) {
-            MSPROF_LOGE(
-                "Failed to check soc pmu events, type: %u, event: %s", static_cast<uint32_t>(eventType),
-                registerList[i].c_str());
-            CmdLog::CmdErrorLog(
-                "The npu-events[%s] is invalid or exceeds the specified length, "
-                "please check ERROR information in host plog.",
-                params_->npuEvents.c_str());
-            return MSPROF_DAEMON_ERROR;
-        }
-    }
-
-    return MSPROF_DAEMON_OK;
 }
 
 int32_t InputParser::MsprofCmdCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt)
@@ -712,9 +645,6 @@ int32_t InputParser::MsprofCmdCheckValid(const struct MsprofCmdInfo& cmdInfo, in
         case ARGS_AIC_METRICS:
         case ARGS_AIV_METRICS:
             ret = CheckAiCoreMetricsValid(cmdInfo, opt);
-            break;
-        case ARGS_NPU_EVENTS:
-            ret = CheckNpuEventsValid(cmdInfo, opt);
             break;
         case ARGS_SYS_DEVICES:
             ret = CheckSysDevicesValid(cmdInfo);
@@ -747,13 +677,8 @@ void InputParser::ParamsSwitchValid2(const struct MsprofCmdInfo& cmdInfo, int32_
             params_->dvpp_profiling = cmdInfo.args[opt];
             break;
         case ARGS_TASK_BLOCK:
-            if (strcmp(cmdInfo.args[opt], MSVP_PROF_ALL) == 0) {
-                params_->taskBlock = MSVP_PROF_ON;
-                params_->taskBlockShink = MSVP_PROF_OFF;
-            } else {
-                params_->taskBlock = cmdInfo.args[opt];
-                params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
-            }
+            params_->taskBlock = cmdInfo.args[opt];
+            params_->taskBlockShink = params_->taskBlock.compare(MSVP_PROF_ON) == 0 ? MSVP_PROF_ON : MSVP_PROF_OFF;
             break;
         case ARGS_SYS_LOW_POWER:
             params_->sysLp = cmdInfo.args[opt];
@@ -774,21 +699,6 @@ void InputParser::ParamsSwitchValid2(const struct MsprofCmdInfo& cmdInfo, int32_
     }
 }
 
-int32_t InputParser::CheckMemServiceflow(const struct MsprofCmdInfo& cmdInfo) const
-{
-    if (cmdInfo.args[ARGS_MEM_SERVICEFLOW] == nullptr) {
-        CmdLog::CmdErrorLog("Argument --sys-mem-serviceflow: expected one argument");
-        return MSPROF_DAEMON_ERROR;
-    }
-    std::string memServiceflow = std::string(cmdInfo.args[ARGS_MEM_SERVICEFLOW]);
-    if (memServiceflow.empty()) {
-        CmdLog::CmdErrorLog("Argument --sys-mem-serviceflow: expected one argument");
-        return MSPROF_DAEMON_ERROR;
-    }
-    params_->memServiceflow = memServiceflow;
-    return MSPROF_DAEMON_OK;
-}
-
 int32_t InputParser::MsprofCmdCheckValid2(const struct MsprofCmdInfo& cmdInfo, int32_t opt)
 {
     int32_t ret = MSPROF_DAEMON_OK;
@@ -807,9 +717,6 @@ int32_t InputParser::MsprofCmdCheckValid2(const struct MsprofCmdInfo& cmdInfo, i
             break;
         case ARGS_REPORTS:
             ret = CheckReports(cmdInfo);
-            break;
-        case ARGS_MEM_SERVICEFLOW:
-            ret = CheckMemServiceflow(cmdInfo);
             break;
         case ARGS_RULE:
             ret = CheckAnalyzeRuleSwitch(cmdInfo);
@@ -1093,12 +1000,6 @@ int32_t InputParser::CheckNtsCustomMetricsValid(const std::string& ntsMetrics)
 int32_t InputParser::ParamsCheck() const
 {
     if (params_ == nullptr) {
-        return MSPROF_DAEMON_ERROR;
-    }
-
-    if (Platform::instance()->CheckIfSupport(PLATFORM_TASK_SCALE) && params_->taskBlock == "on" &&
-        params_->taskBlockShink == "off" && params_->opType.empty()) {
-        CmdLog::CmdErrorLog("Argument --task-block: when set to 'all', --optype must not be empty.");
         return MSPROF_DAEMON_ERROR;
     }
 
@@ -2113,29 +2014,10 @@ int32_t InputParser::CheckTaskBlockValid(const std::string& switchName, const st
         return MSPROF_DAEMON_ERROR;
     }
 
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0 && config.compare(MSVP_PROF_ALL) != 0) {
-        std::string taskBlockRanges;
-        if (Platform::instance()->GetPlatformType() == CHIP_CLOUD_V3 ||
-            Platform::instance()->GetPlatformType() == CHIP_CLOUD_V4 ||
-            Platform::instance()->GetPlatformType() == CHIP_MDC_V2) {
-            taskBlockRanges = "'all', 'on', 'off'.";
-        } else {
-            taskBlockRanges = "'all', 'off'.";
-        }
+    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ON) != 0) {
         CmdLog::CmdErrorLog(
-            "Argument %s: invalid value: %s. Please input %s", switchName.c_str(), config.c_str(),
-            taskBlockRanges.c_str());
-        MSPROF_LOGE(
-            "Argument %s: invalid value: %s. Please input %s", switchName.c_str(), config.c_str(),
-            taskBlockRanges.c_str());
-        return MSPROF_DAEMON_ERROR;
-    }
-    if (config.compare(MSVP_PROF_ON) == 0 && Platform::instance()->GetPlatformType() != CHIP_CLOUD_V3 &&
-        Platform::instance()->GetPlatformType() != CHIP_CLOUD_V4 &&
-        Platform::instance()->GetPlatformType() != CHIP_MDC_V2) {
-        CmdLog::CmdErrorLog(
-            "The 'on' option is not supported on this platform, please use 'all' to collect block data.");
-        MSPROF_LOGE("The 'on' option is not supported on this platform, please use 'all' to collect block data.");
+            "Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(), config.c_str());
+        MSPROF_LOGE("Argument %s: invalid value: %s. Please input 'on' or 'off'.", switchName.c_str(), config.c_str());
         return MSPROF_DAEMON_ERROR;
     }
     return MSPROF_DAEMON_OK;
@@ -2730,9 +2612,6 @@ void ArgsManager::AddHardWareMemArgs()
     llcProfiling.SetDetail("The llc profiling groups, include read, write. the default value is read.");
     argsList_.push_back(hardwareMem);
     argsList_.push_back(hardwareMemFreq);
-    if (Platform::instance()->CheckIfSupport(PLATFORM_SYS_MEM_SERVICEFLOW)) {
-        argsList_.push_back({"sys-mem-serviceflow", "The qos serviceflow group, based on user customized.", ""});
-    }
     argsList_.push_back(llcProfiling);
 }
 
@@ -2763,7 +2642,6 @@ ArgsManager::ArgsManager()
          "Collect AI Core operator shape data. This option takes effect only when task-time is l0. "
          "The possible values are 'on' and 'off', and the default value is off.",
          OFF},
-        {"task-tsfw", "Specify the start of collection of ts management data, the default value is off.", OFF},
         {"task-memory",
          "Show the memory usage of the operator, the default value is off. "
          "The possible parameters are 'on' or 'off'.",
@@ -2802,19 +2680,9 @@ void ArgsManager::AddStarsArgs()
     if (!Platform::instance()->CheckIfSupport(PLATFORM_TASK_BLOCK)) {
         return;
     }
-    std::string task_block_ranges;
-    if (ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V3 ||
-        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_CLOUD_V4 ||
-        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_V2 ||
-        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE_V2) {
-        task_block_ranges = "'all', 'on', 'off'.";
-    } else {
-        task_block_ranges = "'all', 'off'.";
-    }
     Args fftsBlockArgs = {
         "task-block", "Show task block profiling data, the default value is off."
-                      "The possible parameters are " +
-                          task_block_ranges};
+                      "The possible parameters are 'on' or 'off'."};
     argsList_.push_back(fftsBlockArgs);
 }
 
@@ -3003,13 +2871,7 @@ void ArgsManager::AddL2Args()
         smmu = " and SMMU";
     }
     Args l2 = {"l2", "L2 Cache" + smmu + " acquisition switch. The default value is off.", OFF};
-    Args npuEvents = {
-        "npu-events",
-        "Customize soc pmu parameters for collection. "
-        "The input is hexadecimal number starting with 0x. Maximum of 8 parameters can be received for MATA and SMMU." +
-            noc};
     argsList_.push_back(l2);
-    argsList_.push_back(npuEvents);
 }
 } // namespace Msprof
 } // namespace Dvvp
