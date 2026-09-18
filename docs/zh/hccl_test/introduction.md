@@ -15,40 +15,40 @@
 ## 支持的产品
 
 <!-- npu="950" id5 -->
-Ascend 950PR/Ascend 950DT
+Ascend 950PR&950DT系列产品
 <!-- end id5 -->
 
 <!-- npu="A3" id4 -->
-Atlas A3 训练系列产品/Atlas A3 推理系列产品
+Atlas A3系列产品
 <!-- end id4 -->
 
 <!-- npu="910b" id3 -->
-Atlas A2 训练系列产品/Atlas A2 推理系列产品
+Atlas A2系列产品
 <!-- end id3 -->
 
 <!-- npu="910" id2 -->
-Atlas 训练系列产品
+Atlas训练系列产品
 <!-- end id2 -->
 
 <!-- npu="310p" id1 -->
-Atlas 推理系列产品
+Atlas推理系列产品
 <!-- end id1 -->
 
 ## 约束说明
 
   <!-- npu="950" id8 -->
-- 针对Ascend 950PR/Ascend 950DT，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
+- 针对Ascend 950PR&950DT系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
   <!-- end id8 -->
   <!-- npu="A3" id7 -->
-- 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
+- 针对Atlas A3系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
 
   针对AlltoAll、AlltoAllV算子，HCCL性能测试工具最大支持集群组网包含8K的通信rank的场景。
   <!-- end id7 -->
   <!-- npu="910b" id6 -->
-- 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
+- 针对Atlas A2系列产品，HCCL性能测试工具最大支持集群组网包含32K的通信rank的场景。
   <!-- end id6 -->
   <!-- npu="910" id9 -->
-- 针对Atlas 训练系列产品，HCCL性能测试工具最大支持集群组网包含4096的通信rank的场景。
+- 针对Atlas训练系列产品，HCCL性能测试工具最大支持集群组网包含4096的通信rank的场景。
   <!-- end id9 -->
 
 ## 背景知识

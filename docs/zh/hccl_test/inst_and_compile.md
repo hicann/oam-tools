@@ -9,19 +9,19 @@ HCCL Test工具依赖MPI启动多个进程，所以需要先安装MPI软件，�
 
 - 如果通信网卡仅使用IPv4协议：
     <!-- npu="950" id1 -->
-  - 针对Ascend 950PR/Ascend 950DT，请安装[MPICH 4.1.3](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
+  - 针对Ascend 950PR&950DT系列产品，请安装[MPICH 4.1.3](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
     <!-- end id1 -->
     <!-- npu="A3" id2 -->
-  - 针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，请安装[MPICH 4.1.3](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
+  - 针对Atlas A3系列产品，请安装[MPICH 4.1.3](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
     <!-- end id2 -->
     <!-- npu="910b" id3 -->
-  - 针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
+  - 针对Atlas A2系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
     <!-- end id3 -->
     <!-- npu="910" id4 -->
-  - 针对Atlas 训练系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
+  - 针对Atlas训练系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
     <!-- end id4 -->
     <!-- npu="310p" id5 -->
-  - 针对Atlas 推理系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
+  - 针对Atlas推理系列产品，请安装[MPICH 3.2.1](https://www.mpich.org/static/downloads/)版本或者[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。
     <!-- end id5 -->
 
 - 如果通信网卡需要使用IPv6协议，请安装[Open MPI-4.1.5](https://www.open-mpi.org/software/ompi/v4.1/)版本。

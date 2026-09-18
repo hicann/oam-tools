@@ -60,9 +60,9 @@ bash: orted: 未找到命令
 --------------------------------------------------------------------------
 A daemon (pid 8793) died unexpectedly with status 127 while attempting
 to launch so we are aborting.
- 
+
 There may be more information reported by the environment (see above).
- 
+
 This may be because the daemon was unable to find all the needed shared
 libraries on the remote node. You may set your LD_LIBRARY_PATH to have the
 location of the shared libraries on the remote nodes and this will
@@ -109,13 +109,13 @@ that caused that situation.
 
 ```text
 the minbytes is 8192, maxbytes is 2147483648, iters is 20, warmup_iters is 5
-hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7 
+hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7
 This is an error in init_hcclComm.
-hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7 
+hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7
 This is an error in init_hcclComm.
-hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7 
+hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7
 This is an error in init_hcclComm.
-hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7 
+hccl interface return err ./common/src/hccl_test_common.cc:538, retcode: 7
 This is an error in init_hcclComm.
 ```
 
