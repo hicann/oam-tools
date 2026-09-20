@@ -26,10 +26,10 @@ msprof [options] <app>
 - 对于以下型号，--sys-profiling、--sys-pid-profiling、--sys-cpu-profiling参数不支持同时采集共用OS的两个Device。例如：该Device为\[0,7\]，但0和1、2和3、4和5、6和7分别共用OS，那么此时--sys-devices则不能同时配置0和1、2和3、4和5、6和7，可以配置0、2、4、6或1、3、5、7。
 
    <!-- npu="A3" id56 -->
-  - Atlas A3 训练系列产品/Atlas A3 推理系列产品
+  - Atlas A3系列产品
    <!-- end id56 -->
    <!-- npu="950" id3 -->
-  - Ascend 950PR/Ascend 950DT
+  - Ascend 950PR&Ascend 950DT系列产品
    <!-- end id3 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id00001 -->
@@ -71,60 +71,60 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 - L2Cache：L2 Cache命中率
 
     <!-- npu="310p" id5 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id5 -->
 - PipelineExecuteUtilization：计算类和搬运类指令耗时和占比，统计`fixpipe_exe_ratio`时，需要使用该取值。
 
     <!-- npu="310p" id6 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id6 -->
     <!-- npu="910" id7 -->
-  - Atlas 训练系列产品：不支持
+  - Atlas训练系列产品：不支持
     <!-- end id7 -->
     <!-- npu="910b" id8 -->
-  - Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+  - Atlas A2系列产品品：不支持
     <!-- end id8 -->
     <!-- npu="A3" id9 -->
-  - Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+  - Atlas A3系列产品：不支持
     <!-- end id9 -->
     <!-- npu="950" id10 -->
-  - Ascend 950PR/Ascend 950DT：不支持
+  - Ascend 950PR&Ascend 950DT系列产品：不支持
     <!-- end id10 -->
 
 - MemoryAccess：
 
     <!-- npu="310b" id11 -->
-  - Atlas 200I/500 A2 推理产品：不支持
+  - Atlas 200I/500 A2推理产品：不支持
     <!-- end id11 -->
     <!-- npu="310p" id12 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id12 -->
     <!-- npu="910" id13 -->
-  - Atlas 训练系列产品：不支持
+  - Atlas训练系列产品：不支持
     <!-- end id13 -->
     <!-- npu="950" id14 -->
-  - Ascend 950PR/Ascend 950DT：不支持
+  - Ascend 950PR&Ascend 950DT系列产品：不支持
     <!-- end id14 -->
 
 默认值：
 
 <!-- npu="310b" id15 -->
-- Atlas 200I/500 A2 推理产品：PipelineExecuteUtilization
+- Atlas 200I/500 A2推理产品：PipelineExecuteUtilization
 <!-- end id15 -->
 <!-- npu="310b" id16 -->
-- Atlas 推理系列产品：PipeUtilization
+- Atlas推理系列产品：PipeUtilization
 <!-- end id16 -->
 <!-- npu="910" id17 -->
-- Atlas 训练系列产品：PipeUtilization
+- Atlas训练系列产品：PipeUtilization
 <!-- end id17 -->
 <!-- npu="910b" id18 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：PipeUtilization
+- Atlas A2系列产品品：PipeUtilization
 <!-- end id18 -->
 <!-- npu="A3" id19 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：PipeUtilization
+- Atlas A3系列产品：PipeUtilization
 <!-- end id19 -->
 <!-- npu="950" id20 -->
-- Ascend 950PR/Ascend 950DT：PipeUtilization
+- Ascend 950PR&Ascend 950DT系列产品：PipeUtilization
 <!-- end id20 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id00002 -->
@@ -145,20 +145,20 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
 
 <!-- npu="950" id21 -->
-Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id21 -->
 设置该参数需要`--sys-hardware-mem`参数设置为on。
 <!-- npu="A3,910b,310b" id22 -->
 对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
 <!-- end id22 -->
 <!-- npu="310b" id23 -->
-- Atlas 200I/500 A2 推理产品
+- Atlas 200I/500 A2推理产品
 <!-- end id23 -->
 <!-- npu="910b" id24 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品品
 <!-- end id24 -->
 <!-- npu="950,A3,910b,910,310p,310b" id25 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id25 -->
 <!-- end id60 -->
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id3 -->
@@ -204,22 +204,22 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 <!-- end id27 -->
 
 <!-- npu="310b" id28 -->
-- Atlas 200I/500 A2 推理产品：仅RC场景支持采集NIC，容器场景参数不生效
+- Atlas 200I/500 A2推理产品：仅RC场景支持采集NIC，容器场景参数不生效
 <!-- end id28 -->
 <!-- npu="310p" id29 -->
-- Atlas 推理系列产品：不支持该参数。
+- Atlas推理系列产品：不支持该参数。
 <!-- end id29 -->
 <!-- npu="910" id30 -->
-- Atlas 训练系列产品：支持采集NIC和ROCE
+- Atlas训练系列产品：支持采集NIC和ROCE
 <!-- end id30 -->
 <!-- npu="910b" id31 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持采集NIC、ROCE和MAC
+- Atlas A2系列产品品：支持采集NIC、ROCE和MAC
 <!-- end id31 -->
 <!-- npu="A3" id32 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持采集NIC、ROCE和MAC
+- Atlas A3系列产品：支持采集NIC、ROCE和MAC
 <!-- end id32 -->
 <!-- npu="950" id33 -->
-- Ascend 950PR/Ascend 950DT：支持采集UB带宽数据
+- Ascend 950PR&Ascend 950DT系列产品：支持采集UB带宽数据
 <!-- end id33 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id34 -->
@@ -231,7 +231,7 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 <!-- end id35 -->
 
 <!-- npu="310p" id36 -->
-Atlas 200I/500 A2 推理产品不支持该参数。
+Atlas 200I/500 A2推理产品不支持该参数。
 <!-- end id36 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id37 -->
@@ -241,22 +241,22 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 <!-- end id37 -->
 
 <!-- npu="310b" id38 -->
-- Atlas 200I/500 A2 推理产品不支持该参数。
+- Atlas 200I/500 A2推理产品不支持该参数。
 <!-- end id38 -->
 <!-- npu="310p" id39 -->
-- Atlas 推理系列产品：支持采集PCIe数据
+- Atlas推理系列产品：支持采集PCIe数据
 <!-- end id39 -->
 <!-- npu="910" id40 -->
-- Atlas 训练系列产品：支持采集HCCS、PCIe数据
+- Atlas训练系列产品：支持采集HCCS、PCIe数据
 <!-- end id40 -->
 <!-- npu="910b" id41 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息
+- Atlas A2系列产品品：支持采集HCCS、PCIe数据、片间传输带宽信息
 <!-- end id41 -->
 <!-- npu="A3" id42 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据。
+- Atlas A3系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据。
 <!-- end id42 -->
 <!-- npu="950" id43 -->
-- Ascend 950PR/Ascend 950DT：支持采集CCU带宽数据、PCIe数据、片间传输带宽信息、SIO数据、UB带宽数据。
+- Ascend 950PR&Ascend 950DT系列产品：支持采集CCU带宽数据、PCIe数据、片间传输带宽信息、SIO数据、UB带宽数据。
 <!-- end id43 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id44 -->
@@ -268,17 +268,17 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
 
 <!-- npu="910b" id58 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品品
 <!-- end id58 -->
 <!-- npu="A3" id59 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id59 -->
 <!-- end id57 -->
 
 设置该参数需`--sys-interconnection-profiling`参数设置为on。
 
 <!-- npu="310b" id45 -->
-Atlas 200I/500 A2 推理产品不支持该参数。
+Atlas 200I/500 A2推理产品不支持该参数。
 <!-- end id45 -->
 
 <!-- end id44 -->
@@ -304,20 +304,20 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 
 <!-- end id46 -->
 <!-- npu="910b" id47 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品品
 <!-- end id47 -->
 <!-- npu="A3" id48 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id48 -->
 <!-- npu="950" id49 -->
-- Ascend 950PR/Ascend 950DT
+- Ascend 950PR&Ascend 950DT系列产品
 <!-- end id49 -->
 
 <!-- npu="950,A3,910b" id50 -->
 仅在单算子场景下采集AI任务性能数据（即传入用户程序）时才能采集到具体性能数据。
 <!-- end id50 -->
 <!-- npu="950" id51 -->
-对于Ascend 950PR/Ascend 950DT，可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
+对于Ascend 950PR&Ascend 950DT系列产品，可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id51 -->
 
 <!-- npu="A3,910b" id53 -->
@@ -331,10 +331,10 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 <!-- end id53 -->
 
 <!-- npu="910b" id54 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品品
 <!-- end id54 -->
 <!-- npu="A3" id55 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id55 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id4 -->
@@ -344,13 +344,13 @@ Atlas 200I/500 A2 推理产品不支持该参数。
 
 --sys-lp=<sys-lp-value\>：可选，采集低功耗数据。默认值为on，表示开启，可手动配置为off，表示关闭。仅以下型号支持该参数：
 
-Ascend 950PR/Ascend 950DT
+Ascend 950PR&Ascend 950DT系列产品
 
 ### sys-lp-freq
 
 --sys-lp-freq=<sys-lp-freq-value\>：可选，低功耗数据采集频率。取值范围：[1,100]，默认值：100，单位：Hz。仅以下型号支持该参数：
 
-Ascend 950PR/Ascend 950DT
+Ascend 950PR&Ascend 950DT系列产品
 <!-- end id61 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id4 -->
