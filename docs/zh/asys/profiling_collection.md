@@ -7,7 +7,7 @@
 <!-- npu="910,310p,310b" id1 -->
 ## 注意事项
 
-对于Atlas 200I/500 A2 推理产品、Atlas 推理系列产品、Atlas 训练系列产品，不支持使用环境配置功能。
+对于Atlas 200I/500 A2推理产品、Atlas推理系列产品、Atlas训练系列产品，不支持使用环境配置功能。
 
 <!-- end id1 -->
 ## 命令格式
@@ -59,7 +59,7 @@ asys profiling -r=aicore -p=10 -d=0 --output=./ --aic_metrics=PipeUtilization
 2025-11-27 20:15:45,141 [ASYS] [INFO]: Start run: msprof --output=./ --sys-period=10 --sys-devices=0 --ai-core=on --aic-mode=sample-based --aic-metrics=PipeUtilization, please wait about 10 seconds.
 2025-11-27 20:16:04,335 [ASYS] [INFO]: Succeeded in running aicore profiling, [INFO] Start profiling....
 [INFO] Start export data in PROF_000001_20251127201545157_03062849EPFNHDPB.
-......       
+......
 [INFO] Query all data in PROF_000001_20251127201545157_03062849EPFNHDPB done.
 [INFO] Profiling finished.
 [INFO] Process profiling data complete. Data is saved in /xxx/ascend_system_advisor/asys/asys_profiling_result_20251127201545110/PROF_000001_20251127201545157_03062849EPFNHDPB

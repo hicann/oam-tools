@@ -9,7 +9,7 @@
 综合检测相关命令必须在物理机且root用户下执行。
 
 <!-- npu="910,310p,310b" id1 -->
-对于Atlas 200I/500 A2 推理产品、Atlas 推理系列产品、Atlas 训练系列产品，不支持使用综合检测功能。
+对于Atlas 200I/500 A2推理产品、Atlas推理系列产品、Atlas训练系列产品，不支持使用综合检测功能。
 <!-- end id1 -->
 
 ## 命令格式
@@ -69,7 +69,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
     - **aicore\_stl\_detect：AI Core STL硬件检测**
 
         <!-- npu="950" id2 -->
-        仅支持在Ascend 950PR/Ascend 950DT上运行。
+        仅支持在Ascend 950PR&Ascend 950DT系列产品上运行。
         <!-- end id2 -->
         显示检测结果时：
 
@@ -90,12 +90,12 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
 
     ```bash
     asys diagnose -r=stress_detect
-     +------------------------+ -----------------------+ 
-     | Group of 4 Device      | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Performance --------+ -----------------------+ 
-     | Stress Detect          | Pass - All             | 
-     +------------------------+ -----------------------+ 
+     +------------------------+ -----------------------+
+     | Group of 4 Device      | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Performance --------+ -----------------------+
+     | Stress Detect          | Pass - All             |
+     +------------------------+ -----------------------+
     asys diagnose -r=hbm_detect --timeout=3000
      +------------------------+------------------------+
      | Group of 4 Device      | Diagnostic Result      |
@@ -112,32 +112,32 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      | CPU Detect             | Pass - All             |
      +------------------------+------------------------+
     asys diagnose -r=aicore_stl_detect
-     +------------------------+------------------------+ 
-     | Group of 4 Device      | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Hardware -----------+------------------------+ 
-     | AICore STL Detect      | Pass - All             | 
-     +------------------------+------------------------+ 
+     +------------------------+------------------------+
+     | Group of 4 Device      | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Hardware -----------+------------------------+
+     | AICore STL Detect      | Pass - All             |
+     +------------------------+------------------------+
     ```
 
 - 不指定device，部分device正常，此处以四卡为例：
 
     ```bash
     asys diagnose -r=stress_detect
-     +------------------------+ -----------------------+ 
-     | Group of 4 Device      | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Performance --------+ -----------------------+ 
-     | Stress Detect          | Pass, Warn, Pass, Warn | 
-     +------------------------+ -----------------------+ 
+     +------------------------+ -----------------------+
+     | Group of 4 Device      | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Performance --------+ -----------------------+
+     | Stress Detect          | Pass, Warn, Pass, Warn |
+     +------------------------+ -----------------------+
     asys diagnose -r=hbm_detect
-     +------------------------+ -----------------------+ 
-     | Group of 4 Device      | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Hardware -----------+ -----------------------+ 
-     | HBM Detect             | Pass, Warn, Pass, Warn | 
+     +------------------------+ -----------------------+
+     | Group of 4 Device      | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Hardware -----------+ -----------------------+
+     | HBM Detect             | Pass, Warn, Pass, Warn |
      |                        | (9, 0, 5, 0)           |
-     +------------------------+ -----------------------+ 
+     +------------------------+ -----------------------+
     asys diagnose -r=cpu_detect
      +------------------------+------------------------+
      | Group of 4 Device      | Diagnostic Result      |
@@ -146,12 +146,12 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      | CPU Detect             | Pass, Warn, Pass, Fail |
      +------------------------+------------------------+
     asys diagnose -r=aicore_stl_detect
-     +------------------------+------------------------+ 
-     | Group of 4 Device      | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Hardware -----------+------------------------+ 
-     | AICore STL Detect      | Pass, Warn, Pass, Fail | 
-     +------------------------+------------------------+ 
+     +------------------------+------------------------+
+     | Group of 4 Device      | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Hardware -----------+------------------------+
+     | AICore STL Detect      | Pass, Warn, Pass, Fail |
+     +------------------------+------------------------+
     ```
 
 - 指定device，此处以device 0为例：
@@ -179,10 +179,10 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
      | CPU Detect             | Pass                   |
      +------------------------+------------------------+
     asys diagnose -r=aicore_stl_detect
-     +------------------------+------------------------+ 
-     | Device ID: 0           | Diagnostic Result      | 
-     +========================+ =======================+ 
-     +--- Hardware -----------+------------------------+ 
-     | AICore STL Detect      | Pass                   | 
-     +------------------------+------------------------+ 
+     +------------------------+------------------------+
+     | Device ID: 0           | Diagnostic Result      |
+     +========================+ =======================+
+     +--- Hardware -----------+------------------------+
+     | AICore STL Detect      | Pass                   |
+     +------------------------+------------------------+
     ```

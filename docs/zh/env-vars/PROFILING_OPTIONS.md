@@ -74,24 +74,24 @@ AI Core性能指标采集项，取值如下：
 - L2Cache：读写L2 Cache命中次数和缺失后重新分配次数。
 
   <!-- npu="310p" id6 -->
-  Atlas 推理系列产品不支持该参数。
+  Atlas推理系列产品不支持该参数。
   <!-- end id6 -->
 
   <!-- npu="910" id7 -->
-  Atlas 训练系列产品不支持该参数。
+  Atlas训练系列产品不支持该参数。
   <!-- end id7 -->
 - MemoryAccess：算子在核上访存的带宽数据量。
 
   <!-- npu="310p" id8 -->
-  Atlas 推理系列产品不支持该参数。
+  Atlas推理系列产品不支持该参数。
   <!-- end id8 -->
 
   <!-- npu="910" id9 -->
-  Atlas 训练系列产品不支持该参数。
+  Atlas训练系列产品不支持该参数。
   <!-- end id9 -->
 
   <!-- npu="950" id10 -->
-  Ascend 950PR/Ascend 950DT：不支持该参数。
+  Ascend 950PR&Ascend 950DT系列产品：不支持该参数。
   <!-- end id10 -->
 
   > [!NOTE]说明
@@ -105,23 +105,23 @@ AI Core性能指标采集项，取值如下：
 控制L2 Cache和TLB页表缓存命中率的开关，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。
 
 <!-- npu="310p" id11 -->
-- Atlas 推理系列产品：支持采集L2 Cache的命中率。
+- Atlas推理系列产品：支持采集L2 Cache的命中率。
 <!-- end id11 -->
 
 <!-- npu="910" id12 -->
-- Atlas 训练系列产品：支持采集L2 Cache的命中率。
+- Atlas训练系列产品：支持采集L2 Cache的命中率。
 <!-- end id12 -->
 
 <!-- npu="910b" id13 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
+- Atlas A2系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
 <!-- end id13 -->
 
 <!-- npu="A3" id14 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
+- Atlas A3系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
 <!-- end id14 -->
 
 <!-- npu="950" id15 -->
-- Ascend 950PR/Ascend 950DT：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
+- Ascend 950PR&Ascend 950DT系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
 <!-- end id15 -->
 
 ### msproftx
@@ -138,7 +138,7 @@ AI Core性能指标采集项，取值如下：
 片上内存、QoS传输带宽、LLC三级缓存带宽、加速器带宽、SoC传输带宽、组件内存占用等的采集开关。不同产品的采集内容略有差异，请以实际结果为准。范围\[1,100\]，单位Hz。
 
 <!-- npu="950" id16 -->
-Ascend 950PR/Ascend 950DT，Qos和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&Ascend 950DT系列产品，Qos和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id16 -->
 
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
@@ -148,15 +148,15 @@ Ascend 950PR/Ascend 950DT，Qos和SoC支持的采集频率最大支持配置1000
 <!-- end id17 -->
 
 <!-- npu="310b" id18 -->
-Atlas 200I/500 A2 推理产品
+Atlas 200I/500 A2推理产品
 <!-- end id18 -->
 
 <!-- npu="910b" id19 -->
-Atlas A2 训练系列产品/Atlas A2 推理系列产品
+Atlas A2系列产品
 <!-- end id19 -->
 
 <!-- npu="A3" id20 -->
-Atlas A3 训练系列产品/Atlas A3 推理系列产品
+Atlas A3系列产品
 <!-- end id20 -->
 
 ### llc\_profiling
@@ -171,19 +171,19 @@ LLC Profiling采集事件，可以设置为：
 NIC、ROCE、UB带宽数据采集频率。范围\[1,100\]，单位Hz。
 
 <!-- npu="310p" id21 -->
-Atlas 推理系列产品：不支持该参数。
+Atlas推理系列产品：不支持该参数。
 <!-- end id21 -->
 
 <!-- npu="910b" id22 -->
-Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持采集NIC、ROCE。
+Atlas A2系列产品：支持采集NIC、ROCE。
 <!-- end id22 -->
 
 <!-- npu="A3" id23 -->
-Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持采集NIC、ROCE。
+Atlas A3系列产品：支持采集NIC、ROCE。
 <!-- end id23 -->
 
 <!-- npu="950" id24 -->
-Ascend 950PR/Ascend 950DT：支持采集UB带宽数据。
+Ascend 950PR&Ascend 950DT系列产品：支持采集UB带宽数据。
 <!-- end id24 -->
 
 ### sys\_interconnection\_freq
@@ -191,19 +191,19 @@ Ascend 950PR/Ascend 950DT：支持采集UB带宽数据。
 集合通信带宽数据（HCCS）、集合通信硬件加速单元（CCU）带宽数据、SIO数据、PCIe数据、UB带宽数据采集频率以及片间传输带宽信息采集频率。范围\[1,50\]，单位Hz。
 
 <!-- npu="910" id25 -->
-- Atlas 训练系列产品：支持采集HCCS、PCIe数据。
+- Atlas训练系列产品：支持采集HCCS、PCIe数据。
 <!-- end id25 -->
 
 <!-- npu="910b" id26 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息。
+- Atlas A2系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息。
 <!-- end id26 -->
 
 <!-- npu="A3" id27 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据。
+- Atlas A3系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据。
 <!-- end id27 -->
 
 <!-- npu="950" id28 -->
-- Ascend 950PR/Ascend 950DT：支持采集PCIe数据、片间传输带宽信息、CCU带宽数据、SIO数据、UB带宽数据。
+- Ascend 950PR&Ascend 950DT系列产品：支持采集PCIe数据、片间传输带宽信息、CCU带宽数据、SIO数据、UB带宽数据。
 <!-- end id28 -->
 
 ### dvpp\_freq
@@ -215,19 +215,19 @@ DVPP采集频率。范围\[1,100\]，单位Hz。
 AI Core和AI Vector的带宽和延时采集开关。仅单算子场景支持。取值on/off，默认为off。
 
 <!-- npu="910" id29 -->
-- Atlas 训练系列产品：不支持该功能。
+- Atlas训练系列产品：不支持该功能。
 <!-- end id29 -->
 
 <!-- npu="910b" id30 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持该开关，通过instr\_profiling\_freq控制该功能。
+- Atlas A2系列产品：不支持该开关，通过instr\_profiling\_freq控制该功能。
 <!-- end id30 -->
 
 <!-- npu="A3" id31 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持该开关，通过instr\_profiling\_freq控制该功能。
+- Atlas A3系列产品：不支持该开关，通过instr\_profiling\_freq控制该功能。
 <!-- end id31 -->
 
 <!-- npu="950" id32 -->
-- Ascend 950PR/Ascend 950DT：支持，但可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
+- Ascend 950PR&Ascend 950DT系列产品：支持，但可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id32 -->
 
 ### instr\_profiling\_freq
@@ -235,19 +235,19 @@ AI Core和AI Vector的带宽和延时采集开关。仅单算子场景支持。�
 AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开启相关采集能力。仅单算子场景支持。范围\[300,30000\]，单位Hz。
 
 <!-- npu="910" id33 -->
-- Atlas 训练系列产品：不支持该功能。
+- Atlas训练系列产品：不支持该功能。
 <!-- end id33 -->
 
 <!-- npu="910b" id34 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持。
+- Atlas A2系列产品：支持。
 <!-- end id34 -->
 
 <!-- npu="A3" id35 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持。
+- Atlas A3系列产品：支持。
 <!-- end id35 -->
 
 <!-- npu="950" id36 -->
-- Ascend 950PR/Ascend 950DT：不支持该开关，通过instr\_profiling控制该功能。
+- Ascend 950PR&Ascend 950DT系列产品：不支持该开关，通过instr\_profiling控制该功能。
 <!-- end id36 -->
 
 ### host\_sys
@@ -287,21 +287,21 @@ export PROFILING_OPTIONS='{"output":"/tmp/profiling","training_trace":"on","task
 ## 支持的型号
 
 <!-- npu="910" id1 -->
-Atlas 训练系列产品
+Atlas训练系列产品
 <!-- end id1 -->
 
 <!-- npu="310p" id2 -->
-Atlas 推理系列产品
+Atlas推理系列产品
 <!-- end id2 -->
 
 <!-- npu="910b" id3 -->
-Atlas A2 训练系列产品/Atlas A2 推理系列产品
+Atlas A2系列产品
 <!-- end id3 -->
 
 <!-- npu="A3" id4 -->
-Atlas A3 训练系列产品/Atlas A3 推理系列产品
+Atlas A3系列产品
 <!-- end id4 -->
 
 <!-- npu="950" id5 -->
-Ascend 950PR/Ascend 950DT
+Ascend 950PR&Ascend 950DT系列产品
 <!-- end id5 -->

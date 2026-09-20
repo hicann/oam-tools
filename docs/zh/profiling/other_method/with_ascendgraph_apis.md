@@ -8,19 +8,19 @@ Ascend Graph API是在构图过程中采集性能数据。
 ## 支持的型号
 
 <!-- npu="310p" id1 -->
-- Atlas 推理系列产品
+- Atlas推理系列产品
 <!-- end id1 -->
 <!-- npu="910" id2 -->
-- Atlas 训练系列产品
+- Atlas训练系列产品
 <!-- end id2 -->
 <!-- npu="910b" id3 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品
 <!-- end id3 -->
 <!-- npu="A3" id4 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id4 -->
 <!-- npu="950" id5 -->
-- Ascend 950PR/Ascend 950DT
+- Ascend 950PR&Ascend 950DT系列产品
 <!-- end id5 -->
 
 ## 启动方式介绍
@@ -68,7 +68,7 @@ std::map<AscendString, AscendString> config = {{"ge.exec.deviceId", "0"},
 
   std::string profilerResultPath = "/home/test/prof";       //该路径需要提前创建
   uint32_t length = strlen("/home/test/prof");
-  ret = ge::aclgrphProfInit(profilerResultPath.c_str(), length);     
+  ret = ge::aclgrphProfInit(profilerResultPath.c_str(), length);
 
   std::map<string, string> options = {{"a", "b"}, {"c", "d"}};
   uint32_t graphId = 0;
@@ -80,7 +80,7 @@ std::map<AscendString, AscendString> config = {{"ge.exec.deviceId", "0"},
   uint32_t device_nums = 1;
   uint64_t data_type_config = ProfDataTypeConfig::kProfTaskTime | ProfDataTypeConfig::kProfAiCoreMetrics | ProfDataTypeConfig::kProfAicpu | ProfDataTypeConfig::kProfTrainingTrace;
   ProfAicoreEvents *aicore_events = NULL;
-  ProfilingAicoreMetrics aicore_metrics = ProfilingAicoreMetrics::kAicoreArithmeticUtilization;  
+  ProfilingAicoreMetrics aicore_metrics = ProfilingAicoreMetrics::kAicoreArithmeticUtilization;
   ge::aclgrphProfConfig *pro_config = ge::aclgrphProfCreateConfig(deviceid_list, device_nums, aicore_metrics, aicore_events, data_type_config);
 
   ge::aclgrphProfStart(pro_config);

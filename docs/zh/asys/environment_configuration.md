@@ -9,16 +9,16 @@
 环境配置相关命令必须在物理机且root用户下执行。
 
 <!-- npu="910,310p,310b" id1 -->
-对于Atlas 200I/500 A2 推理产品、Atlas 推理系列产品、Atlas 训练系列产品，不支持使用环境配置功能。
+对于Atlas 200I/500 A2推理产品、Atlas推理系列产品、Atlas训练系列产品，不支持使用环境配置功能。
 <!-- end id1 -->
 
 ## 命令格式
 
 ```bash
-# 查询压测相关配置 
-asys config -d=deviceId --get --stress_detect  
+# 查询压测相关配置
+asys config -d=deviceId --get --stress_detect
 
-# 恢复压测相关配置 
+# 恢复压测相关配置
 asys config -d=deviceId --restore --stress_detect
 ```
 

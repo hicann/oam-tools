@@ -84,60 +84,60 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 - L2Cache：L2 Cache命中率
 
     <!-- npu="310p" id3 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id3 -->
 - PipelineExecuteUtilization：计算类和搬运类指令耗时和占比，统计`fixpipe_exe_ratio`时，需要使用该取值。
 
     <!-- npu="310p" id4 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id4 -->
     <!-- npu="910" id5 -->
-  - Atlas 训练系列产品：不支持
+  - Atlas训练系列产品：不支持
     <!-- end id5 -->
     <!-- npu="910b" id6 -->
-  - Atlas A2 训练系列产品/Atlas A2 推理系列产品：不支持
+  - Atlas A2系列产品：不支持
     <!-- end id6 -->
     <!-- npu="A3" id7 -->
-  - Atlas A3 训练系列产品/Atlas A3 推理系列产品：不支持
+  - Atlas A3系列产品：不支持
     <!-- end id7 -->
     <!-- npu="950" id8 -->
-  - Ascend 950PR/Ascend 950DT：不支持
+  - Ascend 950PR&Ascend 950DT系列产品：不支持
     <!-- end id8 -->
 
 - MemoryAccess：
 
     <!-- npu="310b" id9 -->
-  - Atlas 200I/500 A2 推理产品：不支持
+  - Atlas 200I/500 A2推理产品：不支持
     <!-- end id9 -->
     <!-- npu="310p" id10 -->
-  - Atlas 推理系列产品：不支持
+  - Atlas推理系列产品：不支持
     <!-- end id10 -->
     <!-- npu="910" id11 -->
-  - Atlas 训练系列产品：不支持
+  - Atlas训练系列产品：不支持
     <!-- end id11 -->
     <!-- npu="950" id12 -->
-  - Ascend 950PR/Ascend 950DT：不支持
+  - Ascend 950PR&Ascend 950DT系列产品：不支持
     <!-- end id12 -->
 
 默认值：
 
 <!-- npu="310b" id13 -->
-- Atlas 200I/500 A2 推理产品：PipelineExecuteUtilization
+- Atlas 200I/500 A2推理产品：PipelineExecuteUtilization
 <!-- end id13 -->
 <!-- npu="310b" id14 -->
-- Atlas 推理系列产品：PipeUtilization
+- Atlas推理系列产品：PipeUtilization
 <!-- end id14 -->
 <!-- npu="910" id15 -->
-- Atlas 训练系列产品：PipeUtilization
+- Atlas训练系列产品：PipeUtilization
 <!-- end id15 -->
 <!-- npu="910b" id16 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：PipeUtilization
+- Atlas A2系列产品：PipeUtilization
 <!-- end id16 -->
 <!-- npu="A3" id17 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：PipeUtilization
+- Atlas A3系列产品：PipeUtilization
 <!-- end id17 -->
 <!-- npu="950" id18 -->
-- Ascend 950PR/Ascend 950DT：PipeUtilization
+- Ascend 950PR&Ascend 950DT系列产品：PipeUtilization
 <!-- end id18 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id00002 -->
@@ -159,7 +159,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
 
 <!-- npu="950" id19 -->
-Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id19 -->
 
 设置该参数需要`--sys-hardware-mem`参数设置为on。
@@ -168,13 +168,13 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 对于以下型号，采集任务结束后，不建议用户改变采集频率，否则可能导致数据丢失。
 <!-- end id20 -->
 <!-- npu="310b" id21 -->
-- Atlas 200I/500 A2 推理产品
+- Atlas 200I/500 A2推理产品
 <!-- end id21 -->
 <!-- npu="910b" id22 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
+- Atlas A2系列产品
 <!-- end id22 -->
 <!-- npu="A3" id23 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A3系列产品
 <!-- end id23 -->
 <!-- end id30 -->
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id1 -->
@@ -183,10 +183,10 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 --l2=<l2-value\>：可选，采集L2 Cache、TLB页表缓存的命中率，可选on或off，默认为off。若在aclgraph场景执行模型阶段开启Profiling，则该采集项无法生效。
 
 <!-- npu="910b" id24 -->
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品：分析AI Core命中L2次数推荐使用--aic-metrics=L2Cache。
+- Atlas A2系列产品：分析AI Core命中L2次数推荐使用--aic-metrics=L2Cache。
 <!-- end id24 -->
 <!-- npu="A3" id25 -->
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品：分析AI Core命中L2次数推荐使用--aic-metrics=L2Cache。
+- Atlas A3系列产品：分析AI Core命中L2次数推荐使用--aic-metrics=L2Cache。
 <!-- end id25 -->
 
 ### ge-api
@@ -221,7 +221,7 @@ Ascend 950PR/Ascend 950DT，QoS和SoC支持的采集频率最大支持配置1000
 
 仅以下型号支持该参数：
 
-Ascend 950PR/Ascend 950DT：可选on或off，默认值为off。
+Ascend 950PR&Ascend 950DT系列产品：可选on或off，默认值为off。
 <!-- end id26 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id00005 -->
