@@ -558,8 +558,77 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(str(array.dtype), "float32")
         self.assertEqual(array.shape, (2, 3))
 
-    def test_save_data_to_bin_file_with_user_tag(self):
-        """头部op attr带user_tag时，与shape/dtype同行展示"""
+    def test_save_data_to_bin_file_custom_dump_isolated(self):
+        """自定义dump的张量写入custom_dump子目录，且不并入bin/workspace列表，
+        避免与原始报错dump的解析产物互相覆盖、污染单算子复跑"""
+        custom_file = dump_file + ".custom.1726159207469500"
+        dump_data_parser = DumpDataParser(
+            dump_file, AicErrorInfo(), custom_dump_files=[custom_file]
+        )
+        # 真实场景下原始dump先解析并设置kernel_name，自定义dump复用同一名字
+        dump_data_parser.info.kernel_name = "AbsAicore"
+        raw = np.arange(6, dtype=np.float32).tobytes()
+        res = getattr(dump_data_parser, "_save_data_to_bin_file")(
+            {
+                "input": [
+                    {
+                        "data_type": 1,
+                        "shape": {"dim": ["2", "3"]},
+                        "size": "24",
+                        "data": raw,
+                    }
+                ]
+            },
+            "input",
+            {"input": {}},
+            custom_file,
+        )
+        self.assertIn(res, "shape: (2, 3) size: 24 dtype: float32")
+        self.assertEqual(dump_data_parser.get_bin_data(), [])
+        self.assertEqual(dump_data_parser.get_workspace_data(), [])
+        self.assertEqual(
+            os.path.isfile(
+                os.path.join("custom_dump", "AbsAicore.input.0.float32.npy")
+            ),
+            True,
+        )
+        ws_res = getattr(dump_data_parser, "_save_data_to_bin_file")(
+            {
+                "space": [
+                    {
+                        "data_type": 1,
+                        "shape": {"dim": ["4"]},
+                        "size": "16",
+                        "data": np.arange(4, dtype=np.float32).tobytes(),
+                    }
+                ]
+            },
+            "space",
+            {},
+            custom_file,
+        )
+        self.assertIn(ws_res, "shape: (4,) size: 16 dtype: int8")
+        self.assertEqual(dump_data_parser.get_workspace_data(), [])
+        self.assertEqual(
+            os.path.isfile(
+                os.path.join("custom_dump", "AbsAicore.workspace.0.int8.npy")
+            ),
+            True,
+        )
+
+    def test_save_dfx_message_keeps_original_dump(self):
+        """dfx_message固定取自原始报错dump文件，自定义dump的头部信息不覆盖它"""
+        custom_file = dump_file + ".custom.1726159207469500"
+        dump_data_parser = DumpDataParser(
+            dump_file, AicErrorInfo(), custom_dump_files=[custom_file]
+        )
+        save_dfx = getattr(dump_data_parser, "_save_dfx_message")
+        save_dfx({"dfx_message": "origin err msg"}, dump_file)
+        save_dfx({"dfx_message": "custom msg"}, custom_file)
+        self.assertEqual(dump_data_parser.get_dfx_message(), "origin err msg")
+
+    def test_save_data_to_bin_file_user_tag_not_inline(self):
+        """user_tag不再内联到shape行展示，_save_data_to_bin_file不输出任何user tag"""
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
         raw = np.arange(6, dtype=np.float32).tobytes()
         res = getattr(dump_data_parser, "_save_data_to_bin_file")(
@@ -578,14 +647,11 @@ class TestUtilsMethods(CommonAssert):
             {"input": {}},
             dump_file,
         )
-        self.assertIn(
-            res,
-            "shape: (2, 3) size: 24 dtype: float32 "
-            "user tag: component=demo;stage=forward\n",
-        )
+        self.assertIn(res, "shape: (2, 3) size: 24 dtype: float32\n")
+        self.assertNotIn(res, "user tag")
 
-    def test_save_data_to_bin_file_user_tag_on_every_item(self):
-        """user_tag是op级属性，每个tensor行都要带上"""
+    def test_save_data_to_bin_file_no_inline_user_tag_multi_items(self):
+        """多tensor场景下每个tensor行均不再内联user tag"""
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
         raw = np.arange(2, dtype=np.float32).tobytes()
         res = getattr(dump_data_parser, "_save_data_to_bin_file")(
@@ -600,7 +666,8 @@ class TestUtilsMethods(CommonAssert):
             {"input": {}},
             dump_file,
         )
-        self.assertEqual(res.count("user tag: my_tag"), 2)
+        self.assertNotIn(res, "user tag")
+        self.assertEqual(res.count("shape: (2,) size: 8 dtype: float32"), 2)
 
     def test_save_data_to_bin_file_other_attr_not_shown(self):
         """非user_tag的attr不展示，且不影响原有字段"""
@@ -659,22 +726,61 @@ class TestUtilsMethods(CommonAssert):
         self.assertEqual(sanitized, "case=data_invalid check")
         self.assertNotIn(sanitized, "data invalid")
 
-    def test_save_data_to_bin_file_data_invalid_user_tag_not_in_dump(self):
-        """含"data invalid"的user tag解析后不应出现该判据子串，避免改写出错结论"""
+    def test_parse_dump_data_data_invalid_user_tag_not_in_dump(self, mocker):
+        """user tag含"data invalid"时，parse_dump_data输出被清洗后的user tag行，不污染结论"""
         dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
-        raw = np.arange(2, dtype=np.float32).tobytes()
-        res = getattr(dump_data_parser, "_save_data_to_bin_file")(
-            {
-                "input": [
-                    {"data_type": 1, "shape": {"dim": ["2"]}, "size": "8", "data": raw}
-                ],
-                "attr": [{"name": "user_tag", "value": "case=data invalid check"}],
+        mocker.patch.object(
+            BigDumpDataParser,
+            "parse",
+            return_value={
+                "attr": [{"name": "user_tag", "value": "case=data invalid check"}]
             },
-            "input",
-            {"input": {}},
-            dump_file,
         )
+        mocker.patch.object(dump_data_parser, "_get_json_dtypes", return_value={})
+        mocker.patch.object(
+            dump_data_parser,
+            "_save_data_to_bin_file",
+            side_effect=["shape: (2,) size: 8 dtype: float32\n", "", ""],
+        )
+        mocker.patch.object(dump_data_parser, "_save_dfx_message")
+        res = dump_data_parser.parse_dump_data(dump_file)
+        self.assertIn(res, "user tag: case=data_invalid check\n")
         self.assertNotIn(res, "data invalid")
+
+    def test_parse_dump_data_user_tag_extra_line(self, mocker):
+        """user tag存在时在result_info最前面新增一行，整个文件仅一行"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        mocker.patch.object(
+            BigDumpDataParser,
+            "parse",
+            return_value={"attr": [{"name": "user_tag", "value": "tag14"}]},
+        )
+        mocker.patch.object(dump_data_parser, "_get_json_dtypes", return_value={})
+        mocker.patch.object(
+            dump_data_parser,
+            "_save_data_to_bin_file",
+            side_effect=["shape: (2, 3) size: 24 dtype: float32\n", "", ""],
+        )
+        mocker.patch.object(dump_data_parser, "_save_dfx_message")
+        res = dump_data_parser.parse_dump_data(dump_file)
+        self.assertEqual(
+            res, "user tag: tag14\nshape: (2, 3) size: 24 dtype: float32\n"
+        )
+
+    def test_parse_dump_data_without_user_tag_no_extra_line(self, mocker):
+        """无user_tag时不输出该行、不占位"""
+        dump_data_parser = DumpDataParser(dump_file, AicErrorInfo())
+        mocker.patch.object(BigDumpDataParser, "parse", return_value={"attr": []})
+        mocker.patch.object(dump_data_parser, "_get_json_dtypes", return_value={})
+        mocker.patch.object(
+            dump_data_parser,
+            "_save_data_to_bin_file",
+            side_effect=["shape: (2,) size: 8 dtype: float32\n", "", ""],
+        )
+        mocker.patch.object(dump_data_parser, "_save_dfx_message")
+        res = dump_data_parser.parse_dump_data(dump_file)
+        self.assertEqual(res, "shape: (2,) size: 8 dtype: float32\n")
+        self.assertNotIn(res, "user tag")
 
     def test_save_data_to_bin_file_json_dtype_fallback(self):
         """data_type为0(undefined)时回退到json中的dtype"""
@@ -744,9 +850,9 @@ class TestUtilsMethods(CommonAssert):
         real_dtype = np.dtype
         mocker.patch(
             "numpy.dtype",
-            side_effect=lambda x: (_ for _ in ()).throw(TypeError())
-            if x == "int4"
-            else real_dtype(x),
+            side_effect=lambda x: (
+                (_ for _ in ()).throw(TypeError()) if x == "int4" else real_dtype(x)
+            ),
         )
         res = getattr(dump_data_parser, "_save_data_to_bin_file")(
             {
@@ -1163,3 +1269,134 @@ class TestUtilsMethods(CommonAssert):
         mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
         dump_data_parser.parse()
         self.assertEqual(info.dump_file, [str(dump_dir.joinpath("GatherV2.1.1.123"))])
+
+    def test_parse_parses_custom_dump_files(self, mocker):
+        """自定义dump文件与原始dump一起被逐一解析"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath("GatherV2.1.1.123").touch()
+        custom_file = str(dump_dir.joinpath("exception_info.custom.1726159207469000"))
+        with open(custom_file, "w", encoding="utf-8") as f:
+            f.write("custom")
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(
+            str(dump_dir), info, custom_dump_files=[custom_file]
+        )
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
+        dump_data_parser.parse()
+        self.assertEqual(
+            set(info.dump_file),
+            {str(dump_dir.joinpath("GatherV2.1.1.123")), custom_file},
+        )
+
+    def test_parse_marks_custom_dump_file(self, mocker):
+        """自定义dump的解析块前额外输出一行Custom dump file:说明，原始dump不加"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        original_file = dump_dir.joinpath("GatherV2.1.1.123")
+        original_file.touch()
+        custom_file = str(dump_dir.joinpath("exception_info.custom.1726159207469000"))
+        with open(custom_file, "w", encoding="utf-8") as f:
+            f.write("custom")
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(
+            str(dump_dir), info, custom_dump_files=[custom_file]
+        )
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="data")
+        dump_data_parser.parse()
+        self.assertIn(
+            info.dump_info,
+            f"Custom dump file:\nOriginal file: {custom_file}\nafter convert:\ndata",
+        )
+        self.assertEqual(info.dump_info.count("Custom dump file:"), 1)
+        self.assertNotIn(
+            info.dump_info, f"Custom dump file:\nOriginal file: {original_file}"
+        )
+
+    def test_parse_skips_unregistered_custom_file_in_walk(self, mocker):
+        """walk按node_name命中的自定义dump文件未登记进custom_dump_files时，不作为报错dump解析"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath("GatherV2.custom.1726159207469000").touch()
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(str(dump_dir), info)
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [])
+
+    def test_parse_custom_dump_file_missing_skipped(self, mocker):
+        """日志指示但文件不存在的自定义dump不进入解析列表"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath("GatherV2.1.1.123").touch()
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(
+            str(dump_dir),
+            info,
+            custom_dump_files=[str(dump_dir.joinpath("exception_info.custom.123"))],
+        )
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [str(dump_dir.joinpath("GatherV2.1.1.123"))])
+
+    def test_parse_custom_dump_file_deduped(self, mocker):
+        """自定义dump文件被walk按node_name命中时只解析一次"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        custom_file = str(dump_dir.joinpath("GatherV2.custom.1726159207469000"))
+        with open(custom_file, "w", encoding="utf-8") as f:
+            f.write("custom")
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(
+            str(dump_dir), info, custom_dump_files=[custom_file]
+        )
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [custom_file])
+
+    def test_parse_without_custom_dump_files(self, mocker):
+        """未传custom_dump_files时行为与原来一致"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.joinpath("GatherV2.1.1.123").touch()
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(str(dump_dir), info)
+        mocker.patch.object(dump_data_parser, "parse_dump_data", return_value="")
+        dump_data_parser.parse()
+        self.assertEqual(info.dump_file, [str(dump_dir.joinpath("GatherV2.1.1.123"))])
+
+    def test_parse_separates_dump_files_with_blank_line(self, mocker):
+        """多个dump文件解析块之间用空行分隔，便于阅读"""
+        dump_dir = self.temp.joinpath("dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        first_file = str(dump_dir.joinpath("GatherV2.1.1.123"))
+        dump_dir.joinpath("GatherV2.1.1.123").touch()
+        custom_file = str(dump_dir.joinpath("exception_info.custom.1726159207469000"))
+        with open(custom_file, "w", encoding="utf-8") as f:
+            f.write("custom")
+        info = AicErrorInfo()
+        info.node_name = "GatherV2"
+        dump_data_parser = DumpDataParser(
+            str(dump_dir), info, custom_dump_files=[custom_file]
+        )
+        mocker.patch.object(
+            dump_data_parser, "parse_dump_data", side_effect=["AA\n", "BB\n"]
+        )
+        dump_data_parser.parse()
+        self.assertEqual(
+            info.dump_info,
+            f"Original file: {first_file}\n"
+            "after convert:\n"
+            "AA\n"
+            "\n"
+            "Custom dump file:\n"
+            f"Original file: {custom_file}\n"
+            "after convert:\n"
+            "BB\n",
+        )

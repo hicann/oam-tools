@@ -481,6 +481,52 @@ class AicoreErrorParser:
                 raise utils.AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
             return dump_data_ret[:2]
 
+    def _get_custom_dump_files(self, dump_dir):
+        """从已采集的plog中检测用户自定义dump文件路径。
+
+        自定义dump由runtime在原始dump之外额外落盘，仅在日志中以
+        "dump custom exception to file"关键字指示，文件名形如
+        <name>.custom.<毫秒时间戳>。采集侧已按报错device过滤文件，
+        解析侧不再按命令行device再次过滤，仅保留dump目录下实际存在
+        的文件，避免命令行device与报错device不一致时漏解析。
+        """
+        plog_dir = os.path.join(self.collect_path, "collection", "plog")
+        dump_data_cmd = ["grep", "dump custom exception to file", "-inrE", plog_dir]
+        dump_data_regexp = (
+            r"(\d+-\d+-\d+-\d+:\d+:\d+\.\d+\.\d+).+?"
+            r"extra-info\/data-dump\/(\d+)\/([\w.]+\.custom\.\d+)"
+        )
+        custom_files = []
+        name_mapping = utils.parse_name_mapping_csv(
+            os.path.join(dump_dir, Constant.MAPPING_CSV_FILE)
+        )
+        dump_data_ret = utils.get_inquire_result(dump_data_cmd, dump_data_regexp)
+        for _, _, data_name in dump_data_ret:
+            dump_file = os.path.join(dump_dir, data_name)
+            if not os.path.isfile(dump_file) and name_mapping:
+                # 超长自定义dump被runtime改为随机数字串，按mapping.csv反查实际文件名
+                dump_file = os.path.join(dump_dir, name_mapping.get(data_name, ""))
+            if os.path.isfile(dump_file):
+                custom_files.append(dump_file)
+        if custom_files:
+            utils.print_info_log(
+                f"{len(custom_files)} custom dump file(s) will be parsed."
+            )
+        elif dump_data_ret:
+            # plog有自定义dump日志却一个都没落盘，提示不作为自定义dump解析
+            utils.print_warn_log(
+                "Custom dump file(s) are detected in the plog but none can be found "
+                "in the dump directory, skip parsing them as custom dump."
+            )
+        return custom_files
+
+    def _build_dump_parser(self, collect_dump_data, info):
+        return DumpDataParser(
+            collect_dump_data,
+            info,
+            custom_dump_files=self._get_custom_dump_files(collect_dump_data),
+        )
+
     def set_info(self, aic_err_ret, plog_path, data_name, rts_block_dim, records=None):
         info = AicErrorInfo()
         if records is None:
@@ -1102,9 +1148,7 @@ class AicoreErrorParser:
         src = pc_corrector.get_corrected_src(
             plog_path, core_id, cls._get_symbolize_o_file(info), offset, core_type
         )
-        info.corrected_instr = (
-            f"Error occurred most likely at line: {hex(offset)[2:]}\n"
-        )
+        info.corrected_instr = f"Error occurred most likely at line: {hex(offset)}\n"
         if not src:
             info.corrected_instr += "Unable to calculate the corrected source location, check the logs for more details.\n"
             return
@@ -1216,7 +1260,7 @@ class AicoreErrorParser:
                 err_pc = hex(current_pc5_value - start_pc5_value)[2:]
         else:
             err_pc = hex(current_pc5_value - start_pc5_value)[2:]
-        info.instr += "\nError occurred most likely at line: %s\n\n" % err_pc
+        info.instr += "\nError occurred most likely at line: 0x%s\n\n" % err_pc
         return err_pc
 
     @staticmethod
@@ -1927,7 +1971,7 @@ exit()"""
             "Step 7. Parse dump data and check whether flushing data to disk is normal."
         )
         collect_dump_data = os.path.join(self.collect_path, "collection", "dump")
-        dump_parser = DumpDataParser(collect_dump_data, info)
+        dump_parser = self._build_dump_parser(collect_dump_data, info)
         dump_parser.parse()
         if self.parse_level == 1:
             info.data_dump_result = self._get_data_dump_result()
