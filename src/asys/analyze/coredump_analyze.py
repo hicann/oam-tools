@@ -231,7 +231,9 @@ class CoreDump:
     def _get_reg_info_level_stack(self):
         queue_reg_info = Manager().Queue()
         cmd = self._get_gdb_cmd(self.exe_file, self.core_file)
-        p = Pool(cpu_count() - 1)
+        # A minimal container can expose only one CPU.  Pool(0) raises before
+        # any core-dump data is processed, so always keep one worker.
+        p = Pool(max(1, cpu_count() - 1))
         for thread, stacks in self.bt_info.items():
             p.apply_async(
                 thread_stacks_reg_info, args=(cmd, thread, stacks, queue_reg_info)

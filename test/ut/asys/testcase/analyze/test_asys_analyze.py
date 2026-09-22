@@ -324,6 +324,31 @@ class TestAsysAnalyze(AssertTest):
             }
         )
 
+    def test_asys_analyze_coredump_stack_uses_one_worker_on_single_cpu(self, mocker):
+        worker_counts = []
+
+        class PoolStub:
+            def __init__(self, count):
+                worker_counts.append(count)
+
+            def apply_async(self, *args, **kwargs):
+                return None
+
+            def close(self):
+                return None
+
+            def join(self):
+                return None
+
+        mocker.patch("analyze.coredump_analyze.cpu_count", return_value=1)
+        mocker.patch("analyze.coredump_analyze.Pool", PoolStub)
+        mocker.patch(
+            "analyze.coredump_analyze.Manager"
+        ).return_value.Queue.return_value.qsize.return_value = 0
+        obj = CoreDump("", "", "", "")
+        obj._get_reg_info_level_stack()
+        self.assertTrue(worker_counts == [1])
+
     def test_asys_analyze_coredump_stack_add_reg(self, mocker, capsys):
         self.assertTrue(True)
         mocker.patch("subprocess.Popen", return_value=PopenMock())
