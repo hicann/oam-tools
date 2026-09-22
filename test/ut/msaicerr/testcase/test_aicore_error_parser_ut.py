@@ -240,6 +240,119 @@ class TestUtilsMethods(CommonAssert):
         thread_id, _ = dump_data_info_list[0]
         self.assertEqual(thread_id, "1592077")
 
+    def test_get_custom_dump_files(self, tmp_path):
+        """只认dump目录下实际存在的自定义dump文件，不按命令行device过滤
+        （采集侧已按报错device过滤，解析侧再按self.device_id过滤会在device
+        不一致时漏解析）"""
+        collect_path = tmp_path.joinpath("info")
+        plog_dir = collect_path.joinpath("collection/plog")
+        dump_dir = collect_path.joinpath("collection/dump")
+        plog_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        plog_dir.joinpath("aicore_error.log").write_text(
+            "[ERROR] IDEDD(1,python3):2024-09-12-16:40:08.360.227 [tid:1] [Dump][Exception] "
+            "dump custom exception to file, file: x/extra-info/data-dump/0/"
+            "exception_info.42.1.1726159207469285.custom.1726159207469000\n"
+            "[ERROR] IDEDD(1,python3):2024-09-12-16:40:08.360.228 [tid:1] [Dump][Exception] "
+            "dump custom exception to file, file: x/extra-info/data-dump/1/"
+            "exception_info.42.1.1726159207469285.custom.1726159207469001\n"
+            "[ERROR] IDEDD(1,python3):2024-09-12-16:40:08.360.229 [tid:1] [Dump][Exception] "
+            "dump custom exception to file, file: x/extra-info/data-dump/0/"
+            "GatherV2.custom.1726159207469002\n",
+            encoding="utf-8",
+        )
+        dev0_file = dump_dir.joinpath(
+            "exception_info.42.1.1726159207469285.custom.1726159207469000"
+        )
+        dev0_file.touch()
+        dev1_file = dump_dir.joinpath(
+            "exception_info.42.1.1726159207469285.custom.1726159207469001"
+        )
+        dev1_file.touch()
+        parser = AicoreErrorParser(str(collect_path), device_id=0)
+        res = getattr(parser, "_get_custom_dump_files")(str(dump_dir))
+        # device 1 的9001文件实际存在，即使命令行device为0也解析
+        self.assertEqual(res, [str(dev0_file), str(dev1_file)])
+
+    def test_get_custom_dump_files_oversize_uses_mapping(self, tmp_path):
+        """超长自定义dump被runtime改为随机数字串时，按mapping.csv反查实际文件名"""
+        collect_path = tmp_path.joinpath("info")
+        plog_dir = collect_path.joinpath("collection/plog")
+        dump_dir = collect_path.joinpath("collection/dump")
+        plog_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        oversize_custom = (
+            "exception_info.42.1.1726159207469285"
+            + "n" * 260
+            + ".custom.1726159207469000"
+        )
+        mapped_name = "1234567890123456"
+        plog_dir.joinpath("aicore_error.log").write_text(
+            "[ERROR] IDEDD(1,python3):2024-09-12-16:40:08.360.227 [tid:1] [Dump][Exception] "
+            "dump custom exception to file, file: x/extra-info/data-dump/0/"
+            f"{oversize_custom}\n",
+            encoding="utf-8",
+        )
+        mapped_file = dump_dir.joinpath(mapped_name)
+        mapped_file.touch()
+        dump_dir.joinpath("mapping.csv").write_text(
+            f"{mapped_name},{oversize_custom}\n", encoding="utf-8"
+        )
+        parser = AicoreErrorParser(str(collect_path), device_id=0)
+        res = getattr(parser, "_get_custom_dump_files")(str(dump_dir))
+        self.assertEqual(res, [str(mapped_file)])
+
+    def test_get_custom_dump_files_no_custom_log(self, tmp_path):
+        """plog中无自定义dump日志时返回空列表，不抛异常"""
+        collect_path = tmp_path.joinpath("info")
+        plog_dir = collect_path.joinpath("collection/plog")
+        plog_dir.mkdir(parents=True, exist_ok=True)
+        plog_dir.joinpath("aicore_error.log").write_text(
+            "[Dump][Exception] dump exception to file, file: x/extra-info/data-dump/0/"
+            "exception_info.42.1.1726159207469285",
+            encoding="utf-8",
+        )
+        parser = AicoreErrorParser(str(collect_path))
+        res = getattr(parser, "_get_custom_dump_files")(str(plog_dir))
+        self.assertEqual(res, [])
+
+    def test_get_custom_dump_files_dump_missing(self, tmp_path):
+        """日志指示的自定义dump未落盘时返回空列表"""
+        collect_path = tmp_path.joinpath("info")
+        plog_dir = collect_path.joinpath("collection/plog")
+        dump_dir = collect_path.joinpath("collection/dump")
+        plog_dir.mkdir(parents=True, exist_ok=True)
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        plog_dir.joinpath("aicore_error.log").write_text(
+            "[ERROR] IDEDD(1,python3):2024-09-12-16:40:08.360.230 [tid:1] [Dump][Exception] "
+            "dump custom exception to file, file: x/extra-info/data-dump/0/"
+            "exception_info.42.1.1726159207469285.custom.1726159207469000",
+            encoding="utf-8",
+        )
+        parser = AicoreErrorParser(str(collect_path), device_id=0)
+        res = getattr(parser, "_get_custom_dump_files")(str(dump_dir))
+        self.assertEqual(res, [])
+        # plog有自定义dump日志却一个都没落盘时应给出告警，提示不解析
+        self.assertIn(
+            self.debug_info.read_text(encoding="utf-8"),
+            "Custom dump file(s) are detected in the plog but none can be found",
+        )
+
+    def test_build_dump_parser_passes_custom_dump_files(self, tmp_path, mocker):
+        """Step7构造DumpDataParser时传入检测到的自定义dump文件"""
+        collect_path = tmp_path.joinpath("info")
+        dump_dir = collect_path.joinpath("collection/dump")
+        dump_dir.mkdir(parents=True, exist_ok=True)
+        custom_file = dump_dir.joinpath("exception_info.custom.1726159207469000")
+        custom_file.touch()
+        info = AicErrorInfo()
+        parser = AicoreErrorParser(str(collect_path), device_id=0)
+        mocker.patch.object(
+            parser, "_get_custom_dump_files", return_value=[str(custom_file)]
+        )
+        dump_parser = parser._build_dump_parser(str(dump_dir), info)
+        self.assertEqual(dump_parser.custom_dump_files, [str(custom_file)])
+
     def test_collect_driver_aicore_number(self, mocker):
         info = AicErrorInfo()
         info.kernel_name = "kernel_name"
@@ -314,6 +427,37 @@ class TestUtilsMethods(CommonAssert):
         info.aic_error_info["start_pc"] = "x0123"
         err_pc = getattr(parser, "_get_info_for_decompile")(info)
         self.assertEqual(err_pc, "")
+
+    def test_get_err_pc_display_with_0x_prefix(self, mocker):
+        """展示行Error occurred most likely at line后带0x前缀，返回的err_pc保持无前缀"""
+        mocker.patch(
+            "ms_interface.aic_error_info.AicErrorInfo.find_extra_pc", return_value=""
+        )
+        parser = AicoreErrorParser("collection")
+        info = AicErrorInfo()
+        info.instr = ""
+        err_pc = getattr(parser, "_get_err_pc")(info, 5173, 291)
+        self.assertEqual(err_pc, "1312")
+        self.assertIn(info.instr, "Error occurred most likely at line: 0x1312")
+
+    def test_set_corrected_instr_display_with_0x_prefix(self, mocker):
+        """corrected instr的Error occurred most likely at line后带0x前缀"""
+        info = AicErrorInfo()
+        info.corrected_pc = {"offset": 4470, "plog_path": ""}
+        info.aic_error_info["core_id"] = "0"
+        mocker.patch(
+            "ms_interface.aicore_error_parser.pc_corrector.derive_core_type",
+            return_value="AIV",
+        )
+        mocker.patch(
+            "ms_interface.aicore_error_parser.pc_corrector.get_corrected_src",
+            return_value=None,
+        )
+        mocker.patch.object(AicoreErrorParser, "_get_symbolize_o_file", return_value="")
+        AicoreErrorParser._set_corrected_instr(info)
+        self.assertIn(
+            info.corrected_instr, "Error occurred most likely at line: 0x1176"
+        )
 
     def test_update_err_pc_data(self, mocker):
         info = AicErrorInfo()

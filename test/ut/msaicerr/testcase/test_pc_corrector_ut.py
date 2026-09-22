@@ -536,7 +536,7 @@ def test_corrected_instr_has_line_when_symbolize_ok(monkeypatch):
     }
     AicoreErrorParser._set_corrected_instr(info)
     result = info._get_pc_str()
-    assert "Error occurred most likely at line: 1000" in result
+    assert "Error occurred most likely at line: 0x1000" in result
     assert "outerSrc: /path/kernel.cce:88:3" in result
     assert "innerSrc: /path/kernel.h:40:10" in result
     assert "llvm-symbolizer is not installed" not in result

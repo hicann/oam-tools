@@ -87,6 +87,7 @@ class Constant:
 
     MAX_FILE_NAME_LEN = 255  # Linux NAME_MAX，单文件名上限
     MAPPING_CSV_FILE = "mapping.csv"  # 超长文件名映射表，每行 {映射后},{映射前}
+    CUSTOM_DUMP_DIR = "custom_dump"  # 自定义dump张量产物子目录，与原始报错dump隔离
 
     DIR_PLOG = "plog"
 

@@ -27,6 +27,7 @@ import csv
 import json
 import os
 import random
+import re
 import struct
 import ctypes
 import traceback
@@ -119,7 +120,14 @@ class DumpDataParser:
     The class for dump data parser
     """
 
-    def __init__(self, dump_path, info: AicErrorInfo, dest_dtype="", output_path=""):
+    def __init__(
+        self,
+        dump_path,
+        info: AicErrorInfo,
+        dest_dtype="",
+        output_path="",
+        custom_dump_files=None,
+    ):
         self.dump_path = dump_path
         self.info = info
         self.input_data_list = []
@@ -130,6 +138,10 @@ class DumpDataParser:
         self.output_path = os.path.realpath(output_path) if output_path else ""
         self.parse_types = ["input", "output", "space"]
         self.dest_dtype = dest_dtype
+        # 用户自定义dump文件（user_tag仅存在于其中），与原始dump格式一致
+        self.custom_dump_files = list(custom_dump_files) if custom_dump_files else []
+        # 解析自定义dump时为True：其张量产物与原始报错dump隔离，且不并入算子张量列表
+        self._custom_dump_mode = False
 
     def get_input_data(self):
         return self.input_data_list
@@ -273,7 +285,11 @@ class DumpDataParser:
             # only swallow normal errors here, KeyboardInterrupt/SystemExit must propagate
             return result_info + f"Can not read with dtype {dtype}!\n"
 
-    def _save_dfx_message(self, dump_json_data):
+    def _save_dfx_message(self, dump_json_data, dump_file):
+        # dfx_message是报错dump的头部信息，自定义dump不覆盖它，
+        # 否则会把原始dump的解析结论（如地址非法）清空
+        if dump_file in self.custom_dump_files:
+            return
         self.dfx_message = dump_json_data.get("dfx_message", "")
         utils.print_debug_log(f"Dump exception info: {self.dfx_message}")
 
@@ -395,6 +411,10 @@ class DumpDataParser:
             np.save(dst_file_name, array)
         else:
             array.tofile(dst_file_name)
+        # 自定义dump的张量仅供展示，不并入原始报错dump的算子张量列表，
+        # 避免污染单算子复跑的bin_file_list与_get_sub_ptr的遍历上界
+        if self._custom_dump_mode:
+            return dst_file_name
         if parse_type == "workspace":
             self.workspace_data_list.append(dst_file_name)
         else:
@@ -422,16 +442,12 @@ class DumpDataParser:
                 return str(value).replace("data invalid", "data_invalid")
         return ""
 
-    def _parse_one_item(
-        self, item, parse_type, json_dtype, index, dump_file_path, user_tag=""
-    ):
+    def _parse_one_item(self, item, parse_type, json_dtype, index, dump_file_path):
         dtype = self._get_item_dtype(item, parse_type, json_dtype, index)
         shape = [int(i) for i in item.get("shape", {}).get("dim", [])]
-        # user tag是op级属性，随每个tensor一起展示，无该属性时不占位
-        user_tag_info = f" user tag: {user_tag}" if user_tag else ""
         result_info = (
             f"shape: {tuple(shape)} size: {item.get('size', 0)} "
-            f"dtype: {dtype if dtype else 'unknown'}{user_tag_info}\n"
+            f"dtype: {dtype if dtype else 'unknown'}\n"
         )
 
         array, np_dtype = self._build_typed_array(item.get("data"), dtype, shape)
@@ -459,7 +475,16 @@ class DumpDataParser:
 
     def _save_data_to_bin_file(self, dump_json_data, parse_type, json_dtype, dump_file):
         dump_file_path, dump_file_name = os.path.split(dump_file)
-        dump_file_path = self.output_path or dump_file_path
+        self._custom_dump_mode = dump_file in self.custom_dump_files
+        if self._custom_dump_mode:
+            # 自定义dump与原始报错dump输出到不同子目录，
+            # 避免同名张量产物（kernel.input.0.dtype.npy）相互覆盖
+            dump_file_path = os.path.join(
+                self.output_path or dump_file_path, Constant.CUSTOM_DUMP_DIR
+            )
+            os.makedirs(dump_file_path, exist_ok=True)
+        else:
+            dump_file_path = self.output_path or dump_file_path
         items = dump_json_data.get(parse_type)
         if not items:
             utils.print_warn_log(f"There is no {parse_type} in {dump_file_name}.")
@@ -470,13 +495,12 @@ class DumpDataParser:
         # "space" is dumped as the workspace of the kernel
         parse_type = "workspace" if parse_type == "space" else parse_type
 
-        user_tag = self._get_user_tag(dump_json_data)
         result_info_list = []
         for index, item in enumerate(items):
             try:
                 result_info_list.append(
                     self._parse_one_item(
-                        item, parse_type, json_dtype, index, dump_file_path, user_tag
+                        item, parse_type, json_dtype, index, dump_file_path
                     )
                 )
             except (TypeError, ValueError, IOError, OSError, MemoryError) as error:
@@ -573,7 +597,11 @@ class DumpDataParser:
                 result_info += self._save_data_to_bin_file(
                     dump_json_data, parse_type, json_dtype, dump_file
                 )
-            self._save_dfx_message(dump_json_data)
+            self._save_dfx_message(dump_json_data, dump_file)
+            # user tag是op级属性，每个dump文件在解析结果最前面输出一行，无该属性时不占位
+            user_tag = self._get_user_tag(dump_json_data)
+            if user_tag:
+                result_info = f"user tag: {user_tag}\n" + result_info
         except (
             OSError,
             ValueError,
@@ -624,7 +652,20 @@ class DumpDataParser:
                     if name == Constant.MAPPING_CSV_FILE:
                         continue
                     if match_name in name:
-                        match_dump_list.append(os.path.join(top, name))
+                        full_path = os.path.join(top, name)
+                        if (
+                            re.search(r"\.custom\.\d+$", name)
+                            and full_path not in self.custom_dump_files
+                        ):
+                            # 未被日志登记进custom_dump_files的自定义dump不作为报错
+                            # dump解析，避免被walk按算子名命中后误当普通dump
+                            continue
+                        match_dump_list.append(full_path)
+            # 用户自定义dump文件名可能不含算子名，按日志精确指定路径追加解析；
+            # 文件不存在或已在walk命中时跳过，避免重复解析
+            for custom_file in self.custom_dump_files:
+                if os.path.isfile(custom_file) and custom_file not in match_dump_list:
+                    match_dump_list.append(custom_file)
 
         # parse data
         result_info_list = []
@@ -634,6 +675,11 @@ class DumpDataParser:
                 dump_file.endswith(".npy") or dump_file.endswith(".bin")
             ):
                 continue
+            if result_info_list:
+                result_info_list.append("\n")
+            if dump_file in self.custom_dump_files:
+                # 标注该块来自用户自定义dump，与原始报错dump区分
+                result_info_list.append("Custom dump file:\n")
             result_info_list.extend(
                 [
                     f"Original file: {dump_file}\n",
