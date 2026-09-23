@@ -16,6 +16,7 @@ repos:
       - id: check-yaml
         args: ["--allow-multiple-documents"]
       - id: check-added-large-files
+        args: ["--maxkb=1024"]
       - id: check-merge-conflict
       - id: detect-private-key
       - id: check-json
@@ -118,7 +119,7 @@ repos:
         # 且不能带 ./ 前缀才能命中嵌套文件）。
         args: [
             "-L",
-            "CANN,cann,NNAL,nnal,ASCEND,ascend,EnQue,CopyIn,ArchType,AND,ND,tbe,copyin,alog,oam,msprof,aicerr,hccl,te,nin,fo,optin,abl,OpEnd,mata,VALU,nd,enque,datas,WRON,modeE",
+            "CANN,cann,NNAL,nnal,ASCEND,ascend,EnQue,CopyIn,ArchType,AND,ND,tbe,copyin,alog,oam,msprof,aicerr,hccl,te,nin,fo,optin,abl,OpEnd,mata,VALU,nd,enque,datas,WRON,modeE,AER",
             "--skip",
             "*.bin,*.xlsx,*.png,*.svg,*.lock,*.whl,*.pyc,./build,./bundle,./submodule,./third_party,./node_modules,test/*/*/res/*",
           ]

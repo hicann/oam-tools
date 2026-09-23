@@ -42,6 +42,7 @@ copyin = "copyin" # Ascend C CopyIn API
 enque = "enque"   # Ascend C EnQue API
 datas = "datas"   # data
 WRON = "WRON"     # WRONG枚举简写
+AER = "AER"       # PCIe Advanced Error Reporting 缩写
 emtpy = "emtpy"           # legacy FileOperate.check_emtpy API
 bandwith = "bandwith"     # legacy ctypes ABI field bandwith_util_rate
 ue = "ue"                 # device report field UEIdx
