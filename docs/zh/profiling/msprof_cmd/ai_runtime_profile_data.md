@@ -101,7 +101,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
   - Atlas A3系列产品：不支持
     <!-- end id7 -->
     <!-- npu="950" id8 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
     <!-- end id8 -->
 
 - MemoryAccess：
@@ -116,7 +116,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
   - Atlas训练系列产品：不支持
     <!-- end id11 -->
     <!-- npu="950" id12 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
     <!-- end id12 -->
 
 默认值：
@@ -137,7 +137,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 - Atlas A3系列产品：PipeUtilization
 <!-- end id17 -->
 <!-- npu="950" id18 -->
-- Ascend 950PR&Ascend 950DT系列产品：PipeUtilization
+- Ascend 950PR&950DT系列产品：PipeUtilization
 <!-- end id18 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id00002 -->
@@ -159,7 +159,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
 
 <!-- npu="950" id19 -->
-Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id19 -->
 
 设置该参数需要`--sys-hardware-mem`参数设置为on。
@@ -221,7 +221,7 @@ Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支�
 
 仅以下型号支持该参数：
 
-Ascend 950PR&Ascend 950DT系列产品：可选on或off，默认值为off。
+Ascend 950PR&950DT系列产品：可选on或off，默认值为off。
 <!-- end id26 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/ai_runtime_profile_data_res.md#id00005 -->

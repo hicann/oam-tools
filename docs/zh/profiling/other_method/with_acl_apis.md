@@ -13,7 +13,7 @@
 |方式三：订阅算子信息|将采集到的性能数据解析后写入管道，由用户读入内存，再由用户调用API获取性能数据。|
 
 <!-- npu="950,A3,910b,910,310p,310b" id22 -->
-注：接口详细说明，请参见《Runtime运行时 API》。
+注：接口详细说明，请参见《[Runtime运行时API](https://gitcode.com/cann/runtime/blob/master/docs/zh/api_ref/README.md)》。
 <!-- end id22 -->
 
 > [!NOTE]说明
@@ -42,7 +42,7 @@
 > [!NOTE]说明
 >aclprofInit接口传入的性能采集数据的落盘路径，需要确保用户进程具有读写权限。
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id23 -->
->接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
+>接口详细说明，请参见《[Runtime运行时API](https://gitcode.com/cann/runtime/blob/master/docs/zh/api_ref/README.md)》。
 <!-- end id23 -->
 
 **API调用示例**
@@ -112,9 +112,9 @@ aclprofFinalize();
 |aclprofDestroyStamp|释放msproftx事件标记。|
 
 > [!NOTE]说明
->当只开启msproftx功能时，aclProfCreateConfig接口的deviceIdList参数值需设为空，deviceNums参数值设为0。
+>当只开启msproftx功能时，aclprofCreateConfig接口的deviceIdList参数值需设为空，deviceNums参数值设为0。
 <!-- npu="950,A3,910b,910,310p,310b,IPV350" id24 -->
->接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
+>接口详细说明，请参见《[Runtime运行时API](https://gitcode.com/cann/runtime/blob/master/docs/zh/api_ref/README.md)》。
 <!-- end id24 -->
 
 **API调用示例**
@@ -315,7 +315,7 @@ aclprofFinalize();
 |aclprofDestroySubscribeConfig|销毁通过aclprofCreateSubscribeConfig接口创建的aclprofSubscribeConfig类型的数据。同步接口。|
 
 > [!NOTE]说明
->接口详细说明，请参见[《Runtime运行时 API》](https://hiascend.com/document/redirect/CannCommunityRuntimeApi)。
+>接口详细说明，请参见《[Runtime运行时API](https://gitcode.com/cann/runtime/blob/master/docs/zh/api_ref/README.md)》。
 
 ## 采集数据说明
 
@@ -336,23 +336,21 @@ aclprofFinalize();
   - op_statistic_*.csv
   - fusion_op_*.csv
 - ACL_PROF_ACL_API:msprof_\*.json中的CANN_AscendCL层级和api_statistic_*.csv文件
-- ACL_PROF_RUNTIME_API:msprof_\*.json中的CANN_AscendCL层级和api_statistic_*.csv文件
 - ACL_PROF_RUNTIME_API:msprof_\*.json中的CANN_Runtime层级和api_statistic_*.csv文件
 - ACL_PROF_HCCL_TRACE:msprof_\*.json中的Communication层级和communication_statistic_*.csv文件
 <!-- npu="950,A3,910b,910,310p,310b" id2 -->
-- ACL_PROF_AICPU:aicpu_*.csv
-- ACL_PROF_L2CACHE:l2_cache_*.csv
+- ACL_PROF_AICPU:aicpu_\*.csv
+- ACL_PROF_L2CACHE:l2_cache_\*.csv
+<!-- end id2 -->
+- ACL_PROF_AICORE_METRICS:op_summary_\*.csv
 - ACL_PROF_TASK_MEMORY:
   - memory_record_*.csv
   - operator_memory_*.csv
   - static_op_mem_*.csv
 - ACL_PROF_MSPROFTX：msproftx数据
-<!-- end id2 -->
-<!-- npu="950,A3,910b,910,310p,310b" id3 -->
 - ACL_PROF_SYS_HARDWARE_MEM_FREQ：
   - 片上内存读写速率文件
   - msprof_\*.json中的LLC层级和llc_read_write_*.csv文件
-  <!-- end id3 -->
   <!-- npu="950,A3,910b,310b" id4 -->
   - msprof_\*.json中的acc_pmu层级
   <!-- end id4 -->
@@ -362,33 +360,7 @@ aclprofFinalize();
   <!-- npu="950,A3,910b,910,310p,310b" id6 -->
   - msprof_\*.json中的NPU MEM层级和npu_mem_*.csv文件
   <!-- end id6 -->
-  <!-- npu="950,A3,910b,910,310p,310b" id7 -->
-  - ACL_PROF_AICPU:aicpu_*.csv
-  <!-- end id7 -->
-- ACL_PROF_L2CACHE:l2_cache_*.csv
-- ACL_PROF_TASK_MEMORY:
-  - memory_record_*.csv
-  - operator_memory_*.csv
-  - static_op_mem_*.csv
-- ACL_PROF_MSPROFTX：msproftx数据
-
-<!-- npu="950,A3,910b,910,310p,310b" id8 -->
-- ACL_PROF_SYS_HARDWARE_MEM_FREQ：
-  - 片上内存读写速率文件
-  - msprof_*.json中的LLC层级和llc_read_write_*.csv文件
-  <!-- end id8 -->
-  <!-- npu="950,A3,910b,310b" id9 -->
-  - msprof_*.json中的acc_pmu层级
-  <!-- end id9 -->
-  <!-- npu="950,A3,910b,310b" id10 -->
-  - msprof_*.json中的Stars Soc Info层级
-  <!-- end id10 -->
-  <!-- npu="950,A3,910b,910,310p,310b" id11 -->
-  - msprof_*.json中的NPU MEM层级和npu_mem_*.csv文件
-  <!-- end id11 -->
-  <!-- npu="950,A3,910b,910,310p,310b" id12 -->
-  - npu_module_mem_*.csv
-  <!-- end id12 -->
+  - npu_module_mem_\*.csv
 <!-- npu="A3,910b,910,310b" id13 -->
 - ACL_PROF_SYS_IO_FREQ：msprof_\*.json中的NIC层级和nic_*.csv文件和msprof_*.json中的RoCE层级和roce_*.csv文件
 <!-- end id13 -->
@@ -407,12 +379,17 @@ aclprofFinalize();
 <!-- npu="950,A3,910b,910,310b" id18 -->
 - ACL_PROF_DVPP_FREQ：dvpp_*.csv
 <!-- end id18 -->
+<!-- npu="950,A3,910b,910,310p,310b" id3 -->
+- ACL_PROF_HOST_SYS:
+  - msprof_\*.json中的CPU Usage层级和host_cpu_usage_\*.csv文件
+  - msprof_\*.json中的Memory Usage层级和host_mem_usage_\*.csv文件
+<!-- end id3 -->
 <!-- npu="950,A3,910b,910,310p,310b" id19 -->
 - ACL_PROF_HOST_SYS_USAGE/ACL_PROF_HOST_SYS_USAGE_FREQ:Host侧进程CPU利用率数据和Host侧进程内存利用率数据
 <!-- end id19 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id20 -->
-详细的性能数据信息如请参考[性能数据参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md#db%E6%A0%BC%E5%BC%8F%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE)。
+详细的性能数据信息如请参考[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/master/docs/zh/user_guide/profile_data_file_references.md)。
 <!-- end id20 -->
 
 <!-- end id21 -->

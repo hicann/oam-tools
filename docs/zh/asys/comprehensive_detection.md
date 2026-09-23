@@ -69,7 +69,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
     - **aicore\_stl\_detect：AI Core STL硬件检测**
 
         <!-- npu="950" id2 -->
-        仅支持在Ascend 950PR&Ascend 950DT系列产品上运行。
+        仅支持在Ascend 950PR&950DT系列产品上运行。
         <!-- end id2 -->
         显示检测结果时：
 

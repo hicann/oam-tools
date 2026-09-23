@@ -20,7 +20,7 @@ Ascend Graph API是在构图过程中采集性能数据。
 - Atlas A3系列产品
 <!-- end id4 -->
 <!-- npu="950" id5 -->
-- Ascend 950PR&Ascend 950DT系列产品
+- Ascend 950PR&950DT系列产品
 <!-- end id5 -->
 
 ## 启动方式介绍
