@@ -17,6 +17,13 @@
 # 公共变量：msprof collector 源码根目录，供各子目录 UT 复用
 set(MSPROF_SOURCE_DIR ${TOP_DIR}/src/msprof/collector)
 
+# mockcpp 的 API 钩子蹦床（aarch64）会在被打桩函数入口覆写 32 字节指令序列；
+# 桩函数与部分产品源内的小函数（< 32B，如 osal.c 的 OsalDlopen 仅 4B）相邻排布时，
+# 蹦床会溢出覆写相邻函数入口，使后续调用以错误签名跳入 mock 桩并段错误
+# （GitCode issue #217：msprof_ut 三处用例级 Segmentation fault）。
+# 将本目录下所有函数入口按 64 字节对齐，任意入口到下一入口间距 >= 64B，蹦床不再越界。
+add_compile_options(-falign-functions=64)
+
 ############ intf_pub c++17 ############
 # 各 msprof UT target 公共链接接口库
 add_library(intf_llt_pub INTERFACE)
