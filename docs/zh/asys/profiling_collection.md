@@ -7,7 +7,7 @@
 <!-- npu="910,310p,310b" id1 -->
 ## 注意事项
 
-对于Atlas 200I/500 A2推理产品、Atlas推理系列产品、Atlas训练系列产品，不支持使用环境配置功能。
+对于Atlas 200I/500 A2推理产品、Atlas推理系列产品、Atlas训练系列产品，不支持使用性能数据采集功能。
 
 <!-- end id1 -->
 ## 命令格式
@@ -52,7 +52,7 @@ asys profiling -r=aicore -p=time -d=deviceId --output=./ --aic_metrics=PipeUtili
 asys profiling -r=aicore -p=10 -d=0 --output=./ --aic_metrics=PipeUtilization
 ```
 
-命令执行成功后，会提示如下信息，并在\{output\}/asys\_profiling\_result\__timestamp_目录下生成采集结果文件：
+命令执行成功后，会提示如下信息，并在\{output\}/asys\_profiling\_result\_timestamp目录下生成采集结果文件：
 
 ```bash
 2025-11-27 20:15:45,141 [ASYS] [INFO]: asys start.

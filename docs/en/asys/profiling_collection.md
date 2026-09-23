@@ -7,7 +7,7 @@ Collect profile data.
 <!-- npu="910,310p,310b" id1 -->
 ## Notes
 
-Atlas 200I/500 A2 inference products,  Atlas inference products, and  Atlas training products  do not support environment configuration.
+Atlas 200I/500 A2 inference products,  Atlas inference products, and  Atlas training products  do not support performance data collection.
 <!-- end id1 -->
 
 ## Command Format
@@ -52,7 +52,7 @@ asys profiling -r=aicore -p=time -d=deviceId --output=./ --aic_metrics=PipeUtili
 asys profiling -r=aicore -p=10 -d=0 --output=./ --aic_metrics=PipeUtilization
 ```
 
-After the command is executed successfully, the following information is displayed and the collection result file is generated in the  **\{output\}/asys\_profiling\_result\__timestamp_**  directory:
+After the command is executed successfully, the following information is displayed and the collection result file is generated in the  **\{output\}/asys\_profiling\_result\_timestamp**  directory:
 
 ```text
 2025-11-27 20:15:45,141 [ASYS] [INFO]: asys start.

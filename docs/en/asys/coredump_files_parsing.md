@@ -6,7 +6,7 @@ Parse the core dump file.
 
 ## Notes
 
-The GDB is required for core dump parsing. You need to install the GDB in advance by using package management \(including  **apt-get install gdb**  or  **yum install gdb**\). For details about the installation procedure and usage, see  [GDB official documentation](https://sourceware.org/gdb/).
+The GDB is required for core dump parsing. You need to install the GDB in advance by using package management tools \(including  **apt-get install gdb**  or  **yum install gdb**\). For details about the installation procedure and usage, see  [GDB official documentation](https://sourceware.org/gdb/).
 
 ## Command Format
 

@@ -6,7 +6,7 @@ During service execution, if the log file or information printed on the screen c
 
 ## Notes
 
-1. To ensure the accuracy of the parsed data, clear the logs before reproducing the AI Core error.
+1. To ensure the accuracy of the parsed data, clear the service running logs and plog logs before reproducing the AI Core error.
 2. To avoid cyclic copy, the  **--output**  directory cannot be the  **--path**  directory or its subdirectory.
 
 ## Command Format
@@ -19,7 +19,7 @@ asys analyze -r=aicore_error -d=deviceId --path=${HOME}/aic_err_info_timestamp
 ## Parameters
 
 - **r**: This parameter is mandatory. It specifies the parsing mode. Set it to  **aicore\_error**.
-- **d**: This parameter is optional. It specifies the ID of the device to be operated. If this parameter is not set, the configuration of device 0 is used by default.
+- **d**: This parameter is optional. It specifies the ID of the device to be operated. If this parameter is not set, the fault information of device 0 is parsed by default.
 - **path**: This parameter is optional. It specifies the directory for storing fault information such as logs and dump files.
 
     If this parameter is not set, the asys tool automatically collects fault information. Automatic collection is affected by environment variables. Therefore, when you run the asys command, the environment variable values must be the same as those used during service running. Otherwise, the collected information may be incorrect. The following environment variables are involved:  **ASCEND\_PROCESS\_LOG\_PATH**,  **NPU\_COLLECT\_PATH**,  **DUMP\_GRAPH\_PATH**,  **ASCEND\_WORK\_PATH**,  **ASCEND\_CACHE\_PATH**,  **ASCEND\_CUSTOM\_OPP\_PATH**. For details about the environment variables and their restrictions, see  [Environment Variables](https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/maintenref/envvar/envref_07_0001.html). If these environment variables do not exist, fault information is collected from the current directory where the asys command is executed.

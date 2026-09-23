@@ -17,9 +17,9 @@ asys info -r="status" -d=deviceId
     - software：显示Host的软件信息，包含系统和内核版本、CANN包版本等信息。
     - hardware：显示Host和Device的硬件信息，包括Host的CPU型号&核数、内存容量和硬盘容量，Device的NPU个数&型号，AI CPU/AI Core/AI Vector个数等信息。
 
-- **d**：可选参数，指定需要展示信息的deviceId，不设置该参数，默认展示device 0的信息, 仅-r=status时有效。
+- **d**：可选参数，指定需要展示信息的deviceId，不设置该参数，默认展示device 0的信息，仅-r=status时有效。
 
-## 使用示例和输出示例
+## 使用示例和输出说明
 
 ```bash
 asys info -r="status" -d=0

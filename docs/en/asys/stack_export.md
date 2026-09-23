@@ -22,7 +22,7 @@ asys collect -r=stacktrace --remote=pid --all --quiet --timeout=num --output=pat
 
 - **remote**: It specifies the ID of the process that is suspended. This parameter is mandatory when  **-r**  is set to  **stacktrace**. The ID must be greater than or equal to 2. If the input process ID does not exist, the asys command reports an error and exits.
 - **all**: If this parameter is set, the stack information of all threads in the suspended process is exported. This parameter is mandatory when  **-r**  is set to  **stacktrace**.
-- **quiet**  \(optional\): If this parameter is set, user interaction is disabled during stack information export. If this parameter is not set, user interaction is enabled by default, and you need to confirm whether the signal set for trace processing is enabled on the current server \(whether  **ASCEND\_COREDUMP\_SIGNAL**  is set to a value other than  **none**  or is not set\). This parameter can be used when  **-r**  is set to  **stacktrace**.
+- **quiet**  \(optional\): If this parameter is set, user interaction is disabled during stack information export. If this parameter is not set, user interaction is enabled by default, and you need to confirm whether the signal set for trace processing is enabled on the current server \(when  **ASCEND\_COREDUMP\_SIGNAL**  is not set or is set to a value other than  **none**, the signal set is enabled\). This parameter can be used when  **-r**  is set to  **stacktrace**.
 
     When real-time stack information is exported, signal 35 needs to be sent to the specified process. If the signal set for trace processing is disabled, the suspended process is stopped and stack information cannot be exported.
 

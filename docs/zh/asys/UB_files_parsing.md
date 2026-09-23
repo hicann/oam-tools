@@ -14,7 +14,7 @@ asys analyze -r=ub --path=directory --output=path
 
 ## 参数说明
 
-- **r**： 必选参数，解析模式，此处设置为ub，用于解析二进制格式的UB维测信息采集文件，供后续定位使用。
+- **r**：必选参数，解析模式，此处设置为ub，用于解析二进制格式的UB维测信息采集文件，供后续定位使用。
 - **path**：指定目录，用于解析指定目录下的二进制文件，ub模式下必选。asys会读取path路径下的以下二进制文件并解析为同名的txt文件。
     - ubnl\_dfx\_config\_item.bin：UB网络层配置表项
     - ubnl\_dfx\_statistic.bin：UB网络层统计信息
@@ -25,7 +25,7 @@ asys analyze -r=ub --path=directory --output=path
 
 - **output**：可选参数，其值作为asys工具的结果输出目录的路径前缀，即最终输出目录为\{output\}/asys\_output\_timestamp。命令行中不带output参数时，输出结果存放在命令行执行目录下；若output指定值为空、无效字符串、或指定路径目录无写权限、或创建目录失败，则asys工具退出执行并报错。
 
-## 使用示例及输出说明
+## 使用示例和输出说明
 
 ```bash
 asys analyze -r=ub --path=/home/test/msnpureport/device-0/ub

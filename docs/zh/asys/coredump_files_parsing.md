@@ -6,7 +6,7 @@
 
 ## 注意事项
 
-coredump解析功能依赖gdb，需提前安装gdb，可通过包管理（如apt-get install gdb、yum install gdb）进行安装，详细安装步骤及使用方法请参见[GDB官方文档](https://sourceware.org/gdb/)。
+coredump解析功能依赖gdb，需提前安装gdb，可通过包管理工具（如apt-get install gdb、yum install gdb）进行安装，详细安装步骤及使用方法请参见[GDB官方文档](https://sourceware.org/gdb/)。
 
 ## 命令格式
 
@@ -16,7 +16,7 @@ asys analyze -r=coredump --exe_file=filename --core_file=filename --reg=reglevel
 
 ## 参数说明
 
-- **r**  ：必选参数，解析模式，此处设置为coredump。在执行任务过程中进程中断退出，软件在退出时会报Segmentation fault等错误，可以使用该功能解析coredump生成的core文件，获取stackcore格式的堆栈文件（\*.txt文件），供后续定位使用。
+- **r**：必选参数，解析模式，此处设置为coredump。在执行任务过程中进程中断退出，软件在退出时会报Segmentation fault等错误，可以使用该功能解析coredump生成的core文件，获取stackcore格式的堆栈文件（\*.txt文件），供后续定位使用。
 - **exe\_file**：程序coredump时的可执行文件，此处设置为包含路径的文件名，coredump模式必选，需要保证与core\_file相匹配，否则解析结果错误。
 - **core\_file**：程序coredump时生成的core文件，此处设置为包含路径的文件名，coredump模式必选，需要保证与exe\_file相匹配，否则解析结果错误。
 - **reg**：coredump功能添加寄存器数据的模式，只支持0、1和2，默认为0，coredump模式可选。
@@ -45,7 +45,7 @@ asys analyze -r=coredump --exe_file=filename --core_file=filename --reg=reglevel
     crash reason: SIGABRT
     crash pid: 37246
     crash tid: 37246
-    
+
     [stack]
     Thread 1 (37246)
     #00 0x00007fbad83792bf 0x00007fbad830b000 /usr/local/python3.7.5/lib/libpython3.7m.so.1.0
@@ -53,7 +53,7 @@ asys analyze -r=coredump --exe_file=filename --core_file=filename --reg=reglevel
     #02 0x00007fbad83d8c22 0x00007fbad830b000 /usr/local/python3.7.5/lib/libpython3.7m.so.1.0
     #03 0x00007fbad83e9648 0x00007fbad830b000 /usr/local/python3.7.5/lib/libpython3.7m.so.1.0
     ......
-    
+
     [maps]
         Start Addr           End Addr       Size     Offset objfile
     0x562677ed1000     0x562677ed2000     0x1000        0x0 /usr/local/python3.7.5/bin/python3.7
@@ -76,7 +76,7 @@ asys analyze -r=coredump --exe_file=filename --core_file=filename --reg=reglevel
     crash reason: SIGABRT
     crash pid: 37246
     crash tid: 37246
-    
+
     [stack]
     Thread 1 (37246)
     #00 0x00007fbad83792bf in lookdict_unicode (value_addr=0x7ffea1e917e8, hash=<optimized out>, key=<optimized out>, mp=0x7fba98907fa0) at Objects/dictobject.c:811
@@ -84,7 +84,7 @@ asys analyze -r=coredump --exe_file=filename --core_file=filename --reg=reglevel
     #02 0x00007fbad83d8c22 in PyDict_GetItem (op=op@entry=0x7fba98907fa0, key=key@entry=0x7fba9a15b570) at Objects/dictobject.c:1327
     #03 0x00007fbad83e9648 in _PyObject_GenericGetAttrWithDict (obj=obj@entry=0x7fba989083b0, name=name@entry=0x7fba9a15b570, dict=0x7fba98907fa0, dict@entry=0x0, suppress=suppress@entry=0) at Objects/object.c:1268
     ......
-    
+
     [maps]
         Start Addr           End Addr       Size     Offset objfile
     0x562677ed1000     0x562677ed2000     0x1000        0x0 /usr/local/python3.7.5/bin/python3.7

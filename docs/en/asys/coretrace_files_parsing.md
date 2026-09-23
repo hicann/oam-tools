@@ -80,7 +80,7 @@ PID 12356 TGID 12335 comm adx_get_file_th
 ```
 
 - If the parsed file contains  **?**, the possible causes are as follows:
-    - Compile option: The  **-g**  option is not used during compilation of the dynamic library file to retain debugging information in the file.
+    - Compile option: The  **-g**  option is not used during compilation of the dynamic library file; as a result, debugging information is not retained in the file.
     - Link parameter not added:  **-rdynamic**  is not used to instruct the linker to add all symbols to the dynamic symbol table.
     - Dynamic library not found: No matching dynamic library is found.
 

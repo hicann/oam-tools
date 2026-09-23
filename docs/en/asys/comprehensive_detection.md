@@ -66,7 +66,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
         -   If the detection result is  **Warn**, task scheduling problems occur during the detection. You can view the detailed information in the plog on the host \(default path: $HOME/ascend/log/run|debug/plog/plog-_pid_  \_\*.log\) to locate the fault. You can filter the log information based on the keyword "\[ERROR\] AML".
         -   If the detection result is  **Pass**, the detection is successful.
 
-    -   **aicore\_stl\_detect**：AI Core STL (Software Test Library) hardware detection
+    -   **aicore\_stl\_detect**: AI Core STL (Software Test Library) hardware detection
 
         <!-- npu="950" id2 -->
         It can run only on the Ascend 950PR/Ascend 950DT.
@@ -81,7 +81,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
         -   If the detection result is  **Warn**, task scheduling problems occur during the detection. You can view the detailed information in the plog on the host \(default path: $HOME/ascend/log/run|debug/plog/plog-_pid_  \_\*.log\) to locate the fault. You can filter the log information based on the keyword "\[ERROR\] AML".
         -   If the detection result is  **Pass**, the detection is successful.
 
--   **d**  \(optional\): It specifies the ID of the device to be detected. If this parameter is not specified, the detection results of all devices are displayed by default.  **Pass**  indicates that the result is normal, and  **Warn**  indicates that the result is abnormal.
+-   **d**  \(optional\): It specifies the ID of the device to be detected. If this parameter is not specified, the detection results of all devices are displayed by default.
 -   **timeout**  \(optional\): It specifies the hardware detection time, in seconds. If this parameter is not specified, the detection time is 600s by default. This parameter is valid only for HBM detection and CPU detection. For HBM detection, the value range is \[0, 604800\] \(**0**  indicates that only one round of HBM detection is performed\); for CPU detection, the value range is \[1, 604800\].
 -   **output**  \(optional\): It specifies the directory for storing the detection result file  **diagnose\_result\__\{time\_stamp\}_.txt**. If the command does not contain the  **output**  parameter, the command output is only printed on the terminal screen but not flushed. If the value of  **output**  is empty or invalid, the specified directory does not have the write permission, or the directory fails to be created, the asys tool exits and reports an error.
 
