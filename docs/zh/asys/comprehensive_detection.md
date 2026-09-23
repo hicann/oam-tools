@@ -35,7 +35,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
 
         该功能涉及执行算子，因此环境中需提前安装算子二进制包（包名为Ascend-cann-\*-ops-\*.run）。
 
-        AICore压力检测涉及到对device侧部分电压调整，当压力检测正常结束时，可自行恢复；但部分压力检测异常退出时，存在电压不能自行恢复，这时用户可以根据asys环境配置功能手动恢复电压。建议在执行AI Core压力检测前、后，用户可以分别获取电压，用于判断电压是否异常、以及是否需要恢复电压。获取及恢复电压请参见[环境配置](environment_configuration.md)。
+        AI Core压力检测涉及到对device侧部分电压调整，当压力检测正常结束时，可自行恢复；但部分压力检测异常退出时，可能存在电压不能自行恢复的情况，这时用户可以根据asys环境配置功能手动恢复电压。建议在执行AI Core压力检测前、后，用户可以分别获取电压，用于判断电压是否异常、以及是否需要恢复电压。获取及恢复电压请参见[环境配置](environment_configuration.md)。
 
         显示检测结果时：
 
@@ -80,7 +80,7 @@ asys diagnose -r=aicore_stl_detect -d=deviceId --output=path
         - **若检测结果为Warn**，表示检测过程中任务调度出现问题，可能是硬件故障或软件问题。可查看Host侧plog日志（默认路径为$HOME/ascend/log/run|debug/plog/plog-_pid_\_\*.log）中的详细信息定位问题，可先根据关键字“\[ERROR\] AML”筛选日志信息。
         - **若检测结果为Pass**，表示检测成功。
 
-- **d**：可选参数，指定待检测的deviceId，不设置该参数，默认显示所有device的检测结果。Pass表示正常，Warn表示异常。
+- **d**：可选参数，指定待检测的deviceId，不设置该参数，默认显示所有device的检测结果。
 - **timeout**：可选参数，指定硬件检测时间，单位秒。不传默认检测600秒。仅HBM检测、CPU检测时生效，HBM检测时取值范围：\[0, 604800\]，设置为0时表示仅执行一轮HBM检测；CPU检测时取值范围：\[1, 604800\]。
 - **output**：可选参数，其值作为检测结果文件diagnose\_result\_\{time\_stamp\}.txt的保存目录。命令行中不带output参数时，输出结果不落盘仅在终端屏幕显示；若output指定值为空、无效字符串、或指定路径目录无写权限、或创建目录失败，则asys工具退出执行并报错。
 

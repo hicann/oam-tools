@@ -18,7 +18,7 @@ asys launch --task="sh ../app_run.sh" --tar="True" --output=path
 
 ## 参数说明
 
-- **task**：必选参数，为复跑业务的执行命令，需要填写完整的命令，例如"sh ../app\_run.sh"，_sh_为执行任务的命令，_../app\_run.sh_为要执行的任务脚本。
+- **task**：必选参数，为复跑业务的执行命令，需要填写完整的命令，例如**sh ../app\_run.sh**，**sh**为执行任务的命令，**../app\_run.sh**为要执行的任务脚本。
 
     不支持原有执行脚本内部直接后台执行的方式。例如：原有用例通过命令行执行sh cmd.sh来拉起用例，而cmd.sh的实现里执行python3 test.py &，用后台的方式执行，此种任务由于无法感知结束点，暂不支持使用。
 
@@ -29,7 +29,7 @@ asys launch --task="sh ../app_run.sh" --tar="True" --output=path
 
 1. （可选）修改业务复跑相关的配置项，如果不修改，则采用默认配置。
 
-    默认配置如下，可通过修改asys工具目录下的“ascend\_system\_advisor/asys/conf/asys.ini”文件中的参数，从而打开或关闭开启算子编译文件和dump图收集等功能：
+    默认配置如下，可通过修改asys工具目录下的“ascend\_system\_advisor/asys/conf/asys.ini”文件中的参数，从而开启或关闭算子编译文件和dump图收集等功能：
 
     ```bash
     [launch]
@@ -53,26 +53,26 @@ asys launch --task="sh ../app_run.sh" --tar="True" --output=path
     执行完命令后，在\{output\}/asys\_output\_timestamp路径下的故障信息文件目录如下所示：
 
     ```bash
-    ├── asys_output_timestamp         
+    ├── asys_output_timestamp
        ├── software_info.txt            // 安装包版本、环境变量、依赖软件、系统信息
        ├── hardware_info.txt            // 收集了host和device侧硬件信息，host信息包括内核版本信息、CPU型号、内存和硬盘使用情况等， device信息包括设备个数、aicpu个数等
        ├── status_info.txt              // 收集device的信息，包含芯片型号、CPU和AI Core利用率等
        ├── health_result.txt            // 收集device健康信息，包括故障码和故障信息
-       └── dfx              
-           ├── bbox                     // Device侧的黑匣子信息       
+       └── dfx
+           ├── bbox                     // Device侧的黑匣子信息
            ├── data-dump                // 发生Aicore err时，生成的dump文件
            ├── graph                    // dump图信息，包含GE与TF Adapter的dump图
-           ├── ops                      // 算子编译信息，包括算子编译*.o和*.json文件、算子编译过程信息、自定义算子配置信息等 
+           ├── ops                      // 算子编译信息，包括算子编译*.o和*.json文件、算子编译过程信息、自定义算子配置信息等
            ├── stackcore                // 报错触发coredump时的core文件信息
            ├── atrace                   // trace落盘信息，包括trace二进制文件解析的明文文件
-           └── log          
-               ├── device       
+           └── log
+               ├── device
                │     ├──dev-os-{id}
                │           ├── firmware      // 固件生成的日志
                │           ├── slogd         // 日志相关进程的维测日志
                │           ├── application   // 业务进程产生的非EVENT级别应用日志
                │           └── system        // 常驻进程生成的日志
-               └── host     
+               └── host
                     ├── message         // message/syslog日志
                     ├── install         // 包历史安装情况的日志
                     ├── cann            // 应用类日志

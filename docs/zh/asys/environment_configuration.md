@@ -29,7 +29,7 @@ asys config -d=deviceId --restore --stress_detect
 - **restore**：恢复指定配置。
 - **stress\_detect**：表示压测相关配置。get和stress\_detect配合使用，用于获取压测相关配置；restore和stress\_detect配合使用，用于恢复压测相关配置。
 
-## 使用示例和输出示例
+## 使用示例和输出说明
 
 各产品型号的输出信息有所不同，请以实际输出信息为准。
 

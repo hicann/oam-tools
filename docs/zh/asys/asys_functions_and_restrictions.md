@@ -11,7 +11,7 @@
 - **[软硬件、Device状态信息展示](software_hardware_device_status_info_display.md)**：收集安装包版本信息、Device温度、功率等。
 - **[健康检查](health_check.md)**：检查所有Device或指定Device的健康状态（若不健康，会展示报错信息）。
 - **[综合检测](comprehensive_detection.md)**：涉及压力检测、HBM硬件检测、CPU检测、AI Core STL硬件检测等功能。
-- **[组件检测](component_diagnostics.md)**：当前只支持AI Vector组件检测，不支持并行执行 。
+- **[组件检测](component_diagnostics.md)**：当前只支持AI Vector组件检测，不支持并行执行。
 - **[trace文件解析](trace_files_parsing.md)/[coredump文件解析](coredump_files_parsing.md)/[stackcore文件解析](stackcore_files_parsing.md)/[coretrace文件解析](coretrace_files_parsing.md)/[UB文件解析](UB_files_parsing.md)**：解析各类文件，以便后续定位问题。
 - **[实时堆栈导出](stack_export.md)**：该功能适用于业务进程卡住场景，以便导出堆栈信息定位问题。
 - **[环境配置](environment_configuration.md)**：获取或恢复指定配置。
@@ -31,7 +31,7 @@
 | 用户用例执行的命令信息 | - |
 | 调试版本的二进制信息 | 即${ASCEND_OPP_PATH}/debug_kernel目录下的信息，但需提前配置环境变量ASCEND_OPP_PATH（用于设置算子库的安装路径）。若未配置ASCEND_OPP_PATH环境变量或该环境变量配置不正确，则默认不收集调试版本的二进制信息。 |
 
->**说明：** 
+>**说明：**
 >环境变量的详细配置说明请参见[《环境变量参考》](https://hiascend.com/document/redirect/CannCommunityEnvRef)。
 
 ## 使用约束
