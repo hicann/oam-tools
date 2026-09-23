@@ -185,7 +185,9 @@ class AsysStackTrace(AscendTraceDll):
 
         # check remote pid ?
         cmd = f"ps -p {self.remote_id}"
-        ret = popen_run_cmd(cmd)[:-1].split("\n")
+        # Split the command output into logical lines without manually
+        # trimming a presumed trailing newline.
+        ret = popen_run_cmd(cmd).splitlines()
         if len(ret) != 2:
             log_error("The remote parameter must be set to the PID of the process.")
             return False
