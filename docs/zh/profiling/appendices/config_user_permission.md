@@ -115,7 +115,7 @@
             echo "${command_param}" | grep -q -E '^[ 0-9a-zA-Z./:]*$'
             result=$?
             if [ "$result" -ne 0 ]; then
-                echo "Parameter:${command_param} is invalied!"
+                echo "Parameter:${command_param} is invalid!"
                 exit 1
             fi
             if ! id -u "${command_param}" >/dev/null 2>&1 ; then
@@ -241,7 +241,7 @@
     执行完成后，返回如下所示表示执行成功。
 
     ```sh
-    The user permission have been configured successfully.You cann find the configuration file /etc/sudoers.d/HwHiAiuser_profiling
+    The user permission have been configured successfully.You can find the configuration file /etc/sudoers.d/HwHiAiuser_profiling
     ```
 
     > [!NOTE]说明

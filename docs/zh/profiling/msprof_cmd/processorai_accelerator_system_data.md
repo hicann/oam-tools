@@ -29,7 +29,7 @@ msprof [options] <app>
   - Atlas A3系列产品
    <!-- end id56 -->
    <!-- npu="950" id3 -->
-  - Ascend 950PR&Ascend 950DT系列产品
+  - Ascend 950PR&950DT系列产品
    <!-- end id3 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id00001 -->
@@ -88,7 +88,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
   - Atlas A3系列产品：不支持
     <!-- end id9 -->
     <!-- npu="950" id10 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
     <!-- end id10 -->
 
 - MemoryAccess：
@@ -103,7 +103,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
   - Atlas训练系列产品：不支持
     <!-- end id13 -->
     <!-- npu="950" id14 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
     <!-- end id14 -->
 
 默认值：
@@ -124,7 +124,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 - Atlas A3系列产品：PipeUtilization
 <!-- end id19 -->
 <!-- npu="950" id20 -->
-- Ascend 950PR&Ascend 950DT系列产品：PipeUtilization
+- Ascend 950PR&950DT系列产品：PipeUtilization
 <!-- end id20 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id00002 -->
@@ -145,7 +145,7 @@ aic-metrics=<aic-metrics-value\>：可选，AI Core性能指标采集项。该�
 --sys-hardware-mem-freq=<sys-hardware-mem-freq-value\>：可选，--sys-hardware-mem的采集频率，范围\[1,100\]，默认值为50，单位Hz。
 
 <!-- npu="950" id21 -->
-Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id21 -->
 设置该参数需要`--sys-hardware-mem`参数设置为on。
 <!-- npu="A3,910b,310b" id22 -->
@@ -219,7 +219,7 @@ Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支�
 - Atlas A3系列产品：支持采集NIC、ROCE和MAC
 <!-- end id32 -->
 <!-- npu="950" id33 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集UB带宽数据
+- Ascend 950PR&950DT系列产品：支持采集UB带宽数据
 <!-- end id33 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id34 -->
@@ -256,7 +256,7 @@ Atlas 200I/500 A2推理产品不支持该参数。
 - Atlas A3系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据。
 <!-- end id42 -->
 <!-- npu="950" id43 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集CCU带宽数据、PCIe数据、片间传输带宽信息、SIO数据、UB带宽数据。
+- Ascend 950PR&950DT系列产品：支持采集CCU带宽数据、PCIe数据、片间传输带宽信息、SIO数据、UB带宽数据。
 <!-- end id43 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id44 -->
@@ -310,14 +310,14 @@ Atlas 200I/500 A2推理产品不支持该参数。
 - Atlas A3系列产品
 <!-- end id48 -->
 <!-- npu="950" id49 -->
-- Ascend 950PR&Ascend 950DT系列产品
+- Ascend 950PR&950DT系列产品
 <!-- end id49 -->
 
 <!-- npu="950,A3,910b" id50 -->
 仅在单算子场景下采集AI任务性能数据（即传入用户程序）时才能采集到具体性能数据。
 <!-- end id50 -->
 <!-- npu="950" id51 -->
-对于Ascend 950PR&Ascend 950DT系列产品，可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
+对于Ascend 950PR&950DT系列产品，可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id51 -->
 
 <!-- npu="A3,910b" id53 -->
@@ -344,13 +344,13 @@ Atlas 200I/500 A2推理产品不支持该参数。
 
 --sys-lp=<sys-lp-value\>：可选，采集低功耗数据。默认值为on，表示开启，可手动配置为off，表示关闭。仅以下型号支持该参数：
 
-Ascend 950PR&Ascend 950DT系列产品
+Ascend 950PR&950DT系列产品
 
 ### sys-lp-freq
 
 --sys-lp-freq=<sys-lp-freq-value\>：可选，低功耗数据采集频率。取值范围：[1,100]，默认值：100，单位：Hz。仅以下型号支持该参数：
 
-Ascend 950PR&Ascend 950DT系列产品
+Ascend 950PR&950DT系列产品
 <!-- end id61 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id4 -->
@@ -362,9 +362,9 @@ Ascend 950PR&Ascend 950DT系列产品
 msprof --output=/home/projects/output --sys-devices=<ID> --sys-period=<period> --ai-core=on --sys-hardware-mem=on --sys-cpu-profiling=on --sys-profiling=on --sys-pid-profiling=on --dvpp-profiling=on
 ```
 
-Ascend EP场景下，在--output指定的目录下生成PROF_XXX目录，存放自动解析后的性能数据，相关结果文件请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/profile_data_file_references.md)。
+Ascend EP场景下，在--output指定的目录下生成PROF_XXX目录，存放自动解析后的性能数据，相关结果文件请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.2.0/docs/zh/user_guide/profile_data_file_references.md)。
 
-Ascend RC场景下，在--output指定的目录下生成PROF_XXX目录，该目录下的文件未经解析无法查看，您需要将PROF_XXX目录上传到开发环境进行数据解析，具体操作方法请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/msprof_parsing_instruct.md)。
+Ascend RC场景下，在--output指定的目录下生成PROF_XXX目录，该目录下的文件未经解析无法查看，您需要将PROF_XXX目录上传到开发环境进行数据解析，具体操作方法请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.2.0/docs/zh/user_guide/msprof_parsing_instruct.md)。
 <!-- end id4 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/msprof_cmd/processorai_accelerator_system_data_res.md#id00004 -->

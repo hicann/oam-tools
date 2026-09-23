@@ -38,5 +38,5 @@ Atlas A3系列产品
 <!-- end id4 -->
 
 <!-- npu="950" id5 -->
-Ascend 950PR&Ascend 950DT系列产品
+Ascend 950PR&950DT系列产品
 <!-- end id5 -->

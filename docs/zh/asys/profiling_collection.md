@@ -30,7 +30,7 @@ asys profiling -r=aicore -p=time -d=deviceId --output=./ --aic_metrics=PipeUtili
 - **d**：可选参数，指定待操作的deviceId，仅支持输入单个deviceId，默认值为0。
 - **output**：可选参数，其值作为asys工具的结果输出目录的路径前缀，即最终输出目录为\{output\}/asys\_profiling\_result\__timestamp_。命令行中不带output参数时，输出结果存放在命令行执行目录下。若output指定值为空、无效字符串、或指定路径目录无写权限、或创建目录失败，则asys工具退出执行并报错。
 
-    结果文件的详细解释请参见[《性能调优工具》](https://hiascend.com/document/redirect/CannCommunityToolProfiling)中的性能数据文件参考。
+    结果文件的详细解释请参见[《性能调优工具》](https://hiascend.com/document/redirect/CannCommunityToolProfiling)中的[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.2.0/docs/zh/user_guide/profile_data_file_references.md)。
 
 - **aic\_metrics**：可选参数，AI Core PMU（performance monitor unit，性能监测单元）类型，当采集类型包含aicore时该参数生效。
 

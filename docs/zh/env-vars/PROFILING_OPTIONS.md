@@ -91,7 +91,7 @@ AI Core性能指标采集项，取值如下：
   <!-- end id9 -->
 
   <!-- npu="950" id10 -->
-  Ascend 950PR&Ascend 950DT系列产品：不支持该参数。
+  Ascend 950PR&950DT系列产品：不支持该参数。
   <!-- end id10 -->
 
   > [!NOTE]说明
@@ -121,7 +121,7 @@ AI Core性能指标采集项，取值如下：
 <!-- end id14 -->
 
 <!-- npu="950" id15 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
+- Ascend 950PR&950DT系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic-metrics=L2Cache。
 <!-- end id15 -->
 
 ### msproftx
@@ -138,7 +138,7 @@ AI Core性能指标采集项，取值如下：
 片上内存、QoS传输带宽、LLC三级缓存带宽、加速器带宽、SoC传输带宽、组件内存占用等的采集开关。不同产品的采集内容略有差异，请以实际结果为准。范围\[1,100\]，单位Hz。
 
 <!-- npu="950" id16 -->
-Ascend 950PR&Ascend 950DT系列产品，Qos和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&950DT系列产品，Qos和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id16 -->
 
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
@@ -183,7 +183,7 @@ Atlas A3系列产品：支持采集NIC、ROCE。
 <!-- end id23 -->
 
 <!-- npu="950" id24 -->
-Ascend 950PR&Ascend 950DT系列产品：支持采集UB带宽数据。
+Ascend 950PR&950DT系列产品：支持采集UB带宽数据。
 <!-- end id24 -->
 
 ### sys\_interconnection\_freq
@@ -203,7 +203,7 @@ Ascend 950PR&Ascend 950DT系列产品：支持采集UB带宽数据。
 <!-- end id27 -->
 
 <!-- npu="950" id28 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集PCIe数据、片间传输带宽信息、CCU带宽数据、SIO数据、UB带宽数据。
+- Ascend 950PR&950DT系列产品：支持采集PCIe数据、片间传输带宽信息、CCU带宽数据、SIO数据、UB带宽数据。
 <!-- end id28 -->
 
 ### dvpp\_freq
@@ -227,7 +227,7 @@ AI Core和AI Vector的带宽和延时采集开关。仅单算子场景支持。�
 <!-- end id31 -->
 
 <!-- npu="950" id32 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持，但可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
+- Ascend 950PR&950DT系列产品：支持，但可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id32 -->
 
 ### instr\_profiling\_freq
@@ -247,7 +247,7 @@ AI Core和AI Vector的带宽和延时采集开关，配置了采集频率即开�
 <!-- end id35 -->
 
 <!-- npu="950" id36 -->
-- Ascend 950PR&Ascend 950DT系列产品：不支持该开关，通过instr\_profiling控制该功能。
+- Ascend 950PR&950DT系列产品：不支持该开关，通过instr\_profiling控制该功能。
 <!-- end id36 -->
 
 ### host\_sys
@@ -303,5 +303,5 @@ Atlas A3系列产品
 <!-- end id4 -->
 
 <!-- npu="950" id5 -->
-Ascend 950PR&Ascend 950DT系列产品
+Ascend 950PR&950DT系列产品
 <!-- end id5 -->

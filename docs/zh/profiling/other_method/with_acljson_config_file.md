@@ -5,11 +5,11 @@
 采集性能原始数据成功后，可将采集的原始数据取到装有工具的开发环境上进行性能数据解析，展示性能数据解析结果。
 
 <!-- npu="950,A3,910b,910,310p,310b" id1 -->
-解析操作请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/msprof_parsing_instruct.md)，解析结果文件介绍请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.1.0/docs/zh/user_guide/profile_data_file_references.md)。
+解析操作请参见[使用msprof命令解析、查询与导出性能数据](https://gitcode.com/Ascend/msprof/blob/26.2.0/docs/zh/user_guide/msprof_parsing_instruct.md)，解析结果文件介绍请参见[性能数据文件参考](https://gitcode.com/Ascend/msprof/blob/26.2.0/docs/zh/user_guide/profile_data_file_references.md)。
 <!-- end id1 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id50 -->
-本节仅介绍如何在推理程序中开启性能数据采集，推理应用完整开发过程请参见《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》。
+本节仅介绍如何在推理程序中开启性能数据采集，推理应用完整开发过程请参见《[应用开发 \(C&C++\)](https://gitcode.com/cann/docs/blob/9.2.0/docs/zh/app-dev/README.md)》。
 <!-- end id50 -->
 
 ## 前提条件
@@ -52,7 +52,7 @@
 
 3. 配置acl.json文件完成后，请重新编译应用工程、并运行应用工程。
    <!-- npu="950,A3,910b,910,310p,310b" id51 -->
-   应用开发详细内容请参考《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》。
+   应用开发详细内容请参考《[应用开发 \(C&C++\)](https://gitcode.com/cann/docs/blob/9.2.0/docs/zh/app-dev/README.md)》。
    <!-- end id51 -->
 
     “output”指定路径下生成Profiling性能原始数据，如下所示。
@@ -137,7 +137,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
   - Atlas A3系列产品：不支持
   <!-- end id7 -->
   <!-- npu="950" id8 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
   <!-- end id8 -->
 
 - MemoryAccess：
@@ -152,7 +152,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
   - Atlas训练系列产品：不支持
   <!-- end id11 -->
   <!-- npu="950" id12 -->
-  - Ascend 950PR&Ascend 950DT系列产品：不支持
+  - Ascend 950PR&950DT系列产品：不支持
   <!-- end id12 -->
 
 默认值：
@@ -173,7 +173,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
 - Atlas A3系列产品：PipeUtilization
 <!-- end id17 -->
 <!-- npu="950" id18 -->
-- Ascend 950PR&Ascend 950DT系列产品：PipeUtilization
+- Ascend 950PR&950DT系列产品：PipeUtilization
 <!-- end id18 -->
 
 <!-- @ref: oam-tools/res/docs/zh/profiling/other_method/with_acljson_config_file_res.md#id00001 -->
@@ -204,7 +204,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
 - Atlas A3系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic\_metrics=L2Cache。
 <!-- end id23 -->
 <!-- npu="950" id24 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic\_metrics=L2Cache。
+- Ascend 950PR&950DT系列产品：支持采集L2 Cache和TLB页表缓存的命中率；分析AI Core命中L2次数推荐使用aic\_metrics=L2Cache。
 <!-- end id24 -->
 
 ### hccl
@@ -246,7 +246,7 @@ AI Core性能指标采集项。task_time或task_trace配置为on、l1或l2时，
 片上内存读写速率、QoS传输带宽、LLC三级缓存带宽、加速器带宽、SoC传输带宽、组件内存占用等的采集频率。不同产品的采集内容略有差异，请以实际结果为准。范围\[1,100\]，单位Hz。默认不采集。
 
 <!-- npu="950" id25 -->
-Ascend 950PR&Ascend 950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
+Ascend 950PR&950DT系列产品，QoS和SoC支持的采集频率最大支持配置10000，其他采集项支持的最大采集频率仍为100，若配置超出范围，其他采集项则按照最大采集频率100进行采集。
 <!-- end id25 -->
 
 已知在安装有glibc<2.34的环境上采集memory数据，可能触发glibc的一个已知[Bug 19329](https://sourceware.org/bugzilla/show_bug.cgi?id=19329)，通过升级环境的glibc版本可解决此问题。
@@ -294,7 +294,7 @@ LLC Profiling采集事件。采集该数据需要设置sys\_hardware\_mem\_freq�
 - Atlas A3系列产品：支持采集NIC和ROCE
 <!-- end id35 -->
 <!-- npu="950" id36 -->
-- Ascend 950PR&Ascend 950DT系列产品：UB带宽数据
+- Ascend 950PR&950DT系列产品：UB带宽数据
 <!-- end id36 -->
 
 <!-- npu="950,A3,910b,910,310p" id37 -->
@@ -319,7 +319,7 @@ LLC Profiling采集事件。采集该数据需要设置sys\_hardware\_mem\_freq�
 - Atlas A3系列产品：支持采集HCCS、PCIe数据、片间传输带宽信息、SIO数据
 <!-- end id42 -->
 <!-- npu="950" id43 -->
-- Ascend 950PR&Ascend 950DT系列产品：支持采集PCIe数据、片间传输带宽信息、SIO数据、CCU带宽数据、UB带宽数据
+- Ascend 950PR&950DT系列产品：支持采集PCIe数据、片间传输带宽信息、SIO数据、CCU带宽数据、UB带宽数据
 <!-- end id43 -->
 
 <!-- npu="950,A3,910b,910,310p,310b" id44 -->
@@ -335,7 +335,7 @@ DVPP采集频率。范围\[1,100\]，单位Hz。
 
 AI Core和AI Vector的带宽和延时采集频率开关。
 
-<br>仅单算子场景支持。仅Ascend 950PR&Ascend 950DT系列产品支持。
+<br>仅单算子场景支持。仅Ascend 950PR&950DT系列产品支持。
 <br>可能会因最后一段指令的统计时间超长导致统计不准确，建议使用msprof op方式采集。
 <!-- end id45 -->
 

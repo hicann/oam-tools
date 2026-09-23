@@ -58,7 +58,7 @@
 - 执行约束
   - 不支持在同一个Device同时拉起多个采集任务。也不可同时开启两种及以上性能数据采集方式。举例说明：使用msprof命令行方式启动Profiling时，app中不能通过acl接口启动Profiling数据采集。
     <!-- npu="950" id7 -->
-    <br>Ascend 950PR&Ascend 950DT系列产品场景下，支持同一个Device同时拉起多个task-time采集任务；当aic-mode取值为task-based时，支持同一个Device同时拉起多个aic-metrics采集任务。
+    <br>Ascend 950PR&950DT系列产品场景下，支持同一个Device同时拉起多个task-time采集任务；当aic-mode取值为task-based时，支持同一个Device同时拉起多个aic-metrics采集任务。
     <!-- end id7 -->
   - 不建议性能数据的采集功能与Dump功能同时使用。Dump操作会影响系统性能，如果同时开启采集功能与Dump功能，会造成采集的性能数据指标不准确，启动采集前请关闭数据Dump。
 
@@ -76,7 +76,7 @@
   - 工具要求Python 3.7.5及以上版本。
   - 调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口完成去初始化，才能获取到完整的性能数据。
   <!-- npu="950,A3,910b,910,310p,310b,IPV350" id5 -->
-  - 应用工程开发务必遵循《[应用开发 \(C&C++\)](https://hiascend.com/document/redirect/cannCommunityadevguide)》手册。如果应用程序已调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口导致工具采集流程未正常结束，采集数据会不完整。最后1秒内已采集的数据可能因未及时落盘而丢失，但丢失的数据不大于2M，不影响已落盘的性能数据分析。
+  - 应用工程开发务必遵循《[应用开发 \(C&C++\)](https://gitcode.com/cann/docs/blob/9.2.0/docs/zh/app-dev/README.md)》手册。如果应用程序已调用`aclInit()`接口完成初始化和调用`aclFinalize()`接口导致工具采集流程未正常结束，采集数据会不完整。最后1秒内已采集的数据可能因未及时落盘而丢失，但丢失的数据不大于2M，不影响已落盘的性能数据分析。
   <!-- end id5 -->
   <!-- npu="950,A3,910b,910,310p,310b" id3 -->
   - 使用pyACL API开发的应用工程在通过msprof命令行方式采集性能数据时，不支持在工程Python脚本中打开相对路径文件。Python脚本中包含打开相对路径文件的操作会导致采集性能数据报错。
