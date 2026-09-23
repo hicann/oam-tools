@@ -78,6 +78,7 @@ int HcclOpBaseReducescatterTest::check_buf_result()
             break;
         case HCCL_DATA_TYPE_INT8:
         case HCCL_DATA_TYPE_UINT8:
+        case HCCL_DATA_TYPE_HIF8:
             ret = check_buf_result_int8((char*)recv_buff_temp, (char*)check_buf, data->count, check);
             break;
         case HCCL_DATA_TYPE_INT32:

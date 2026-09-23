@@ -24,6 +24,7 @@
 #include <string>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <hccl/hccl_types.h>
 #include "hccl_test_common.h"
 #include <map>
@@ -99,6 +100,109 @@ static inline uint16_t fp32tobf16(float x)
     *p &= 0xffff0000;
 
     return y;
+}
+
+constexpr u8 HIF8_SIGN_MASK = 0x80;
+constexpr u8 HIF8_DATA_MASK = 0x7F;
+constexpr u8 HIF8_POSITIVE_INFINITY = 0x6F;
+constexpr u8 HIF8_NAN = 0x80;
+constexpr float HIF8_INFINITY_THRESHOLD = 40960.0F;
+
+// 昇腾 HiFloat8：符号位 + 7 位数据（高位至低位：前缀|指数|尾数，三者位宽恒为 7）。
+// 前缀标记小数点位置：0001/001/01/10/11 依次为 dot0..dot4，0000（0x00-0x07）为非规格化数。
+static inline float decode_positive_hif8(u8 encoded)
+{
+    if (encoded == HIF8_POSITIVE_INFINITY) {
+        return std::numeric_limits<float>::infinity();
+    }
+
+    if ((encoded & 0x78U) == 0) {
+        // 0000eee：eee 为 0 时表示 0，否则表示 2^(eee-23)。
+        const int denormalExponent = encoded & 0x07U;
+        return denormalExponent == 0 ? 0.0F : std::ldexp(1.0F, denormalExponent - 23);
+    }
+
+    int exponentWidth = 0; // 点位前缀确定的指数位宽
+    int mantissaWidth = 0; // 点位前缀确定的尾数位宽
+    switch (encoded >> 3) {
+        case 0x1: // 前缀 0001：0 位指数，3 位尾数
+            exponentWidth = 0;
+            mantissaWidth = 3;
+            break;
+        case 0x2:
+        case 0x3: // 前缀 001：1 位指数，3 位尾数
+            exponentWidth = 1;
+            mantissaWidth = 3;
+            break;
+        case 0x4:
+        case 0x5:
+        case 0x6:
+        case 0x7: // 前缀 01：2 位指数，3 位尾数
+            exponentWidth = 2;
+            mantissaWidth = 3;
+            break;
+        case 0x8:
+        case 0x9:
+        case 0xA:
+        case 0xB: // 前缀 10：3 位指数，2 位尾数
+            exponentWidth = 3;
+            mantissaWidth = 2;
+            break;
+        default: // 前缀 11：4 位指数，1 位尾数
+            exponentWidth = 4;
+            mantissaWidth = 1;
+            break;
+    }
+
+    // 规格化数的尾数有一个不存储的前导 1。
+    const u8 mantissaMask = static_cast<u8>((1U << mantissaWidth) - 1U);
+    const float significand
+        = 1.0F + static_cast<float>(encoded & mantissaMask) / static_cast<float>(1U << mantissaWidth);
+    if (exponentWidth == 0) {
+        return significand;
+    }
+
+    const u8 exponentMask = static_cast<u8>((1U << exponentWidth) - 1U);
+    const u8 encodedExponent = static_cast<u8>((encoded >> mantissaWidth) & exponentMask);
+    const u8 exponentSign = static_cast<u8>(encodedExponent >> (exponentWidth - 1));
+    // 指数采用符号-幅值编码：存储域为 1 位符号 + 幅值低位，幅值的最高位 1 隐含不存储。
+    const int exponentMagnitude = (1U << (exponentWidth - 1)) | (encodedExponent & ((1U << (exponentWidth - 1)) - 1U));
+    const int exponent = exponentSign == 0 ? exponentMagnitude : -exponentMagnitude;
+    return std::ldexp(significand, exponent);
+}
+
+static inline u8 fp32tohif8(float value)
+{
+    if (std::isnan(value)) {
+        return HIF8_NAN;
+    }
+
+    const bool isNegative = std::signbit(value);
+    const float absValue = std::fabs(value);
+    if (absValue == 0.0F) {
+        return 0;
+    }
+    if (std::isinf(absValue) || absValue >= HIF8_INFINITY_THRESHOLD) {
+        return static_cast<u8>(HIF8_POSITIVE_INFINITY | (isNegative ? HIF8_SIGN_MASK : 0));
+    }
+
+    // Select the nearest finite encoding. On a tie, the larger magnitude implements round half away from zero.
+    u8 nearest = 0;
+    float nearestValue = 0.0F;
+    float nearestError = std::numeric_limits<float>::infinity();
+    for (u16 encoded = 0; encoded <= HIF8_DATA_MASK; ++encoded) {
+        if (encoded == HIF8_POSITIVE_INFINITY) {
+            continue;
+        }
+        const float candidate = decode_positive_hif8(static_cast<u8>(encoded));
+        const float error = std::fabs(absValue - candidate);
+        if (error < nearestError || (error == nearestError && candidate > nearestValue)) {
+            nearest = static_cast<u8>(encoded);
+            nearestValue = candidate;
+            nearestError = error;
+        }
+    }
+    return static_cast<u8>(nearest | (isNegative ? HIF8_SIGN_MASK : 0));
 }
 
 typedef void (*HostBufInitFunc)(void*, u64, int);

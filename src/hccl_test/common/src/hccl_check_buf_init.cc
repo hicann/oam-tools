@@ -22,6 +22,7 @@
 #include "hccl_test_common.h"
 #include <sys/syscall.h>
 #include "hccl_check_buf_init.h"
+#include <limits>
 #include <map>
 
 void host_buf_init_fp32(void* dst_buf, u64 count, int val)
@@ -110,6 +111,15 @@ void hccl_host_buf_init(void* dst_buf, u64 count, int dtype, int val)
         functionMap[dtype](dst_buf, count, val);
     }
     return;
+}
+
+void host_buf_init_hif8(void* dst_buf, u64 count, int val)
+{
+    u8* hif8Buf = static_cast<u8*>(dst_buf);
+    const u8 encoded = fp32tohif8(static_cast<float>(val));
+    for (u64 j = 0; j < count; ++j) {
+        hif8Buf[j] = encoded;
+    }
 }
 
 void reduce_check_buf_init_fp32(void* dst_buf, u64 count, int val, int op, int rank_size)
@@ -291,6 +301,26 @@ void hccl_reduce_check_buf_init(void* dst_buf, u64 count, int dtype, int op, int
         functionReduceMap[dtype](dst_buf, count, val, op, rank_size);
     }
     return;
+}
+
+void reduce_check_buf_init_hif8(void* dst_buf, u64 count, int val, int op, int rank_size)
+{
+    const u8 input = fp32tohif8(static_cast<float>(val));
+    float result = decode_positive_hif8(static_cast<u8>(input & HIF8_DATA_MASK));
+    if ((input & HIF8_SIGN_MASK) != 0) {
+        result = -result;
+    }
+    if (op == HCCL_REDUCE_SUM) {
+        result *= rank_size;
+    } else if (op == HCCL_REDUCE_PROD) {
+        result = std::pow(result, rank_size);
+    }
+
+    u8* hif8Buf = static_cast<u8*>(dst_buf);
+    const u8 encoded = fp32tohif8(result);
+    for (u64 j = 0; j < count; ++j) {
+        hif8Buf[j] = encoded;
+    }
 }
 
 int alltoall_check_result_uint64(
@@ -571,6 +601,29 @@ int alltoall_check_result_bfp16(
     return ret;
 }
 
+int alltoall_check_result_hif8(
+    const void* check_buf, u64* recv_counts, u64* recv_disp, int rank_size, int dtype, int rank_id, int check_level)
+{
+    int ret = 0;
+    const u8* result = NULL;
+    for (int i = 0; i < rank_size; ++i) {
+        const u8 check_val = fp32tohif8(static_cast<float>(i + 1));
+        result = static_cast<const u8*>(check_buf) + recv_disp[i];
+        for (u64 j = 0; j < recv_counts[i]; ++j) {
+            if (result[j] != check_val) {
+                if (check_level >= 2) {
+                    printf(
+                        "local rankId[%d]: check data from rank %d result[%llu] error, exp:%d, act:%d\n", rank_id, i, j,
+                        check_val, result[j]);
+                }
+                ret++;
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
 int hccl_alltoallv_check_result(
     void* check_buf, u64* recv_counts, u64* recv_disp, int rank_id, int rank_size, int dtype, int check_level)
 {
@@ -630,7 +683,7 @@ std::map<int, HostBufInitFunc> functionMap
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_FP64, host_buf_init_fp64),
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_UINT64, host_buf_init_int64),
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_BFP16, host_buf_init_bfp16),
-       std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_HIF8, host_buf_init_int8),
+       std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_HIF8, host_buf_init_hif8),
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_FP8E4M3, host_buf_init_int8),
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_FP8E5M2, host_buf_init_int8),
        std::pair<int, HostBufInitFunc>(HCCL_DATA_TYPE_FP8E8M0, host_buf_init_int8)};
@@ -645,7 +698,8 @@ std::map<int, ReduceCheckBufInitFunc> functionReduceMap
        std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_INT64, reduce_check_buf_init_int64),
        std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_UINT64, reduce_check_buf_init_int64),
        std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_FP64, reduce_check_buf_init_fp64),
-       std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_BFP16, reduce_check_buf_init_bfp16)};
+       std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_BFP16, reduce_check_buf_init_bfp16),
+       std::pair<int, ReduceCheckBufInitFunc>(HCCL_DATA_TYPE_HIF8, reduce_check_buf_init_hif8)};
 
 std::map<int, AllToAllCheckResult> functionAllToAllMap
     = {std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_UINT64, alltoall_check_result_uint64),
@@ -660,7 +714,7 @@ std::map<int, AllToAllCheckResult> functionAllToAllMap
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_UINT32, alltoall_check_result_uint32),
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP64, alltoall_check_result_fp64),
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_BFP16, alltoall_check_result_bfp16),
-       std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_HIF8, alltoall_check_result_uint8),
+       std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_HIF8, alltoall_check_result_hif8),
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E4M3, alltoall_check_result_uint8),
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E5M2, alltoall_check_result_uint8),
        std::pair<int, AllToAllCheckResult>(HCCL_DATA_TYPE_FP8E8M0, alltoall_check_result_uint8)};

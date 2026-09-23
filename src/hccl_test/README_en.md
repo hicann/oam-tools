@@ -302,7 +302,7 @@ Each operator test class overrides `is_data_overflow()` to define operator-speci
 | fp64 | `fp64` | 8 Bytes | Element-wise comparison | Reduction verification not supported |
 | bfp16 | `bfp16` | 2 Bytes | Element-wise comparison | Supported (overflow detection) |
 | int128 | `int128` | 16 Bytes | Initialization only | Reduction verification not supported |
-| hif8 | `hif8` | 1 Byte | Element-wise comparison | Reduction verification not supported |
+| hif8 | `hif8` | 1 Byte | Element-wise comparison | ReduceScatter supported (sum/max/min) |
 | fp8e4m3 | `fp8e4m3` | 1 Byte | Element-wise comparison | Reduction verification not supported |
 | fp8e5m2 | `fp8e5m2` | 1 Byte | Element-wise comparison | Reduction verification not supported |
 | fp8e8m0 | `fp8e8m0` | 1 Byte | Element-wise comparison | Reduction verification not supported |

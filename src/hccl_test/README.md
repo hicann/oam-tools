@@ -302,7 +302,7 @@ HCCL Test支持三种内存管理模式：
 | fp64 | `fp64` | 8 Bytes | 逐元素比对 | 不支持归约校验 |
 | bfp16 | `bfp16` | 2 Bytes | 逐元素比对 | 支持（溢出检测） |
 | int128 | `int128` | 16 Bytes | 仅初始化支持 | 不支持归约校验 |
-| hif8 | `hif8` | 1 Byte | 逐元素比对 | 不支持归约校验 |
+| hif8 | `hif8` | 1 Byte | 逐元素比对 | ReduceScatter支持（sum/max/min） |
 | fp8e4m3 | `fp8e4m3` | 1 Byte | 逐元素比对 | 不支持归约校验 |
 | fp8e5m2 | `fp8e5m2` | 1 Byte | 逐元素比对 | 不支持归约校验 |
 | fp8e8m0 | `fp8e8m0` | 1 Byte | 逐元素比对 | 不支持归约校验 |
