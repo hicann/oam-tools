@@ -289,7 +289,7 @@ add_executable(param_validation_utest
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_lite_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_v2_platform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/stub/rc_v2_platform_stub.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/modena_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/base_analyzer.cpp
     ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
@@ -346,6 +346,7 @@ target_include_directories(param_validation_utest PRIVATE
     ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
     ${CMAKE_BINARY_DIR}/proto/param_validation_utest_proto/
     ../stub/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/stub
 )
 
 target_compile_options(param_validation_utest PRIVATE

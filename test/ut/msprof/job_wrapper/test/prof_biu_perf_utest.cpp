@@ -30,7 +30,7 @@
 #include "prof_inner_api.h"
 #include "ai_drv_dev_api.h"
 #include "ai_drv_prof_api.h"
-#include "mdc_v2_platform.h"
+#include "rc_v2_platform_stub.h"
 
 namespace {
 std::vector<int32_t> g_startedChannels;
@@ -126,7 +126,7 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, Launch)
     } while (0);
 }
 
-TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2InstrProfilingOnlyStartsWhitelistChannels)
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, RcV2InstrProfilingOnlyStartsWhitelistChannels)
 {
     g_startedChannels.clear();
     MOCKER_CPP(
@@ -281,13 +281,13 @@ TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, BiuPerfJobErrorBranches)
     EXPECT_EQ(PROFILING_FAILED, profBiuPerfJob->Uninit());
 }
 
-TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, MdcV2GetBiuPerfChannelInfosReturnsWhitelist)
+TEST_F(JOB_WRAPPER_PROF_BIU_PERF_JOB_TEST, RcV2GetBiuPerfChannelInfosReturnsWhitelist)
 {
     using namespace Dvvp::Collect::Platform;
-    MdcV2Platform mdcV2Platform;
+    RcV2PlatformStub rcV2Platform;
     std::vector<uint32_t> groupVector = {0, 2, 3, 5};
-    auto infos = mdcV2Platform.GetBiuPerfChannelInfos(groupVector, groupVector.size());
-    // MdcV2 returns a fixed whitelist of 4 channels regardless of input.
+    auto infos = rcV2Platform.GetBiuPerfChannelInfos(groupVector, groupVector.size());
+    // RcV2 returns a fixed whitelist of 4 channels regardless of input.
     EXPECT_EQ(4u, infos.size());
     std::vector<int32_t> expectedChannelIds = {11, 17, 20, 26};
     for (size_t i = 0; i < infos.size(); i++) {

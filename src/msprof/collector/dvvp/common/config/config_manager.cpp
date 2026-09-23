@@ -80,7 +80,11 @@ int32_t ConfigManager::Init()
                 "Driver doesn't support device type version by halGetDeviceInfo interface, ret=%d"
                 ", set PlatformType::HELPER_DEVICE_TYPE",
                 static_cast<int32_t>(ret));
-            chipId = static_cast<uint32_t>(PlatformType::HELPER_DEVICE_TYPE);
+#ifdef MSPROF_MODULE_EXT_DEFAULT_PLATFORM_TYPE
+            chipId = static_cast<uint32_t>(MSPROF_MODULE_EXT_DEFAULT_PLATFORM_TYPE);
+#else
+            chipId = static_cast<uint32_t>(HELPER_DEVICE_TYPE);
+#endif
             break;
         }
     }
@@ -149,6 +153,16 @@ void ConfigManager::InitFrequency()
     configMap_[FRQ_CONFIG] = frequency;
 }
 
+void ConfigManager::UpdateFrequency(const std::string& frequency, const std::string& aicFrequency)
+{
+    if (!frequency.empty()) {
+        configMap_[FRQ_CONFIG] = frequency;
+    }
+    if (!aicFrequency.empty()) {
+        configMap_[AIC_CONFIG] = aicFrequency;
+    }
+}
+
 std::string ConfigManager::GetChipIdStr()
 {
     const auto iter = configMap_.find(TYPE_CONFIG);
@@ -175,12 +189,10 @@ PlatformType ConfigManager::GetPlatformType() const
 bool ConfigManager::IsDriverSupportLlc() const
 {
     PlatformType type = GetPlatformType();
-    if (type == PlatformType::CLOUD_TYPE || type == PlatformType::DC_TYPE || type == PlatformType::MDC_TYPE ||
-        type == PlatformType::CHIP_V4_1_0 || type == PlatformType::MINI_V3_TYPE || type == PlatformType::CHIP_TINY_V1 ||
-        type == PlatformType::CHIP_MDC_MINI_V3 || type == PlatformType::CHIP_MDC_LITE ||
-        type == PlatformType::CHIP_MDC_V2 || type == PlatformType::CHIP_CLOUD_V3 ||
-        type == PlatformType::CHIP_CLOUD_V3_LITE || type == PlatformType::CHIP_CLOUD_V4 ||
-        type == PlatformType::CHIP_MDC_LITE_V2) {
+    if (type == PlatformType::CLOUD_TYPE || type == PlatformType::DC_TYPE || type == PlatformType::CHIP_V4_1_0 ||
+        type == PlatformType::MINI_V3_TYPE || type == PlatformType::CHIP_TINY_V1 ||
+        type == PlatformType::CHIP_CLOUD_V3 || type == PlatformType::CHIP_CLOUD_V3_LITE ||
+        type == PlatformType::CHIP_CLOUD_V4) {
         return true;
     }
     return false;

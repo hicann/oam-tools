@@ -77,6 +77,9 @@ int32_t Platform::Init()
     platform_ = PlatformReflection::CreatePlatformClass(type);
     if (platform_ == nullptr) {
         MSPROF_LOGE("Profiling platform init failed");
+    } else {
+        ConfigManager::instance()->UpdateFrequency(
+            platform_->GetDeviceOscDefaultFreq(), platform_->GetAicDefaultFreq());
     }
     return PROFILING_SUCCESS;
 }
@@ -187,24 +190,17 @@ int32_t Platform::GetAicoreEvents(const std::string& aicoreMetricsType, std::str
 
 int32_t Platform::GetNtsEvents(const std::string& ntsMetricsType, std::string& ntsEvents) const
 {
-    if (ConfigManager::instance()->GetPlatformType() != PlatformType::CHIP_MDC_V2) {
-        MSPROF_LOGE("NTS PMU events are not supported on current platform.");
-        return PROFILING_FAILED;
-    }
     if (platform_ == nullptr) {
         MSPROF_LOGE("Get platform instances info failed.");
         return PROFILING_FAILED;
     }
-
-    std::string metricsType = ntsMetricsType;
-    if (metricsType == PIPE_UTILIZATION) {
-        metricsType = PIPE_UTILIZATION_EXCT;
-    }
-    if (metricsType != PIPE_UTILIZATION_EXCT) {
-        MSPROF_LOGE("Unsupported NTS metrics type: %s.", ntsMetricsType.c_str());
+    // NTS事件支持由平台特性集合表达，非支持平台返回空事件
+    ntsEvents = platform_->GetNtsEvents(ntsMetricsType);
+    if (ntsEvents.empty()) {
+        MSPROF_LOGE("NTS PMU events are not supported on current platform.");
         return PROFILING_FAILED;
     }
-    return platform_->GetAiPmuMetrics(metricsType, ntsEvents);
+    return PROFILING_SUCCESS;
 }
 
 /**
@@ -235,6 +231,19 @@ bool Platform::CheckIfSupport(const std::string feature) const
         }
     }
     return false;
+}
+
+std::vector<std::string> Platform::GetHiddenCliArgs() const
+{
+    if (platform_ == nullptr) {
+        return {};
+    }
+    return platform_->GetHiddenCliArgs();
+}
+
+bool Platform::IsSupportLlcProfiling() const
+{
+    return ConfigManager::instance()->IsDriverSupportLlc() || CheckIfSupport(PLATFORM_SYS_DEVICE_LLC_EXT);
 }
 
 void Platform::SetSubscribeFeature()
@@ -358,6 +367,14 @@ uint16_t Platform::GetMaxMonitorNumber() const
         return MAX_COLLECT_MONITOR_NUM;
     }
     return platform_->GetMaxMonitorNumber();
+}
+
+int32_t Platform::GetMaxAiPmuEvent() const
+{
+    if (platform_ == nullptr) {
+        return 0;
+    }
+    return platform_->GetMaxAiPmuEvent();
 }
 
 std::vector<BiuPerfChannelInfo> Platform::GetBiuPerfChannelInfos(

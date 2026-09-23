@@ -158,6 +158,7 @@ target_compile_definitions(ascend_devprof PRIVATE
     MSPROF_LIB
     google=ascend_private
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>:NOMINMAX>
+    $<$<BOOL:${ENABLE_MODULE_EXT}>:${MSPROF_MODULE_EXT_COMPILE_DEFINITIONS}>
     $<$<STREQUAL:${PRODUCT},ascend310rc>:RC_MODE ASCEND310>
     $<$<STREQUAL:${PRODUCT},ascend310Brc>:RC_MODE>
     $<$<STREQUAL:${PRODUCT},ascend310Brcesl>:RC_MODE>
@@ -166,10 +167,6 @@ target_compile_definitions(ascend_devprof PRIVATE
     $<$<STREQUAL:${PRODUCT},ascend310Besl>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},ascend310p>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},helper310p>:RC_MODE>
-    $<$<STREQUAL:${PRODUCT},ascend610>:RC_MODE>
-    $<$<STREQUAL:${PRODUCT},ascend610Lite>:RC_MODE>
-    $<$<STREQUAL:${PRODUCT},ascend610Liteesl>:RC_MODE>
-    $<$<STREQUAL:${PRODUCT},as31xm1>:RC_MODE>
     $<$<STREQUAL:${PRODUCT},ascend910>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},ascend910B>:EP_MODE>
     $<$<STREQUAL:${PRODUCT},ascend910_95>:EP_MODE>

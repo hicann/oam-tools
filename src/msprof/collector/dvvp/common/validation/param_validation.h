@@ -86,7 +86,6 @@ public:
     bool CheckSocPmuEventsValid(ProfSocPmuType type, const std::vector<std::string>& events) const;
     bool CheckSocPmuEventsSizeValid(ProfSocPmuType type, uint32_t eventSize, int32_t& maxEvent) const;
     bool CheckOpTypeIsValid(const std::string& opTypeInput, std::string& opType, std::string& errInfo) const;
-    bool CheckTaskBlockValid(const std::string& switchName, const std::string& config) const;
     bool CheckDynaPidIsValid(const int32_t pid) const;
 
 private:

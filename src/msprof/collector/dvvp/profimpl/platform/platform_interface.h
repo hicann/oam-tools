@@ -48,23 +48,20 @@ constexpr char INTERFACE_L2CACHE[] = "0x500,0x502,0x504,0x506,0x508,0x50a";
 constexpr char INTERFACE_L2CACHEEVENT[] = "0xF6,0xFB,0xFC,0xBF,0x90,0x91,0x9C,0x9D";
 constexpr char INTERFACE_MEMORYACCESS[] = "0x32,0x3d,0x3e,0x206,0x20c,0x50c,0x50d,0x50e";
 constexpr char EMPTY_FREQUENCY[] = "";
+// NTS default event table: concrete platforms override GetNtsPipeUtilizationMetrics on ext side
+constexpr char INTERFACE_NTS_PIPEUTILIZATION[] = "";
 
 enum PlatformTypeEnum {
     CHIP_MINI = 0,
     CHIP_CLOUD = 1,
-    CHIP_MDC = 2,
     CHIP_DC = 4,
     CHIP_CLOUD_V2 = 5,
     CHIP_MINI_V3 = 7,
     CHIP_TINY_V1 = 8,
     CHIP_NANO_V1 = 9,
-    CHIP_MDC_MINI_V3 = 11,
-    CHIP_MDC_LITE = 12,
     CHIP_CLOUD_V3 = 15,
     CHIP_CLOUD_V3_LITE = 19,
     CHIP_CLOUD_V4 = 16,
-    CHIP_MDC_V2 = 17,
-    CHIP_MDC_LITE_V2 = 18,
     CHIP_5162A = 21,
     CHIP_END
 };
@@ -165,6 +162,18 @@ enum PlatformFeature {
     // Feature analysis
     PLATFORM_EXPORT_TYPE,
     PLATFORM_AICPU_SAMPLE_PERIOD,
+    PLATFORM_TASK_NTS,
+    // platform capability extension features: set by blue-area platforms, extension platforms (module ext) set on ext
+    // side
+    PLATFORM_TASK_BLOCK_ON,              // task-block supports the on value
+    PLATFORM_AICORE_EVENT_FROM_ZERO,     // aicore pmu event min value is 0
+    PLATFORM_ADPROF,                     // supports adprof collection
+    PLATFORM_AIV_INDEPENDENT_CONFIG,     // aiv params configured independently
+    PLATFORM_AICORE_EXCT_DEFAULT,        // default metrics is PipeUtilizationExct
+    PLATFORM_TASK_L2CACHE_ENUM,          // aicoreMetrics supports L2Cache enum
+    PLATFORM_SYS_DEVICE_LLC_EXT,         // ext platform LLC driver support
+    PLATFORM_SYS_DEVICE_SIO_PA,          // sys-interconnection covers SIO and PA
+    PLATFORM_SYS_DEVICE_INTERCONNECTION, // sys-interconnection acquisition group is offered
     // MAX
     PLATFORM_COLLECTOR_TYPES_MAX
 };
@@ -196,6 +205,8 @@ const std::map<std::string, PlatformFeature> METRIC_FEATURE_MAP = {
     {"ScalarRatio", PLATFORM_TASK_SCALAR_RATIO_PMU},
     {"MemoryAccess", PLATFORM_TASK_MEMORY_ACCESS_PMU}};
 
+const std::map<std::string, PlatformFeature> NTS_METRIC_FEATURE_MAP = {{"PipeUtilization", PLATFORM_TASK_NTS}};
+
 const std::map<std::string, std::vector<PlatformFeature>> PLATFORM_FEATURE_MAP = {
     {"switch", {PLATFORM_TASK_SWITCH}},
     {"ge_api", {PLATFORM_TASK_GE_API}},
@@ -223,7 +234,8 @@ const std::map<std::string, std::vector<PlatformFeature>> PLATFORM_FEATURE_MAP =
     {"dvpp_freq", {PLATFORM_SYS_DEVICE_DVPP, PLATFORM_SYS_DEVICE_DVPP_EX}},
     {"host_sys", {PLATFORM_SYS_HOST_SYS_CPU, PLATFORM_SYS_HOST_SYS_MEM}},
     {"host_sys_usage", {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}},
-    {"host_sys_usage_freq", {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}}};
+    {"host_sys_usage_freq", {PLATFORM_SYS_HOST_ALL_PID_CPU, PLATFORM_SYS_HOST_ALL_PID_MEM}},
+    {"nts_metrics", {PLATFORM_TASK_NTS}}};
 
 const std::map<uint64_t, PlatformFeature> PLATFORM_BITE_MAP = {
     {PROF_ACL_API, PLATFORM_TASK_ASCENDCL},   {PROF_TASK_TIME_L1, PLATFORM_TASK_TRACE},
@@ -252,6 +264,11 @@ public:
     virtual PlatformFeature PmuMetricsToFeature(const std::string& key) const;
     virtual uint16_t GetMaxMonitorNumber() const;
     virtual uint16_t GetQosMonitorNumber() const;
+    // max aicore pmu event, 0 means no extra limit (only some ext platforms have one)
+    virtual int32_t GetMaxAiPmuEvent() const;
+    // NTS event query: capability-based interface
+    virtual std::string GetNtsEvents(const std::string& metrics);
+    virtual PlatformFeature NtsMetricsToFeature(const std::string& key) const;
     virtual std::vector<BiuPerfChannelInfo> GetBiuPerfChannelInfos(
         const std::vector<uint32_t>& groupVector, uint32_t groupNum) const;
     // Returns the number of BIU profiling groups supported by the platform. Zero means unsupported.
@@ -263,6 +280,10 @@ public:
     virtual PmuCalculationAttr* GetMetricsFunc(const std::string& name, uint32_t index) const;
     virtual float GetTotalTime(uint64_t cycle, double freq, uint16_t blockDim, int64_t coreNum) const;
     virtual void SetSubscribeFeature();
+    // msprof CLI long option names this platform hides from users. Extension platforms fill in
+    // their own list, so chip specific blacklists stay out of the main tree. An empty list hides
+    // nothing and keeps the tool side blacklist table as the only source.
+    virtual std::vector<std::string> GetHiddenCliArgs() const;
 
 protected:
     virtual std::string GetMetricsValue(const PlatformFeature feature);
@@ -278,6 +299,7 @@ protected:
     virtual std::string GetL2CacheMetrics();
     virtual std::string GetScalarMetrics();
     virtual std::string GetMemoryAccessMetrics();
+    virtual std::string GetNtsPipeUtilizationMetrics();
     std::set<PlatformFeature> supportedFeature_;
     SHARED_PTR_ALIA<BaseAnalyzer> analyzer_;
 };

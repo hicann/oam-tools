@@ -23,10 +23,11 @@
 #include "david_lite_platform.h"
 #include "david_v121_platform.h"
 #include "dc_platform.h"
-#include "mdc_lite_platform.h"
-#include "mdc_lite_v2_platform.h"
-#include "mdc_mini_v3_platform.h"
-#include "mdc_platform.h"
+#include "rc_lite_platform_stub.h"
+#include "rc_lite_v2_platform_stub.h"
+#include "rc_mini_v3_platform_stub.h"
+#include "rc_platform_stub.h"
+#include "rc_v2_platform_stub.h"
 #include "mini_v3_platform.h"
 #include "modena_platform.h"
 #include "platform/platform.h"
@@ -36,7 +37,9 @@ using namespace analysis::dvvp::common::config;
 
 namespace {
 constexpr uint16_t MODENA_MAX_MONITOR_NUM = 8;
-}
+constexpr uint16_t RC_V2_QOS_MONITOR_NUM = 8;
+constexpr uint32_t RC_V2_CHIP_ID = 17;
+} // namespace
 
 class PLATFORM_UTEST : public testing::Test {
 protected:
@@ -192,11 +195,11 @@ TEST_F(PLATFORM_UTEST, Dc_GetL2CacheEvents)
     EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 
-// ================================ MdcLitePlatform ================================
+// ================================ RcLitePlatformStub ================================
 
-TEST_F(PLATFORM_UTEST, MdcLite_FeatureIsSupport)
+TEST_F(PLATFORM_UTEST, RcLite_FeatureIsSupport)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_ASCENDCL));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AU_PMU));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_HBM));
@@ -205,125 +208,200 @@ TEST_F(PLATFORM_UTEST, MdcLite_FeatureIsSupport)
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_MC2));
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetPipeUtilizationMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetPipeUtilizationMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x34,0x35"), platform->GetPipeUtilizationMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetPipelineExecuteUtilizationMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetPipelineExecuteUtilizationMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x500,0x301,0x1,0x701,0x202,0x203,0x714"), platform->GetPipelineExecuteUtilizationMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetMemoryMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x404,0x406,0x566,0x567,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryL0Metrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetMemoryL0Metrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x304,0x702,0x306,0x703,0x712,0x30a,0x308"), platform->GetMemoryL0Metrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetMemoryUBMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetMemoryUBMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x57b,0x57c"), platform->GetMemoryUBMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetArithmeticUtilizationMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetArithmeticUtilizationMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x302,0x303"), platform->GetArithmeticUtilizationMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetResourceConflictRatioMetrics)
+TEST_F(PLATFORM_UTEST, RcLite_GetResourceConflictRatioMetrics)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x54f,0x551,0x552,0x561,0x563,0x564,0x557"), platform->GetResourceConflictRatioMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLite_GetL2CacheEvents)
+TEST_F(PLATFORM_UTEST, RcLite_GetL2CacheEvents)
 {
-    auto platform = std::make_shared<MdcLitePlatform>();
+    auto platform = std::make_shared<RcLitePlatformStub>();
     EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 
-// ================================ MdcLiteV2Platform ================================
+// ================================ RcLiteV2PlatformStub ================================
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_FeatureIsSupport)
+TEST_F(PLATFORM_UTEST, RcLiteV2_FeatureIsSupport)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_ASCENDCL));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AU_PMU));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_MC2));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_STARS_QOS));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AICPU));
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_FWK));
-    EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_AICPU));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_SIO_PA));
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_INTERCONNECTION));
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMaxMonitorNumber)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetMaxMonitorNumber)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(MAX_DAVID_MONITOR_NUM, platform->GetMaxMonitorNumber());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetQosMonitorNumber)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetQosMonitorNumber)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(8, platform->GetQosMonitorNumber());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetPipeUtilizationMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetPipeUtilizationMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"), platform->GetPipeUtilizationMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetMemoryMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"), platform->GetMemoryMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryL0Metrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetMemoryL0Metrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"), platform->GetMemoryL0Metrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetMemoryUBMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetMemoryUBMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"), platform->GetMemoryUBMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetArithmeticUtilizationMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetArithmeticUtilizationMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x323,0x324"), platform->GetArithmeticUtilizationMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetResourceConflictRatioMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetResourceConflictRatioMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"), platform->GetResourceConflictRatioMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetL2CacheMetrics)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetL2CacheMetrics)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"), platform->GetL2CacheMetrics());
 }
 
-TEST_F(PLATFORM_UTEST, MdcLiteV2_GetL2CacheEvents)
+TEST_F(PLATFORM_UTEST, RcLiteV2_GetL2CacheEvents)
 {
-    auto platform = std::make_shared<MdcLiteV2Platform>();
+    auto platform = std::make_shared<RcLiteV2PlatformStub>();
     EXPECT_EQ(std::string("0x00,0x81,0x82,0x83,0x74,0x75"), platform->GetL2CacheEvents());
+}
+
+// ================================ RcV2PlatformStub ================================
+
+TEST_F(PLATFORM_UTEST, RcV2_FeatureIsSupport)
+{
+    RcV2PlatformStub platform;
+    const std::vector<PlatformFeature> rcV2Features = {
+        PLATFORM_TASK_NTS,
+        PLATFORM_TASK_AICPU,
+        PLATFORM_TASK_L2_CACHE_REG,
+        PLATFORM_TASK_L2_CACHE_PMU,
+        PLATFORM_TASK_SOC_PMU,
+        PLATFORM_TASK_BLOCK,
+        PLATFORM_TASK_BLOCK_ON,
+        PLATFORM_AICORE_EVENT_FROM_ZERO,
+        PLATFORM_SYS_DEVICE_LLC_EXT,
+        PLATFORM_SYS_DEVICE_SIO_PA,
+        PLATFORM_SYS_DEVICE_INTERCONNECTION};
+    for (const auto& feature : rcV2Features) {
+        EXPECT_TRUE(platform.FeatureIsSupport(feature));
+    }
+    EXPECT_FALSE(platform.FeatureIsSupport(PLATFORM_TASK_FWK));
+    EXPECT_FALSE(platform.FeatureIsSupport(PLATFORM_TASK_PC_SAMPLING));
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_MonitorNumberAndDefaultFreq)
+{
+    RcV2PlatformStub platform;
+    EXPECT_EQ(MAX_DAVID_MONITOR_NUM, platform.GetMaxMonitorNumber());
+    EXPECT_EQ(RC_V2_QOS_MONITOR_NUM, platform.GetQosMonitorNumber());
+    // 频率归一到平台层：与扩展仓rc_v2平台实现保持一致
+    EXPECT_EQ(std::string("38.4"), platform.GetDeviceOscDefaultFreq());
+    EXPECT_EQ(std::string("1400"), platform.GetAicDefaultFreq());
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_AicoreMetricsTables)
+{
+    RcV2PlatformStub platform;
+    EXPECT_EQ(std::string("0x501,0x301,0x1,0x701,0x202,0x203,0x34,0x35,0x714"), platform.GetPipeUtilizationMetrics());
+    EXPECT_EQ(std::string("0x323,0x324"), platform.GetArithmeticUtilizationMetrics());
+    EXPECT_EQ(std::string("0x540,0x556,0x502,0x528"), platform.GetResourceConflictRatioMetrics());
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_MemoryMetricsTables)
+{
+    RcV2PlatformStub platform;
+    EXPECT_EQ(std::string("0x400,0x401,0x56f,0x571,0x570,0x572,0x707,0x709"), platform.GetMemoryMetrics());
+    EXPECT_EQ(std::string("0x304,0x703,0x306,0x705,0x712,0x30a,0x308"), platform.GetMemoryL0Metrics());
+    EXPECT_EQ(std::string("0x3,0x5,0x70c,0x206,0x204,0x571,0x572"), platform.GetMemoryUBMetrics());
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_L2CacheMetricsAndEvents)
+{
+    RcV2PlatformStub platform;
+    EXPECT_EQ(std::string("0x424,0x425,0x426,0x42a,0x42b,0x42c"), platform.GetL2CacheMetrics());
+    EXPECT_EQ(std::string("0x00,0x75,0x76,0x77,0x66,0x67,0x68,0x69"), platform.GetL2CacheEvents());
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_NtsPipeUtilizationMetrics)
+{
+    RcV2PlatformStub platform;
+    EXPECT_EQ(
+        std::string("0x301,0x312,0x315,0x316,0x32e,0x701,0x202,0x203,0x1,0x35"),
+        platform.GetNtsPipeUtilizationMetrics());
+}
+
+TEST_F(PLATFORM_UTEST, RcV2_CanBeCreatedByReflection)
+{
+    auto platform = PlatformReflection::CreatePlatformClass(static_cast<PlatformTypeEnum>(RC_V2_CHIP_ID));
+    ASSERT_NE(nullptr, platform);
+    EXPECT_EQ(MAX_DAVID_MONITOR_NUM, platform->GetMaxMonitorNumber());
+    EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_NTS));
 }
 
 // ================================ ModenaPlatform ================================
@@ -364,11 +442,11 @@ TEST_F(PLATFORM_UTEST, Modena_CreateByReflection)
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_LLC));
 }
 
-// ================================ MdcMiniV3Platform ================================
+// ================================ RcMiniV3PlatformStub ================================
 
-TEST_F(PLATFORM_UTEST, MdcMiniV3_FeatureIsSupport_ErasedFeatures)
+TEST_F(PLATFORM_UTEST, RcMiniV3_FeatureIsSupport_ErasedFeatures)
 {
-    auto platform = std::make_shared<MdcMiniV3Platform>();
+    auto platform = std::make_shared<RcMiniV3PlatformStub>();
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_AICPU));
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_BLOCK));
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_NIC));
@@ -377,20 +455,20 @@ TEST_F(PLATFORM_UTEST, MdcMiniV3_FeatureIsSupport_ErasedFeatures)
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_TASK_DELAY_DURATION));
 }
 
-TEST_F(PLATFORM_UTEST, MdcMiniV3_FeatureIsSupport_RetainedFeatures)
+TEST_F(PLATFORM_UTEST, RcMiniV3_FeatureIsSupport_RetainedFeatures)
 {
-    auto platform = std::make_shared<MdcMiniV3Platform>();
+    auto platform = std::make_shared<RcMiniV3PlatformStub>();
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_ASCENDCL));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AU_PMU));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_HCCL));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_SYS_DEVICE_NPU_MODULE_MEM));
 }
 
-// ================================ MdcPlatform ================================
+// ================================ RcPlatformStub ================================
 
-TEST_F(PLATFORM_UTEST, Mdc_FeatureIsSupport)
+TEST_F(PLATFORM_UTEST, Rc_FeatureIsSupport)
 {
-    auto platform = std::make_shared<MdcPlatform>();
+    auto platform = std::make_shared<RcPlatformStub>();
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AICPU));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_ASCENDCL));
     EXPECT_TRUE(platform->FeatureIsSupport(PLATFORM_TASK_AU_PMU));
@@ -399,9 +477,9 @@ TEST_F(PLATFORM_UTEST, Mdc_FeatureIsSupport)
     EXPECT_FALSE(platform->FeatureIsSupport(PLATFORM_MC2));
 }
 
-TEST_F(PLATFORM_UTEST, Mdc_GetL2CacheEvents)
+TEST_F(PLATFORM_UTEST, Rc_GetL2CacheEvents)
 {
-    auto platform = std::make_shared<MdcPlatform>();
+    auto platform = std::make_shared<RcPlatformStub>();
     EXPECT_EQ(std::string("0x78,0x79,0x77,0x71,0x6a,0x6c,0x74,0x62"), platform->GetL2CacheEvents());
 }
 

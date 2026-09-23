@@ -145,12 +145,7 @@ set(msprofbinCpp
     ../profimpl/platform/david_v121_platform.cpp
     ../profimpl/platform/cloud_platform.cpp
     ../profimpl/platform/dc_platform.cpp
-    ../profimpl/platform/mdc_lite_platform.cpp
-    ../profimpl/platform/mdc_lite_v2_platform.cpp
-    ../profimpl/platform/mdc_mini_v3_platform.cpp
-    ../profimpl/platform/mdc_platform.cpp
     ../profimpl/platform/mini_v3_platform.cpp
-    ../profimpl/platform/mdc_v2_platform.cpp
     ../message/codec.cpp
     ../transport/file_transport.cpp
     ../transport/pipe_transport.cpp
@@ -171,6 +166,24 @@ set(msprofbinCpp
     ${CppPath}
 )
 
+# 扩展平台（module ext）源文件隔离：仅MODULE_EXT使能时编入
+set(ENABLE_MODULE_EXT OFF)
+if(DEFINED MODULE_EXT AND NOT (MODULE_EXT STREQUAL "") AND
+    NOT (MODULE_EXT STREQUAL "False") AND NOT (MODULE_EXT STREQUAL "false") AND
+    NOT (MODULE_EXT STREQUAL "OFF") AND NOT (MODULE_EXT STREQUAL "0"))
+    set(ENABLE_MODULE_EXT ON)
+    if(NOT DEFINED MSPROF_MODULE_EXT_ROOT)
+        get_filename_component(MSPROF_MODULE_EXT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../../modext/runtime_modext" ABSOLUTE)
+    endif()
+    set(MSPROF_MODULE_EXT_CMAKE
+        "${MSPROF_MODULE_EXT_ROOT}/src/dfx/msprof/collector/dvvp/cmake/msprof_module_ext.cmake")
+    if(NOT EXISTS "${MSPROF_MODULE_EXT_CMAKE}")
+        message(FATAL_ERROR "Profiling module ext cmake not found: ${MSPROF_MODULE_EXT_CMAKE}")
+    endif()
+    include("${MSPROF_MODULE_EXT_CMAKE}")
+    list(APPEND msprofbinCpp ${MSPROF_MODULE_EXT_PLATFORM_CPP})
+endif()
+
 if(${TARGET_SYSTEM_NAME} STREQUAL "Windows")
 set(msprofbinCpp
     src/win/msprof_bin.cpp
@@ -185,6 +198,7 @@ link_directories(
 )
 
 target_include_directories(msprofbin PRIVATE
+    $<$<BOOL:${ENABLE_MODULE_EXT}>:${MSPROF_MODULE_EXT_PLATFORM_INC}>
     ${msprofBinHeader}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}/proto/msprofbin_proto
@@ -213,6 +227,7 @@ target_compile_definitions(msprofbin PRIVATE
     SECUREC_USING_STD_SECURE_LIB=0
     google=ascend_private
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>:NOMINMAX>
+    $<$<BOOL:${ENABLE_MODULE_EXT}>:${MSPROF_MODULE_EXT_COMPILE_DEFINITIONS}>
 )
 
 target_link_options(msprofbin PRIVATE

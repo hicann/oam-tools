@@ -595,14 +595,13 @@ int32_t RunningMode::HandleProfilingParams() const
     std::string aiCoreMetrics;
     std::string aiVectMetrics;
     if (ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_V3_TYPE ||
-        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_MINI_V3 ||
         ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_TINY_V1 ||
-        ConfigManager::instance()->GetPlatformType() == PlatformType::CHIP_MDC_LITE) {
+        Platform::instance()->CheckIfSupport(::Dvvp::Collect::Platform::PLATFORM_AICORE_EXCT_DEFAULT)) {
         aiCoreMetrics = params_->ai_core_metrics.empty() ? PIPE_EXECUTION_UTILIZATION : params_->ai_core_metrics;
     } else {
         aiCoreMetrics = params_->ai_core_metrics.empty() ? PIPE_UTILIZATION : params_->ai_core_metrics;
     }
-    if (ConfigManager::instance()->GetPlatformType() == PlatformType::MDC_TYPE) {
+    if (Platform::instance()->CheckIfSupport(::Dvvp::Collect::Platform::PLATFORM_AIV_INDEPENDENT_CONFIG)) {
         aiVectMetrics = params_->aiv_metrics.empty() ? PIPE_UTILIZATION : params_->aiv_metrics;
     } else {
         aiVectMetrics = aiCoreMetrics;
@@ -863,8 +862,7 @@ int32_t AppMode::StartAppTask(bool needWait)
 
 void AppMode::SetDefaultParamsByPlatformType() const
 {
-    auto platformType = ConfigManager::instance()->GetPlatformType();
-    if (platformType == PlatformType::MDC_TYPE) {
+    if (Platform::instance()->CheckIfSupport(::Dvvp::Collect::Platform::PLATFORM_AIV_INDEPENDENT_CONFIG)) {
         if (params_->aiv_profiling.empty()) {
             params_->aiv_profiling = "on";
         }

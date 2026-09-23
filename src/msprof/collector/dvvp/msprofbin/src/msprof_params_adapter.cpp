@@ -82,7 +82,7 @@ void MsprofParamsAdapter::GenerateLlcEvents(SHARED_PTR_ALIA<analysis::dvvp::mess
         } else if (params->llc_profiling.compare(LLC_PROFILING_BANDWIDTH) == 0) {
             params->llc_profiling_events = GenerateBandwidthEvents();
         }
-    } else if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->IsDriverSupportLlc()) {
+    } else if (Platform::instance()->IsSupportLlcProfiling()) {
         if (params->llc_profiling.compare(LLC_PROFILING_READ) == 0) {
             params->llc_profiling_events = LLC_PROFILING_READ;
         } else if (params->llc_profiling.compare(LLC_PROFILING_WRITE) == 0) {
@@ -99,7 +99,7 @@ void MsprofParamsAdapter::GenerateLlcDefEvents(SHARED_PTR_ALIA<analysis::dvvp::m
     if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->GetPlatformType() == PlatformType::MINI_TYPE) {
         params->llc_profiling = LLC_PROFILING_CAPACITY;
         params->llc_profiling_events = GenerateCapacityEvents();
-    } else if (Analysis::Dvvp::Common::Config::ConfigManager::instance()->IsDriverSupportLlc()) {
+    } else if (Platform::instance()->IsSupportLlcProfiling()) {
         params->llc_profiling = LLC_PROFILING_READ;
         params->llc_profiling_events = LLC_PROFILING_READ;
     } else {

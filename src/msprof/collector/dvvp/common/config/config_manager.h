@@ -28,61 +28,42 @@ namespace Dvvp {
 namespace Common {
 namespace Config {
 
-#define HELPER_DEVICE_TYPE MDC_TYPE
+// helper形态设备类型：由扩展平台注入的chip id（数值与扩展仓注入实现一致），未注入时为2
+constexpr int32_t HELPER_DEVICE_TYPE = 2;
 constexpr uint32_t VER_310M = 5;
 enum class PlatformType {
     MINI_TYPE = 0,
     CLOUD_TYPE,
-    MDC_TYPE,
     DC_TYPE = 4,
     CHIP_V4_1_0,
     MINI_V3_TYPE = 7,
     CHIP_TINY_V1 = 8,
     CHIP_NANO_V1 = 9,
-    CHIP_MDC_MINI_V3 = 11,
-    CHIP_MDC_LITE = 12,
     CHIP_CLOUD_V3 = 15,
     CHIP_CLOUD_V3_LITE = 19,
     CHIP_CLOUD_V4 = 16,
-    CHIP_MDC_V2 = 17,
-    CHIP_MDC_LITE_V2 = 18,
     CHIP_5162A = 21,
     END_TYPE
 };
 
 const std::map<PlatformType, std::string> FREQUENCY_TYPE = {
-    {PlatformType::MINI_TYPE, "19.2"},
-    {PlatformType::CLOUD_TYPE, "100"},
-    {PlatformType::DC_TYPE, "38.4"},
-    {PlatformType::MDC_TYPE, "38.4"},
-    {PlatformType::CHIP_V4_1_0, "50"},
-    {PlatformType::MINI_V3_TYPE, "48"},
-    {PlatformType::CHIP_MDC_MINI_V3, "48"},
-    {PlatformType::CHIP_TINY_V1, "48"},
-    {PlatformType::CHIP_MDC_LITE, "38.4"},
-    {PlatformType::CHIP_CLOUD_V3, "1000"},
-    {PlatformType::CHIP_CLOUD_V3_LITE, "1000"},
-    {PlatformType::CHIP_CLOUD_V4, "1000"},
-    {PlatformType::CHIP_MDC_V2, "38.4"},
-    {PlatformType::CHIP_MDC_LITE_V2, "38.4"},
-    {PlatformType::CHIP_5162A, "20"}};
+    {PlatformType::MINI_TYPE, "19.2"},     {PlatformType::CLOUD_TYPE, "100"},
+    {PlatformType::DC_TYPE, "38.4"},       {PlatformType::CHIP_V4_1_0, "50"},
+    {PlatformType::MINI_V3_TYPE, "48"},    {PlatformType::CHIP_TINY_V1, "48"},
+    {PlatformType::CHIP_CLOUD_V3, "1000"}, {PlatformType::CHIP_CLOUD_V3_LITE, "1000"},
+    {PlatformType::CHIP_CLOUD_V4, "1000"}, {PlatformType::CHIP_5162A, "20"}};
 
 // clang-format off
 const std::map<PlatformType, std::string> AIC_TYPE = {
     {PlatformType::MINI_TYPE, "680"},
     {PlatformType::CLOUD_TYPE, "800"},
     {PlatformType::DC_TYPE, "1150"},
-    {PlatformType::MDC_TYPE, "960"},
     {PlatformType::CHIP_V4_1_0, "800"},
     {PlatformType::MINI_V3_TYPE, "1250"},
-    {PlatformType::CHIP_MDC_MINI_V3, "1250"},
     {PlatformType::CHIP_TINY_V1, "1250"},
-    {PlatformType::CHIP_MDC_LITE, "1250"},
     {PlatformType::CHIP_CLOUD_V3, "800"},
     {PlatformType::CHIP_CLOUD_V3_LITE, "800"},
     {PlatformType::CHIP_CLOUD_V4, "1650"},
-    {PlatformType::CHIP_MDC_V2, "1400"},
-    {PlatformType::CHIP_MDC_LITE_V2, "1500"},
     {PlatformType::CHIP_5162A, "20"}};
 // clang-format on
 
@@ -100,6 +81,7 @@ public:
     std::string GetPerfDataDir(const int32_t devId = 0) const;
     std::string GetDefaultWorkDir() const;
     void GetVersionSpecificMetrics(std::string& aicMetrics) const;
+    void UpdateFrequency(const std::string& frequency, const std::string& aicFrequency);
 
 private:
     void InitFrequency();

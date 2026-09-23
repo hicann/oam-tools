@@ -134,6 +134,37 @@ bool PlatformInterface::FeatureIsSupport(const PlatformFeature feature) const
     return (supportedFeature_.count(feature) > 0);
 }
 
+std::vector<std::string> PlatformInterface::GetHiddenCliArgs() const { return {}; }
+
+int32_t PlatformInterface::GetMaxAiPmuEvent() const { return 0; }
+
+std::string PlatformInterface::GetNtsEvents(const std::string& metrics)
+{
+    const PlatformFeature feature = NtsMetricsToFeature(metrics);
+    if (!FeatureIsSupport(feature)) {
+        return EMPTY_FREQUENCY;
+    }
+
+    if (feature == PLATFORM_TASK_NTS) {
+        return GetNtsPipeUtilizationMetrics();
+    }
+
+    MSPROF_LOGE("Failed to find [%d] nts metrics function", feature);
+    return EMPTY_FREQUENCY;
+}
+
+std::string PlatformInterface::GetNtsPipeUtilizationMetrics() { return INTERFACE_NTS_PIPEUTILIZATION; }
+
+PlatformFeature PlatformInterface::NtsMetricsToFeature(const std::string& key) const
+{
+    const auto it = NTS_METRIC_FEATURE_MAP.find(key);
+    if (it != NTS_METRIC_FEATURE_MAP.cend()) {
+        return it->second;
+    }
+
+    return PlatformFeature::PLATFORM_FEATURE_INVALID;
+}
+
 uint16_t PlatformInterface::GetMaxMonitorNumber() const { return MAX_COLLECT_MONITOR_NUM; }
 
 uint16_t PlatformInterface::GetQosMonitorNumber() const { return MAX_COLLECT_MONITOR_NUM; }

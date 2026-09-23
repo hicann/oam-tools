@@ -86,7 +86,7 @@ set(profilerSrcFiles
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/src/json_parser.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/platform_interface.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/cloud_v2_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_v2_platform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/stub/rc_v2_platform_stub.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_lite_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
@@ -231,6 +231,7 @@ target_include_directories(job_wrapper PRIVATE
     ${CMAKE_BINARY_DIR}/proto/job_wrapper_proto/
     ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
     ${MSPROF_SOURCE_DIR}/dvvp/acp/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../platform/stub
 )
 
 target_compile_options(job_wrapper PRIVATE

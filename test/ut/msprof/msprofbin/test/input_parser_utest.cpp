@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -49,7 +50,7 @@ constexpr int32_t CPU_SAMPLING_FREQ_ARG_INDEX = 64;
 constexpr int32_t INTERCONNECTION_FREQ_ARG_INDEX = 65;
 constexpr int32_t APP_PARAM_EXCEED_MAX_LEN = analysis::dvvp::common::config::MAX_APP_LEN + 1;
 constexpr int32_t OP_TYPE_EXCEED_MAX_LEN = 300;
-constexpr PlatformType TARGET_CHIP_TYPE = PlatformType::CHIP_MDC_V2;
+constexpr PlatformType TARGET_CHIP_TYPE = static_cast<PlatformType>(17);
 
 void SetPlatformTypeForTest(PlatformType platformType)
 {
@@ -662,9 +663,12 @@ TEST_F(INPUT_PARSER_UTEST, NtsMetricsOnlyAvailableOnTargetChip)
 {
     const char* argv[] = {"msprof", "--nts-metrics=PipeUtilization", "python3", "test.py", nullptr};
     SetPlatformTypeForTest(PlatformType::CLOUD_TYPE);
+    Platform::instance()->Uninit();
+    (void)Platform::instance()->Init();
     optind = 1;
     InputParser parser = InputParser();
     EXPECT_EQ(nullptr, parser.MsprofGetOpts(MSPROF_APP_ARGC, argv));
+    Platform::instance()->Uninit();
 }
 
 TEST_F(INPUT_PARSER_UTEST, NtsEventsAllowsTargetChip)
@@ -701,14 +705,8 @@ TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsNtsMetricsOnTargetChip)
 
 TEST_F(INPUT_PARSER_UTEST, PrintHelpHidesNtsMetricsOnOtherPlatform)
 {
-    SetPlatformTypeForTest(PlatformType::CLOUD_TYPE);
-    RefreshArgsManagerForTest();
-    std::ostringstream helpOutput;
-    auto* oldBuffer = std::cout.rdbuf(helpOutput.rdbuf());
-    ArgsManager::instance()->PrintHelp();
-    std::cout.rdbuf(oldBuffer);
-
-    EXPECT_EQ(std::string::npos, helpOutput.str().find("--nts-metrics"));
+    const std::string help = CaptureHelpForPlatform(PlatformType::CLOUD_TYPE);
+    EXPECT_EQ(std::string::npos, help.find("--nts-metrics"));
 }
 
 TEST_F(INPUT_PARSER_UTEST, PrintHelpShowsAicoreShape)
@@ -1238,6 +1236,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
 {
     InputParser parser = InputParser();
 
+    // platforms owning the 'on' capability accept all/on/off and report the full value range
     MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
         .stubs()
         .will(returnValue(true));
@@ -1246,17 +1245,38 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValid)
         .stubs()
         .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3))
         .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V3))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_V2))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V4))
-        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
+        .then(returnValue(static_cast<PlatformType>(17)))
+        .then(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_CLOUD_V4));
 
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "all"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
     EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
-    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "on"));
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
+}
+
+// platforms without the 'on' capability reject 'on' and only advertise all/off
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidWithoutOnCapability)
+{
+    InputParser parser = InputParser();
+
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .with(eq(static_cast<PlatformFeature>(PLATFORM_TASK_BLOCK_ON)))
+        .will(returnValue(false));
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .with(any())
+        .will(returnValue(true));
+    MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
+        .stubs()
+        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::MINI_TYPE));
+
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "on"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "all"));
+    EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "off"));
+    EXPECT_EQ(MSPROF_DAEMON_ERROR, parser.CheckTaskBlockValid("--task-block", "invalid_value"));
 }
 
 TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidDavidLite)
@@ -1273,7 +1293,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidDavidLite)
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
 }
 
-TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidMdcLiteV2)
+TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidRcLiteV2)
 {
     InputParser parser = InputParser();
 
@@ -1282,7 +1302,7 @@ TEST_F(INPUT_PARSER_UTEST, CheckTaskBlockValidMdcLiteV2)
         .will(returnValue(true));
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
-        .will(returnValue(Analysis::Dvvp::Common::Config::PlatformType::CHIP_MDC_LITE_V2));
+        .will(returnValue(static_cast<PlatformType>(18)));
 
     EXPECT_EQ(MSPROF_DAEMON_OK, parser.CheckTaskBlockValid("--task-block", "on"));
 }
@@ -1556,49 +1576,24 @@ TEST_F(INPUT_PARSER_UTEST, CheckReportsWillReturnOKWhenReportsValid)
     EXPECT_STREQ("xx", parser.params_->reportsPath.c_str());
 }
 
-TEST_F(INPUT_PARSER_UTEST, GenerateChipV2PlatSwithMap)
-{
-    InputParser parser = InputParser();
-    auto platMap = parser.GenerateChipV2PlatSwithMap();
-
-    const std::vector<MsprofArgsType> expected = {
-        ARGS_AIV,
-        ARGS_AIV_FREQ,
-        ARGS_AIV_MODE,
-        ARGS_AIV_METRICS,
-        ARGS_AICPU,
-        ARGS_IO_PROFILING,
-        ARGS_DYNAMIC_PROF,
-        ARGS_DYNAMIC_PROF_PID,
-        ARGS_DELAY_PROF,
-        ARGS_DURATION_PROF,
-        ARGS_DVPP_PROFILING,
-        ARGS_DVPP_FREQ,
-        ARGS_HCCL,
-        ARGS_MODEL_EXECUTION,
-        ARGS_INSTR_PROFILING_FREQ};
-
-    EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_V2]);
-    EXPECT_EQ(expected, platMap[PlatformType::CHIP_MDC_LITE_V2]);
-}
-
 TEST_F(INPUT_PARSER_UTEST, AddHCCLArgs)
 {
     ArgsManager argsManager = ArgsManager();
 
-    // Scenario 1: V2 platforms skip the hccl arg, the list stays empty
-    SetPlatformTypeForTest(PlatformType::CHIP_MDC_V2);
+    // platforms that hide the deprecated hccl long option drop the help entry as well
+    GlobalMockObject::verify();
+    MOCKER_CPP(&Platform::GetHiddenCliArgs, std::vector<std::string>(Platform::*)() const)
+        .stubs()
+        .will(returnValue(std::vector<std::string>(1, "hccl")));
     argsManager.argsList_.clear();
     argsManager.AddHCCLArgs();
     EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
 
-    SetPlatformTypeForTest(PlatformType::CHIP_MDC_LITE_V2);
-    argsManager.argsList_.clear();
-    argsManager.AddHCCLArgs();
-    EXPECT_EQ(static_cast<size_t>(0), argsManager.argsList_.size());
-
-    // Scenario 2: non-V2 platform appends the hccl arg
-    SetPlatformTypeForTest(PlatformType::MINI_TYPE);
+    // every other platform still appends it
+    GlobalMockObject::verify();
+    MOCKER_CPP(&Platform::GetHiddenCliArgs, std::vector<std::string>(Platform::*)() const)
+        .stubs()
+        .will(returnValue(std::vector<std::string>()));
     argsManager.argsList_.clear();
     argsManager.AddHCCLArgs();
     EXPECT_EQ(static_cast<size_t>(1), argsManager.argsList_.size());
@@ -1623,10 +1618,37 @@ TEST_F(INPUT_PARSER_UTEST, GeneratePlatSwithList_DavidAndDavid121BlackSwitches)
     Platform::instance()->Init();
     switchList = parser.GeneratePlatSwithList();
 
+    // CHIP_CLOUD_V4 is not registered in this UT target, so only the hardcoded table applies
     const std::vector<MsprofArgsType> david121Expected = {
         ARGS_AIV,      ARGS_AIV_FREQ, ARGS_AIV_MODE, ARGS_AIV_METRICS, ARGS_INSTR_PROFILING_FREQ, ARGS_DVPP_PROFILING,
         ARGS_DVPP_FREQ};
     EXPECT_EQ(david121Expected, switchList);
+    Platform::instance()->Uninit();
+}
+
+TEST_F(INPUT_PARSER_UTEST, InstrProfilingFreqBlacklistFollowsPlatformTable)
+{
+    // CHIP_V4_1_0 table keeps the freq switch out of the blacklist
+    SetPlatformTypeForTest(PlatformType::CHIP_V4_1_0);
+    ConfigManager::instance()->isInit_ = true;
+    Platform::instance()->Uninit();
+    Platform::instance()->Init();
+    ASSERT_TRUE(Platform::instance()->CheckIfPlatformExist());
+    EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_INSTR_PROFILING));
+    InputParser parser = InputParser();
+    auto cloudV2List = parser.GeneratePlatSwithList();
+    EXPECT_EQ(cloudV2List.end(), std::find(cloudV2List.begin(), cloudV2List.end(), ARGS_INSTR_PROFILING_FREQ));
+    Platform::instance()->Uninit();
+
+    // CHIP_CLOUD_V3 table carries the freq switch, so it must be intercepted
+    SetPlatformTypeForTest(PlatformType::CHIP_CLOUD_V3);
+    Platform::instance()->Init();
+    ASSERT_TRUE(Platform::instance()->CheckIfPlatformExist());
+    EXPECT_FALSE(Platform::instance()->CheckIfSupport(PLATFORM_SYS_DEVICE_INSTR_PROFILING));
+    EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_TASK_INSTR_PROFILING));
+    auto davidList = parser.GeneratePlatSwithList();
+    EXPECT_NE(davidList.end(), std::find(davidList.begin(), davidList.end(), ARGS_INSTR_PROFILING_FREQ));
+    Platform::instance()->Uninit();
 }
 
 TEST_F(INPUT_PARSER_UTEST, DavidLiteHelpAndPlatformSwitchesMatchDavid)

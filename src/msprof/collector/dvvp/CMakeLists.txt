@@ -113,19 +113,14 @@ set(profimplCpp
     profimpl/platform/modena_platform.cpp
     profimpl/platform/nano_platform.cpp
     profimpl/platform/mini_v3_platform.cpp
-    profimpl/platform/mdc_mini_v3_platform.cpp
     profimpl/platform/cloud_v2_platform.cpp
     profimpl/platform/david_platform.cpp
     profimpl/platform/david_lite_platform.cpp
     profimpl/platform/david_v121_platform.cpp
-    profimpl/platform/mdc_lite_platform.cpp
-    profimpl/platform/mdc_lite_v2_platform.cpp
     profimpl/platform/cloud_platform.cpp
     profimpl/platform/dc_platform.cpp
     profimpl/platform/mini_platform.cpp
-    profimpl/platform/mdc_platform.cpp
     profimpl/platform/tiny_v1_platform.cpp
-    profimpl/platform/mdc_v2_platform.cpp
     task_handle/src/device.cpp
     task_handle/src/info_json.cpp
     task_handle/src/prof_manager.cpp
@@ -143,6 +138,24 @@ set(profimplCpp
     transport/hdc/helper_transport.cpp
     ${CppPath}
 )
+
+# 扩展平台（module ext）源文件隔离：仅MODULE_EXT使能时编入，默认构建不依赖modext目录
+set(ENABLE_MODULE_EXT OFF)
+if(DEFINED MODULE_EXT AND NOT (MODULE_EXT STREQUAL "") AND
+    NOT (MODULE_EXT STREQUAL "False") AND NOT (MODULE_EXT STREQUAL "false") AND
+    NOT (MODULE_EXT STREQUAL "OFF") AND NOT (MODULE_EXT STREQUAL "0"))
+    set(ENABLE_MODULE_EXT ON)
+    if(NOT DEFINED MSPROF_MODULE_EXT_ROOT)
+        get_filename_component(MSPROF_MODULE_EXT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../modext/runtime_modext" ABSOLUTE)
+    endif()
+    set(MSPROF_MODULE_EXT_CMAKE
+        "${MSPROF_MODULE_EXT_ROOT}/src/dfx/msprof/collector/dvvp/cmake/msprof_module_ext.cmake")
+    if(NOT EXISTS "${MSPROF_MODULE_EXT_CMAKE}")
+        message(FATAL_ERROR "Profiling module ext cmake not found: ${MSPROF_MODULE_EXT_CMAKE}")
+    endif()
+    include("${MSPROF_MODULE_EXT_CMAKE}")
+    list(APPEND profimplCpp ${MSPROF_MODULE_EXT_PLATFORM_CPP})
+endif()
 
 set(profimplInc
     ${TOP_DIR}/graphengine/inc/external
@@ -232,6 +245,7 @@ target_include_directories(profimpl_fwk_share PRIVATE
     ${TOP_DIR}/metadef/inc/external
     depend/include/wrapper
     profapi/inc
+    $<$<BOOL:${ENABLE_MODULE_EXT}>:${MSPROF_MODULE_EXT_PLATFORM_INC}>
 )
 
 set_target_properties(profimpl_fwk_share
@@ -244,6 +258,7 @@ target_compile_definitions(profimpl_fwk_share PRIVATE
     $<$<STREQUAL:${CMAKE_BUILD_TYPE},Debug>:MSPROF_DEBUG>
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>:NOMINMAX>
     $<$<STREQUAL:${TARGET_SYSTEM_NAME},Windows>:WIN32>
+    $<$<BOOL:${ENABLE_MODULE_EXT}>:${MSPROF_MODULE_EXT_COMPILE_DEFINITIONS}>
 )
 
 target_link_options(profimpl_fwk_share PRIVATE

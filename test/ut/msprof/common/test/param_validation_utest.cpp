@@ -557,11 +557,11 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, L2CacheAdaptorSmmuDfx)
     EXPECT_NE(std::string::npos, npuEvents.find(";SMMU_DFX:"));
     Platform::instance()->Uninit();
 
-    // MDC v2 (CHIP_MDC_V2) does not override SMMU DFX: offset/mask are 0, no ";SMMU_DFX:" appended.
+    // RC v2 platform does not override SMMU DFX: offset/mask are 0, no ";SMMU_DFX:" appended.
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
-        .will(returnValue(PlatformType::CHIP_MDC_V2));
+        .will(returnValue(static_cast<PlatformType>(17)));
     Platform::instance()->Init();
     EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXOffset());
     EXPECT_EQ(0u, Platform::instance()->GetSmmuDFXRegMask());
@@ -732,19 +732,25 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckAiCoreEventCoresIsValid)
     EXPECT_EQ(false, ret);
 }
 
-TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckAiCoreEventsIsValidMdcLiteV2)
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckAiCoreEventsIsValidRcLiteV2)
 {
     using namespace analysis::dvvp::common::validation;
     GlobalMockObject::verify();
     MOCKER_CPP(&Platform::GetMaxMonitorNumber).stubs().will(returnValue(MAX_DAVID_MONITOR_NUM));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE_V2));
+    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(static_cast<PlatformTypeEnum>(18)));
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(true));
 
     std::vector<std::string> events = {"0x0", "0x714", "0x715"};
     EXPECT_EQ(true, ParamValidation::instance()->CheckAiCoreEventsIsValid(events));
 
     GlobalMockObject::verify();
     MOCKER_CPP(&Platform::GetMaxMonitorNumber).stubs().will(returnValue(MAX_COLLECT_MONITOR_NUM));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE));
+    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(static_cast<PlatformTypeEnum>(12)));
+    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
+        .stubs()
+        .will(returnValue(false));
 
     events = {"0x0"};
     EXPECT_EQ(false, ParamValidation::instance()->CheckAiCoreEventsIsValid(events));
@@ -804,41 +810,6 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckParamEmptyInvalidBasicResul
     EXPECT_EQ(true, ParamValidation::instance()->CheckParamEmptyInvalid("task_trace", "on"));
     EXPECT_EQ(true, ParamValidation::instance()->CheckParamEmptyInvalid("task_trace", "off"));
     EXPECT_EQ(false, ParamValidation::instance()->CheckParamEmptyInvalid("task_trace", "invalid"));
-}
-
-TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckTaskBlockValidMdcLiteV2)
-{
-    using namespace analysis::dvvp::common::validation;
-    GlobalMockObject::verify();
-    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE_V2));
-
-    EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "on"));
-    EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "all"));
-    EXPECT_EQ(true, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "off"));
-    EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "invalid"));
-
-    GlobalMockObject::verify();
-    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
-        .stubs()
-        .will(returnValue(true));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_MDC_LITE));
-
-    EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "on"));
-}
-
-TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, CheckTaskBlockValidModena)
-{
-    using namespace analysis::dvvp::common::validation;
-    GlobalMockObject::verify();
-    MOCKER_CPP(&Platform::CheckIfSupport, bool(Platform::*)(const PlatformFeature) const)
-        .stubs()
-        .will(returnValue(false));
-    MOCKER_CPP(&Platform::GetPlatformType).stubs().will(returnValue(PlatformTypeEnum::CHIP_5162A));
-
-    EXPECT_EQ(false, ParamValidation::instance()->CheckTaskBlockValid("--task-block", "on"));
 }
 
 TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetPlatformTypeModena)
@@ -984,17 +955,17 @@ TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, GetBiuPerfChannelInfos)
     GlobalMockObject::verify();
 }
 
-TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, MdcV2PlatformL2CacheEvents)
+TEST_F(COMMON_VALIDATION_PARAM_VALIDATION_TEST, RcV2PlatformL2CacheEvents)
 {
     GlobalMockObject::verify();
     MOCKER_CPP(&Analysis::Dvvp::Common::Config::ConfigManager::GetPlatformType)
         .stubs()
-        .will(returnValue(PlatformType::CHIP_MDC_V2));
+        .will(returnValue(static_cast<PlatformType>(17)));
     Platform::instance()->Uninit();
     Platform::instance()->Init();
 
+    // 与扩展仓rc_v2平台实现的L2事件表保持一致
     EXPECT_EQ("0x00,0x75,0x76,0x77,0x66,0x67,0x68,0x69", Platform::instance()->GetL2CacheEvents());
-
     EXPECT_EQ(MAX_DAVID_MONITOR_NUM, Platform::instance()->GetMaxMonitorNumber());
     EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_REG));
     EXPECT_TRUE(Platform::instance()->CheckIfSupport(PLATFORM_TASK_L2_CACHE_PMU));

@@ -1142,14 +1142,14 @@ bool ParamValidation::CheckAiCoreEventsIsValid(const std::vector<std::string>& e
     }
     int32_t minEvent = 1;
     int32_t maxEvent = MAX_PMU_EVENT;
-    if (Platform::instance()->GetPlatformType() == CHIP_MDC_LITE) {
-        maxEvent = LITE_MAX_PMU_EVENT;
-    }
-    PlatformTypeEnum platformType = Platform::instance()->GetPlatformType();
-    if (platformType == CHIP_CLOUD_V3 || platformType == CHIP_CLOUD_V3_LITE || platformType == CHIP_CLOUD_V4 ||
-        platformType == CHIP_MDC_V2 || platformType == CHIP_MDC_LITE_V2 || platformType == CHIP_5162A) {
+    if (Platform::instance()->CheckIfSupport(::Dvvp::Collect::Platform::PLATFORM_AICORE_EVENT_FROM_ZERO)) {
         minEvent = 0;
         maxEvent = ACC_MAX_PMU_EVENT;
+    }
+    // 部分扩展平台有更小的aicore pmu event上限
+    const int32_t maxAiPmuEvent = Platform::instance()->GetMaxAiPmuEvent();
+    if (maxAiPmuEvent > 0) {
+        maxEvent = maxAiPmuEvent;
     }
     for (uint32_t i = 0; i < events.size(); ++i) {
         const int32_t eventVal = strtol(events[i].c_str(), nullptr, BASE_HEX);
@@ -1181,42 +1181,6 @@ bool ParamValidation::CheckLlcConfigValid(const std::string& config) const
     }
     MSPROF_LOGE("Argument llc config: invalid value: %s. Please input in the range of 'read|write'", config.c_str());
     return false;
-}
-
-/**
- * @brief  : Check task block is valid
- * @param  : [in] switchName : the switch name
- * @param  : [in] config : task block config
- * @return : true
- *           false
- */
-bool ParamValidation::CheckTaskBlockValid(const std::string& switchName, const std::string& config) const
-{
-    FUNRET_CHECK_EXPR_ACTION(
-        !Platform::instance()->CheckIfSupport(PLATFORM_TASK_BLOCK), return false, "Argument %s is not supported",
-        switchName.c_str());
-    FUNRET_CHECK_EXPR_ACTION(config.empty(), return false, "Argument %s is empty.", switchName.c_str());
-    if (config.compare(MSVP_PROF_OFF) != 0 && config.compare(MSVP_PROF_ALL) != 0 && config.compare(MSVP_PROF_ON) != 0) {
-        std::string taskBlockRanges;
-        PlatformTypeEnum platformType = Platform::instance()->GetPlatformType();
-        if (platformType == CHIP_CLOUD_V3 || platformType == CHIP_CLOUD_V3_LITE || platformType == CHIP_CLOUD_V4 ||
-            platformType == CHIP_MDC_V2 || platformType == CHIP_MDC_LITE_V2) {
-            taskBlockRanges = "'all', 'on', 'off'.";
-        } else {
-            taskBlockRanges = "'all', 'off'.";
-        }
-        MSPROF_LOGE(
-            "Argument %s: invalid value: %s. Please input %s", switchName.c_str(), config.c_str(),
-            taskBlockRanges.c_str());
-        return false;
-    }
-    PlatformTypeEnum platformType = Platform::instance()->GetPlatformType();
-    if (config.compare(MSVP_PROF_ON) == 0 && platformType != CHIP_CLOUD_V3 && platformType != CHIP_CLOUD_V3_LITE &&
-        platformType != CHIP_CLOUD_V4 && platformType != CHIP_MDC_V2 && platformType != CHIP_MDC_LITE_V2) {
-        MSPROF_LOGE("The on option is not supported on this platform, please use all to collect block data.");
-        return false;
-    }
-    return true;
 }
 } // namespace validation
 } // namespace common

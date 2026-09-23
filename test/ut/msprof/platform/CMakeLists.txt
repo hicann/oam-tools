@@ -41,10 +41,11 @@ add_executable(platform_utest
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_lite_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/david_v121_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/dc_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_lite_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_lite_v2_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_mini_v3_platform.cpp
-    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mdc_platform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub/rc_lite_platform_stub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub/rc_lite_v2_platform_stub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub/rc_mini_v3_platform_stub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub/rc_platform_stub.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub/rc_v2_platform_stub.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/mini_v3_platform.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform/modena_platform.cpp
     ${MSPROF_SOURCE_DIR}/basic/osal/osal.c
@@ -85,6 +86,7 @@ set(libmsprofHeaderDir
 )
 
 target_include_directories(platform_utest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/stub
     ${libmsprofHeaderDir}
     ${MSPROF_SOURCE_DIR}/dvvp
     ${MSPROF_SOURCE_DIR}/dvvp/common

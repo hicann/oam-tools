@@ -16,12 +16,12 @@
 
 #ifndef DVVP_COLLECT_PLATFORM_TINY_V1_PLATFORM_H
 #define DVVP_COLLECT_PLATFORM_TINY_V1_PLATFORM_H
-#include "mdc_mini_v3_platform.h"
+#include "mini_v3_platform.h"
 
 namespace Dvvp {
 namespace Collect {
 namespace Platform {
-class TinyV1Platform : public MdcMiniV3Platform {
+class TinyV1Platform : public MiniV3Platform {
 public:
     TinyV1Platform();
     ~TinyV1Platform() override {}
