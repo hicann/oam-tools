@@ -10,7 +10,7 @@
   - [采集Host侧系统数据](./msprof_cmd/host_system_data.md)<!-- end id1 -->
   - [采集msproftx数据](./msprof_cmd/msproftx_data.md)
   <!-- npu="950,A3,910b,910,310p,310b" id2 -->
-  - [动态采集性能数据](./msprof_cmd/dynamically.md)<!-- end id2 --> 
+  - [动态采集性能数据](./msprof_cmd/dynamically.md)<!-- end id2 -->
   <!-- npu="950,A3,910b,910,310p,310b" id3 -->
   - [延迟采集性能数据](./msprof_cmd/delayed_mode.md)<!-- end id3 -->
 
@@ -18,7 +18,7 @@
   - [使用acl C&C++接口采集性能数据](./other_method/with_acl_apis.md)
   <!-- npu="950,A3,910b,910,310p" id4 -->
   - [使用Ascend Graph接口采集性能数据](./other_method/with_ascendgraph_apis.md)<!-- end id4 -->
-  - [使用acl.json配置文件采集性能数据](./other_method/with_acljson_config_file.md) 
+  - [使用acl.json配置文件采集性能数据](./other_method/with_acljson_config_file.md)
   <!-- npu="950,A3,910b" id5 -->
   - [使用环境变量采集性能数据](./other_method/with_environment_variables.md)<!-- end id5 -->
 
@@ -29,5 +29,8 @@
   - [配置用户权限](./appendices/config_user_permission.md)<!-- end id7 -->
   - [mstx API使用示例](./appendices/mstxapi_usage_example.md)
   <!-- npu="950,A3,910b,910" id8 -->
-  - [Profiling options参数解释](./appendices/profiling_options_parameter.md)<!-- end id8 --> 
+  - [Profiling options参数解释](./appendices/profiling_options_parameter.md)<!-- end id8 -->
 <!-- @ref: oam-tools/res/docs/zh/profiling/index_res.md#id00002 -->
+<!-- npu="950" id9 -->
+- [FAQ](./faq/faq.md)
+<!-- end id9 -->
