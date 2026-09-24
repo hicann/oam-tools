@@ -90,7 +90,7 @@
         export HCCL_BUFFSIZE=2048
         ```
 
-        更多环境变量可参见《[环境变量参考](https://hiascend.com/document/redirect/CannCommunityEnvRef)》中的“集合通信”章节。
+         更多环境变量可参见《HCCL集合通信库》中的“[环境变量参考](https://gitcode.com/cann/hccl/blob/9.2.0/docs/zh/user_guide/hccl_env/README.md)”。
 
     4. （可选）配置HCCL Test工具辅助环境变量。
        - 指定Device执行HCCL Test。
@@ -109,7 +109,7 @@
          export HCCL_TEST_PROFILING_PATH=/home/profiling
          ```
 
-         若开启HCCL_TEST_PROFILING，HCCL Test工具执行完成后会在HCCL_TEST_PROFILING_PATH指定目录下生成profiling数据，性能数据的解析可参见《[性能调优工具用户指南](https://hiascend.com/document/redirect/CannCommunityToolProfiling)》的“使用msprof命令解析、查询与导出性能数据”章节。
+         若开启HCCL_TEST_PROFILING，HCCL Test工具执行完成后会在HCCL_TEST_PROFILING_PATH指定目录下生成profiling数据，性能数据的解析可参见《[性能调优工具](https://gitcode.com/cann/docs/blob/9.2.0/docs/zh/profiling/profiling_menu.md)》的“msProf性能数据解析”章节。
 
          > [!CAUTION]注意
          > 开启Profiling后，会对集合通信算子性能产生影响。
