@@ -751,6 +751,12 @@ TEST_F(JOB_WRAPPER_PROF_ADPROF_JOB_TEST, InitAdprof)
         .then(returnValue(PROFILING_SUCCESS));
     EXPECT_EQ(PROFILING_FAILED, profAdprofJob->InitAdprof());
     EXPECT_EQ(PROFILING_SUCCESS, profAdprofJob->InitAdprof());
+    EXPECT_EQ(profAdprofJob->cmdVec_.size(), profAdprofJob->params_.size());
+    EXPECT_EQ("adprof", profAdprofJob->cmdVec_[0]);
+    for (size_t i = 0; i < profAdprofJob->cmdVec_.size(); i++) {
+        EXPECT_STREQ(profAdprofJob->cmdVec_[i].c_str(), profAdprofJob->params_[i].paramInfo);
+        EXPECT_EQ(profAdprofJob->cmdVec_[i].size(), profAdprofJob->params_[i].paramLen);
+    }
 
     GlobalMockObject::reset();
     StubTsdDlsymWith(TsdDlsymMode::PROC_STATUS_ERROR);
