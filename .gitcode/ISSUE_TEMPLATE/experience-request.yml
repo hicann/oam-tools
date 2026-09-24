@@ -1,0 +1,61 @@
+name: Experience Request|体验需求
+description: 当您在使用 oam-tools 运维工具（asys/msaicerr/msprof/hccl_test）的过程中发现可改进的体验问题时，请使用此模板。
+title: "[Experience Request|体验需求]: "
+labels: ["requirement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sending an issue! Please fill in the following template to help quickly solve your problem.
+  - type: dropdown
+    attributes:
+      label: 相关工具
+      description: 请选择体验问题涉及的工具模块。
+      options:
+        - asys（故障信息收集）
+        - msaicerr（AI Core Error 分析）
+        - msprof（性能剖析与调优）
+        - hccl_test（HCCL 性能测试）
+        - 通用/跨工具（构建、打包、公共文档等）
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: 体验活动所处阶段
+      description: 请选择发现体验问题时所处的工作阶段。
+      options:
+        - 感知学习（了解工具能力、查阅文档与帮助信息等）
+        - 获取构建（源码下载、build.sh 构建、run/rpm/deb 打包与安装等）
+        - 环境准备（CANN 环境适配、依赖安装、多机多卡配置等）
+        - 工具运行与数据采集（故障信息收集、性能数据采集、通信测试执行等）
+        - 结果解析与呈现（报告/summary 文件解读、Dump 解析、性能指标展示等）
+        - 故障定位与性能调优（基于工具输出定位问题、调优验证等）
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: 体验改进触点（问题出现在哪类内容或环节）
+      description: 请选择体验问题对应的触点。
+      options:
+        - 工具文档（README、帮助信息、用户指南等）
+        - 构建与打包（build.sh、依赖下载、打包产物等）
+        - 命令行参数与 API
+        - 运行时反馈（日志、报错信息、进度提示等）
+        - 结果输出（报告文件、summary 展示、可视化等）
+        - 示例代码（examples）
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 详细描述
+      description: 说明具体体验场景和未达到预期的体验维度（如易学性、易用性、反馈清晰度），并描述实际遇到的问题。
+      placeholder: 针对您遇到的问题，请尽可能提供相关的工具版本、命令与参数、操作步骤、日志或截图等信息。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 改进建议
+      description: 请描述您期望的改进方式或理想体验。
+      placeholder: 例如期望补充哪些说明、简化哪些操作，或优化成什么样。
+    validations:
+      required: false
