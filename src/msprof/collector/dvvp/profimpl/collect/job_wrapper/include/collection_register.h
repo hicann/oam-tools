@@ -58,6 +58,7 @@ static const std::string COLLECTION_JOB_FILENAME[NR_MAX_COLLECTION_JOB] = {
     "data/socpmu.data",
     "data/l2_cache.data",
     "data/stars_soc.data",
+    "data/stars_f_soc.data",
     "data/stars_block.data",
     "data/stars_soc_profile.data",
     "data/ffts_profile.data",

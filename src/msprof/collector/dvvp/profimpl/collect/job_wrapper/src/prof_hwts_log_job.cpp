@@ -15,13 +15,19 @@
  */
 
 #include "prof_hwts_log_job.h"
+#include "ai_drv_prof_api.h"
+#include "config/config.h"
 #include "errno/error_code.h"
+#include "json_parser.h"
+#include "platform/platform.h"
 
 namespace Analysis {
 namespace Dvvp {
 namespace JobWrapper {
 using namespace analysis::dvvp::common::error;
 using namespace analysis::dvvp::common::config;
+using namespace Msprofiler::Parser;
+using namespace Analysis::Dvvp::Common::Platform;
 
 ProfHwtsLogJob::ProfHwtsLogJob() : channelId_(PROF_CHANNEL_HWTS_LOG) {}
 
@@ -106,6 +112,84 @@ int32_t ProfAivHwtsLogJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
     }
     collectionJobCfg_ = cfg;
     channelId_ = PROF_CHANNEL_AIV_HWTS_LOG;
+    return PROFILING_SUCCESS;
+}
+
+ProfHwtsLogFDieJob::ProfHwtsLogFDieJob() : channelId_(PROF_CHANNEL_HWTS_LOG) {}
+
+ProfHwtsLogFDieJob::~ProfHwtsLogFDieJob() {}
+
+int32_t ProfHwtsLogFDieJob::Init(const SHARED_PTR_ALIA<CollectionJobCfg> cfg)
+{
+    CHECK_JOB_CONTEXT_PARAM_RET(cfg, return PROFILING_FAILED);
+    if (cfg->comParams->params->hostProfiling) {
+        return PROFILING_FAILED;
+    }
+    if (!Platform::instance()->CheckIfSupport(PLATFORM_STARS_F_DIE)) {
+        MSPROF_LOGI("[ProfHwtsLogFDieJob]F die task data not support on this platform");
+        return PROFILING_FAILED;
+    }
+    if (cfg->comParams->params->stars_acsq_task.compare(MSVP_PROF_ON) != 0 &&
+        cfg->comParams->params->taskBlock.compare(MSVP_PROF_ON) != 0) {
+        MSPROF_LOGI("[ProfHwtsLogFDieJob]task-time and task-block not enabled");
+        return PROFILING_FAILED;
+    }
+    collectionJobCfg_ = cfg;
+    return PROFILING_SUCCESS;
+}
+
+int32_t ProfHwtsLogFDieJob::Process()
+{
+    CHECK_JOB_COMMON_PARAM_RET(collectionJobCfg_, return PROFILING_FAILED);
+
+    if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
+        MSPROF_LOGW(
+            "[ProfHwtsLogFDieJob]Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
+            channelId_);
+        return PROFILING_SUCCESS;
+    }
+
+    MSPROF_LOGI(
+        "Begin to start profiling f die task data, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
+        channelId_);
+    std::string filePath = BindFileWithChannel(collectionJobCfg_->jobParams.dataPath);
+    AddReader(collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId_, filePath);
+    DrvPeripheralProfileCfg drvPeripheralProfileCfg;
+    drvPeripheralProfileCfg.profDeviceId = collectionJobCfg_->comParams->devId;
+    drvPeripheralProfileCfg.profChannel = channelId_;
+    // F die channel must reuse the P die channel 50 param set and values.
+    drvPeripheralProfileCfg.profSamplePeriod = JsonParser::instance()->GetJsonChannelPeriod(PROF_CHANNEL_STARS_SOC_LOG);
+    drvPeripheralProfileCfg.bufLen = JsonParser::instance()->GetJsonChannelDriverBufferLen(PROF_CHANNEL_STARS_SOC_LOG);
+    int32_t ret = DrvStarsSocLogStart(drvPeripheralProfileCfg, collectionJobCfg_->comParams->params);
+    MSPROF_LOGI("start profiling f die task data, ret=%d", ret);
+    if (ret != PROFILING_SUCCESS) {
+        MSPROF_LOGE(
+            "[ProfHwtsLogFDieJob]Process, DrvStarsSocLogStart failed, devId:%d, channelId:%d",
+            collectionJobCfg_->comParams->devId, channelId_);
+    }
+    return ret;
+}
+
+int32_t ProfHwtsLogFDieJob::Uninit()
+{
+    CHECK_JOB_COMMON_PARAM_RET(collectionJobCfg_, return PROFILING_SUCCESS);
+
+    if (!DrvChannelsMgr::instance()->ChannelIsValid(collectionJobCfg_->comParams->devId, channelId_)) {
+        MSPROF_LOGW(
+            "[ProfHwtsLogFDieJob]Channel is invalid, devId:%d, channelId:%d", collectionJobCfg_->comParams->devId,
+            channelId_);
+        return PROFILING_SUCCESS;
+    }
+    MSPROF_LOGI("begin to stop profiling f die task data");
+
+    int32_t ret = DrvStop(collectionJobCfg_->comParams->devId, channelId_);
+    if (ret != PROFILING_SUCCESS) {
+        MSPROF_LOGE(
+            "[ProfHwtsLogFDieJob]Uninit, DrvStop failed, devId:%d, channelId:%d, ret:%d",
+            collectionJobCfg_->comParams->devId, channelId_, ret);
+    }
+    RemoveReader(collectionJobCfg_->comParams->params->job_id, collectionJobCfg_->comParams->devId, channelId_);
+
     return PROFILING_SUCCESS;
 }
 

@@ -111,6 +111,7 @@ set(localSrcFiles
     ../stub/tsd_stub.cpp
     test/prof_job_utest.cpp
     test/prof_job_ccu_utest.cpp
+    test/prof_hwts_log_job_utest.cpp
     test/prof_peripheral_job_utest.cpp
     test/prof_timer_utest.cpp
     test/collection_register_utest.cpp

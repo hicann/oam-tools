@@ -174,6 +174,7 @@ enum PlatformFeature {
     PLATFORM_SYS_DEVICE_LLC_EXT,         // ext platform LLC driver support
     PLATFORM_SYS_DEVICE_SIO_PA,          // sys-interconnection covers SIO and PA
     PLATFORM_SYS_DEVICE_INTERCONNECTION, // sys-interconnection acquisition group is offered
+    PLATFORM_STARS_F_DIE,
     // MAX
     PLATFORM_COLLECTOR_TYPES_MAX
 };
