@@ -836,14 +836,15 @@ void Utils::GetChildFilenames(const std::string& dir, std::vector<std::string>& 
 
 std::string Utils::TimestampToTime(const std::string& timestamp, int32_t unit /* = 1 */)
 {
-    if (timestamp.compare("") == 0 || timestamp.find_first_not_of("1234567890") != std::string::npos || unit == 0) {
+    if (timestamp.compare("") == 0 || timestamp.find_first_not_of("1234567890") != std::string::npos || unit <= 0) {
         return "0";
     }
     time_t secTime;
     uint32_t microTime;
     try {
-        secTime = std::stoll(timestamp) / unit;
-        microTime = static_cast<uint32_t>(std::stoll(timestamp)) % static_cast<uint32_t>(unit);
+        const int64_t ts = std::stoll(timestamp);
+        secTime = ts / unit;
+        microTime = static_cast<uint32_t>(ts % static_cast<int64_t>(unit));
     } catch (...) {
         return "0";
     }

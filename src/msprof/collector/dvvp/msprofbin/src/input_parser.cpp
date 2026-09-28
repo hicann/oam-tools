@@ -612,12 +612,7 @@ void InputParser::ParamsSwitchValid(const struct MsprofCmdInfo& cmdInfo, int32_t
     if (SetBasicSwitchParam(cmdInfo, opt)) {
         return;
     }
-
-    switch (opt) {
-        default:
-            ParamsSwitchValid2(cmdInfo, opt);
-            break;
-    }
+    ParamsSwitchValid2(cmdInfo, opt);
 }
 
 int32_t InputParser::MsprofCmdCheckValid(const struct MsprofCmdInfo& cmdInfo, int32_t opt)

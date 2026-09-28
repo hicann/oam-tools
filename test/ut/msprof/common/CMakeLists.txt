@@ -270,9 +270,7 @@ generate_cann_protobuf(param_validation_utest_proto
     ${MSPROF_SOURCE_DIR}/dvvp/proto/profiler.proto
 )
 
-add_executable(param_validation_utest
-    test/main.cpp
-    test/param_validation_utest.cpp
+set(COMMON_UTEST_SRCS
     ${MSPROF_SOURCE_DIR}/dvvp/common/validation/param_validation.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/utils/utils.cpp
     ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log/cmd_log.cpp
@@ -299,6 +297,12 @@ add_executable(param_validation_utest
     ../stub/devdrv_runtime_api_stub.cpp
     ../stub/profile_drv_user_stub.cpp
     ${CppPath}
+)
+
+add_executable(param_validation_utest
+    test/main.cpp
+    test/param_validation_utest.cpp
+    ${COMMON_UTEST_SRCS}
 )
 
 target_include_directories(param_validation_utest PRIVATE
@@ -372,5 +376,86 @@ target_link_libraries(param_validation_utest PRIVATE
 set_target_properties(param_validation_utest
     PROPERTIES
     OUTPUT_NAME param_validation_utest
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+###################### utils_utest ###########################
+add_executable(utils_utest
+    test/main.cpp
+    test/utils_utest.cpp
+    ${COMMON_UTEST_SRCS}
+)
+
+target_include_directories(utils_utest PRIVATE
+    ${LIBC_SEC_HEADER}
+    ${TOP_DIR}/third_party/libc_sec/include
+    ${TOP_DIR}/src/dfx/error_manager
+    ${TOP_DIR}/src/inc
+    ${TOP_DIR}/src/msprof/inc
+    ${TOP_DIR}/src/msprof/inc/toolchain
+    ${TOP_DIR}/src/msprof/inc/external
+    ${TOP_DIR}/src/msprof/inc/external/acl
+    ${PROTOBUF_HOST_INCLUDE}
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/acl
+    ${ASCEND_CANN_PACKAGE_PATH}/include/driver
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+    ${ASCEND_CANN_PACKAGE_PATH}/include/mmpa
+    ${ASCEND_CANN_PACKAGE_PATH}/include/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/slog/toolchain
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/datagw/aicpu
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/aicpu
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
+    ${MSPROF_SOURCE_DIR}/dvvp
+    ${MSPROF_SOURCE_DIR}/dvvp/common
+    ${MSPROF_SOURCE_DIR}/dvvp/common/utils
+    ${MSPROF_SOURCE_DIR}/dvvp/common/json
+    ${MSPROF_SOURCE_DIR}/dvvp/common/config
+    ${MSPROF_SOURCE_DIR}/dvvp/common/logger
+    ${MSPROF_SOURCE_DIR}/dvvp/common/validation
+    ${MSPROF_SOURCE_DIR}/dvvp/common/platform
+    ${MSPROF_SOURCE_DIR}/dvvp/common/cmd_log
+    ${MSPROF_SOURCE_DIR}/dvvp/common/statistics
+    ${MSPROF_SOURCE_DIR}/basic/osal
+    ${MSPROF_SOURCE_DIR}/dvvp/message
+    ${MSPROF_SOURCE_DIR}/dvvp/driver/inc
+    ${MSPROF_SOURCE_DIR}/dvvp/task_handle/include
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/adapter/inc
+    ${MSPROF_SOURCE_DIR}/dvvp/profimpl/platform
+    ${MSPROF_SOURCE_DIR}/dvvp/profapi/inc
+    ${MSPROF_SOURCE_DIR}/dvvp/depend/include/stub
+    ${CMAKE_BINARY_DIR}/proto/param_validation_utest_proto/
+    ../stub/
+)
+
+target_compile_options(utils_utest PRIVATE
+    -g
+    -pipe
+    -Wall
+    -fno-access-control
+    -Wfloat-equal
+    -Wextra
+)
+
+target_compile_definitions(utils_utest PRIVATE
+    MSPROF_DEBUG
+    google=ascend_private
+)
+
+target_link_libraries(utils_utest PRIVATE
+    error_manager_headers
+    $<BUILD_INTERFACE:intf_llt_pub>
+    alog
+    ascend_protobuf_static
+    c_sec
+)
+
+set_target_properties(utils_utest
+    PROPERTIES
+    OUTPUT_NAME utils_utest
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
