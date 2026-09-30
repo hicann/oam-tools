@@ -21,6 +21,7 @@ This file mainly involves the common function.
 Copyright Information:
 Huawei Technologies Co., Ltd. All Rights Reserved © 2020
 """
+
 import csv
 import inspect
 import os
@@ -55,7 +56,6 @@ def singleton(cls):
 
 @singleton
 class ExceptionRootCause:
-
     def __init__(self):
         self.causes = []
         self.cache_error = True
@@ -66,7 +66,7 @@ class ExceptionRootCause:
     def format_causes(self):
         causes_str = ""
         for idx, cause in enumerate(self.causes):
-            causes_str += f'{idx + 1}. {cause}\n'
+            causes_str += f"{idx + 1}. {cause}\n"
         return causes_str
 
 
@@ -112,7 +112,7 @@ def _print_log_to_txt(level: str, msg: str) -> None:
     current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(time.time())))
     pid = os.getpid()
     print_info = current_time + " (" + str(pid) + ") - [" + level + "] " + msg + "\r\n"
-    with open('debug_info.txt', 'a', encoding='utf-8') as file:
+    with open("debug_info.txt", "a", encoding="utf-8") as file:
         file.write(print_info)
 
 
@@ -151,11 +151,15 @@ def print_error_log(error_msg: str) -> None:
     @return: none
     """
     stack = inspect.stack()
-    call_locations = ['ms_interface/collection.py', 'ms_interface/aicore_error_parser.py']
+    call_locations = [
+        "ms_interface/collection.py",
+        "ms_interface/aicore_error_parser.py",
+    ]
 
     save_to_root_cause = any(
         call_location in frame_info.filename and ExceptionRootCause().cache_error
-        for frame_info in stack for call_location in call_locations
+        for frame_info in stack
+        for call_location in call_locations
     )
 
     if save_to_root_cause:
@@ -177,10 +181,11 @@ def check_path_special_character(path: str) -> None:
     if " " in path:
         print_error_log("The path can not contain space.")
         raise AicErrException(Constant.MS_AICERR_INVALID_PARAM_ERROR)
-    grep_str = "[\';*?`!#$%^&+=<>{}]|~\""
+    grep_str = "[';*?`!#$%^&+=<>{}]|~\""
     if set(path) & set(grep_str):
         print_error_log(
-            "The path is not allowed with special characters " + grep_str + ".")
+            "The path is not allowed with special characters " + grep_str + "."
+        )
         raise AicErrException(Constant.MS_AICERR_INVALID_PARAM_ERROR)
 
 
@@ -198,30 +203,40 @@ def check_path_valid(path: str, isdir: bool = False, output: bool = False) -> No
         try:
             os.makedirs(path, mode=Constant.DIRECTORY_MASK)
         except OSError as ex:
-            print_error_log(f'Failed to create {path}. '
-                            f'Please check that the path is accessible or the disk space is enough. {str(ex)}')
+            print_error_log(
+                f"Failed to create {path}. "
+                f"Please check that the path is accessible or the disk space is enough. {str(ex)}"
+            )
             raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR) from ex
         finally:
             pass
     if not os.path.exists(path):
-        print_error_log(f'The path {path} does not exist. Please check that the path exists.')
+        print_error_log(
+            f"The path {path} does not exist. Please check that the path exists."
+        )
         raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
 
     if not os.access(path, os.R_OK):
-        print_error_log(f'The path {path} does not have permission to read. Please check that the path is readable.')
+        print_error_log(
+            f"The path {path} does not have permission to read. Please check that the path is readable."
+        )
         raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
 
     if isdir and not os.access(path, os.W_OK):
-        print_error_log(f'The path {path} does not have permission to write. Please check that the path is writeable.')
+        print_error_log(
+            f"The path {path} does not have permission to write. Please check that the path is writeable."
+        )
         raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
 
     if isdir:
         if not os.path.isdir(path):
-            print_error_log(f'The path {path} is not a directory. Please check the path.')
+            print_error_log(
+                f"The path {path} is not a directory. Please check the path."
+            )
             raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
     else:
         if not os.path.isfile(path):
-            print_error_log(f'The path {path} is not a file. Please check the path.')
+            print_error_log(f"The path {path} is not a file. Please check the path.")
             raise AicErrException(Constant.MS_AICERR_INVALID_PATH_ERROR)
 
 
@@ -236,19 +251,24 @@ def execute_command(cmd: list, file_out: str = None) -> tuple:
         with tempfile.SpooledTemporaryFile() as out_temp:
             file_no = out_temp.fileno()
             if file_out is None:
-                process = subprocess.Popen(cmd, shell=False, stdout=file_no,
-                                           stderr=file_no)
+                process = subprocess.Popen(
+                    cmd, shell=False, stdout=file_no, stderr=file_no
+                )
             else:
-                with os.fdopen(os.open(file_out, Constant.WRITE_FLAGS, Constant.WRITE_MODES), 'w') as output_file:
-                    process = subprocess.Popen(cmd, shell=False, stdout=output_file, stderr=file_no)
+                with os.fdopen(
+                    os.open(file_out, Constant.WRITE_FLAGS, Constant.WRITE_MODES), "w"
+                ) as output_file:
+                    process = subprocess.Popen(
+                        cmd, shell=False, stdout=output_file, stderr=file_no
+                    )
                     os.chmod(file_out, stat.S_IRUSR)
             process.wait()
             status = process.returncode
             out_temp.seek(0)
-            data = out_temp.read().decode('utf-8')
+            data = out_temp.read().decode("utf-8")
         return status, data
     except FileNotFoundError as error:
-        print_error_log('Failed to execute cmd %s. %s' % (cmd, error))
+        print_error_log("Failed to execute cmd %s. %s" % (cmd, error))
         raise AicErrException(Constant.MS_AICERR_EXECUTE_COMMAND_ERROR) from error
     finally:
         pass
@@ -262,23 +282,38 @@ def run_cmd_output(command, cwd=None, env=None) -> bool:
     if isinstance(command, str):
         # shell=False 下字符串会被当成单个可执行文件名，必然 FileNotFoundError
         # 并被吞成 False（编译流程静默失败），故显式报错点明契约。
-        print_error_log('Run command failed: command must be a list of args, got str: {0}'.format(command))
+        print_error_log(
+            "Run command failed: command must be a list of args, got str: {0}".format(
+                command
+            )
+        )
         return False
     if not env:
         env = os.environ
     try:
-        ret = subprocess.run(command, shell=False, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             encoding='utf-8', env=env, check=False)
+        ret = subprocess.run(
+            command,
+            shell=False,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding="utf-8",
+            env=env,
+            check=False,
+        )
     except (OSError, ValueError) as error:
         # shell=False 下命令不存在/参数非法会抛异常，转为 False 保持原有返回语义。
-        print_error_log('Run command: {0} failed, {1}'.format(command, error))
+        print_error_log("Run command: {0} failed, {1}".format(command, error))
         return False
     if ret.returncode == 0:
         return True
     else:
         ret_err = ret.stdout
         print_error_log(
-            'Run command: {0} failed, ret_code={1}, ret_err={2}'.format(command, ret.returncode, ret_err))
+            "Run command: {0} failed, ret_code={1}, ret_err={2}".format(
+                command, ret.returncode, ret_err
+            )
+        )
         return False
 
 
@@ -326,7 +361,7 @@ def _iter_csv_rows(csv_path: str):
     :param csv_path: the csv path
     """
     # 显式指定utf-8，避免受locale影响；算子名可能含非utf-8字节，需兜住解码失败
-    with open(csv_path, 'r', encoding='utf-8') as csv_file:
+    with open(csv_path, "r", encoding="utf-8") as csv_file:
         yield from csv.reader(csv_file)
 
 
@@ -358,12 +393,13 @@ def write_file(output_path: str, file_content: str, write_mode="w") -> None:
     dest_dir = os.path.dirname(output_path)
     check_path_valid(dest_dir, isdir=True, output=True)
     try:
-        with os.fdopen(os.open(output_path, Constant.WRITE_FLAGS, Constant.WRITE_MODES), write_mode) as output_file:
+        with os.fdopen(
+            os.open(output_path, Constant.WRITE_FLAGS, Constant.WRITE_MODES), write_mode
+        ) as output_file:
             output_file.write(file_content)
         os.chmod(output_path, stat.S_IRUSR)
     except IOError as io_error:
-        print_error_log(
-            'Failed to write file %s. %s' % (output_path, io_error))
+        print_error_log("Failed to write file %s. %s" % (output_path, io_error))
         raise AicErrException(Constant.MS_AICERR_OPEN_FILE_ERROR) from io_error
     finally:
         pass
@@ -377,7 +413,7 @@ def get_str_value(value_str: str) -> int:
         return -1
     value_str = value_str.strip()
     try:
-        if value_str.startswith("0x"):
+        if value_str.lower().startswith("0x"):
             return int(value_str, 16)
         else:
             return int(value_str)
@@ -409,7 +445,7 @@ def hexstr_to_list_bin(hexstr: str) -> list:
     binstr_size = len(binstr)
     ret = []
     for i, bin_value in enumerate(binstr):
-        if bin_value == '1':
+        if bin_value == "1":
             ret.append(binstr_size - i - 1)
     return ret
 
@@ -428,10 +464,14 @@ def get_01_from_hexstr(hexstr: str, high_bit: int, low_bit: int) -> str:
 def strplogtime(str_time: str):
     temp_list = str_time.split(".")
     if len(temp_list) != 3:
-        print_warn_log("str_time[{}] does not match %Y-%m-%d-%H:%M:%S.%f1.%f2, please check".format(str_time))
-        return datetime.strptime(str_time, '%Y-%m-%d-%H:%M:%S')
+        print_warn_log(
+            "str_time[{}] does not match %Y-%m-%d-%H:%M:%S.%f1.%f2, please check".format(
+                str_time
+            )
+        )
+        return datetime.strptime(str_time, "%Y-%m-%d-%H:%M:%S")
     new_str = "{}.{}{}".format(temp_list[0], temp_list[1], temp_list[2])
-    return datetime.strptime(new_str, '%Y-%m-%d-%H:%M:%S.%f')
+    return datetime.strptime(new_str, "%Y-%m-%d-%H:%M:%S.%f")
 
 
 def regexp_match_dict(regexp, data):
@@ -445,7 +485,11 @@ def get_inquire_result(grep_cmd, regexp, match_dict=False):
     if status != 0:
         print_warn_log(f"Failed to execute command:{grep_cmd}.")
         return []
-    ret = regexp_match_dict(regexp, data) if match_dict else re.findall(regexp, data, re.M | re.S)
+    ret = (
+        regexp_match_dict(regexp, data)
+        if match_dict
+        else re.findall(regexp, data, re.M | re.S)
+    )
     if len(ret) == 0:
         print_warn_log(f"Log info does not match:{regexp} in command result.")
         return []
@@ -460,11 +504,11 @@ def load_ascend_handlers():
 
     for folder in os.listdir(current_dir):
         folder_path = os.path.join(current_dir, folder)
-        if not os.path.isdir(folder_path) or not folder.startswith('ascend'):
+        if not os.path.isdir(folder_path) or not folder.startswith("ascend"):
             continue
 
         for file in os.listdir(folder_path):
-            if not (file.startswith('ascend') and file.endswith('handler.py')):
+            if not (file.startswith("ascend") and file.endswith("handler.py")):
                 continue
 
             base_name = os.path.splitext(file)[0]
@@ -473,8 +517,8 @@ def load_ascend_handlers():
                 # 导入模块
                 module = importlib.import_module(module_name)
                 # 从文件名中提取类名
-                class_parts = base_name.split('_')
-                class_name = ''.join([part.capitalize() for part in class_parts])
+                class_parts = base_name.split("_")
+                class_name = "".join([part.capitalize() for part in class_parts])
                 # 获取类并实例化
                 cls = getattr(module, class_name)
                 instance = cls()
