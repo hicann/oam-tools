@@ -357,7 +357,7 @@ def collect_opp_config(output_root_path):
         log_warning(f"The {config_path} file does not have the read permission.")
         return False
 
-    load_priority = re.search("load_priority=(.+?)\n", cfg_content)
+    load_priority = re.search("load_priority=(.+?)(?:\n|$)", cfg_content)
     if not load_priority:
         log_warning(f"The {config_path} file does not contain the load_priority field.")
         return False
