@@ -37,7 +37,6 @@ class ParseData:
 
 
 class ParseCoreTrace:
-    missing_binary = set()
     lock = Lock()
 
     def __init__(self, symbol, file=None):
@@ -45,6 +44,9 @@ class ParseCoreTrace:
         self.symbol_path = symbol
         self.__addr2line = "addr2line"
         self.warned = False
+        # Keep the already-warned binaries per instance, otherwise the warning
+        # is suppressed for every later analysis in the same process.
+        self.missing_binary = set()
 
     def check_tool_exists(self):
         if not check_command(self.__addr2line):
