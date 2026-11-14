@@ -161,11 +161,19 @@ checkopts() {
         shift
         ;;
         --ascend_install_path)
-        ASCEND_HOME_PATH="$(realpath $2)"
+        ASCEND_HOME_PATH="$(realpath -- "$2")"
         shift 2
         ;;
         --cann_3rd_lib_path)
-        CANN_3RD_LIB_PATH="$(realpath $2)"
+        CANN_3RD_LIB_PATH="$(realpath -- "$2")"
+        # 同 --bundle_branch：该值拼进 CMAKE_ARGS 后经 cmake ${cmake_args} .. 非引号
+        # 展开，含空格路径会被拆成多个 CMake 参数导致配置失败。此处拒绝而非加
+        # 引号包裹（引号会作为字面量传给 CMake，见下方拼装处注释）；
+        # 支持含空格路径需先将 CMAKE_ARGS 数组化改造消费链。
+        if [[ "${CANN_3RD_LIB_PATH}" == *" "* ]]; then
+            echo "ERROR: invalid --cann_3rd_lib_path '${CANN_3RD_LIB_PATH}': spaces are not supported."
+            exit 1
+        fi
         shift 2
         ;;
         --bundle_branch)
